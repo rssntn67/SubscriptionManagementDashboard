@@ -16,6 +16,9 @@ import com.vaadin.ui.VerticalLayout;
 @Title("Gestione Abbonamenti ADP")
 public class SmdUI extends UI {
 
+	public final static String URL_ANAGRAFICA="anagrafica";
+	public final static String URL_PUBBLICAZIONI="pubblicazioni";
+	public final static String URL_ABBONAMENTI="abbonamenti";
 	/**
 	 * 
 	 */
@@ -27,9 +30,9 @@ public class SmdUI extends UI {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		layout.addComponents(new Label("Benvenuti nel programma gestione abbonamenti ADP"), 
-				new Link("Anagrafica dei Destinatari", new ExternalResource("anagrafica")),
-				new Link("Anagrafica delle Pubblicazioni", new ExternalResource("pubblicazioni")),
-				new Link("Abbonamenti", new ExternalResource("abbonamenti"))				
+				new Link("Anagrafica dei Destinatari", new ExternalResource(URL_ANAGRAFICA)),
+				new Link("Anagrafica delle Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
+				new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI))				
 		);
 		setContent(layout);
 

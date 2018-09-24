@@ -1,9 +1,9 @@
 package it.arsinfo.smd.vaadin;
 
 
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Anagrafica.Diocesi;
-import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.entity.Pubblicazione.Tipo;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import java.util.EnumSet;
 
@@ -27,30 +27,30 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-@SpringUI(path=SmdUI.URL_ANAGRAFICA)
-@Title("Anagrafica Clienti ADP")
-public class AnagraficaUI extends UI {
+@SpringUI(path=SmdUI.URL_PUBBLICAZIONI)
+@Title("Anagrafica Pubblicazioni ADP")
+public class PubblicazioneUI extends UI {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7884064928998716106L;
 
-	Grid<Anagrafica> grid;
+	Grid<Pubblicazione> grid;
 	@Autowired
-	AnagraficaDao repo;
+	PubblicazioneDao repo;
 	
 	@Override
 	protected void init(VaadinRequest request) {
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Anagrafica Clienti");
-		Button addNewBtn = new Button("Aggiungi ad Anagrafica", VaadinIcons.PLUS);		
-		TextField filterCognome = new TextField();
-		ComboBox<Anagrafica.Diocesi> filterDiocesi = new ComboBox<Anagrafica.Diocesi>(null,EnumSet.allOf(Anagrafica.Diocesi.class));
+		Label header = new Label("Anagrafica Pubblicazioni");
+		Button addNewBtn = new Button("Aggiungi Pubblicazione", VaadinIcons.PLUS);		
+		TextField filterNome = new TextField();
+		ComboBox<Tipo> filterTipo = new ComboBox<Tipo>(null,EnumSet.allOf(Tipo.class));
 		
-		grid = new Grid<>(Anagrafica.class);
-		AnagraficaEditor editor = new AnagraficaEditor(repo);
-		HorizontalLayout actions = new HorizontalLayout(filterDiocesi,filterCognome,addNewBtn);
+		grid = new Grid<>(Pubblicazione.class);
+		PubblicazioneEditor editor = new PubblicazioneEditor(repo);
+		HorizontalLayout actions = new HorizontalLayout(filterTipo,filterNome,addNewBtn);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		layout.addComponents(header,editor,actions,grid);
@@ -58,48 +58,48 @@ public class AnagraficaUI extends UI {
 
 		header.addStyleName(ValoTheme.LABEL_H2);
 		
-		filterDiocesi.setEmptySelectionAllowed(false);
-		filterDiocesi.setPlaceholder("Cerca per Diocesi");
+		filterTipo.setEmptySelectionAllowed(false);
+		filterTipo.setPlaceholder("Cerca per Tipo");
 		
-		filterCognome.setPlaceholder("Cerca per Cognome");
+		filterNome.setPlaceholder("Cerca per Nome");
 		
-		grid.setColumns("id", "nome", "cognome","diocesi","indirizzo");		
+		grid.setColumns("id", "nome", "tipo");		
 		grid.getColumn("id").setMaximumWidth(50);
 		grid.setWidth("80%");
 
 		editor.setWidth("80%");
 
-		filterDiocesi.addSelectionListener(e-> listType(e.getSelectedItem().get()));
+		filterTipo.addSelectionListener(e-> listCustomer(e.getSelectedItem().get()));
 
-		filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
-		filterCognome.addValueChangeListener(e -> list(e.getValue()));		
+		filterNome.setValueChangeMode(ValueChangeMode.EAGER);
+		filterNome.addValueChangeListener(e -> listCustomers(e.getValue()));		
 
 		grid.asSingleSelect().addValueChangeListener(e -> {
 			editor.edit(e.getValue());
 		});
 		
-		addNewBtn.addClickListener(e -> editor.edit(new Anagrafica("", "")));
+		addNewBtn.addClickListener(e -> editor.edit(new Pubblicazione("")));
 
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			list(filterCognome.getValue());
+			listCustomers(filterNome.getValue());
 		});
-		list(null);
+		listCustomers(null);
 
 	}
 
-	void list(String filterText) {
+	void listCustomers(String filterText) {
 		if (StringUtils.isEmpty(filterText)) {
 			grid.setItems(repo.findAll());
 		}
 		else {
-			grid.setItems(repo.findByCognomeStartsWithIgnoreCase(filterText));
+			grid.setItems(repo.findByNomeStartsWithIgnoreCase(filterText));
 		}
 	}
 	
-	void listType(Diocesi diocesi) {
-		if (diocesi != null ) {
-			grid.setItems(repo.findByDiocesi(diocesi));
+	void listCustomer(Tipo tipo) {
+		if (tipo != null ) {
+			grid.setItems(repo.findByTipo(tipo));
 		} else {
 			grid.setItems(repo.findAll());
 		}
