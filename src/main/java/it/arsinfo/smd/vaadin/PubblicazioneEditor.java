@@ -7,9 +7,11 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -31,14 +33,20 @@ public class PubblicazioneEditor extends VerticalLayout {
 	 */
 	private Pubblicazione pubblicazione;
 	private final TextField nome = new TextField("Nome");
+	private final TextField autore = new TextField("Autore");
+	private final TextField editore = new TextField("Editore");
 	private final ComboBox<Tipo> tipo = new ComboBox<Tipo>("Tipo", EnumSet.allOf(Tipo.class));
+	private final TextField costo = new TextField("Costo");
 	
+	private final CheckBox active = new CheckBox("Active");
+	private final CheckBox abbonamento = new CheckBox("Abbonamento");
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(nome,tipo);
+	HorizontalLayout basic = new HorizontalLayout(nome,tipo,autore,editore,costo);
+	HorizontalLayout check = new HorizontalLayout(active,abbonamento);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Pubblicazione> binder = new Binder<>(Pubblicazione.class);
@@ -48,11 +56,21 @@ public class PubblicazioneEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,actions);
+		addComponents(basic,check,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
-		binder.bindInstanceFields(this);
-
+		binder.forField(nome).asRequired("Il Nome della Pubblicazione e' abbligatorio")
+			.bind(Pubblicazione::getNome, Pubblicazione::setNome);
+		binder.forField(tipo).asRequired("Il Tipo di pubblicazione e' obbligatorio")
+			.bind(Pubblicazione::getTipo, Pubblicazione::setTipo);
+		binder.bind(autore, Pubblicazione::getAutore, Pubblicazione::setAutore);
+		binder.bind(editore, Pubblicazione::getEditore,Pubblicazione::setEditore);
+		binder.forField(costo).asRequired()
+		.withConverter(new StringToFloatConverter("Conversione in Eur")).withValidator( f -> f > 0, "Deve essere maggire di 0" )
+		.bind(Pubblicazione::getCosto, Pubblicazione::setCosto);
+		binder.forField(active).bind(Pubblicazione::isActive,Pubblicazione::setActive);
+		binder.forField(abbonamento).bind(Pubblicazione::isAbbonamento,Pubblicazione::setAbbonamento);
+		
 		// Configure and style components
 		setSpacing(true);
 
