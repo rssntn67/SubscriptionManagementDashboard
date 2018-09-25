@@ -63,7 +63,7 @@ public class AnagraficaUI extends UI {
 		
 		filterCognome.setPlaceholder("Cerca per Cognome");
 		
-		grid.setColumns("id", "nome", "cognome","diocesi","indirizzo");		
+		grid.setColumns("id", "nome", "cognome","diocesi","indirizzo","citta","cap","paese","email","telefono","omaggio");		
 		grid.getColumn("id").setMaximumWidth(50);
 		grid.setWidth("80%");
 

@@ -6,9 +6,11 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -30,18 +32,30 @@ public class AnagraficaEditor extends VerticalLayout {
 	 */
 	private Anagrafica customer;
 	private final TextField nome = new TextField("Nome");
-	private final TextField cognome = new TextField("Cognome");
+	private final TextField cognome = new TextField("Cognome/Ragione Sociale");
 
 	private final TextField indirizzo = new TextField("Indirizzo");
+	private final TextField cap = new TextField("CAP");
+	private final TextField citta = new TextField("Citta'");
+	private final TextField email = new TextField("Email");
+	private final TextField telefono = new TextField("Telefono");
+	private final TextField cellulare = new TextField("Cellulare");
+	private final TextField note = new TextField("Telefono");
+
+	private final CheckBox omaggio = new CheckBox("Omaggio");
+	private final CheckBox privilegiato = new CheckBox("Privilegiato");
 	private final ComboBox<Anagrafica.Diocesi> diocesi = new ComboBox<Anagrafica.Diocesi>("Diocesi", EnumSet.allOf(Anagrafica.Diocesi.class));
+	private final ComboBox<Anagrafica.Paese> paese = new ComboBox<Anagrafica.Paese>("Paese", EnumSet.allOf(Anagrafica.Paese.class));
 	
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(nome,cognome);
-	HorizontalLayout sec = new HorizontalLayout(diocesi,indirizzo);
+	HorizontalLayout pri = new HorizontalLayout(cognome, nome, diocesi);
+	HorizontalLayout sec = new HorizontalLayout(indirizzo, cap, citta, paese);
+	HorizontalLayout tel = new HorizontalLayout(email,telefono, cellulare, note);
+	HorizontalLayout che = new HorizontalLayout(omaggio, privilegiato);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Anagrafica> binder = new Binder<>(Anagrafica.class);
@@ -51,9 +65,11 @@ public class AnagraficaEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,sec,actions);
+		addComponents(pri,sec,tel,che,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
+		binder.forField(cognome).asRequired();
+		binder.forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));
 		binder.bindInstanceFields(this);
 
 		// Configure and style components

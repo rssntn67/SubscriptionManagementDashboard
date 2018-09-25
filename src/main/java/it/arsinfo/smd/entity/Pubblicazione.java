@@ -17,6 +17,7 @@ public class Pubblicazione {
 		QUINDICINALE,
 		MENSILE,
 		BIMESTRALE,
+		TRIMESTRALE,
 		SEMESTRALE,
 		ANNUALE;
 	}
