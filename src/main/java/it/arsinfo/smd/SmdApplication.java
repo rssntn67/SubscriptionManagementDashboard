@@ -1,8 +1,19 @@
 package it.arsinfo.smd;
 
+import java.util.Date;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.transaction.Transactional;
+
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.AbbonamentoPubblicazione;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AbbonamentoPubblicazioneDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
@@ -22,7 +33,11 @@ public class SmdApplication {
 	}
 	
 	@Bean
-	public CommandLineRunner loadData(AnagraficaDao anagraficaDao, PubblicazioneDao pubblicazioneDao) {
+	@Transactional
+	public CommandLineRunner loadData(AnagraficaDao anagraficaDao, 
+										PubblicazioneDao pubblicazioneDao,
+										AbbonamentoDao abbonamentoDao,
+										AbbonamentoPubblicazioneDao abbonamentoPubblicazioneDao) {
 		return (args) -> {
 			// save a couple of customers
 			
@@ -108,6 +123,19 @@ public class SmdApplication {
 			libro.setAutore("Padre xxx S.J.");
 			pubblicazioneDao.save(libro);
 
+			Abbonamento abbonamentoMd = new Abbonamento(md);
+			abbonamentoMd.setCampo("0003299900000");
+			abbonamentoMd.setData(new Date());
+			abbonamentoMd.setCost(10.0f);
+			/*
+			AbbonamentoPubblicazione abMdMen = new AbbonamentoPubblicazione(abbonamentoMd,mensile1);
+			AbbonamentoPubblicazione abMdTri = new AbbonamentoPubblicazione(abbonamentoMd,trimestrale);
+			AbbonamentoPubblicazione abMdSem = new AbbonamentoPubblicazione(abbonamentoMd,semestrale);
+			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdMen);
+			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdTri);
+			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdSem);
+*/
+			abbonamentoDao.save(abbonamentoMd);
 			// fetch all customers
 			log.info("Customers found with findAll():");
 			log.info("-------------------------------");
@@ -172,6 +200,21 @@ public class SmdApplication {
 			}
 			log.info("");
 			
+			// fetch all customers
+			log.info("Abbonamenti found with findAll():");
+			log.info("-------------------------------");
+			for (Abbonamento abbonamento : abbonamentoDao.findAll()) {
+				log.info(abbonamento.toString());
+			}
+			
+			log.info("Abbonamenti found with findByAnagrafica(Md):");
+			log.info("-------------------------------");
+			for (Abbonamento abbonamentomd : abbonamentoDao.findByAnagrafica(md)) {
+				log.info(abbonamentomd.toString());
+			}
+
+			log.info("");
+
 			
 
 		};
