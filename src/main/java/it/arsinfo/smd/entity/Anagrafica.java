@@ -34,6 +34,8 @@ public class Anagrafica {
     @Enumerated(EnumType.STRING)
     private Diocesi diocesi;
     
+	private String codfis;
+	private String piva;
 	private String indirizzo;
 	private String cap;
 	private String citta;
@@ -169,5 +171,21 @@ public class Anagrafica {
 
 	public void setPaese(Paese paese) {
 		this.paese = paese;
+	}
+
+	public String getCodfis() {
+		return codfis;
+	}
+
+	public void setCodfis(String codfis) {
+		this.codfis = codfis;
+	}
+
+	public String getPiva() {
+		return piva;
+	}
+
+	public void setPiva(String piva) {
+		this.piva = piva;
 	}
 }

@@ -37,6 +37,8 @@ public class AnagraficaEditor extends VerticalLayout {
 	private final TextField indirizzo = new TextField("Indirizzo");
 	private final TextField cap = new TextField("CAP");
 	private final TextField citta = new TextField("Citta'");
+	private final TextField piva = new TextField("P.Iva");
+	private final TextField codfis = new TextField("codice Fiscale");
 	private final TextField email = new TextField("Email");
 	private final TextField telefono = new TextField("Telefono");
 	private final TextField cellulare = new TextField("Cellulare");
@@ -55,6 +57,7 @@ public class AnagraficaEditor extends VerticalLayout {
 	HorizontalLayout pri = new HorizontalLayout(cognome, nome, diocesi);
 	HorizontalLayout sec = new HorizontalLayout(indirizzo, cap, citta, paese);
 	HorizontalLayout tel = new HorizontalLayout(email,telefono, cellulare, note);
+	HorizontalLayout min = new HorizontalLayout(codfis,piva);
 	HorizontalLayout che = new HorizontalLayout(omaggio, privilegiato);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
@@ -65,7 +68,7 @@ public class AnagraficaEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,sec,tel,che,actions);
+		addComponents(pri,sec,tel,min,che,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
 		binder.forField(cognome).asRequired();
