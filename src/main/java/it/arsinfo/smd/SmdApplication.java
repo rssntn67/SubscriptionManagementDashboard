@@ -3,6 +3,7 @@ package it.arsinfo.smd;
 import javax.transaction.Transactional;
 
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -125,6 +126,7 @@ public class SmdApplication {
 			abbonamentoMd.setBlocchetti(true);
 			abbonamentoMd.setLodare(true);
 			abbonamentoMd.setInizio(Mese.GIUGNO);			
+			abbonamentoMd.setAnno(Anno.ANNO2018);			
 			abbonamentoDao.save(abbonamentoMd);
 			
 			Abbonamento abbonamentoCo = new Abbonamento(co);
@@ -134,6 +136,7 @@ public class SmdApplication {
 			abbonamentoCo.setLodare(true);
 			abbonamentoCo.setEstratti(true);
 			abbonamentoCo.setMessaggio(true);
+			abbonamentoCo.setAnno(Anno.ANNO2018);			
 			abbonamentoDao.save(abbonamentoCo);
 			
 			Abbonamento abbonamentoDp = new Abbonamento(dp);
@@ -142,6 +145,7 @@ public class SmdApplication {
 			abbonamentoDp.setLodare(true);
 			abbonamentoDp.setCosti(true);
 			abbonamentoDp.setInizio(Mese.MAGGIO);
+			abbonamentoDp.setAnno(Anno.ANNO2018);			
 			abbonamentoDao.save(abbonamentoDp);
 			
 

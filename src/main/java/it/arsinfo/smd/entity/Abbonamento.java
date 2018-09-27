@@ -28,6 +28,10 @@ public class Abbonamento {
 		private Anno(int anno) {
 			this.anno=anno;
 		}
+		
+		public String getAnnoAsString() {
+			return Integer.toString(anno);
+		}
 
 		public int getAnno() {
 			return anno;
@@ -254,6 +258,14 @@ public class Abbonamento {
 
 	public void setDestinatario(Anagrafica destinatario) {
 		this.destinatario = destinatario;
+	}
+
+	public Anno getAnno() {
+		return anno;
+	}
+
+	public void setAnno(Anno anno) {
+		this.anno = anno;
 	}
 		
 }

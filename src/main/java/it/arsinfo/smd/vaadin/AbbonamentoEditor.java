@@ -72,19 +72,26 @@ public class AbbonamentoEditor extends VerticalLayout {
 
 		addComponents(pri,sec,che,pag,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-		
+
+		anno.setItemCaptionGenerator(Anno::getAnnoAsString);
+
+		inizio.setItemCaptionGenerator(Mese::getNomeBreve);
+		fine.setItemCaptionGenerator(Mese::getNomeBreve);
+
 		anagrafica.setItems(anagraficaDao.findAll());
 		anagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
 		destinatario.setItems(anagraficaDao.findAll());
 		destinatario.setItemCaptionGenerator(Anagrafica::getCognome);
+
 		binder.forField(anagrafica).asRequired().withValidator(an -> an != null, "Scegliere un Cliente" ).bind(Abbonamento::getAnagrafica, Abbonamento::setAnagrafica);
 		binder.forField(destinatario).bind("destinatario");
+		binder.forField(anno).bind("anno");
+		binder.forField(inizio).bind("inizio");
+		binder.forField(fine).bind("fine");
 		binder.forField(campo).asRequired().withValidator(ca -> ca != null, "Deve essere definito").bind(Abbonamento::getCampo, Abbonamento::setCampo);
 		binder.forField(cost).asRequired()
 		.withConverter(new StringToFloatConverter("Conversione in Eur")).withValidator( f -> f > 0, "Deve essere maggire di 0" )
 		.bind(Abbonamento::getCost, Abbonamento::setCost);
-		binder.forField(inizio).bind("inizio");
-		binder.forField(fine).bind("fine");
 		binder.forField(lodare).bind("lodare");
 		binder.forField(messaggio).bind("messaggio");
 		binder.forField(estratti).bind("estratti");
