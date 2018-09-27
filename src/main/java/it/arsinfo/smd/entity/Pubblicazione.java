@@ -1,5 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import it.arsinfo.smd.entity.Abbonamento.Mese;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,12 +14,7 @@ public class Pubblicazione {
 
 	public enum Tipo {
 		UNICO,
-		GIORNALIERO,
-		SETTIMANALE,
-		QUINDICINALE,
 		MENSILE,
-		BIMESTRALE,
-		TRIMESTRALE,
 		SEMESTRALE,
 		ANNUALE;
 	}
@@ -34,6 +31,9 @@ public class Pubblicazione {
     private boolean active;
 
     private boolean abbonamento;
+    
+    @Enumerated(EnumType.STRING)
+    private Mese primaPubblicazione;
 
 	private Float costo;
     
@@ -125,6 +125,14 @@ public class Pubblicazione {
 
 	public void setEditore(String editore) {
 		this.editore = editore;
+	}
+
+	public Mese getPrimaPubblicazione() {
+		return primaPubblicazione;
+	}
+
+	public void setPrimaPubblicazione(Mese primapubblicazione) {
+		this.primaPubblicazione = primapubblicazione;
 	}
 	
     

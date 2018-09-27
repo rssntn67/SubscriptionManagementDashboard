@@ -12,12 +12,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.annotations.Title;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,13 +42,12 @@ public class PubblicazioneUI extends UI {
 	protected void init(VaadinRequest request) {
 		Assert.notNull(repo, "repo must be not null");
 		Label header = new Label("Anagrafica Pubblicazioni");
-		Button addNewBtn = new Button("Aggiungi Pubblicazione", VaadinIcons.PLUS);		
 		TextField filterNome = new TextField();
 		ComboBox<Tipo> filterTipo = new ComboBox<Tipo>(null,EnumSet.allOf(Tipo.class));
 		
 		grid = new Grid<>(Pubblicazione.class);
 		PubblicazioneEditor editor = new PubblicazioneEditor(repo);
-		HorizontalLayout actions = new HorizontalLayout(filterTipo,filterNome,addNewBtn);
+		HorizontalLayout actions = new HorizontalLayout(filterTipo,filterNome);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		layout.addComponents(header,editor,actions,grid);
@@ -78,8 +75,6 @@ public class PubblicazioneUI extends UI {
 			editor.edit(e.getValue());
 		});
 		
-		addNewBtn.addClickListener(e -> editor.edit(new Pubblicazione("")));
-
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
 			listCustomers(filterNome.getValue());

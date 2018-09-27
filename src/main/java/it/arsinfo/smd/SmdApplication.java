@@ -1,19 +1,13 @@
 package it.arsinfo.smd;
 
-import java.util.Date;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.transaction.Transactional;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.AbbonamentoPubblicazione;
+import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AbbonamentoPubblicazioneDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
@@ -36,8 +30,8 @@ public class SmdApplication {
 	@Transactional
 	public CommandLineRunner loadData(AnagraficaDao anagraficaDao, 
 										PubblicazioneDao pubblicazioneDao,
-										AbbonamentoDao abbonamentoDao,
-										AbbonamentoPubblicazioneDao abbonamentoPubblicazioneDao) {
+										AbbonamentoDao abbonamentoDao
+								) {
 		return (args) -> {
 			// save a couple of customers
 			
@@ -87,55 +81,70 @@ public class SmdApplication {
 			anagraficaDao.save(md);
 			
 
-			Pubblicazione semestrale = new Pubblicazione("Adp Semestrale", Pubblicazione.Tipo.SEMESTRALE);
-			semestrale.setActive(true);
-			semestrale.setAbbonamento(true);
-			semestrale.setCosto(15.45f);
-			semestrale.setEditore("ADP");
-			pubblicazioneDao.save(semestrale);
+			Pubblicazione blocchetti = new Pubblicazione("Blocchetti", Pubblicazione.Tipo.SEMESTRALE);
+			blocchetti.setActive(true);
+			blocchetti.setAbbonamento(true);
+			blocchetti.setCosto(15.45f);
+			blocchetti.setEditore("ADP");
+			blocchetti.setPrimaPubblicazione(Mese.MARZO);
+			pubblicazioneDao.save(blocchetti);
 
-			Pubblicazione trimestrale = new Pubblicazione("Adp Trimestrale", Pubblicazione.Tipo.TRIMESTRALE);
-			trimestrale.setActive(true);
-			trimestrale.setAbbonamento(true);
-			trimestrale.setCosto(5.95f);
-			trimestrale.setEditore("ADP");
-			pubblicazioneDao.save(trimestrale);
+			Pubblicazione estratti = new Pubblicazione("Estratti", Pubblicazione.Tipo.ANNUALE);
+			estratti.setActive(true);
+			estratti.setAbbonamento(true);
+			estratti.setCosto(5.95f);
+			estratti.setEditore("ADP");
+			estratti.setPrimaPubblicazione(Mese.LUGLIO);
+			pubblicazioneDao.save(estratti);
 
-			Pubblicazione mensile1 = new Pubblicazione("Adp Messaggero", Pubblicazione.Tipo.MENSILE);
-			mensile1.setActive(true);
-			mensile1.setAbbonamento(true);
-			mensile1.setCosto(5.95f);
-			mensile1.setEditore("ADP");
-			pubblicazioneDao.save(mensile1);
+			Pubblicazione messaggio = new Pubblicazione("Messaggio", Pubblicazione.Tipo.MENSILE);
+			messaggio.setActive(true);
+			messaggio.setAbbonamento(true);
+			messaggio.setCosto(5.95f);
+			messaggio.setEditore("ADP");
+			messaggio.setPrimaPubblicazione(Mese.GENNAIO);
+			pubblicazioneDao.save(messaggio);
 
-			Pubblicazione mensile2 = new Pubblicazione("Adp Preghiera", Pubblicazione.Tipo.MENSILE);
-			mensile2.setActive(false);
-			mensile2.setAbbonamento(true);
-			mensile2.setCosto(5.95f);
-			mensile2.setEditore("ADP");
-			pubblicazioneDao.save(mensile2);
+			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", Pubblicazione.Tipo.MENSILE);
+			lodare.setActive(false);
+			lodare.setAbbonamento(true);
+			lodare.setCosto(5.95f);
+			lodare.setEditore("ADP");
+			lodare.setPrimaPubblicazione(Mese.GENNAIO);
+			pubblicazioneDao.save(lodare);
 			
-			Pubblicazione libro = new Pubblicazione("San Luigi Gonzaga", Pubblicazione.Tipo.UNICO);
-			libro.setActive(true);
-			libro.setAbbonamento(false);
-			libro.setCosto(35.95f);
-			libro.setEditore("ADP");
-			libro.setAutore("Padre xxx S.J.");
-			pubblicazioneDao.save(libro);
+			Pubblicazione spese = new Pubblicazione("Spese di Spedizione", Pubblicazione.Tipo.UNICO);
+			spese.setActive(true);
+			spese.setAbbonamento(false);
+			spese.setCosto(5.95f);
+			pubblicazioneDao.save(spese);
 
 			Abbonamento abbonamentoMd = new Abbonamento(md);
 			abbonamentoMd.setCampo("0003299900000");
-			abbonamentoMd.setData(new Date());
 			abbonamentoMd.setCost(10.0f);
-			/*
-			AbbonamentoPubblicazione abMdMen = new AbbonamentoPubblicazione(abbonamentoMd,mensile1);
-			AbbonamentoPubblicazione abMdTri = new AbbonamentoPubblicazione(abbonamentoMd,trimestrale);
-			AbbonamentoPubblicazione abMdSem = new AbbonamentoPubblicazione(abbonamentoMd,semestrale);
-			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdMen);
-			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdTri);
-			abbonamentoMd.getAbbonamentoPubblicazione().add(abMdSem);
-*/
+			abbonamentoMd.setBlocchetti(true);
+			abbonamentoMd.setLodare(true);
+			abbonamentoMd.setInizio(Mese.GIUGNO);			
 			abbonamentoDao.save(abbonamentoMd);
+			
+			Abbonamento abbonamentoCo = new Abbonamento(co);
+			abbonamentoCo.setCampo("00032999000132");
+			abbonamentoCo.setCost(20.0f);
+			abbonamentoCo.setBlocchetti(true);
+			abbonamentoCo.setLodare(true);
+			abbonamentoCo.setEstratti(true);
+			abbonamentoCo.setMessaggio(true);
+			abbonamentoDao.save(abbonamentoCo);
+			
+			Abbonamento abbonamentoDp = new Abbonamento(dp);
+			abbonamentoDp.setCampo("0003255559000132");
+			abbonamentoDp.setCost(10.0f);
+			abbonamentoDp.setLodare(true);
+			abbonamentoDp.setCosti(true);
+			abbonamentoDp.setInizio(Mese.MAGGIO);
+			abbonamentoDao.save(abbonamentoDp);
+			
+
 			// fetch all customers
 			log.info("Customers found with findAll():");
 			log.info("-------------------------------");

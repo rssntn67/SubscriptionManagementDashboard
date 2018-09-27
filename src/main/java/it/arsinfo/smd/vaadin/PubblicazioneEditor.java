@@ -1,6 +1,7 @@
 package it.arsinfo.smd.vaadin;
 
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
@@ -36,6 +37,7 @@ public class PubblicazioneEditor extends VerticalLayout {
 	private final TextField autore = new TextField("Autore");
 	private final TextField editore = new TextField("Editore");
 	private final ComboBox<Tipo> tipo = new ComboBox<Tipo>("Tipo", EnumSet.allOf(Tipo.class));
+	private final ComboBox<Mese> primaPubblicazione = new ComboBox<Mese>("Prima Pubblicazione", EnumSet.allOf(Mese.class));
 	private final TextField costo = new TextField("Costo");
 	
 	private final CheckBox active = new CheckBox("Active");
@@ -45,7 +47,7 @@ public class PubblicazioneEditor extends VerticalLayout {
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout basic = new HorizontalLayout(nome,tipo,autore,editore,costo);
+	HorizontalLayout basic = new HorizontalLayout(nome,tipo,autore,editore,costo,primaPubblicazione);
 	HorizontalLayout check = new HorizontalLayout(active,abbonamento);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
@@ -70,9 +72,11 @@ public class PubblicazioneEditor extends VerticalLayout {
 		.bind(Pubblicazione::getCosto, Pubblicazione::setCosto);
 		binder.forField(active).bind(Pubblicazione::isActive,Pubblicazione::setActive);
 		binder.forField(abbonamento).bind(Pubblicazione::isAbbonamento,Pubblicazione::setAbbonamento);
-		
+		binder.forField(primaPubblicazione).bind(Pubblicazione::getPrimaPubblicazione, Pubblicazione::setPrimaPubblicazione);
 		// Configure and style components
 		setSpacing(true);
+
+		primaPubblicazione.setItemCaptionGenerator(Mese::getNomeBreve);
 
 		save.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		delete.addStyleName(ValoTheme.BUTTON_DANGER);
