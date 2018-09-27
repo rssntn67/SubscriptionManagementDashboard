@@ -88,6 +88,9 @@ public class Abbonamento {
 	@ManyToOne
 	private Anagrafica anagrafica;
 
+	@ManyToOne
+	private Anagrafica destinatario;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date data;
 	private Float cost;
@@ -118,11 +121,21 @@ public class Abbonamento {
 	public Abbonamento(Anagrafica anagrafica) {
 		super();
 		this.anagrafica = anagrafica;
+		this.destinatario = anagrafica;
 		this.data = new Date();
 		this.campo="";
 		this.cost=0.00f;
 	}
-	
+
+	public Abbonamento(Anagrafica anagrafica, Anagrafica destinatario) {
+		super();
+		this.anagrafica = anagrafica;
+		this.destinatario = destinatario;
+		this.data = new Date();
+		this.campo="";
+		this.cost=0.00f;
+	}
+
 	public Anagrafica getAnagrafica() {
 		return anagrafica;
 	}
@@ -233,6 +246,14 @@ public class Abbonamento {
 
 	public void setFine(Mese fine) {
 		this.fine = fine;
+	}
+
+	public Anagrafica getDestinatario() {
+		return destinatario;
+	}
+
+	public void setDestinatario(Anagrafica destinatario) {
+		this.destinatario = destinatario;
 	}
 		
 }

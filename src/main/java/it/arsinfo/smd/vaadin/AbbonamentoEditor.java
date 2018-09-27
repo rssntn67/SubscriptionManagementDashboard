@@ -1,16 +1,20 @@
 package it.arsinfo.smd.vaadin;
 
+import java.util.EnumSet;
+
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Abbonamento.Anno;
+import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -32,15 +36,31 @@ public class AbbonamentoEditor extends VerticalLayout {
 	 */
 	private Abbonamento abbonamento;
 	private final ComboBox<Anagrafica> anagrafica = new ComboBox<Anagrafica>("Selezionare il cliente");
+	private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Selezionare il destinatario");
 	private final TextField campo = new TextField("V Campo Poste Italiane");
 	private final TextField cost = new TextField("Costo");
 	
+	private final CheckBox pagato=new CheckBox("Pagato");
+
+    private final CheckBox estratti=new CheckBox("Abb. Ann. Estratti");
+    private final CheckBox blocchetti=new CheckBox("Abb. Sem. Blocchetti");
+    private final CheckBox lodare=new CheckBox("Abb. Men. Lodare e Service");
+    private final CheckBox messaggio=new CheckBox("Abb. Men. Messaggio");
+    private final CheckBox costi=new CheckBox("Costi Spedizione");
+    
+    private final ComboBox<Anno> anno = new ComboBox<Abbonamento.Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
+    private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio", EnumSet.allOf(Mese.class));
+    private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine", EnumSet.allOf(Mese.class));
+
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(anagrafica,campo, cost);
+	HorizontalLayout pri = new HorizontalLayout(anagrafica,destinatario,anno,inizio,fine);
+	HorizontalLayout sec = new HorizontalLayout(campo, cost);
+	HorizontalLayout che = new HorizontalLayout(estratti, blocchetti,lodare,messaggio,costi);
+	HorizontalLayout pag = new HorizontalLayout(pagato);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Abbonamento> binder = new Binder<>(Abbonamento.class);
@@ -50,16 +70,28 @@ public class AbbonamentoEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,actions);
+		addComponents(pri,sec,che,pag,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 		
 		anagrafica.setItems(anagraficaDao.findAll());
 		anagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
+		destinatario.setItems(anagraficaDao.findAll());
+		destinatario.setItemCaptionGenerator(Anagrafica::getCognome);
 		binder.forField(anagrafica).asRequired().withValidator(an -> an != null, "Scegliere un Cliente" ).bind(Abbonamento::getAnagrafica, Abbonamento::setAnagrafica);
+		binder.forField(destinatario).bind("destinatario");
 		binder.forField(campo).asRequired().withValidator(ca -> ca != null, "Deve essere definito").bind(Abbonamento::getCampo, Abbonamento::setCampo);
 		binder.forField(cost).asRequired()
 		.withConverter(new StringToFloatConverter("Conversione in Eur")).withValidator( f -> f > 0, "Deve essere maggire di 0" )
 		.bind(Abbonamento::getCost, Abbonamento::setCost);
+		binder.forField(inizio).bind("inizio");
+		binder.forField(fine).bind("fine");
+		binder.forField(lodare).bind("lodare");
+		binder.forField(messaggio).bind("messaggio");
+		binder.forField(estratti).bind("estratti");
+		binder.forField(blocchetti).bind("blocchetti");
+		binder.forField(costi).bind("costi");
+		binder.forField(pagato).bind("pagato");
+
 
 
 		// Configure and style components
