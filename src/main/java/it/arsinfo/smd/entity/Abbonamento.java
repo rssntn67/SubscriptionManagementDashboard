@@ -40,17 +40,17 @@ public class Abbonamento {
 	
 	public enum Mese {
 		GENNAIO("Gen",1),
-		FEBBRAIO("Gen",2),
-		MARZO("Gen",3),
-		APRILE("Gen",4),
-		MAGGIO("Gen",5),
-		GIUGNO("Gen",6),
-		LUGLIO("Gen",7),
-		AGOSTO("Gen",8),
-		SETTEMBRE("Gen",9),
-		OTTOBRE("Gen",10),
-		NOVEMBRE("Gen",11),
-		DICEMBRE("Gen",12);
+		FEBBRAIO("Feb",2),
+		MARZO("Mar",3),
+		APRILE("Apr",4),
+		MAGGIO("Mag",5),
+		GIUGNO("Giu",6),
+		LUGLIO("Lug",7),
+		AGOSTO("Ago",8),
+		SETTEMBRE("Set",9),
+		OTTOBRE("Ott",10),
+		NOVEMBRE("Nov",11),
+		DICEMBRE("Dic",12);
 		
 		private String nomeBreve;
 		private int posizione;

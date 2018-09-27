@@ -62,8 +62,8 @@ public class Pubblicazione {
 
     @Override
 	public String toString() {
-		return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s']", 
-				id, nome, tipo);
+		return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Prima Pubblicazione='%s']", 
+				id, nome, tipo,primaPubblicazione);
 	}
 
 	public Pubblicazione(String nome, Tipo tipo) {
