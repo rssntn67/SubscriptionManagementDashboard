@@ -106,7 +106,7 @@ public class SmdApplication {
 			pubblicazioneDao.save(messaggio);
 
 			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", Pubblicazione.Tipo.MENSILE);
-			lodare.setActive(false);
+			lodare.setActive(true);
 			lodare.setAbbonamento(true);
 			lodare.setCosto(5.95f);
 			lodare.setEditore("ADP");
