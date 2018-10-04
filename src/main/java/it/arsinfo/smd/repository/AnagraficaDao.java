@@ -12,7 +12,6 @@ public interface AnagraficaDao extends JpaRepository<Anagrafica, Long> {
 
 	List<Anagrafica> findByCognomeStartsWithIgnoreCase(String lastName);
 	List<Anagrafica> findByDiocesi(Diocesi diocesi);
-	// FIXME Devo potere effettuare ricerca per BmCassa
-	//List<Anagrafica> findByBmCassaOrByBmCassa(BmCassa bmcassa1, BmCassa bmcassa2);
+	List<Anagrafica> findByBmCassa(BmCassa bmcassa);
 
 }

@@ -1,8 +1,9 @@
 package it.arsinfo.smd.vaadin;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
+import it.arsinfo.smd.entity.Anagrafica.CentroDiocesano;
 import it.arsinfo.smd.entity.Anagrafica.Diocesi;
+import it.arsinfo.smd.entity.Anagrafica.Regione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import java.util.EnumSet;
@@ -33,36 +34,57 @@ public class AnagraficaEditor extends VerticalLayout {
 	 * The currently edited customer
 	 */
 	private Anagrafica customer;
+	
+	private final ComboBox<Anagrafica.Diocesi> diocesi = new ComboBox<Anagrafica.Diocesi>("Diocesi", EnumSet.allOf(Anagrafica.Diocesi.class));
+    private final ComboBox<Regione> regioneVescovi = new ComboBox<Anagrafica.Regione>("Regione Vescovi", EnumSet.allOf(Regione.class));
+    private final ComboBox<CentroDiocesano> centroDiocesano = new ComboBox<Anagrafica.CentroDiocesano>("Centro Diocesano", EnumSet.allOf(CentroDiocesano.class));
+	HorizontalLayout riga1 = new HorizontalLayout(diocesi,regioneVescovi, centroDiocesano);
+
+	private final ComboBox<Anagrafica.Titolo> titolo = new ComboBox<Anagrafica.Titolo>("Titolo", EnumSet.allOf(Anagrafica.Titolo.class));
 	private final TextField nome = new TextField("Nome");
 	private final TextField cognome = new TextField("Cognome/Ragione Sociale");
 	private final TextField intestazione = new TextField("Intestazione");
-	private final ComboBox<Anagrafica.Titolo> titolo = new ComboBox<Anagrafica.Titolo>("Titolo", EnumSet.allOf(Anagrafica.Titolo.class));
+	HorizontalLayout riga2 = new HorizontalLayout(titolo,cognome, nome, intestazione);
 
 	private final TextField indirizzo = new TextField("Indirizzo");
 	private final TextField cap = new TextField("CAP");
 	private final TextField citta = new TextField("Citta'");
-	private final TextField piva = new TextField("P.Iva");
-	private final TextField codfis = new TextField("codice Fiscale");
+	private final ComboBox<Anagrafica.Paese> paese = new ComboBox<Anagrafica.Paese>("Paese", EnumSet.allOf(Anagrafica.Paese.class));
+	HorizontalLayout riga3 = new HorizontalLayout(indirizzo, cap, citta, paese);
+
 	private final TextField email = new TextField("Email");
 	private final TextField telefono = new TextField("Telefono");
 	private final TextField cellulare = new TextField("Cellulare");
-	private final TextField note = new TextField("Telefono");
-
-	private final ComboBox<Anagrafica.Omaggio> omaggio = new ComboBox<Anagrafica.Omaggio>("Omaggio", EnumSet.allOf(Anagrafica.Omaggio.class));
-	private final CheckBox privilegiato = new CheckBox("Privilegiato");
-	private final ComboBox<Anagrafica.Diocesi> diocesi = new ComboBox<Anagrafica.Diocesi>("Diocesi", EnumSet.allOf(Anagrafica.Diocesi.class));
-	private final ComboBox<Anagrafica.Paese> paese = new ComboBox<Anagrafica.Paese>("Paese", EnumSet.allOf(Anagrafica.Paese.class));
+	private final TextField note = new TextField("Note");
+	private final TextField piva = new TextField("P.Iva");
+	private final TextField codfis = new TextField("Cod. Fis.");
+	HorizontalLayout riga4 = new HorizontalLayout(email,telefono, cellulare, codfis,piva,note);
 	
+	private final CheckBox presidenteDiocesano = new CheckBox("Pres. Diocesano");//52 | Presidenti e Referenti DIOCESANI    
+	private final CheckBox direttoreDiocesiano = new CheckBox("Dir. Diocesano");//1 | DIRETTORE DIOCESANO	
+	private final CheckBox direttoreZonaMilano = new CheckBox("Dir. Zona Milano");//00013 | DIRETTORI ZONE MILANO	
+	private final CheckBox elencoMarisaBisi = new CheckBox("Elenco Marisa Bisi"); //144 | MARISA BISI ELENCO
+	private final CheckBox promotoreRegionale = new CheckBox("Prom. Reg.") ; //12 | PROMOTORI REGIONALI
+	HorizontalLayout riga5 = new HorizontalLayout(presidenteDiocesano,direttoreDiocesiano,direttoreZonaMilano,elencoMarisaBisi,promotoreRegionale);
+	private final ComboBox<Anagrafica.Omaggio> omaggio = new ComboBox<Anagrafica.Omaggio>("Omaggio", EnumSet.allOf(Anagrafica.Omaggio.class));
+	private final ComboBox<Anagrafica.BmCassa> bmCassa = new ComboBox<Anagrafica.BmCassa>("Blocchetti Mensili Cassa", EnumSet.allOf(Anagrafica.BmCassa.class));
+	private final ComboBox<Regione> regionePresidenteDiocesano = new ComboBox<Anagrafica.Regione>("Regione Pres. Diocesano", EnumSet.allOf(Regione.class));
+	private final ComboBox<Regione> regioneDirettoreDiocesano = new ComboBox<Anagrafica.Regione>("Regione Dir. Diocesano", EnumSet.allOf(Regione.class));
+	HorizontalLayout riga6 = new HorizontalLayout(omaggio, bmCassa,regionePresidenteDiocesano, regioneDirettoreDiocesano);
+	
+	private final CheckBox consiglioNazionaleADP = new CheckBox("Cons. Naz. ADP"); //10 | CONSIGLIO NAZIONALE A.D.P.
+	private final CheckBox presidenzaADP = new CheckBox("Pres. ADP"); //49 | CONSIGLIO PRESIDENZA ADP
+	private final CheckBox direzioneADP = new CheckBox("Dir. ADP"); //15 | MEMBRI DIREZIONE ADP
+	private final CheckBox caricheSocialiADP = new CheckBox("Car. Soc. ADP"); //141 | CARICHE SOCIALI E RAPPRESENTANTI
+	private final CheckBox delegatiRegionaliADP = new CheckBox("Del. Reg. ADP"); //140 | DELEGATI REGIONALI
+	HorizontalLayout riga7 = new HorizontalLayout(consiglioNazionaleADP, presidenzaADP,direzioneADP,caricheSocialiADP,delegatiRegionaliADP);
+
+    
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(titolo,cognome, nome, intestazione,diocesi);
-	HorizontalLayout sec = new HorizontalLayout(indirizzo, cap, citta, paese);
-	HorizontalLayout tel = new HorizontalLayout(email,telefono, cellulare, note);
-	HorizontalLayout min = new HorizontalLayout(codfis,piva);
-	HorizontalLayout che = new HorizontalLayout(omaggio, privilegiato);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Anagrafica> binder = new Binder<>(Anagrafica.class);
@@ -72,7 +94,7 @@ public class AnagraficaEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,sec,tel,min,che,actions);
+		addComponents(riga1,riga2,riga3,riga4,riga5,riga7,riga6,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
 		binder.forField(cognome).asRequired();
