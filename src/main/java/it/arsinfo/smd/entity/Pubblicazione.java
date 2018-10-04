@@ -36,7 +36,9 @@ public class Pubblicazione {
     private Mese primaPubblicazione;
 
 	private Float costo;
-    
+
+	private Float costoScontato;
+
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
     
@@ -133,6 +135,14 @@ public class Pubblicazione {
 
 	public void setPrimaPubblicazione(Mese primapubblicazione) {
 		this.primaPubblicazione = primapubblicazione;
+	}
+
+	public Float getCostoScontato() {
+		return costoScontato;
+	}
+
+	public void setCostoScontato(Float costoScontato) {
+		this.costoScontato = costoScontato;
 	}
 	
     

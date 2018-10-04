@@ -39,7 +39,8 @@ public class PubblicazioneEditor extends VerticalLayout {
 	private final ComboBox<Tipo> tipo = new ComboBox<Tipo>("Tipo", EnumSet.allOf(Tipo.class));
 	private final ComboBox<Mese> primaPubblicazione = new ComboBox<Mese>("Prima Pubblicazione", EnumSet.allOf(Mese.class));
 	private final TextField costo = new TextField("Costo");
-	
+	private final TextField costoScontato = new TextField("Costo Scontato");
+
 	private final CheckBox active = new CheckBox("Active");
 	private final CheckBox abbonamento = new CheckBox("Abbonamento");
 	Button save = new Button("Save", VaadinIcons.CHECK);
@@ -47,7 +48,8 @@ public class PubblicazioneEditor extends VerticalLayout {
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout basic = new HorizontalLayout(nome,tipo,autore,editore,costo,primaPubblicazione);
+	HorizontalLayout basic = new HorizontalLayout(nome,tipo,autore,editore);
+	HorizontalLayout costi = new HorizontalLayout(costo,costoScontato,primaPubblicazione);
 	HorizontalLayout check = new HorizontalLayout(active,abbonamento);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 

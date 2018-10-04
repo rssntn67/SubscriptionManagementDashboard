@@ -1,6 +1,8 @@
 package it.arsinfo.smd.vaadin;
 
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Abbonamento.Mese;
+import it.arsinfo.smd.entity.Anagrafica.Diocesi;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import java.util.EnumSet;
@@ -33,6 +35,8 @@ public class AnagraficaEditor extends VerticalLayout {
 	private Anagrafica customer;
 	private final TextField nome = new TextField("Nome");
 	private final TextField cognome = new TextField("Cognome/Ragione Sociale");
+	private final TextField intestazione = new TextField("Intestazione");
+	private final ComboBox<Anagrafica.Titolo> titolo = new ComboBox<Anagrafica.Titolo>("Titolo", EnumSet.allOf(Anagrafica.Titolo.class));
 
 	private final TextField indirizzo = new TextField("Indirizzo");
 	private final TextField cap = new TextField("CAP");
@@ -44,7 +48,7 @@ public class AnagraficaEditor extends VerticalLayout {
 	private final TextField cellulare = new TextField("Cellulare");
 	private final TextField note = new TextField("Telefono");
 
-	private final CheckBox omaggio = new CheckBox("Omaggio");
+	private final ComboBox<Anagrafica.Omaggio> omaggio = new ComboBox<Anagrafica.Omaggio>("Omaggio", EnumSet.allOf(Anagrafica.Omaggio.class));
 	private final CheckBox privilegiato = new CheckBox("Privilegiato");
 	private final ComboBox<Anagrafica.Diocesi> diocesi = new ComboBox<Anagrafica.Diocesi>("Diocesi", EnumSet.allOf(Anagrafica.Diocesi.class));
 	private final ComboBox<Anagrafica.Paese> paese = new ComboBox<Anagrafica.Paese>("Paese", EnumSet.allOf(Anagrafica.Paese.class));
@@ -54,7 +58,7 @@ public class AnagraficaEditor extends VerticalLayout {
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(cognome, nome, diocesi);
+	HorizontalLayout pri = new HorizontalLayout(titolo,cognome, nome, intestazione,diocesi);
 	HorizontalLayout sec = new HorizontalLayout(indirizzo, cap, citta, paese);
 	HorizontalLayout tel = new HorizontalLayout(email,telefono, cellulare, note);
 	HorizontalLayout min = new HorizontalLayout(codfis,piva);
@@ -77,6 +81,9 @@ public class AnagraficaEditor extends VerticalLayout {
 
 		// Configure and style components
 		setSpacing(true);
+		
+		diocesi.setItemCaptionGenerator(Diocesi::getDetails);
+
 
 		save.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		delete.addStyleName(ValoTheme.BUTTON_DANGER);

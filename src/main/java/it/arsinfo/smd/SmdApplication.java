@@ -37,7 +37,7 @@ public class SmdApplication {
 			// save a couple of customers
 			
 			Anagrafica jb =new Anagrafica("Jack", "Bauer");
-			jb.setDiocesi(Anagrafica.Diocesi.MILANO);
+			jb.setDiocesi(Anagrafica.Diocesi.DIOCESI116);
 			jb.setIndirizzo("Piazza Duomo 1");
 			jb.setCitta("Milano");
 			jb.setCap("20100");
@@ -46,7 +46,7 @@ public class SmdApplication {
 			anagraficaDao.save(jb);
 			
 			Anagrafica co = new Anagrafica("Chloe", "O'Brian");
-			co.setDiocesi(Anagrafica.Diocesi.MILANO);
+			co.setDiocesi(Anagrafica.Diocesi.DIOCESI116);
 			co.setIndirizzo("Piazza Sant'Ambrogio 1");
 			co.setCitta("Milano");
 			co.setCap("20110");
@@ -55,7 +55,7 @@ public class SmdApplication {
 			anagraficaDao.save(co);
 			
 			Anagrafica kb = new Anagrafica("Kim", "Bauer");
-			kb.setDiocesi(Anagrafica.Diocesi.ROMA);
+			kb.setDiocesi(Anagrafica.Diocesi.DIOCESI168);
 			kb.setIndirizzo("Piazza del Gesu' 1");
 			kb.setCitta("Roma");
 			kb.setCap("00192");
@@ -64,7 +64,7 @@ public class SmdApplication {
 			anagraficaDao.save(kb);
 			
 			Anagrafica dp = new Anagrafica("David", "Palmer");
-			dp.setDiocesi(Anagrafica.Diocesi.ROMA);
+			dp.setDiocesi(Anagrafica.Diocesi.DIOCESI168);
 			dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
 			dp.setCitta("Roma");
 			dp.setCap("00195");
@@ -73,7 +73,7 @@ public class SmdApplication {
 			anagraficaDao.save(dp);
 
 			Anagrafica md = new Anagrafica("Michelle", "Dessler");
-			md.setDiocesi(Anagrafica.Diocesi.NAPOLI);
+			md.setDiocesi(Anagrafica.Diocesi.DIOCESI126);
 			md.setIndirizzo("Via Duomo 10");
 			md.setCitta("Napoli");
 			md.setCap("80135");
@@ -176,7 +176,7 @@ public class SmdApplication {
 			log.info("Customer found with findByDiocesi('ROMA'):");
 			log.info("--------------------------------------------");
 			for (Anagrafica roma : anagraficaDao
-					.findByDiocesi(Anagrafica.Diocesi.ROMA)) {
+					.findByDiocesi(Anagrafica.Diocesi.DIOCESI168)) {
 				log.info(roma.toString());
 			}
 			log.info("");

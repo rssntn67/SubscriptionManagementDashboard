@@ -60,17 +60,22 @@ public class AnagraficaUI extends UI {
 		
 		filterDiocesi.setEmptySelectionAllowed(false);
 		filterDiocesi.setPlaceholder("Cerca per Diocesi");
-		
+		filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
+
 		filterCognome.setPlaceholder("Cerca per Cognome");
 		
 		grid.setColumns("id", "nome", "cognome","diocesi","indirizzo","citta","cap","paese","email","telefono","omaggio");		
-		grid.getColumn("id").setMaximumWidth(50);
+		grid.getColumn("id").setMaximumWidth(100);
+		
 		grid.setWidth("80%");
 
 		editor.setWidth("80%");
 
+		filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
+
 		filterDiocesi.addSelectionListener(e-> listType(e.getSelectedItem().get()));
 
+		
 		filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
 		filterCognome.addValueChangeListener(e -> list(e.getValue()));		
 

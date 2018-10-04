@@ -19,6 +19,10 @@ public class SmdUI extends UI {
 	public final static String URL_ANAGRAFICA="anagrafica";
 	public final static String URL_PUBBLICAZIONI="pubblicazioni";
 	public final static String URL_ABBONAMENTI="abbonamenti";
+	public final static String URL_CAMPAGNA="campagna";
+	public final static String URL_INCASSI="incassi";
+	public final static String URL_PROSPETTI="prospetti";
+	public final static String URL_NOTE="note";
 	/**
 	 * 
 	 */
@@ -30,9 +34,13 @@ public class SmdUI extends UI {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		layout.addComponents(new Label("Benvenuti nel programma gestione abbonamenti ADP"), 
-				new Link("Anagrafica dei Destinatari", new ExternalResource(URL_ANAGRAFICA)),
-				new Link("Anagrafica delle Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
-				new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI))				
+				new Link("Anagrafica", new ExternalResource(URL_ANAGRAFICA)),
+				new Link("Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
+				new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI)),				
+				new Link("Campagna", new ExternalResource(URL_CAMPAGNA)),				
+				new Link("Incassi", new ExternalResource(URL_INCASSI)),
+				new Link("Prospetti", new ExternalResource(URL_PROSPETTI)),				
+				new Link("Note", new ExternalResource(URL_NOTE))				
 		);
 		setContent(layout);
 
