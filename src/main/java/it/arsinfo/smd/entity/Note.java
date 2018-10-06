@@ -1,10 +1,12 @@
 package it.arsinfo.smd.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Note {
@@ -13,13 +15,14 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-	@OneToMany
+	@ManyToOne
 	private Anagrafica anagrafica;
 	
 	private String description;
 	
+	private Date data = new Date();
+	
 	public Note() {
-		
 	}
 
 	public Anagrafica getAnagrafica() {
@@ -40,6 +43,14 @@ public class Note {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getData() {
+		return data;
+	}
+
+	public void setData(Date data) {
+		this.data = data;
 	}
 	
 	

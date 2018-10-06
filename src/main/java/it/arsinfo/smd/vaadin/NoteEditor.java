@@ -6,12 +6,14 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -30,7 +32,8 @@ public class NoteEditor extends VerticalLayout {
 	 */
 	private Note note;
 
-	private final TextField description = new TextField("Descrizione");
+	private final DateField data = new DateField("data");
+	private final TextArea description = new TextArea("Descrizione");
 	private final ComboBox<Anagrafica> anagrafica = new ComboBox<Anagrafica>("Selezionare il cliente");
     
 	Button save = new Button("Save", VaadinIcons.CHECK);
@@ -38,8 +41,6 @@ public class NoteEditor extends VerticalLayout {
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
-	HorizontalLayout pri = new HorizontalLayout(anagrafica);
-	HorizontalLayout che = new HorizontalLayout(description);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Note> binder = new Binder<>(Note.class);
@@ -49,16 +50,23 @@ public class NoteEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,che,actions);
+		HorizontalLayout pri = new HorizontalLayout();
+		pri.addComponent(anagrafica);
+		pri.addComponent(data);
+		pri.addComponentsAndExpand(description);
+		addComponents(pri,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
+		description.setWordWrap(false);
+		description.setSizeFull();
 		anagrafica.setItems(anadao.findAll());
-		anagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
+		anagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
 
 		binder.forField(anagrafica).asRequired().withValidator(an -> an != null, "Scegliere un Cliente" ).bind(Note::getAnagrafica, Note::setAnagrafica);
 		binder.forField(description).bind(Note::getDescription, Note::setDescription);
-		binder.bindInstanceFields(this);
-		// Configure and style components
+		binder.forField(data).
+		withConverter(new LocalDateToDateConverter()).bind("data");
+	// Configure and style components
 		setSpacing(true);
 
 
@@ -121,6 +129,8 @@ public class NoteEditor extends VerticalLayout {
 	
 	private void setNoteEditable(Note c,boolean read) {
 
+		data.setReadOnly(read);
+		data.setVisible(!read);
 		anagrafica.setReadOnly(read);
 		description.setReadOnly(read);
 		save.setEnabled(!read);

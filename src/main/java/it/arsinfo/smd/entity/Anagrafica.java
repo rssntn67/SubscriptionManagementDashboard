@@ -6,6 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity
 public class Anagrafica {
@@ -648,5 +649,10 @@ public class Anagrafica {
 
 	public void setIntestazione(String intestazione) {
 		this.intestazione = intestazione;
+	}
+	
+	@Transient
+	public String getCaption() {
+		return this.nome + " " +this.cognome; 
 	}
 }

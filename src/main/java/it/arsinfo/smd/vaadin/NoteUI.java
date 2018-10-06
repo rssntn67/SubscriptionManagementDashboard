@@ -69,7 +69,8 @@ public class NoteUI extends UI {
 		filterAnagrafica.setEmptySelectionAllowed(false);
 		filterAnagrafica.setPlaceholder("Cerca per Cliente");
 		filterAnagrafica.setItems(anadao.findAll());
-		grid.setColumns("id", "anagrafica.cognome", "description");		
+		filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
+		grid.setColumns("id", "anagrafica.cognome", "anagrafica.nome","data","description");		
 		grid.getColumn("id").setMaximumWidth(50);
 		grid.setWidth("80%");
 
@@ -93,9 +94,9 @@ public class NoteUI extends UI {
 
 	void list(String filterText) {
 		if (StringUtils.isEmpty(filterText)) {
-			grid.setItems(repo.findByDescriptionStartsWithIgnoreCase(filterText));
-		} else {
 			grid.setItems(repo.findAll());
+		} else {
+			grid.setItems(repo.findByDescriptionStartsWithIgnoreCase(filterText));
 		}
 	}
 	

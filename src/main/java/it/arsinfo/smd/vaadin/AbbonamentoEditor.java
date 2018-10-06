@@ -82,9 +82,9 @@ public class AbbonamentoEditor extends VerticalLayout {
 		fine.setItemCaptionGenerator(Mese::getNomeBreve);
 
 		anagrafica.setItems(anagraficaDao.findAll());
-		anagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
+		anagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
 		destinatario.setItems(anagraficaDao.findAll());
-		destinatario.setItemCaptionGenerator(Anagrafica::getCognome);
+		destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
 		binder.forField(anagrafica).asRequired().withValidator(an -> an != null, "Scegliere un Cliente" ).bind(Abbonamento::getAnagrafica, Abbonamento::setAnagrafica);
 		binder.forField(destinatario).bind("destinatario");
