@@ -95,6 +95,9 @@ public class Abbonamento {
 	@ManyToOne
 	private Anagrafica destinatario;
 
+	@ManyToOne
+	private Campagna campagna;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date data;
 	private Float cost;
@@ -276,6 +279,14 @@ public class Abbonamento {
 
 	public void setDataincasso(Date dataincasso) {
 		this.dataincasso = dataincasso;
+	}
+
+	public Campagna getCampagna() {
+		return campagna;
+	}
+
+	public void setCampagna(Campagna campagna) {
+		this.campagna = campagna;
 	}
 		
 }
