@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.entity.Abbonamento.Mese;
-import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
