@@ -1,13 +1,6 @@
 package it.arsinfo.smd.vaadin;
 
-import java.util.Date;
 import java.util.EnumSet;
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
