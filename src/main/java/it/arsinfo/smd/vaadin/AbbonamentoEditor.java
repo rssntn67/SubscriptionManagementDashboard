@@ -1,6 +1,13 @@
 package it.arsinfo.smd.vaadin;
 
+import java.util.Date;
 import java.util.EnumSet;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -10,12 +17,14 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -41,7 +50,7 @@ public class AbbonamentoEditor extends VerticalLayout {
 	private final TextField cost = new TextField("Costo");
 	
 	private final CheckBox pagato=new CheckBox("Pagato");
-
+	private final DateField dataincasso = new DateField("Incassato");
     private final CheckBox estratti=new CheckBox("Abb. Ann. Estratti");
     private final CheckBox blocchetti=new CheckBox("Abb. Sem. Blocchetti");
     private final CheckBox lodare=new CheckBox("Abb. Men. Lodare e Service");
@@ -61,6 +70,7 @@ public class AbbonamentoEditor extends VerticalLayout {
 	HorizontalLayout sec = new HorizontalLayout(campo, cost);
 	HorizontalLayout che = new HorizontalLayout(estratti, blocchetti,lodare,messaggio,costi);
 	HorizontalLayout pag = new HorizontalLayout(pagato);
+	HorizontalLayout pagfield = new HorizontalLayout(dataincasso);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Abbonamento> binder = new Binder<>(Abbonamento.class);
@@ -70,7 +80,7 @@ public class AbbonamentoEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(pri,sec,che,pag,actions);
+		addComponents(pri,sec,che,pag,pagfield,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
 		anno.setItemCaptionGenerator(Anno::getAnnoAsString);
@@ -98,8 +108,8 @@ public class AbbonamentoEditor extends VerticalLayout {
 		binder.forField(blocchetti).bind("blocchetti");
 		binder.forField(costi).bind("costi");
 		binder.forField(pagato).bind("pagato");
-
-
+		binder.forField(dataincasso).
+		withConverter(new LocalDateToDateConverter()).bind("dataincasso");
 
 		// Configure and style components
 		setSpacing(true);
@@ -120,6 +130,9 @@ public class AbbonamentoEditor extends VerticalLayout {
 	}
 
 	void save() {
+		if (abbonamento.getDataincasso() != null) {
+			abbonamento.setPagato(true);
+		}
 		repo.save(abbonamento);
 		changeHandler.onChange();
 	}
@@ -143,9 +156,11 @@ public class AbbonamentoEditor extends VerticalLayout {
 		if (persisted) {
 			// Find fresh entity for editing
 			abbonamento = repo.findById(c.getId()).get();
+			setAbbonamentoEditable(abbonamento, true);
 		}
 		else {
 			abbonamento = c;
+			setAbbonamentoEditable(abbonamento, false);
 		}
 		cancel.setVisible(persisted);
 
@@ -153,11 +168,45 @@ public class AbbonamentoEditor extends VerticalLayout {
 		// Could also use annotation or "manual binding" or programmatically
 		// moving values from fields to entities before saving
 		binder.setBean(abbonamento);
-
 		setVisible(true);
 
 		// Focus first name initially
 		anagrafica.focus();
+	}
+	
+	private void setAbbonamentoEditable(Abbonamento c,boolean read) {
+
+		anagrafica.setReadOnly(read);
+		destinatario.setReadOnly(read);
+
+		estratti.setReadOnly(read);
+	    blocchetti.setReadOnly(read);
+	    lodare.setReadOnly(read);
+	    messaggio.setReadOnly(read);
+	    costi.setReadOnly(read);
+	    
+	    anno.setReadOnly(read);
+	    inizio.setReadOnly(read);
+	    fine.setReadOnly(read);
+
+		if (c.isPagato()) {
+			save.setEnabled(false);
+			cancel.setEnabled(false);
+			pagato.setVisible(true);
+			pagato.setReadOnly(true);
+			dataincasso.setReadOnly(true);
+		} else {
+			save.setEnabled(true);
+			cancel.setEnabled(true);
+			pagato.setVisible(false);
+			dataincasso.setReadOnly(false);
+		}
+		cost.setVisible(read);
+		cost.setReadOnly(read);
+		campo.setVisible(read);
+		campo.setReadOnly(read);		
+		dataincasso.setVisible(read);
+
 	}
 	
 }

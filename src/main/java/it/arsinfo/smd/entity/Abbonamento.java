@@ -101,7 +101,9 @@ public class Abbonamento {
 	private String campo;
     
 	private boolean pagato=false;
-
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date dataincasso;
+	
     private boolean estratti=false;
     private boolean blocchetti=false;
     private boolean lodare=false;
@@ -266,6 +268,14 @@ public class Abbonamento {
 
 	public void setAnno(Anno anno) {
 		this.anno = anno;
+	}
+
+	public Date getDataincasso() {
+		return dataincasso;
+	}
+
+	public void setDataincasso(Date dataincasso) {
+		this.dataincasso = dataincasso;
 	}
 		
 }
