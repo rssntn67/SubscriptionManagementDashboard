@@ -10,6 +10,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class SmdApplication {
 	@Transactional
 	public CommandLineRunner loadData(AnagraficaDao anagraficaDao, 
 										PubblicazioneDao pubblicazioneDao,
-										AbbonamentoDao abbonamentoDao
+										AbbonamentoDao abbonamentoDao, CampagnaDao campagnaDao
 								) {
 		return (args) -> {
 			// save a couple of customers
@@ -119,14 +120,14 @@ public class SmdApplication {
 			spese.setAbbonamento(false);
 			spese.setCosto(5.95f);
 			pubblicazioneDao.save(spese);
-
+			
 			Abbonamento abbonamentoMd = new Abbonamento(md);
 			abbonamentoMd.setCampo("0003299900000");
 			abbonamentoMd.setCost(10.0f);
 			abbonamentoMd.setBlocchetti(true);
 			abbonamentoMd.setLodare(true);
 			abbonamentoMd.setInizio(Mese.GIUGNO);			
-			abbonamentoMd.setAnno(Anno.ANNO2018);			
+			abbonamentoMd.setAnno(Anno.ANNO2018);	
 			abbonamentoDao.save(abbonamentoMd);
 			
 			Abbonamento abbonamentoCo = new Abbonamento(co);

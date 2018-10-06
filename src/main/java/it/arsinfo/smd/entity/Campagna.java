@@ -1,14 +1,21 @@
 package it.arsinfo.smd.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.entity.Abbonamento.Mese;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Campagna {
@@ -34,6 +41,9 @@ public class Campagna {
     @Enumerated(EnumType.STRING)
     private Mese fine=Mese.DICEMBRE;
 
+    @OneToMany(cascade = {CascadeType.PERSIST})
+    List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
+    
     public Campagna() {
     	
     }
@@ -128,6 +138,14 @@ public class Campagna {
 
 	public Long getId() {
 		return id;
+	}
+
+	public List<Abbonamento> getAbbonamenti() {
+		return abbonamenti;
+	}
+
+	public void setAbbonamenti(List<Abbonamento> abbonamenti) {
+		this.abbonamenti = abbonamenti;
 	}
     
     

@@ -5,7 +5,9 @@ import java.util.EnumSet;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.entity.Abbonamento.Mese;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 
 import com.vaadin.data.Binder;
@@ -27,6 +29,7 @@ public class CampagnaEditor extends VerticalLayout {
 	private static final long serialVersionUID = 4673834235533544936L;
 
 	private final CampagnaDao repo;
+	private final AnagraficaDao anaDao;
 
 	/**
 	 * The currently edited customer
@@ -60,9 +63,10 @@ public class CampagnaEditor extends VerticalLayout {
 	Binder<Campagna> binder = new Binder<>(Campagna.class);
 	private ChangeHandler changeHandler;
 
-	public CampagnaEditor(CampagnaDao repo) {
+	public CampagnaEditor(CampagnaDao repo, AnagraficaDao anadao) {
 		
 		this.repo=repo;
+		this.anaDao=anadao;
 
 		addComponents(pri,che,pag,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
@@ -92,6 +96,10 @@ public class CampagnaEditor extends VerticalLayout {
 	}
 
 	void save() {
+		anaDao.findAll().stream().forEach( anag -> {
+			Abbonamento abb = new Abbonamento(anag);
+			campagna.getAbbonamenti().add(abb);
+		});
 		repo.save(campagna);
 		changeHandler.onChange();
 	}
