@@ -38,9 +38,9 @@ public class SmdUI extends UI {
 				new Link("Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
 				new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI)),				
 				new Link("Campagna", new ExternalResource(URL_CAMPAGNA)),				
+				new Link("Note", new ExternalResource(URL_NOTE)),				
 				new Link("Incassi", new ExternalResource(URL_INCASSI)),
-				new Link("Prospetti", new ExternalResource(URL_PROSPETTI)),				
-				new Link("Note", new ExternalResource(URL_NOTE))				
+				new Link("Prospetti", new ExternalResource(URL_PROSPETTI))			
 		);
 		setContent(layout);
 
