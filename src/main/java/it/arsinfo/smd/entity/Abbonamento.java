@@ -1,5 +1,6 @@
 package it.arsinfo.smd.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -14,7 +15,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 public class Abbonamento {
-
+		
 	public enum Anno {
 		ANNO2018(2018),
 		ANNO2019(2019),
@@ -43,26 +44,28 @@ public class Abbonamento {
 	}
 	
 	public enum Mese {
-		GENNAIO("Gen",1),
-		FEBBRAIO("Feb",2),
-		MARZO("Mar",3),
-		APRILE("Apr",4),
-		MAGGIO("Mag",5),
-		GIUGNO("Giu",6),
-		LUGLIO("Lug",7),
-		AGOSTO("Ago",8),
-		SETTEMBRE("Set",9),
-		OTTOBRE("Ott",10),
-		NOVEMBRE("Nov",11),
-		DICEMBRE("Dic",12);
+		GENNAIO("Gen",1, "01"),
+		FEBBRAIO("Feb",2, "02"),
+		MARZO("Mar",3, "03"),
+		APRILE("Apr",4, "04"),
+		MAGGIO("Mag",5, "05"),
+		GIUGNO("Giu",6, "06"),
+		LUGLIO("Lug",7, "07"),
+		AGOSTO("Ago",8, "08"),
+		SETTEMBRE("Set",9, "09"),
+		OTTOBRE("Ott",10, "10"),
+		NOVEMBRE("Nov",11, "11"),
+		DICEMBRE("Dic",12, "12");
 		
 		private String nomeBreve;
 		private int posizione;
+		private String code;
 		
 		
-		private Mese(String nome, int posizione) {
+		private Mese(String nome, int posizione, String cod) {
 			this.nomeBreve=nome;
 			this.posizione=posizione;
+			this.code=cod;
 		}
 
 
@@ -84,6 +87,16 @@ public class Abbonamento {
 		public void setPosizione(int posizione) {
 			this.posizione = posizione;
 		}
+
+
+		public String getCode() {
+			return code;
+		}
+
+
+		public void setCode(String code) {
+			this.code = code;
+		}
 	}
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -100,9 +113,10 @@ public class Abbonamento {
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date data;
-	private Float cost;
+	private BigDecimal cost;
 	private String campo;
     
+	private boolean omaggio=false;
 	private boolean pagato=false;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataincasso;
@@ -111,7 +125,7 @@ public class Abbonamento {
     private boolean blocchetti=false;
     private boolean lodare=false;
     private boolean messaggio=false;
-    private boolean costi=false;
+    private boolean spese=false;
     
     @Enumerated(EnumType.STRING)
     private Anno anno;
@@ -124,7 +138,7 @@ public class Abbonamento {
 		this.anagrafica = new Anagrafica();
 		this.data = new Date();
 		this.campo="";
-		this.cost=0.00f;
+		this.cost=BigDecimal.ZERO;
 	}
 
 	public Abbonamento(Anagrafica anagrafica) {
@@ -133,7 +147,7 @@ public class Abbonamento {
 		this.destinatario = anagrafica;
 		this.data = new Date();
 		this.campo="";
-		this.cost=0.00f;
+		this.cost=BigDecimal.ZERO;
 	}
 
 	public Abbonamento(Anagrafica anagrafica, Anagrafica destinatario) {
@@ -142,7 +156,7 @@ public class Abbonamento {
 		this.destinatario = destinatario;
 		this.data = new Date();
 		this.campo="";
-		this.cost=0.00f;
+		this.cost=BigDecimal.ZERO;
 	}
 
 	public Anagrafica getAnagrafica() {
@@ -161,11 +175,11 @@ public class Abbonamento {
 		this.data = data;
 	}
 	
-	public Float getCost() {
+	public BigDecimal getCost() {
 		return cost;
 	}
 	
-	public void setCost(Float cost) {
+	public void setCost(BigDecimal cost) {
 		this.cost = cost;
 	}
 	
@@ -233,12 +247,12 @@ public class Abbonamento {
 		this.messaggio = messaggio;
 	}
 
-	public boolean isCosti() {
-		return costi;
+	public boolean isSpese() {
+		return spese;
 	}
 
-	public void setCosti(boolean costi) {
-		this.costi = costi;
+	public void setSpese(boolean spese) {
+		this.spese = spese;
 	}
 
 	public Mese getInizio() {
@@ -287,6 +301,14 @@ public class Abbonamento {
 
 	public void setCampagna(Campagna campagna) {
 		this.campagna = campagna;
+	}
+
+	public boolean isOmaggio() {
+		return omaggio;
+	}
+
+	public void setOmaggio(boolean omaggio) {
+		this.omaggio = omaggio;
 	}
 		
 }

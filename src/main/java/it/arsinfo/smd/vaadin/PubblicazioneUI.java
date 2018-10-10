@@ -60,7 +60,7 @@ public class PubblicazioneUI extends UI {
 		
 		filterNome.setPlaceholder("Cerca per Nome");
 		
-		grid.setColumns("id", "nome", "tipo","costo","active","abbonamento");		
+		grid.setColumns("id", "nome", "tipo","costo","costoScontato","primaPubblicazione");		
 		grid.getColumn("id").setMaximumWidth(50);
 		grid.setWidth("80%");
 

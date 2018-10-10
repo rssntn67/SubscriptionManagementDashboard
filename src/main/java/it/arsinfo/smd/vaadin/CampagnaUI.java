@@ -7,6 +7,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -41,6 +42,9 @@ public class CampagnaUI extends UI {
 	@Autowired
 	AnagraficaDao anadao;
 
+	@Autowired
+	PubblicazioneDao pubdao;
+
 	@Override
 	protected void init(VaadinRequest request) {
 		Assert.notNull(repo, "repo must be not null");
@@ -49,7 +53,7 @@ public class CampagnaUI extends UI {
 	    ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
 		
 		grid = new Grid<>(Campagna.class);
-		CampagnaEditor editor = new CampagnaEditor(repo,anadao);
+		CampagnaEditor editor = new CampagnaEditor(repo,anadao,pubdao);
 		HorizontalLayout actions = new HorizontalLayout(filterAnno,addNewBtn);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);

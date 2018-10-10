@@ -8,7 +8,7 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -60,7 +60,7 @@ public class PubblicazioneEditor extends VerticalLayout {
 		
 		this.repo=repo;
 
-		addComponents(basic,check,actions);
+		addComponents(basic,costi,check,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
 		binder.forField(nome).asRequired("Il Nome della Pubblicazione e' abbligatorio")
@@ -70,8 +70,11 @@ public class PubblicazioneEditor extends VerticalLayout {
 		binder.bind(autore, Pubblicazione::getAutore, Pubblicazione::setAutore);
 		binder.bind(editore, Pubblicazione::getEditore,Pubblicazione::setEditore);
 		binder.forField(costo).asRequired()
-		.withConverter(new StringToFloatConverter("Conversione in Eur")).withValidator( f -> f > 0, "Deve essere maggire di 0" )
+		.withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator( f -> f.signum() == 1 , "Deve essere maggiore di 0" )
 		.bind(Pubblicazione::getCosto, Pubblicazione::setCosto);
+		binder.forField(costoScontato).asRequired()
+		.withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator( f -> f.signum() == 1 , "Deve essere maggiore di 0" )
+		.bind(Pubblicazione::getCostoScontato, Pubblicazione::setCostoScontato);
 		binder.forField(active).bind(Pubblicazione::isActive,Pubblicazione::setActive);
 		binder.forField(abbonamento).bind(Pubblicazione::isAbbonamento,Pubblicazione::setAbbonamento);
 		binder.forField(primaPubblicazione).bind(Pubblicazione::getPrimaPubblicazione, Pubblicazione::setPrimaPubblicazione);

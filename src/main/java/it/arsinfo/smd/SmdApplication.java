@@ -1,5 +1,9 @@
 package it.arsinfo.smd;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import it.arsinfo.smd.entity.Abbonamento;
@@ -24,6 +28,95 @@ import org.springframework.context.annotation.Bean;
 public class SmdApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+	
+	static int startabbonamento = 0;
+	/*
+	 * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici 
+	 * riservati al correntista 
+	 * che intende utilizzare tale campo
+	 * 2 caratteri numerici di controcodice 
+	 * pari al resto della divisione 
+	 * dei primi 16 caratteri per 93 
+	 * (Modulo 93. Valori possibili
+	 * dei caratteri di controcodice: 00 - 92)
+	 */
+	public static String generateCampo(Anno anno, Mese inizio, Mese fine) {
+		// primi 4 caratteri anno
+		String campo = anno.getAnnoAsString();
+		// 5 e 6 inizio
+		campo+=inizio.getCode();
+		// 7 e 8 fine
+		campo+=fine.getCode();
+		// 9-16
+		startabbonamento++;
+		campo+=String.format("%08d", startabbonamento);
+		campo+=String.format("%02d", Long.parseLong(campo)%93);
+		return campo;
+	}
+	
+	public static int getNumeroPubblicazioni(Abbonamento abb, Pubblicazione pub) {
+		int numero = 0;
+		switch (pub.getTipo()) {
+			case ANNUALE: 
+				if (abb.getInizio().getPosizione() < pub.getPrimaPubblicazione().getPosizione() &&
+						abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()) {
+					numero = 1;
+				}
+				break;
+			case SEMESTRALE:  
+				if (abb.getInizio().getPosizione() < pub.getPrimaPubblicazione().getPosizione() &&
+						abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()) {
+					numero += 1;
+				}
+				if (abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()+6) {
+					numero += 1;
+				}
+				break;
+			case MENSILE: 
+				numero = abb.getFine().getPosizione() - abb.getInizio().getPosizione() + 1;
+				break;
+			case UNICO:
+				numero=1;
+				break;
+			default:
+				break;
+		}
+		return numero;
+	}
+
+	public static BigDecimal getCosto(Abbonamento abb, List<Pubblicazione> pubs) {
+		if (abb.isOmaggio()) {
+			return BigDecimal.ZERO;
+		}
+		double costo=0.0;
+		if (abb.getAnagrafica().getOmaggio() != null) {
+			switch (abb.getAnagrafica().getOmaggio()) {
+			case AbbonatoConSconto:
+				costo = pubs.stream().mapToDouble( pubblicazione -> 
+					pubblicazione.getCostoScontato().doubleValue() * getNumeroPubblicazioni(abb, pubblicazione)
+				).sum();
+				break;
+			case OmaggioCuriaDiocesiana:
+				break;
+
+			case OmaggioBlocchettiMensiliGesuiti:
+				break;
+
+			case OmaggioBlocchettiMensiliCuriaGeneralizia:
+				break;
+
+			default:
+				break;
+			}
+		} else {
+			costo = pubs.stream().mapToDouble( pubblicazione -> 
+				pubblicazione.getCosto().doubleValue() * getNumeroPubblicazioni(abb, pubblicazione)
+				).sum();
+		}
+
+		return BigDecimal.valueOf(costo);
+	}
+	
 	public static void main(String[] args) {
 		SpringApplication.run(SmdApplication.class, args);
 	}
@@ -86,7 +179,8 @@ public class SmdApplication {
 			Pubblicazione blocchetti = new Pubblicazione("Blocchetti", Pubblicazione.Tipo.SEMESTRALE);
 			blocchetti.setActive(true);
 			blocchetti.setAbbonamento(true);
-			blocchetti.setCosto(15.45f);
+			blocchetti.setCosto(new BigDecimal(10.45));
+			blocchetti.setCostoScontato(new BigDecimal(8.75));
 			blocchetti.setEditore("ADP");
 			blocchetti.setPrimaPubblicazione(Mese.MARZO);
 			pubblicazioneDao.save(blocchetti);
@@ -94,7 +188,8 @@ public class SmdApplication {
 			Pubblicazione estratti = new Pubblicazione("Estratti", Pubblicazione.Tipo.ANNUALE);
 			estratti.setActive(true);
 			estratti.setAbbonamento(true);
-			estratti.setCosto(5.95f);
+			estratti.setCosto(new BigDecimal(15.95));
+			estratti.setCostoScontato(new BigDecimal(12.45));
 			estratti.setEditore("ADP");
 			estratti.setPrimaPubblicazione(Mese.LUGLIO);
 			pubblicazioneDao.save(estratti);
@@ -102,7 +197,8 @@ public class SmdApplication {
 			Pubblicazione messaggio = new Pubblicazione("Messaggio", Pubblicazione.Tipo.MENSILE);
 			messaggio.setActive(true);
 			messaggio.setAbbonamento(true);
-			messaggio.setCosto(5.95f);
+			messaggio.setCosto(new BigDecimal(5.95));
+			messaggio.setCostoScontato(new BigDecimal(4.50));
 			messaggio.setEditore("ADP");
 			messaggio.setPrimaPubblicazione(Mese.GENNAIO);
 			pubblicazioneDao.save(messaggio);
@@ -110,7 +206,8 @@ public class SmdApplication {
 			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", Pubblicazione.Tipo.MENSILE);
 			lodare.setActive(true);
 			lodare.setAbbonamento(true);
-			lodare.setCosto(5.95f);
+			lodare.setCosto(new BigDecimal(5.95));
+			lodare.setCostoScontato(new BigDecimal(4.50));
 			lodare.setEditore("ADP");
 			lodare.setPrimaPubblicazione(Mese.GENNAIO);
 			pubblicazioneDao.save(lodare);
@@ -118,35 +215,46 @@ public class SmdApplication {
 			Pubblicazione spese = new Pubblicazione("Spese di Spedizione", Pubblicazione.Tipo.UNICO);
 			spese.setActive(true);
 			spese.setAbbonamento(false);
-			spese.setCosto(5.95f);
+			spese.setCosto(new BigDecimal(5.95));
 			pubblicazioneDao.save(spese);
 			
+			List<Pubblicazione> pubblMd = new ArrayList<Pubblicazione>();
+			pubblMd.add(blocchetti);
+			pubblMd.add(lodare);
 			Abbonamento abbonamentoMd = new Abbonamento(md);
-			abbonamentoMd.setCampo("0003299900000");
-			abbonamentoMd.setCost(10.0f);
 			abbonamentoMd.setBlocchetti(true);
 			abbonamentoMd.setLodare(true);
 			abbonamentoMd.setInizio(Mese.GIUGNO);			
 			abbonamentoMd.setAnno(Anno.ANNO2018);	
+			abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),abbonamentoMd.getInizio(),abbonamentoMd.getFine()));
+			abbonamentoMd.setCost(getCosto(abbonamentoMd, pubblMd));
 			abbonamentoDao.save(abbonamentoMd);
 			
+			List<Pubblicazione> pubblCo = new ArrayList<Pubblicazione>();
+			pubblCo.add(blocchetti);
+			pubblCo.add(lodare);
+			pubblCo.add(messaggio);
+			pubblCo.add(estratti);
 			Abbonamento abbonamentoCo = new Abbonamento(co);
-			abbonamentoCo.setCampo("00032999000132");
-			abbonamentoCo.setCost(20.0f);
 			abbonamentoCo.setBlocchetti(true);
 			abbonamentoCo.setLodare(true);
 			abbonamentoCo.setEstratti(true);
 			abbonamentoCo.setMessaggio(true);
 			abbonamentoCo.setAnno(Anno.ANNO2018);			
+			abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),abbonamentoCo.getInizio(),abbonamentoCo.getFine()));
+			abbonamentoCo.setCost(getCosto(abbonamentoCo, pubblCo));
 			abbonamentoDao.save(abbonamentoCo);
 			
+			List<Pubblicazione> pubblDp = new ArrayList<Pubblicazione>();
+			pubblDp.add(lodare);
+			pubblDp.add(spese);
 			Abbonamento abbonamentoDp = new Abbonamento(dp);
-			abbonamentoDp.setCampo("0003255559000132");
-			abbonamentoDp.setCost(10.0f);
 			abbonamentoDp.setLodare(true);
-			abbonamentoDp.setCosti(true);
+			abbonamentoDp.setSpese(true);
 			abbonamentoDp.setInizio(Mese.MAGGIO);
 			abbonamentoDp.setAnno(Anno.ANNO2018);			
+			abbonamentoDp.setCampo(generateCampo(abbonamentoDp.getAnno(),abbonamentoDp.getInizio(),abbonamentoDp.getFine()));
+			abbonamentoDp.setCost(getCosto(abbonamentoDp, pubblDp));
 			abbonamentoDao.save(abbonamentoDp);
 			
 

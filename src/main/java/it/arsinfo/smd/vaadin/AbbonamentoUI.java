@@ -5,6 +5,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -39,6 +40,9 @@ public class AbbonamentoUI extends UI {
 	@Autowired
 	AnagraficaDao rana;
 
+	@Autowired
+	PubblicazioneDao pubb;
+
 	@Override
 	protected void init(VaadinRequest request) {
 		Assert.notNull(repo, "repo must be not null");
@@ -47,7 +51,7 @@ public class AbbonamentoUI extends UI {
 		ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
 		
 		grid = new Grid<>(Abbonamento.class);
-		AbbonamentoEditor editor = new AbbonamentoEditor(repo,rana);
+		AbbonamentoEditor editor = new AbbonamentoEditor(repo,rana,pubb);
 		HorizontalLayout actions = new HorizontalLayout(filterAnagrafica,addNewBtn);
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);

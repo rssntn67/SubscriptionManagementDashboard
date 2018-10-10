@@ -1,5 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import java.math.BigDecimal;
+
 import it.arsinfo.smd.entity.Abbonamento.Mese;
 
 import javax.persistence.Entity;
@@ -35,9 +37,9 @@ public class Pubblicazione {
     @Enumerated(EnumType.STRING)
     private Mese primaPubblicazione;
 
-	private Float costo;
+	private BigDecimal costo;
 
-	private Float costoScontato;
+	private BigDecimal costoScontato;
 
     @Enumerated(EnumType.STRING)
     private Tipo tipo;
@@ -72,21 +74,24 @@ public class Pubblicazione {
 		super();
 		this.nome = nome;
 		this.tipo = tipo;
-		this.costo = 1.00f;
+		this.costo = BigDecimal.ZERO;
+		this.costoScontato = BigDecimal.ZERO;
 	}
 
 	public Pubblicazione(String nome) {
 		super();
 		this.nome = nome;
 		this.tipo = Tipo.UNICO;
-		this.costo = 1.00f;
+		this.costo = BigDecimal.ZERO;
+		this.costoScontato = BigDecimal.ZERO;
 	}
 	
 	public Pubblicazione() {
 		super();
 		this.nome = "";
 		this.tipo = Tipo.UNICO;
-		this.costo = 1.00f;
+		this.costo = BigDecimal.ZERO;
+		this.costoScontato = BigDecimal.ZERO;
 	}
 
     public boolean isActive() {
@@ -105,11 +110,11 @@ public class Pubblicazione {
 		this.abbonamento = abbonamento;
 	}
 
-	public Float getCosto() {
+	public BigDecimal getCosto() {
 		return costo;
 	}
 
-	public void setCosto(Float costo) {
+	public void setCosto(BigDecimal costo) {
 		this.costo = costo;
 	}
 
@@ -137,11 +142,14 @@ public class Pubblicazione {
 		this.primaPubblicazione = primapubblicazione;
 	}
 
-	public Float getCostoScontato() {
+	public BigDecimal getCostoScontato() {
+		if (costoScontato == BigDecimal.ZERO) {
+			return costo;
+		}
 		return costoScontato;
 	}
 
-	public void setCostoScontato(Float costoScontato) {
+	public void setCostoScontato(BigDecimal costoScontato) {
 		this.costoScontato = costoScontato;
 	}
 	

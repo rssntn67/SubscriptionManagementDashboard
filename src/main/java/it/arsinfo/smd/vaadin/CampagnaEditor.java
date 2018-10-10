@@ -1,13 +1,21 @@
 package it.arsinfo.smd.vaadin;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
+
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
+
 
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
@@ -29,6 +37,7 @@ public class CampagnaEditor extends VerticalLayout {
 
 	private final CampagnaDao repo;
 	private final AnagraficaDao anaDao;
+	private final PubblicazioneDao pubbldao;
 
 	/**
 	 * The currently edited customer
@@ -62,11 +71,12 @@ public class CampagnaEditor extends VerticalLayout {
 	Binder<Campagna> binder = new Binder<>(Campagna.class);
 	private ChangeHandler changeHandler;
 
-	public CampagnaEditor(CampagnaDao repo, AnagraficaDao anadao) {
+	public CampagnaEditor(CampagnaDao repo, AnagraficaDao anadao,PubblicazioneDao pubdao) {
 		
 		this.repo=repo;
 		this.anaDao=anadao;
-
+		this.pubbldao=pubdao;
+		
 		addComponents(pri,che,pag,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
@@ -95,8 +105,34 @@ public class CampagnaEditor extends VerticalLayout {
 	}
 
 	void save() {
+		List<Pubblicazione> abbpub = new ArrayList<Pubblicazione>();
+		if (campagna.isBlocchetti()) {
+			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Blocchetti"));
+		}
+		if (campagna.isEstratti()) {
+			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Estratti"));
+		}
+		if (campagna.isLodare()) {
+			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Lodare"));
+		}
+		if (campagna.isMessaggio()) {
+			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Messaggio"));
+		}
+
 		anaDao.findAll().stream().forEach( anag -> {
 			Abbonamento abb = new Abbonamento(anag);
+			abb.setAnno(campagna.getAnno());
+			abb.setInizio(campagna.getInizio());
+			abb.setFine(campagna.getFine());
+			abb.setEstratti(campagna.isEstratti());
+			abb.setBlocchetti(campagna.isBlocchetti());
+			abb.setMessaggio(campagna.isMessaggio());
+			abb.setLodare(campagna.isLodare());
+			abb.setCampo(SmdApplication.generateCampo(campagna.getAnno(),campagna.getInizio(), campagna.getFine()));
+			abb.setCost(SmdApplication.getCosto(abb, abbpub));
+			if (abb.getCost().doubleValue() == BigDecimal.ZERO.doubleValue()) {
+				abb.setOmaggio(true);
+			}
 			campagna.getAbbonamenti().add(abb);
 		});
 		repo.save(campagna);
