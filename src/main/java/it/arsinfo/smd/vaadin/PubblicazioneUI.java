@@ -15,19 +15,16 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringUI(path=SmdUI.URL_PUBBLICAZIONI)
 @Title("Anagrafica Pubblicazioni ADP")
-public class PubblicazioneUI extends UI {
+public class PubblicazioneUI extends SmdHeaderUI {
 
 	/**
 	 * 
@@ -40,6 +37,7 @@ public class PubblicazioneUI extends UI {
 	
 	@Override
 	protected void init(VaadinRequest request) {
+	    super.init(request);
 		Assert.notNull(repo, "repo must be not null");
 		Label header = new Label("Anagrafica Pubblicazioni");
 		TextField filterNome = new TextField();
@@ -48,10 +46,7 @@ public class PubblicazioneUI extends UI {
 		grid = new Grid<>(Pubblicazione.class);
 		PubblicazioneEditor editor = new PubblicazioneEditor(repo);
 		HorizontalLayout actions = new HorizontalLayout(filterTipo,filterNome);
-		VerticalLayout layout = new VerticalLayout();
-		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		layout.addComponents(header,editor,actions,grid);
-		setContent(layout);
+		addComponents(header,editor,actions,grid);
 
 		header.addStyleName(ValoTheme.LABEL_H2);
 		

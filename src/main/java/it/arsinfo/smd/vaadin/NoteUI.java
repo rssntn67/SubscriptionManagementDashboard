@@ -16,20 +16,17 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringUI(path=SmdUI.URL_NOTE)
 @Title("Note Anagrafica ADP")
-public class NoteUI extends UI {
+public class NoteUI extends SmdHeaderUI {
 
 	/**
 	 * 
@@ -45,8 +42,9 @@ public class NoteUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
+            super.init(request);
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Campagna Abbonamento");
+		Label header = new Label("Note");
 		Button addNewBtn = new Button("Genera Nota", VaadinIcons.PLUS);	
 		TextField filter = new TextField();
 	    ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Selezionare Cliente");
@@ -54,10 +52,7 @@ public class NoteUI extends UI {
 		grid = new Grid<>(Note.class);
 		NoteEditor editor = new NoteEditor(repo,anadao);
 		HorizontalLayout actions = new HorizontalLayout(filterAnagrafica,filter,addNewBtn);
-		VerticalLayout layout = new VerticalLayout();
-		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		layout.addComponents(header,editor,actions,grid);
-		setContent(layout);
+		addComponents(header,editor,actions,grid);
 
 		header.addStyleName(ValoTheme.LABEL_H2);
 		
