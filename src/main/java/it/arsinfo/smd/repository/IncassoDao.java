@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IncassoDao extends JpaRepository<Incasso, Long> {
 
 	List<Incasso> findByCuas(Cuas cuas);
-	List<Incasso> findByContoCorrentePostale(ContoCorrentePostale ccp);
+	List<Incasso> findByCcp(ContoCorrentePostale ccp);
         List<Incasso> findByDataContabile(Date date);
 	
 }

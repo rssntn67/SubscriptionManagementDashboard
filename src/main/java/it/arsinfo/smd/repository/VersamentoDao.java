@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Versamento;
 public interface VersamentoDao extends JpaRepository<Versamento, Long> {
 
 	List<Versamento> findByIncasso(Incasso incasso);
-	List<Versamento> findByContoCorrentePostale(ContoCorrentePostale ccp);
+	List<Versamento> findByCcp(ContoCorrentePostale ccp);
         List<Versamento> findByDataContabile(Date date);
         List<Versamento> findByDataPagamento(Date date);
 	
