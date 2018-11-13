@@ -16,89 +16,7 @@ import javax.persistence.TemporalType;
 @Entity
 public class Abbonamento {
 		
-	public enum Anno {
-		ANNO2018(2018),
-		ANNO2019(2019),
-		ANNO2020(2020),
-		ANNO2021(2021),
-		ANNO2022(2022),
-		ANNO2023(2023);
-		
-		private int anno;
-		
-		private Anno(int anno) {
-			this.anno=anno;
-		}
-		
-		public String getAnnoAsString() {
-			return Integer.toString(anno);
-		}
-
-		public int getAnno() {
-			return anno;
-		}
-
-		public void setAnno(int anno) {
-			this.anno = anno;
-		}
-	}
-	
-	public enum Mese {
-		GENNAIO("Gen",1, "01"),
-		FEBBRAIO("Feb",2, "02"),
-		MARZO("Mar",3, "03"),
-		APRILE("Apr",4, "04"),
-		MAGGIO("Mag",5, "05"),
-		GIUGNO("Giu",6, "06"),
-		LUGLIO("Lug",7, "07"),
-		AGOSTO("Ago",8, "08"),
-		SETTEMBRE("Set",9, "09"),
-		OTTOBRE("Ott",10, "10"),
-		NOVEMBRE("Nov",11, "11"),
-		DICEMBRE("Dic",12, "12");
-		
-		private String nomeBreve;
-		private int posizione;
-		private String code;
-		
-		
-		private Mese(String nome, int posizione, String cod) {
-			this.nomeBreve=nome;
-			this.posizione=posizione;
-			this.code=cod;
-		}
-
-
-		public String getNomeBreve() {
-			return nomeBreve;
-		}
-
-
-		public void setNomeBreve(String nomeBreve) {
-			this.nomeBreve = nomeBreve;
-		}
-
-
-		public int getPosizione() {
-			return posizione;
-		}
-
-
-		public void setPosizione(int posizione) {
-			this.posizione = posizione;
-		}
-
-
-		public String getCode() {
-			return code;
-		}
-
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-	}
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -125,7 +43,7 @@ public class Abbonamento {
     private boolean blocchetti=false;
     private boolean lodare=false;
     private boolean messaggio=false;
-    private boolean spese=false;
+    private BigDecimal spese=BigDecimal.ZERO;
     
     @Enumerated(EnumType.STRING)
     private Anno anno;
@@ -133,8 +51,20 @@ public class Abbonamento {
     private Mese inizio=Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
     private Mese fine=Mese.DICEMBRE;
-	
-	public Abbonamento() {
+
+    @Enumerated(EnumType.STRING)
+    private ContoCorrentePostale contoCorrentePostale=ContoCorrentePostale.UNO;
+
+	public ContoCorrentePostale getContoCorrentePostale() {
+        return contoCorrentePostale;
+    }
+
+    public void setContoCorrentePostale(
+            ContoCorrentePostale contoCorrentePostale) {
+        this.contoCorrentePostale = contoCorrentePostale;
+    }
+
+    public Abbonamento() {
 		this.anagrafica = new Anagrafica();
 		this.data = new Date();
 		this.campo="";
@@ -247,11 +177,11 @@ public class Abbonamento {
 		this.messaggio = messaggio;
 	}
 
-	public boolean isSpese() {
+	public BigDecimal getSpese() {
 		return spese;
 	}
 
-	public void setSpese(boolean spese) {
+	public void setSpese(BigDecimal spese) {
 		this.spese = spese;
 	}
 

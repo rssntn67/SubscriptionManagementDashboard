@@ -3,9 +3,6 @@ package it.arsinfo.smd.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.arsinfo.smd.entity.Abbonamento.Anno;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

@@ -8,9 +8,9 @@ import java.util.List;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Abbonamento.Anno;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -54,7 +54,7 @@ public class CampagnaEditor extends VerticalLayout {
     private final CheckBox lodare=new CheckBox("Abb. Men. Lodare e Service");
     private final CheckBox messaggio=new CheckBox("Abb. Men. Messaggio");
     
-    private final ComboBox<Anno> anno = new ComboBox<Abbonamento.Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
+    private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio", EnumSet.allOf(Mese.class));
     private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine", EnumSet.allOf(Mese.class));
 

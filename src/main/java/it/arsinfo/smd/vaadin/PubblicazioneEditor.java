@@ -1,7 +1,7 @@
 package it.arsinfo.smd.vaadin;
 
+import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 

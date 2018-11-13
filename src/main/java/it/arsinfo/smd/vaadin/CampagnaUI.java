@@ -3,8 +3,8 @@ package it.arsinfo.smd.vaadin;
 
 import java.util.EnumSet;
 
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Abbonamento.Anno;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;

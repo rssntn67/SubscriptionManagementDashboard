@@ -7,9 +7,9 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Abbonamento.Anno;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -114,7 +114,7 @@ public class SmdApplication {
 				).sum();
 		}
 
-		return BigDecimal.valueOf(costo);
+		return BigDecimal.valueOf(costo).add(abb.getSpese());
 	}
 	
 	public static void main(String[] args) {
@@ -179,8 +179,8 @@ public class SmdApplication {
 			Pubblicazione blocchetti = new Pubblicazione("Blocchetti", Pubblicazione.Tipo.SEMESTRALE);
 			blocchetti.setActive(true);
 			blocchetti.setAbbonamento(true);
-			blocchetti.setCosto(new BigDecimal(10.45));
-			blocchetti.setCostoScontato(new BigDecimal(8.75));
+			blocchetti.setCosto(new BigDecimal(3.00));
+			blocchetti.setCostoScontato(new BigDecimal(2.40));
 			blocchetti.setEditore("ADP");
 			blocchetti.setPrimaPubblicazione(Mese.MARZO);
 			pubblicazioneDao.save(blocchetti);
@@ -188,8 +188,8 @@ public class SmdApplication {
 			Pubblicazione estratti = new Pubblicazione("Estratti", Pubblicazione.Tipo.ANNUALE);
 			estratti.setActive(true);
 			estratti.setAbbonamento(true);
-			estratti.setCosto(new BigDecimal(15.95));
-			estratti.setCostoScontato(new BigDecimal(12.45));
+			estratti.setCosto(new BigDecimal(10.00));
+			estratti.setCostoScontato(new BigDecimal(10.00));
 			estratti.setEditore("ADP");
 			estratti.setPrimaPubblicazione(Mese.LUGLIO);
 			pubblicazioneDao.save(estratti);
@@ -197,8 +197,8 @@ public class SmdApplication {
 			Pubblicazione messaggio = new Pubblicazione("Messaggio", Pubblicazione.Tipo.MENSILE);
 			messaggio.setActive(true);
 			messaggio.setAbbonamento(true);
-			messaggio.setCosto(new BigDecimal(5.95));
-			messaggio.setCostoScontato(new BigDecimal(4.50));
+			messaggio.setCosto(new BigDecimal(1.25));
+			messaggio.setCostoScontato(new BigDecimal(1.25));
 			messaggio.setEditore("ADP");
 			messaggio.setPrimaPubblicazione(Mese.GENNAIO);
 			pubblicazioneDao.save(messaggio);
@@ -206,18 +206,12 @@ public class SmdApplication {
 			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", Pubblicazione.Tipo.MENSILE);
 			lodare.setActive(true);
 			lodare.setAbbonamento(true);
-			lodare.setCosto(new BigDecimal(5.95));
-			lodare.setCostoScontato(new BigDecimal(4.50));
+			lodare.setCosto(new BigDecimal(1.50));
+			lodare.setCostoScontato(new BigDecimal(1.50));
 			lodare.setEditore("ADP");
 			lodare.setPrimaPubblicazione(Mese.GENNAIO);
 			pubblicazioneDao.save(lodare);
-			
-			Pubblicazione spese = new Pubblicazione("Spese di Spedizione", Pubblicazione.Tipo.UNICO);
-			spese.setActive(true);
-			spese.setAbbonamento(false);
-			spese.setCosto(new BigDecimal(5.95));
-			pubblicazioneDao.save(spese);
-			
+						
 			List<Pubblicazione> pubblMd = new ArrayList<Pubblicazione>();
 			pubblMd.add(blocchetti);
 			pubblMd.add(lodare);
@@ -247,10 +241,9 @@ public class SmdApplication {
 			
 			List<Pubblicazione> pubblDp = new ArrayList<Pubblicazione>();
 			pubblDp.add(lodare);
-			pubblDp.add(spese);
 			Abbonamento abbonamentoDp = new Abbonamento(dp);
 			abbonamentoDp.setLodare(true);
-			abbonamentoDp.setSpese(true);
+			abbonamentoDp.setSpese(new BigDecimal("3.75"));
 			abbonamentoDp.setInizio(Mese.MAGGIO);
 			abbonamentoDp.setAnno(Anno.ANNO2018);			
 			abbonamentoDp.setCampo(generateCampo(abbonamentoDp.getAnno(),abbonamentoDp.getInizio(),abbonamentoDp.getFine()));

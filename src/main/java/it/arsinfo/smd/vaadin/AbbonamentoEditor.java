@@ -7,8 +7,9 @@ import java.util.List;
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Abbonamento.Anno;
-import it.arsinfo.smd.entity.Abbonamento.Mese;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.ContoCorrentePostale;
+import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -55,19 +56,20 @@ public class AbbonamentoEditor extends VerticalLayout {
     private final CheckBox blocchetti=new CheckBox("Abb. Sem. Blocchetti");
     private final CheckBox lodare=new CheckBox("Abb. Men. Lodare e Service");
     private final CheckBox messaggio=new CheckBox("Abb. Men. Messaggio");
-    private final CheckBox spese=new CheckBox("Spese Spedizione");
+    private final TextField spese=new TextField("Spese Spedizione");
     
-    private final ComboBox<Anno> anno = new ComboBox<Abbonamento.Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
+    private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio", EnumSet.allOf(Mese.class));
     private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine", EnumSet.allOf(Mese.class));
-
+    private final ComboBox<ContoCorrentePostale> contoCorrentePostale = new ComboBox<ContoCorrentePostale>("Selezionare ccp", EnumSet.allOf(ContoCorrentePostale.class));
+    
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
 	Button delete = new Button("Delete", VaadinIcons.TRASH);
 	
 
 	HorizontalLayout pri = new HorizontalLayout(anagrafica,destinatario,anno,inizio,fine);
-	HorizontalLayout sec = new HorizontalLayout(campo, cost);
+	HorizontalLayout sec = new HorizontalLayout(campo, cost,contoCorrentePostale);
 	HorizontalLayout che = new HorizontalLayout(estratti, blocchetti,lodare,messaggio,spese);
 	HorizontalLayout pag = new HorizontalLayout(omaggio,pagato);
 	HorizontalLayout pagfield = new HorizontalLayout(dataincasso);
@@ -89,6 +91,8 @@ public class AbbonamentoEditor extends VerticalLayout {
 
 		inizio.setItemCaptionGenerator(Mese::getNomeBreve);
 		fine.setItemCaptionGenerator(Mese::getNomeBreve);
+		
+		contoCorrentePostale.setItemCaptionGenerator(ContoCorrentePostale::getCcp);
 
 		anagrafica.setItems(anagraficaDao.findAll());
 		anagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -100,6 +104,8 @@ public class AbbonamentoEditor extends VerticalLayout {
 		binder.forField(anno).bind("anno");
 		binder.forField(inizio).bind("inizio");
 		binder.forField(fine).bind("fine");
+		binder.forField(contoCorrentePostale).bind("contoCorrentePostale");
+		        
 		binder.forField(campo).asRequired().withValidator(ca -> ca != null, "Deve essere definito").bind(Abbonamento::getCampo, Abbonamento::setCampo);
 		binder.forField(cost).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
 		.bind(Abbonamento::getCost, Abbonamento::setCost);
@@ -107,7 +113,8 @@ public class AbbonamentoEditor extends VerticalLayout {
 		binder.forField(messaggio).bind("messaggio");
 		binder.forField(estratti).bind("estratti");
 		binder.forField(blocchetti).bind("blocchetti");
-		binder.forField(spese).bind("spese");
+		binder.forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+                .bind(Abbonamento::getSpese, Abbonamento::setSpese);
 		binder.forField(pagato).bind("pagato");
 		binder.forField(omaggio).bind("omaggio");
 		binder.forField(dataincasso).
@@ -150,9 +157,6 @@ public class AbbonamentoEditor extends VerticalLayout {
 				}
 				if (abbonamento.isMessaggio()) {
 					abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Messaggio"));
-				}
-				if (abbonamento.isSpese()) {
-					abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Spese"));					
 				}
 				abbonamento.setCost(SmdApplication.getCosto(abbonamento, abbpub));
 				abbonamento.setCampo(SmdApplication.generateCampo(abbonamento.getAnno(),abbonamento.getInizio(),abbonamento.getFine()));

@@ -2,8 +2,6 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 
-import it.arsinfo.smd.entity.Abbonamento.Mese;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
