@@ -11,47 +11,46 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Note {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-	@ManyToOne
-	private Anagrafica anagrafica;
-	
-	private String description;
-	
-	private Date data = new Date();
-	
-	public Note() {
-	}
+    @ManyToOne
+    private Anagrafica anagrafica;
 
-	public Anagrafica getAnagrafica() {
-		return anagrafica;
-	}
+    private String description;
 
-	public void setAnagrafica(Anagrafica anagrafica) {
-		this.anagrafica = anagrafica;
-	}
+    private Date data = new Date();
 
-	public String getDescription() {
-		return description;
-	}
+    public Note() {
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public Anagrafica getAnagrafica() {
+        return anagrafica;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setAnagrafica(Anagrafica anagrafica) {
+        this.anagrafica = anagrafica;
+    }
 
-	public Date getData() {
-		return data;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setData(Date data) {
-		this.data = data;
-	}
-	
-	
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Date getData() {
+        return data;
+    }
+
+    public void setData(Date data) {
+        this.data = data;
+    }
+
 }

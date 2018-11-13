@@ -14,134 +14,133 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class Campagna {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private boolean estratti=false;
-    private boolean blocchetti=false;
-    private boolean lodare=false;
-    private boolean messaggio=false;
-	
-    private boolean pagato=false;
-    private boolean anagraficaFlagA=false;
-    private boolean anagraficaFlagB=false;
-    private boolean anagraficaFlagC=false;
-    
+    private boolean estratti = false;
+    private boolean blocchetti = false;
+    private boolean lodare = false;
+    private boolean messaggio = false;
+
+    private boolean pagato = false;
+    private boolean anagraficaFlagA = false;
+    private boolean anagraficaFlagB = false;
+    private boolean anagraficaFlagC = false;
+
     @Enumerated(EnumType.STRING)
     private Anno anno;
     @Enumerated(EnumType.STRING)
-    private Mese inizio=Mese.GENNAIO;
+    private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
-    private Mese fine=Mese.DICEMBRE;
+    private Mese fine = Mese.DICEMBRE;
 
-    @OneToMany(cascade = {CascadeType.PERSIST})
+    @OneToMany(cascade = { CascadeType.PERSIST })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
-    
+
     public Campagna() {
-    	
+
     }
 
-	public boolean isAnagraficaFlagC() {
-		return anagraficaFlagC;
-	}
+    public boolean isAnagraficaFlagC() {
+        return anagraficaFlagC;
+    }
 
-	public void setAnagraficaFlagC(boolean anagraficaFlagC) {
-		this.anagraficaFlagC = anagraficaFlagC;
-	}
+    public void setAnagraficaFlagC(boolean anagraficaFlagC) {
+        this.anagraficaFlagC = anagraficaFlagC;
+    }
 
-	public boolean isEstratti() {
-		return estratti;
-	}
+    public boolean isEstratti() {
+        return estratti;
+    }
 
-	public void setEstratti(boolean estratti) {
-		this.estratti = estratti;
-	}
+    public void setEstratti(boolean estratti) {
+        this.estratti = estratti;
+    }
 
-	public boolean isBlocchetti() {
-		return blocchetti;
-	}
+    public boolean isBlocchetti() {
+        return blocchetti;
+    }
 
-	public void setBlocchetti(boolean blocchetti) {
-		this.blocchetti = blocchetti;
-	}
+    public void setBlocchetti(boolean blocchetti) {
+        this.blocchetti = blocchetti;
+    }
 
-	public boolean isLodare() {
-		return lodare;
-	}
+    public boolean isLodare() {
+        return lodare;
+    }
 
-	public void setLodare(boolean lodare) {
-		this.lodare = lodare;
-	}
+    public void setLodare(boolean lodare) {
+        this.lodare = lodare;
+    }
 
-	public boolean isMessaggio() {
-		return messaggio;
-	}
+    public boolean isMessaggio() {
+        return messaggio;
+    }
 
-	public void setMessaggio(boolean messaggio) {
-		this.messaggio = messaggio;
-	}
+    public void setMessaggio(boolean messaggio) {
+        this.messaggio = messaggio;
+    }
 
-	public boolean isPagato() {
-		return pagato;
-	}
+    public boolean isPagato() {
+        return pagato;
+    }
 
-	public void setPagato(boolean pagato) {
-		this.pagato = pagato;
-	}
+    public void setPagato(boolean pagato) {
+        this.pagato = pagato;
+    }
 
-	public boolean isAnagraficaFlagA() {
-		return anagraficaFlagA;
-	}
+    public boolean isAnagraficaFlagA() {
+        return anagraficaFlagA;
+    }
 
-	public void setAnagraficaFlagA(boolean anagraficaFlagA) {
-		this.anagraficaFlagA = anagraficaFlagA;
-	}
+    public void setAnagraficaFlagA(boolean anagraficaFlagA) {
+        this.anagraficaFlagA = anagraficaFlagA;
+    }
 
-	public boolean isAnagraficaFlagB() {
-		return anagraficaFlagB;
-	}
+    public boolean isAnagraficaFlagB() {
+        return anagraficaFlagB;
+    }
 
-	public void setAnagraficaFlagB(boolean anagraficaFlagB) {
-		this.anagraficaFlagB = anagraficaFlagB;
-	}
+    public void setAnagraficaFlagB(boolean anagraficaFlagB) {
+        this.anagraficaFlagB = anagraficaFlagB;
+    }
 
-	public Anno getAnno() {
-		return anno;
-	}
+    public Anno getAnno() {
+        return anno;
+    }
 
-	public void setAnno(Anno anno) {
-		this.anno = anno;
-	}
+    public void setAnno(Anno anno) {
+        this.anno = anno;
+    }
 
-	public Mese getInizio() {
-		return inizio;
-	}
+    public Mese getInizio() {
+        return inizio;
+    }
 
-	public void setInizio(Mese inizio) {
-		this.inizio = inizio;
-	}
+    public void setInizio(Mese inizio) {
+        this.inizio = inizio;
+    }
 
-	public Mese getFine() {
-		return fine;
-	}
+    public Mese getFine() {
+        return fine;
+    }
 
-	public void setFine(Mese fine) {
-		this.fine = fine;
-	}
+    public void setFine(Mese fine) {
+        this.fine = fine;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public List<Abbonamento> getAbbonamenti() {
-		return abbonamenti;
-	}
+    public List<Abbonamento> getAbbonamenti() {
+        return abbonamenti;
+    }
 
-	public void setAbbonamenti(List<Abbonamento> abbonamenti) {
-		this.abbonamenti = abbonamenti;
-	}
-    
-    
+    public void setAbbonamenti(List<Abbonamento> abbonamenti) {
+        this.abbonamenti = abbonamenti;
+    }
+
 }
