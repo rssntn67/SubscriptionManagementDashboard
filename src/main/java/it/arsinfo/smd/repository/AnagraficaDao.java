@@ -1,8 +1,8 @@
 package it.arsinfo.smd.repository;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Anagrafica.BmCassa;
-import it.arsinfo.smd.entity.Anagrafica.Diocesi;
+import it.arsinfo.smd.entity.BmCassa;
+import it.arsinfo.smd.entity.Diocesi;
 
 import java.util.List;
 

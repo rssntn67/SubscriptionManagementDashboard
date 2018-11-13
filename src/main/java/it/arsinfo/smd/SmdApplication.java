@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Diocesi;
 import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.TipoPubblicazione;
@@ -29,6 +30,11 @@ public class SmdApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
 	
+       //143 | RIVISTE OMAGGIO CURIA GENERALIZIA -> Tutte in omaggio --> Questo omaggio, ma mettiamo anche la categoria curia generalizia
+        //9 | OMAGGIO GESUITI -> Solo Messaggio li prepara Sandro e li mette in portineria
+        // quindi non vanno messi dallo spedizionere
+        //OmaggioCuriaDiocesiana va specificato
+
 	static int startabbonamento = 0;
 	/*
 	 * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici 
@@ -131,7 +137,7 @@ public class SmdApplication {
 			// save a couple of customers
 			
 			Anagrafica jb =new Anagrafica("Jack", "Bauer");
-			jb.setDiocesi(Anagrafica.Diocesi.DIOCESI116);
+			jb.setDiocesi(Diocesi.DIOCESI116);
 			jb.setIndirizzo("Piazza Duomo 1");
 			jb.setCitta("Milano");
 			jb.setCap("20100");
@@ -140,7 +146,7 @@ public class SmdApplication {
 			anagraficaDao.save(jb);
 			
 			Anagrafica co = new Anagrafica("Chloe", "O'Brian");
-			co.setDiocesi(Anagrafica.Diocesi.DIOCESI116);
+			co.setDiocesi(Diocesi.DIOCESI116);
 			co.setIndirizzo("Piazza Sant'Ambrogio 1");
 			co.setCitta("Milano");
 			co.setCap("20110");
@@ -149,7 +155,7 @@ public class SmdApplication {
 			anagraficaDao.save(co);
 			
 			Anagrafica kb = new Anagrafica("Kim", "Bauer");
-			kb.setDiocesi(Anagrafica.Diocesi.DIOCESI168);
+			kb.setDiocesi(Diocesi.DIOCESI168);
 			kb.setIndirizzo("Piazza del Gesu' 1");
 			kb.setCitta("Roma");
 			kb.setCap("00192");
@@ -158,7 +164,7 @@ public class SmdApplication {
 			anagraficaDao.save(kb);
 			
 			Anagrafica dp = new Anagrafica("David", "Palmer");
-			dp.setDiocesi(Anagrafica.Diocesi.DIOCESI168);
+			dp.setDiocesi(Diocesi.DIOCESI168);
 			dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
 			dp.setCitta("Roma");
 			dp.setCap("00195");
@@ -167,7 +173,7 @@ public class SmdApplication {
 			anagraficaDao.save(dp);
 
 			Anagrafica md = new Anagrafica("Michelle", "Dessler");
-			md.setDiocesi(Anagrafica.Diocesi.DIOCESI126);
+			md.setDiocesi(Diocesi.DIOCESI126);
 			md.setIndirizzo("Via Duomo 10");
 			md.setCitta("Napoli");
 			md.setCap("80135");
@@ -278,7 +284,7 @@ public class SmdApplication {
 			log.info("Customer found with findByDiocesi('ROMA'):");
 			log.info("--------------------------------------------");
 			for (Anagrafica roma : anagraficaDao
-					.findByDiocesi(Anagrafica.Diocesi.DIOCESI168)) {
+					.findByDiocesi(Diocesi.DIOCESI168)) {
 				log.info(roma.toString());
 			}
 			log.info("");

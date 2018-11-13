@@ -2,7 +2,7 @@ package it.arsinfo.smd.vaadin;
 
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Anagrafica.Diocesi;
+import it.arsinfo.smd.entity.Diocesi;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import java.util.EnumSet;
@@ -44,7 +44,7 @@ public class AnagraficaUI extends SmdHeaderUI {
 		Label header = new Label("Anagrafica Clienti");
 		Button addNewBtn = new Button("Aggiungi ad Anagrafica", VaadinIcons.PLUS);		
 		TextField filterCognome = new TextField();
-		ComboBox<Anagrafica.Diocesi> filterDiocesi = new ComboBox<Anagrafica.Diocesi>(null,EnumSet.allOf(Anagrafica.Diocesi.class));
+		ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>(null,EnumSet.allOf(Diocesi.class));
 		
 		grid = new Grid<>(Anagrafica.class);
 		AnagraficaEditor editor = new AnagraficaEditor(repo);

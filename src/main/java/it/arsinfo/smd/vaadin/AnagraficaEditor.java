@@ -1,9 +1,13 @@
 package it.arsinfo.smd.vaadin;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Anagrafica.CentroDiocesano;
-import it.arsinfo.smd.entity.Anagrafica.Diocesi;
-import it.arsinfo.smd.entity.Anagrafica.Regione;
+import it.arsinfo.smd.entity.BmCassa;
+import it.arsinfo.smd.entity.CentroDiocesano;
+import it.arsinfo.smd.entity.Diocesi;
+import it.arsinfo.smd.entity.Omaggio;
+import it.arsinfo.smd.entity.Paese;
+import it.arsinfo.smd.entity.Regione;
+import it.arsinfo.smd.entity.TitoloAnagrafica;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import java.util.EnumSet;
@@ -35,12 +39,12 @@ public class AnagraficaEditor extends VerticalLayout {
 	 */
 	private Anagrafica customer;
 	
-	private final ComboBox<Anagrafica.Diocesi> diocesi = new ComboBox<Anagrafica.Diocesi>("Diocesi", EnumSet.allOf(Anagrafica.Diocesi.class));
-    private final ComboBox<Regione> regioneVescovi = new ComboBox<Anagrafica.Regione>("Regione Vescovi", EnumSet.allOf(Regione.class));
-    private final ComboBox<CentroDiocesano> centroDiocesano = new ComboBox<Anagrafica.CentroDiocesano>("Centro Diocesano", EnumSet.allOf(CentroDiocesano.class));
+	private final ComboBox<Diocesi> diocesi = new ComboBox<Diocesi>("Diocesi", EnumSet.allOf(Diocesi.class));
+    private final ComboBox<Regione> regioneVescovi = new ComboBox<Regione>("Regione Vescovi", EnumSet.allOf(Regione.class));
+    private final ComboBox<CentroDiocesano> centroDiocesano = new ComboBox<CentroDiocesano>("Centro Diocesano", EnumSet.allOf(CentroDiocesano.class));
 	HorizontalLayout riga1 = new HorizontalLayout(diocesi,regioneVescovi, centroDiocesano);
 
-	private final ComboBox<Anagrafica.Titolo> titolo = new ComboBox<Anagrafica.Titolo>("Titolo", EnumSet.allOf(Anagrafica.Titolo.class));
+	private final ComboBox<TitoloAnagrafica> titolo = new ComboBox<TitoloAnagrafica>("Titolo", EnumSet.allOf(TitoloAnagrafica.class));
 	private final TextField nome = new TextField("Nome");
 	private final TextField cognome = new TextField("Cognome/Ragione Sociale");
 	private final TextField intestazione = new TextField("Intestazione");
@@ -49,7 +53,7 @@ public class AnagraficaEditor extends VerticalLayout {
 	private final TextField indirizzo = new TextField("Indirizzo");
 	private final TextField cap = new TextField("CAP");
 	private final TextField citta = new TextField("Citta'");
-	private final ComboBox<Anagrafica.Paese> paese = new ComboBox<Anagrafica.Paese>("Paese", EnumSet.allOf(Anagrafica.Paese.class));
+	private final ComboBox<Paese> paese = new ComboBox<Paese>("Paese", EnumSet.allOf(Paese.class));
 	HorizontalLayout riga3 = new HorizontalLayout(indirizzo, cap, citta, paese);
 
 	private final TextField email = new TextField("Email");
@@ -66,10 +70,10 @@ public class AnagraficaEditor extends VerticalLayout {
 	private final CheckBox elencoMarisaBisi = new CheckBox("Elenco Marisa Bisi"); //144 | MARISA BISI ELENCO
 	private final CheckBox promotoreRegionale = new CheckBox("Prom. Reg.") ; //12 | PROMOTORI REGIONALI
 	HorizontalLayout riga5 = new HorizontalLayout(presidenteDiocesano,direttoreDiocesiano,direttoreZonaMilano,elencoMarisaBisi,promotoreRegionale);
-	private final ComboBox<Anagrafica.Omaggio> omaggio = new ComboBox<Anagrafica.Omaggio>("Omaggio", EnumSet.allOf(Anagrafica.Omaggio.class));
-	private final ComboBox<Anagrafica.BmCassa> bmCassa = new ComboBox<Anagrafica.BmCassa>("Blocchetti Mensili Cassa", EnumSet.allOf(Anagrafica.BmCassa.class));
-	private final ComboBox<Regione> regionePresidenteDiocesano = new ComboBox<Anagrafica.Regione>("Regione Pres. Diocesano", EnumSet.allOf(Regione.class));
-	private final ComboBox<Regione> regioneDirettoreDiocesano = new ComboBox<Anagrafica.Regione>("Regione Dir. Diocesano", EnumSet.allOf(Regione.class));
+	private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
+	private final ComboBox<BmCassa> bmCassa = new ComboBox<BmCassa>("Blocchetti Mensili Cassa", EnumSet.allOf(BmCassa.class));
+	private final ComboBox<Regione> regionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano", EnumSet.allOf(Regione.class));
+	private final ComboBox<Regione> regioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano", EnumSet.allOf(Regione.class));
 	HorizontalLayout riga6 = new HorizontalLayout(omaggio, bmCassa,regionePresidenteDiocesano, regioneDirettoreDiocesano);
 	
 	private final CheckBox consiglioNazionaleADP = new CheckBox("Cons. Naz. ADP"); //10 | CONSIGLIO NAZIONALE A.D.P.
