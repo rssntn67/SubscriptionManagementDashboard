@@ -2,7 +2,7 @@ package it.arsinfo.smd.vaadin;
 
 import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Pubblicazione.Tipo;
+import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import java.util.EnumSet;
@@ -36,7 +36,7 @@ public class PubblicazioneEditor extends VerticalLayout {
 	private final TextField nome = new TextField("Nome");
 	private final TextField autore = new TextField("Autore");
 	private final TextField editore = new TextField("Editore");
-	private final ComboBox<Tipo> tipo = new ComboBox<Tipo>("Tipo", EnumSet.allOf(Tipo.class));
+	private final ComboBox<TipoPubblicazione> tipo = new ComboBox<TipoPubblicazione>("Tipo", EnumSet.allOf(TipoPubblicazione.class));
 	private final ComboBox<Mese> primaPubblicazione = new ComboBox<Mese>("Prima Pubblicazione", EnumSet.allOf(Mese.class));
 	private final TextField costo = new TextField("Costo");
 	private final TextField costoScontato = new TextField("Costo Scontato");

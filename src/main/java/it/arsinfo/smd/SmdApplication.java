@@ -11,7 +11,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Pubblicazione.Tipo;
+import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -176,7 +176,7 @@ public class SmdApplication {
 			anagraficaDao.save(md);
 			
 
-			Pubblicazione blocchetti = new Pubblicazione("Blocchetti", Pubblicazione.Tipo.SEMESTRALE);
+			Pubblicazione blocchetti = new Pubblicazione("Blocchetti", TipoPubblicazione.SEMESTRALE);
 			blocchetti.setActive(true);
 			blocchetti.setAbbonamento(true);
 			blocchetti.setCosto(new BigDecimal(3.00));
@@ -185,7 +185,7 @@ public class SmdApplication {
 			blocchetti.setPrimaPubblicazione(Mese.MARZO);
 			pubblicazioneDao.save(blocchetti);
 
-			Pubblicazione estratti = new Pubblicazione("Estratti", Pubblicazione.Tipo.ANNUALE);
+			Pubblicazione estratti = new Pubblicazione("Estratti", TipoPubblicazione.ANNUALE);
 			estratti.setActive(true);
 			estratti.setAbbonamento(true);
 			estratti.setCosto(new BigDecimal(10.00));
@@ -194,7 +194,7 @@ public class SmdApplication {
 			estratti.setPrimaPubblicazione(Mese.LUGLIO);
 			pubblicazioneDao.save(estratti);
 
-			Pubblicazione messaggio = new Pubblicazione("Messaggio", Pubblicazione.Tipo.MENSILE);
+			Pubblicazione messaggio = new Pubblicazione("Messaggio", TipoPubblicazione.MENSILE);
 			messaggio.setActive(true);
 			messaggio.setAbbonamento(true);
 			messaggio.setCosto(new BigDecimal(1.25));
@@ -203,7 +203,7 @@ public class SmdApplication {
 			messaggio.setPrimaPubblicazione(Mese.GENNAIO);
 			pubblicazioneDao.save(messaggio);
 
-			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", Pubblicazione.Tipo.MENSILE);
+			Pubblicazione lodare = new Pubblicazione("Lodare e Servire", TipoPubblicazione.MENSILE);
 			lodare.setActive(true);
 			lodare.setAbbonamento(true);
 			lodare.setCosto(new BigDecimal(1.50));
@@ -310,7 +310,7 @@ public class SmdApplication {
 			log.info("Pubblicazione found with findByTipo('MENSILE'):");
 			log.info("--------------------------------------------");
 			for (Pubblicazione mensile : pubblicazioneDao
-					.findByTipo(Tipo.MENSILE)) {
+					.findByTipo(TipoPubblicazione.MENSILE)) {
 				log.info(mensile.toString());
 			}
 			log.info("");

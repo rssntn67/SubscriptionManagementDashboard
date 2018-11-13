@@ -1,8 +1,8 @@
 package it.arsinfo.smd.vaadin;
 
 
-import it.arsinfo.smd.entity.Pubblicazione.Tipo;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import java.util.EnumSet;
@@ -41,7 +41,7 @@ public class PubblicazioneUI extends SmdHeaderUI {
 		Assert.notNull(repo, "repo must be not null");
 		Label header = new Label("Anagrafica Pubblicazioni");
 		TextField filterNome = new TextField();
-		ComboBox<Tipo> filterTipo = new ComboBox<Tipo>(null,EnumSet.allOf(Tipo.class));
+		ComboBox<TipoPubblicazione> filterTipo = new ComboBox<TipoPubblicazione>(null,EnumSet.allOf(TipoPubblicazione.class));
 		
 		grid = new Grid<>(Pubblicazione.class);
 		PubblicazioneEditor editor = new PubblicazioneEditor(repo);
@@ -87,7 +87,7 @@ public class PubblicazioneUI extends SmdHeaderUI {
 		}
 	}
 	
-	void listCustomer(Tipo tipo) {
+	void listCustomer(TipoPubblicazione tipo) {
 		if (tipo != null ) {
 			grid.setItems(repo.findByTipo(tipo));
 		} else {

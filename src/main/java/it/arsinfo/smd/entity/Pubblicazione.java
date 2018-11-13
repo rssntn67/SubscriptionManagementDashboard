@@ -12,12 +12,6 @@ import javax.persistence.Id;
 @Entity
 public class Pubblicazione {
 
-	public enum Tipo {
-		UNICO,
-		MENSILE,
-		SEMESTRALE,
-		ANNUALE;
-	}
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -40,7 +34,7 @@ public class Pubblicazione {
 	private BigDecimal costoScontato;
 
     @Enumerated(EnumType.STRING)
-    private Tipo tipo;
+    private TipoPubblicazione tipo;
     
 	public Long getId() {
 		return id;
@@ -54,11 +48,11 @@ public class Pubblicazione {
 		this.nome = nome;
 	}
 
-	public Tipo getTipo() {
+	public TipoPubblicazione getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Tipo tipo) {
+	public void setTipo(TipoPubblicazione tipo) {
 		this.tipo = tipo;
 	}
 
@@ -68,7 +62,7 @@ public class Pubblicazione {
 				id, nome, tipo,primaPubblicazione);
 	}
 
-	public Pubblicazione(String nome, Tipo tipo) {
+	public Pubblicazione(String nome, TipoPubblicazione tipo) {
 		super();
 		this.nome = nome;
 		this.tipo = tipo;
@@ -79,7 +73,7 @@ public class Pubblicazione {
 	public Pubblicazione(String nome) {
 		super();
 		this.nome = nome;
-		this.tipo = Tipo.UNICO;
+		this.tipo = TipoPubblicazione.UNICO;
 		this.costo = BigDecimal.ZERO;
 		this.costoScontato = BigDecimal.ZERO;
 	}
@@ -87,7 +81,7 @@ public class Pubblicazione {
 	public Pubblicazione() {
 		super();
 		this.nome = "";
-		this.tipo = Tipo.UNICO;
+		this.tipo = TipoPubblicazione.UNICO;
 		this.costo = BigDecimal.ZERO;
 		this.costoScontato = BigDecimal.ZERO;
 	}
