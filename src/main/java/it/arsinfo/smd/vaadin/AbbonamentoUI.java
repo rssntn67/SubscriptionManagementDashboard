@@ -60,7 +60,7 @@ public class AbbonamentoUI extends SmdHeaderUI {
 		filterAnagrafica.setPlaceholder("Cerca per Cliente");
 		filterAnagrafica.setItems(rana.findAll());
 		filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
-		grid.setColumns("id", "anagrafica.cognome", "cost","campo","data");		
+		grid.setColumns("id", "anagrafica.cognome", "anagrafica.nome","contoCorrentePostale.ccp","cost","campo","data");		
 		grid.getColumn("id").setMaximumWidth(50);
 		grid.setWidth("80%");
 
