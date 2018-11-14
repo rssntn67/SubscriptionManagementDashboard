@@ -37,7 +37,7 @@ public class Abbonamento {
     private boolean omaggio = false;
     private boolean pagato = false;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataincasso;
+    private Date incasso;
 
     private boolean estratti = false;
     private boolean blocchetti = false;
@@ -217,12 +217,12 @@ public class Abbonamento {
         this.anno = anno;
     }
 
-    public Date getDataincasso() {
-        return dataincasso;
+    public Date getIncasso() {
+        return incasso;
     }
 
-    public void setDataincasso(Date dataincasso) {
-        this.dataincasso = dataincasso;
+    public void setIncasso(Date incasso) {
+        this.incasso = incasso;
     }
 
     public Campagna getCampagna() {
