@@ -52,11 +52,15 @@ public class Versamento {
     TipoAccettazioneBollettino tipoAccettazione;
     @Enumerated(EnumType.STRING)
     TipoSostitutivoBollettino tipoSostitutivo;
-    
-    
+
     public Versamento() {
         super();
-        // TODO Auto-generated constructor stub
+    }
+
+    
+    public Versamento(Incasso incasso) {
+        super();
+        this.incasso=incasso;
     }
     public Long getId() {
         return id;

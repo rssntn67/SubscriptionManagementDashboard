@@ -88,7 +88,7 @@ public class SmdApplication {
 
         versamenti.stream().forEach(s -> {
             try {
-                incasso.getVersamenti().add(generateVersamento(s));
+                incasso.getVersamenti().add(generateVersamento(incasso,s));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -96,10 +96,10 @@ public class SmdApplication {
         return incasso;
     }
 
-    private static Versamento generateVersamento(String value)
+    private static Versamento generateVersamento(Incasso incasso,String value)
             throws ParseException {
         DateFormat formatter = new SimpleDateFormat("yyMMdd");
-        Versamento versamento = new Versamento();
+        Versamento versamento = new Versamento(incasso);
         versamento.setBobina(value.substring(0, 3));
         versamento.setProgressivoBobina(value.substring(3, 8));
 	String progressivo = value.substring(8,15);

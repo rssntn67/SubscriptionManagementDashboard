@@ -7,7 +7,7 @@ public enum TipoDocumentoBollettino {
      TIPO451(451,"bianchi personalizzati"),
      TIPO123(123,"bianchi");
     
-    String descr;
+    String bollettino;
     int tipo;
     
     public static TipoDocumentoBollettino getTipoBollettino(int tipo) {
@@ -18,16 +18,16 @@ public enum TipoDocumentoBollettino {
     }
     
     private TipoDocumentoBollettino(int tipo,String descr) {
-        this.descr=descr;
+        this.bollettino=descr;
         this.tipo=tipo;        
     }
 
-    public String getDescr() {
-        return descr;
+    public String getBollettino() {
+        return bollettino;
     }
 
-    public void setDescr(String descr) {
-        this.descr = descr;
+    public void setBollettino(String descr) {
+        this.bollettino = descr;
     }
 
     public int getTipo() {
