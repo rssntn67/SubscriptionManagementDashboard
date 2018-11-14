@@ -26,6 +26,8 @@ public class Versamento {
     String bobina;
     String progressivoBobina;
     
+    String progressivo;
+    boolean errore;
     @Enumerated(EnumType.STRING)
     ContoCorrentePostale ccp;
     
@@ -44,6 +46,7 @@ public class Versamento {
     Date dataContabile;
     
     String campo;
+    boolean campovalido;
     
     @Enumerated(EnumType.STRING)
     TipoAccettazioneBollettino tipoAccettazione;
@@ -144,6 +147,29 @@ public class Versamento {
     }
     public void setTipoSostitutivo(TipoSostitutivoBollettino tipoSostitutivo) {
         this.tipoSostitutivo = tipoSostitutivo;
+    }    
+    public boolean isCampovalido() {
+        return campovalido;
     }
-    
+    public void setCampovalido(boolean campovalido) {
+        this.campovalido = campovalido;
+    }
+    public boolean isErrore() {
+        return errore;
+    }
+    public void setErrore(boolean errore) {
+        this.errore = errore;
+    }
+    public String getProgressivo() {
+        return progressivo;
+    }
+    public void setProgressivo(String progressivo) {
+        this.progressivo = progressivo;
+    }
+    @Override
+    public String toString() {
+        return String.format("Versamento[id=%d, ccp='%s', progressivo='%s',errore='%b', campo='%s',valido='%b', importo='%.2f']",
+                             id, ccp.getCcp(), progressivo,errore, campo, campovalido,importo);
+    }
+
 }

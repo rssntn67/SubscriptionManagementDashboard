@@ -1,5 +1,6 @@
 package it.arsinfo.smd.repository;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -15,5 +16,6 @@ public interface VersamentoDao extends JpaRepository<Versamento, Long> {
 	List<Versamento> findByCcp(ContoCorrentePostale ccp);
         List<Versamento> findByDataContabile(Date date);
         List<Versamento> findByDataPagamento(Date date);
+        List<Versamento> findByImporto(BigDecimal importo);
 	
 }

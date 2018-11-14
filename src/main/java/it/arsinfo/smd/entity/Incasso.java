@@ -29,7 +29,7 @@ public class Incasso {
     ContoCorrentePostale ccp;
         
     @OneToMany(cascade = { CascadeType.PERSIST })
-    List<Versamento> abbonamenti = new ArrayList<Versamento>();
+    List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
     Date dataContabile;
@@ -67,11 +67,11 @@ public class Incasso {
     public void setCcp(ContoCorrentePostale ccp) {
         this.ccp = ccp;
     }
-    public List<Versamento> getAbbonamenti() {
-        return abbonamenti;
+    public List<Versamento> getVersamenti() {
+        return versamenti;
     }
-    public void setAbbonamenti(List<Versamento> abbonamenti) {
-        this.abbonamenti = abbonamenti;
+    public void setVersamenti(List<Versamento> abbonamenti) {
+        this.versamenti = abbonamenti;
     }
     public Date getDataContabile() {
         return dataContabile;
@@ -116,6 +116,11 @@ public class Incasso {
         this.importoDocumentiErrati = importoDocumentiErrati;
     }
     
-    
+    @Override
+    public String toString() {
+        return String.format("Incasso[id=%d, cuas='%s', ccp='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+                             id, cuas, ccp.getCcp(), totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+    }
+
     
 }

@@ -1,12 +1,12 @@
 package it.arsinfo.smd.entity;
 
 public enum Cuas {
-    CUAS3(3,"Venezia","C.U.A.S. reale"),
-    CUAS4(4,"Telematici","C.U.A.S. virtuale"),
-    CUAS5(5,"Firenze","C.U.A.S. reale"),
-    CUAS6(6,"Ancona","C.U.A.S. reale"),
-    CUAS7(7,"Bari","C.U.A.S. reale"),
-    CUAS8(8,"AVDS e dematerializzati","C.U.A.S. virtuale");
+    VENEZIA(3,"Venezia","C.U.A.S. reale"),
+    TELEMATICI(4,"Telematici","C.U.A.S. virtuale"),
+    FIRENZE(5,"Firenze","C.U.A.S. reale"),
+    ANCONA(6,"Ancona","C.U.A.S. reale"),
+    BARI(7,"Bari","C.U.A.S. reale"),
+    AVDS(8,"AVDS e dematerializzati","C.U.A.S. virtuale");
     
     private int codice;
     private String denominazione;
