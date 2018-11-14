@@ -1,10 +1,5 @@
 package it.arsinfo.smd.vaadin;
 
-import it.arsinfo.smd.entity.Mese;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.TipoPubblicazione;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
@@ -16,11 +11,15 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.entity.Mese;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.TipoPubblicazione;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
-public class PubblicazioneEditor extends VerticalLayout {
+
+public class PubblicazioneEditor extends SmdEditor {
 
 	/**
 	 * 
@@ -54,7 +53,6 @@ public class PubblicazioneEditor extends VerticalLayout {
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Pubblicazione> binder = new Binder<>(Pubblicazione.class);
-	private ChangeHandler changeHandler;
 
 	public PubblicazioneEditor(PubblicazioneDao repo) {
 		
@@ -101,16 +99,6 @@ public class PubblicazioneEditor extends VerticalLayout {
 	void save() {
 		repo.save(pubblicazione);
 		changeHandler.onChange();
-	}
-
-	public interface ChangeHandler {
-		void onChange();
-	}
-
-	public void setChangeHandler(ChangeHandler h) {
-		// ChangeHandler is notified when either save or delete
-		// is clicked
-		changeHandler = h;
 	}
 	
 	public final void edit(Pubblicazione c) {

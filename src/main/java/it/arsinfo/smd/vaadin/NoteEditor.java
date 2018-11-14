@@ -1,10 +1,5 @@
 package it.arsinfo.smd.vaadin;
 
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Note;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.NoteDao;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.icons.VaadinIcons;
@@ -14,11 +9,15 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Note;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.NoteDao;
 
-public class NoteEditor extends VerticalLayout {
+
+public class NoteEditor extends SmdEditor {
 
 	/**
 	 * 
@@ -44,7 +43,6 @@ public class NoteEditor extends VerticalLayout {
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Note> binder = new Binder<>(Note.class);
-	private ChangeHandler changeHandler;
 
 	public NoteEditor(NoteDao repo, AnagraficaDao anadao) {
 		
@@ -88,16 +86,6 @@ public class NoteEditor extends VerticalLayout {
 	void save() {
 		repo.save(note);
 		changeHandler.onChange();
-	}
-
-	public interface ChangeHandler {
-		void onChange();
-	}
-
-	public void setChangeHandler(ChangeHandler h) {
-		// ChangeHandler is notified when either save or delete
-		// is clicked
-		changeHandler = h;
 	}
 	
 	public final void edit(Note c) {

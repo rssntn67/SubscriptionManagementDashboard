@@ -1,35 +1,34 @@
     package it.arsinfo.smd.vaadin;
     
     import java.util.ArrayList;
-    import java.util.EnumSet;
-    import java.util.List;
+import java.util.EnumSet;
+import java.util.List;
+
+import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.ValoTheme;
+
+import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.ContoCorrentePostale;
+import it.arsinfo.smd.entity.Mese;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
     
-    import it.arsinfo.smd.SmdApplication;
-    import it.arsinfo.smd.entity.Abbonamento;
-    import it.arsinfo.smd.entity.Anagrafica;
-    import it.arsinfo.smd.entity.Anno;
-    import it.arsinfo.smd.entity.ContoCorrentePostale;
-    import it.arsinfo.smd.entity.Mese;
-    import it.arsinfo.smd.entity.Pubblicazione;
-    import it.arsinfo.smd.repository.AbbonamentoDao;
-    import it.arsinfo.smd.repository.AnagraficaDao;
-    import it.arsinfo.smd.repository.PubblicazioneDao;
-    
-    import com.vaadin.data.Binder;
-    import com.vaadin.data.converter.LocalDateToDateConverter;
-    import com.vaadin.data.converter.StringToBigDecimalConverter;
-    import com.vaadin.icons.VaadinIcons;
-    import com.vaadin.ui.Alignment;
-    import com.vaadin.ui.Button;
-    import com.vaadin.ui.CheckBox;
-    import com.vaadin.ui.ComboBox;
-    import com.vaadin.ui.DateField;
-    import com.vaadin.ui.HorizontalLayout;
-    import com.vaadin.ui.TextField;
-    import com.vaadin.ui.VerticalLayout;
-    import com.vaadin.ui.themes.ValoTheme;
-    
-    public class AbbonamentoEditor extends VerticalLayout {
+    public class AbbonamentoEditor extends SmdEditor {
     
         /**
          * 
@@ -81,7 +80,6 @@
         HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
     
         Binder<Abbonamento> binder = new Binder<>(Abbonamento.class);
-        private ChangeHandler changeHandler;
     
         public AbbonamentoEditor(AbbonamentoDao repo, AnagraficaDao anagraficaDao,
                 PubblicazioneDao pubblDao) {
@@ -176,17 +174,7 @@
             repo.save(abbonamento);
             changeHandler.onChange();
         }
-    
-        public interface ChangeHandler {
-            void onChange();
-        }
-    
-        public void setChangeHandler(ChangeHandler h) {
-            // ChangeHandler is notified when either save or delete
-            // is clicked
-            changeHandler = h;
-        }
-    
+        
         public final void edit(Abbonamento c) {
             if (c == null) {
                 setVisible(false);

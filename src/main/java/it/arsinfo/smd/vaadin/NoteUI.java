@@ -26,7 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SpringUI(path=SmdUI.URL_NOTE)
 @Title("Note Anagrafica ADP")
-public class NoteUI extends SmdHeaderUI {
+public class NoteUI extends SmdHeader {
 
 	/**
 	 * 

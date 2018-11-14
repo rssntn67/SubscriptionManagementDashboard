@@ -23,7 +23,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SpringUI(path=SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
-public class AbbonamentoUI extends SmdHeaderUI {
+public class AbbonamentoUI extends SmdHeader {
 
 	/**
 	 * 

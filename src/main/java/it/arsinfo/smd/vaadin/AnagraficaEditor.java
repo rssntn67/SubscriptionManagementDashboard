@@ -1,15 +1,5 @@
 package it.arsinfo.smd.vaadin;
 
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.BmCassa;
-import it.arsinfo.smd.entity.CentroDiocesano;
-import it.arsinfo.smd.entity.Diocesi;
-import it.arsinfo.smd.entity.Omaggio;
-import it.arsinfo.smd.entity.Paese;
-import it.arsinfo.smd.entity.Regione;
-import it.arsinfo.smd.entity.TitoloAnagrafica;
-import it.arsinfo.smd.repository.AnagraficaDao;
-
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
@@ -21,11 +11,20 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.BmCassa;
+import it.arsinfo.smd.entity.CentroDiocesano;
+import it.arsinfo.smd.entity.Diocesi;
+import it.arsinfo.smd.entity.Omaggio;
+import it.arsinfo.smd.entity.Paese;
+import it.arsinfo.smd.entity.Regione;
+import it.arsinfo.smd.entity.TitoloAnagrafica;
+import it.arsinfo.smd.repository.AnagraficaDao;
 
-public class AnagraficaEditor extends VerticalLayout {
+
+public class AnagraficaEditor extends SmdEditor {
 
 	/**
 	 * 
@@ -92,7 +91,6 @@ public class AnagraficaEditor extends VerticalLayout {
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Anagrafica> binder = new Binder<>(Anagrafica.class);
-	private ChangeHandler changeHandler;
 
 	public AnagraficaEditor(AnagraficaDao repo) {
 		
@@ -129,16 +127,6 @@ public class AnagraficaEditor extends VerticalLayout {
 	void save() {
 		repo.save(customer);
 		changeHandler.onChange();
-	}
-
-	public interface ChangeHandler {
-		void onChange();
-	}
-
-	public void setChangeHandler(ChangeHandler h) {
-		// ChangeHandler is notified when either save or delete
-		// is clicked
-		changeHandler = h;
 	}
 	
 	public final void edit(Anagrafica c) {

@@ -28,20 +28,25 @@ public class SmdUI extends UI {
 	 */
 	private static final long serialVersionUID = 7884064928998716106L;
 
-	
+	public static Link[] getPageLinks() {
+	    Link[] links= {
+                    new Link("Anagrafica", new ExternalResource(URL_ANAGRAFICA)),
+                    new Link("Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
+                    new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI)),                         
+                    new Link("Campagna", new ExternalResource(URL_CAMPAGNA)),                               
+                    new Link("Note", new ExternalResource(URL_NOTE)),                               
+                    new Link("Incassi", new ExternalResource(URL_INCASSI)),
+                    new Link("Prospetti", new ExternalResource(URL_PROSPETTI))	            
+	    };
+	    return links;
+	}
 	@Override
 	protected void init(VaadinRequest request) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-		layout.addComponents(new Label("Benvenuti nel programma gestione abbonamenti ADP"), 
-				new Link("Anagrafica", new ExternalResource(URL_ANAGRAFICA)),
-				new Link("Pubblicazioni", new ExternalResource(URL_PUBBLICAZIONI)),
-				new Link("Abbonamenti", new ExternalResource(URL_ABBONAMENTI)),				
-				new Link("Campagna", new ExternalResource(URL_CAMPAGNA)),				
-				new Link("Note", new ExternalResource(URL_NOTE)),				
-				new Link("Incassi", new ExternalResource(URL_INCASSI)),
-				new Link("Prospetti", new ExternalResource(URL_PROSPETTI))			
+		layout.addComponents(new Label("Benvenuti nel programma gestione abbonamenti ADP")
 		);
+		layout.addComponents(getPageLinks());
 		setContent(layout);
 
 	}

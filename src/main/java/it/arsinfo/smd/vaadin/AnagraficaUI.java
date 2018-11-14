@@ -26,7 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SpringUI(path=SmdUI.URL_ANAGRAFICA)
 @Title("Anagrafica Clienti ADP")
-public class AnagraficaUI extends SmdHeaderUI {
+public class AnagraficaUI extends SmdHeader {
 
 	/**
 	 * 

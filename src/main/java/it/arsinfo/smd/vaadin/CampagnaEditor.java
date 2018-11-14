@@ -5,6 +5,14 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.vaadin.data.Binder;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -17,18 +25,7 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 
-import com.vaadin.data.Binder;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-
-
-public class CampagnaEditor extends VerticalLayout {
+public class CampagnaEditor extends SmdEditor {
 
 	/**
 	 * 
@@ -69,7 +66,6 @@ public class CampagnaEditor extends VerticalLayout {
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Campagna> binder = new Binder<>(Campagna.class);
-	private ChangeHandler changeHandler;
 
 	public CampagnaEditor(CampagnaDao repo, AnagraficaDao anadao,PubblicazioneDao pubdao) {
 		
@@ -137,16 +133,6 @@ public class CampagnaEditor extends VerticalLayout {
 		});
 		repo.save(campagna);
 		changeHandler.onChange();
-	}
-
-	public interface ChangeHandler {
-		void onChange();
-	}
-
-	public void setChangeHandler(ChangeHandler h) {
-		// ChangeHandler is notified when either save or delete
-		// is clicked
-		changeHandler = h;
 	}
 	
 	public final void edit(Campagna c) {
