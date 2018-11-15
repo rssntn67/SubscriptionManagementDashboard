@@ -3,6 +3,7 @@ package it.arsinfo.smd.repository;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.Versamento;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 
 	List<Abbonamento> findByAnagrafica(Anagrafica anagrafica);
 	List<Abbonamento> findByCampagna(Campagna campagna);
-	Abbonamento getByCampo(String campo);
+	List<Abbonamento> findByVersamento(Versamento versamento);
+	List<Abbonamento> findByCampo(String campo);
+	List<Abbonamento> findByPagatoAndOmaggio(boolean pagato, boolean omaggio);
 
 }
