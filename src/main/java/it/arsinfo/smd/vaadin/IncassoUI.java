@@ -57,7 +57,7 @@ public class IncassoUI extends SmdHeader
         ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Selezionare C.U.A.S.",
                                                        EnumSet.allOf(Cuas.class));
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
-        filterDataContabile.setDateFormat("yyMMdd");
+        filterDataContabile.setDateFormat("yyyy-MM-dd");
 
         Upload upload = new Upload("Aggiungi Incasso", this);
         upload.setImmediateMode(false);

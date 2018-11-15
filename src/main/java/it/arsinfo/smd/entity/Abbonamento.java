@@ -28,6 +28,9 @@ public class Abbonamento {
 
     @ManyToOne
     private Campagna campagna;
+    
+    @ManyToOne
+    private Versamento versamento;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data;
@@ -239,6 +242,14 @@ public class Abbonamento {
 
     public void setOmaggio(boolean omaggio) {
         this.omaggio = omaggio;
+    }
+
+    public Versamento getVersamento() {
+        return versamento;
+    }
+
+    public void setVersamento(Versamento versamento) {
+        this.versamento = versamento;
     }
 
 }
