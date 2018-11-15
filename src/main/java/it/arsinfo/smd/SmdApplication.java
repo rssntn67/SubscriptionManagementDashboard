@@ -57,6 +57,23 @@ public class SmdApplication {
         return codicecontrollo.intValue() == valorecodice.intValue();
     }
     
+    public static boolean isVersamento(String versamento) {
+        log.info("lunghezza:"+versamento.length());
+        log.info("lunghezza:"+versamento.trim().length());
+        
+        return (
+                versamento != null && versamento.length() == 200 && versamento.trim().length() == 82);
+    }
+    
+    public static boolean isRiepilogo(String riepilogo) {
+        return ( riepilogo != null &&
+                 riepilogo.length() == 200 &&
+                 riepilogo.trim().length() == 96 &&
+                 riepilogo.substring(19,33).trim().length() == 0 &&
+                 riepilogo.substring(33,36).equals("999")
+                );
+    }
+    
     public static Incasso generateIncasso(Set<String> versamenti,
             String riepilogo) throws ParseException {
         DateFormat formatter = new SimpleDateFormat("yyMMdd");

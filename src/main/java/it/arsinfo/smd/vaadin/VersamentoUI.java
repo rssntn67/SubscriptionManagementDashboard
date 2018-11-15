@@ -23,7 +23,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.TipoDocumentoBollettino;
 import it.arsinfo.smd.entity.Versamento;
@@ -39,7 +38,7 @@ public class VersamentoUI extends SmdHeader {
      */
     private static final long serialVersionUID = 7884064928998716106L;
 
-    private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(VersamentoUI.class);
 
     Grid<Versamento> grid;
     
