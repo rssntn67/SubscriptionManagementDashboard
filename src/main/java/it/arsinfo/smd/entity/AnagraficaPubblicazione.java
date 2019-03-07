@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 @Entity
 public class AnagraficaPubblicazione {
@@ -81,6 +82,22 @@ public class AnagraficaPubblicazione {
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
     }
+    
+    @Transient
+    public String getNomeDestinatario() {
+        return String.format("'%s %s'", destinatario.getNome(),destinatario.getCognome());
+    }
+
+    @Transient
+    public String getNomeIntestatario() {
+        return String.format("'%s %s'", intestatario.getNome(),intestatario.getCognome());
+    }
+    
+    @Transient
+    public String getNomePubblicazione() {
+        return pubblicazione.getNome();
+    }
+
 
     @Override
     public String toString() {

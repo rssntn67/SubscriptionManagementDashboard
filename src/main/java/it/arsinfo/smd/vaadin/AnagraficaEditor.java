@@ -1,6 +1,8 @@
 package it.arsinfo.smd.vaadin;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.EmailValidator;
@@ -138,6 +140,10 @@ public class AnagraficaEditor extends SmdEditor {
                                                 )
                                      )
                               );
+        
+        grid = new Grid<>(AnagraficaPubblicazione.class);
+        grid.setColumns("id","numero","nomePubblicazione","nomeIntestatario","nomeDestinatario");             
+        grid.setWidth("80%");
 
         addComponents(
                       new HorizontalLayout(
@@ -147,7 +153,8 @@ public class AnagraficaEditor extends SmdEditor {
                       riga2, 
                       riga3, 
                       riga4, 
-                      riga5
+                      riga5,
+                      grid
                   );
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
@@ -208,6 +215,18 @@ public class AnagraficaEditor extends SmdEditor {
 
         // Focus first name initially
         cognome.focus();
+        if (persisted) {
+            list();
+        }
+    }
+    
+    public final void list() {
+        List<AnagraficaPubblicazione> list = anagraficaPubblicazioneDao.findByIntestatario(customer);
+        list.addAll(anagraficaPubblicazioneDao.findByDestinatario(customer)
+                    .stream()
+                    .filter(ap -> customer.getId() != ap.getIntestatario().getId())
+                    .collect(Collectors.toList()));
+        grid.setItems(list);
     }
 
 }
