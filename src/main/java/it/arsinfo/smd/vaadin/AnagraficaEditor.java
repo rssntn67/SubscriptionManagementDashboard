@@ -9,6 +9,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -20,6 +21,7 @@ import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.AnagraficaPubblicazione;
 import it.arsinfo.smd.entity.Paese;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
@@ -78,6 +80,8 @@ public class AnagraficaEditor extends SmdEditor {
 
     Binder<Anagrafica> binder = new Binder<>(Anagrafica.class);
 
+    Grid<AnagraficaPubblicazione> grid;
+
     public AnagraficaEditor(AnagraficaDao anagraficaDao, AnagraficaPubblicazioneDao anagraficaPubblicazioneDao) {
 
         this.anagraficaDao = anagraficaDao;
@@ -104,37 +108,47 @@ public class AnagraficaEditor extends SmdEditor {
                                                       piva, 
                                                       note
                                                       );
-        VerticalLayout riga5col1 = new VerticalLayout(inRegola,
-                                                      new Label("Incarichi Diocesani"),
-                                                      new HorizontalLayout(
-                                                           presidenteDiocesano,
-                                                           direttoreDiocesiano,
-                                                           direttoreZonaMilano
-                                                      ), 
-                                                      new HorizontalLayout(
-                                                           regionePresidenteDiocesano,
-                                                           regioneDirettoreDiocesano)
-                                                      );
-        VerticalLayout riga5col2 = new VerticalLayout(new Label("ADP:"), 
-                                                      new HorizontalLayout(
-                                                           consiglioNazionaleADP,
-                                                           presidenzaADP, 
-                                                           direzioneADP,
-                                                           caricheSocialiADP,
-                                                           delegatiRegionaliADP),
-                                                      new VerticalLayout(
-                                                           new Label("Altre Categorie:"), 
-                                                           new HorizontalLayout(
-                                                                elencoMarisaBisi,
-                                                                promotoreRegionale)
-                                                           )
-                                                      );
+        
+        HorizontalLayout riga5 = new HorizontalLayout(
+                                     new VerticalLayout(inRegola,
+                                             new Label("Incarichi Diocesani"),
+                                             new HorizontalLayout(
+                                                  presidenteDiocesano,
+                                                  direttoreDiocesiano,
+                                                  direttoreZonaMilano
+                                             ), 
+                                             new HorizontalLayout(
+                                                  regionePresidenteDiocesano,
+                                                  regioneDirettoreDiocesano
+                                              )
+                                     ),
+                                     new VerticalLayout(
+                                            new Label("ADP:"),
+                                            new HorizontalLayout(
+                                                  consiglioNazionaleADP,
+                                                  presidenzaADP, 
+                                                  direzioneADP,
+                                                  caricheSocialiADP,
+                                                  delegatiRegionaliADP
+                                              ),
+                                            new VerticalLayout(
+                                                  new Label("Altre Categorie:"), 
+                                                  elencoMarisaBisi,
+                                                  promotoreRegionale
+                                                )
+                                     )
+                              );
 
-        HorizontalLayout riga5 = new HorizontalLayout(riga5col1,riga5col2);
-        HorizontalLayout actions = new HorizontalLayout(save, cancel, delete,back);
-
-        addComponents(riga1, riga2, riga3, riga4, riga5,
-                      actions);
+        addComponents(
+                      new HorizontalLayout(
+                               save, cancel, delete,back
+                          ),
+                      riga1, 
+                      riga2, 
+                      riga3, 
+                      riga4, 
+                      riga5
+                  );
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         binder.forField(cognome).asRequired();

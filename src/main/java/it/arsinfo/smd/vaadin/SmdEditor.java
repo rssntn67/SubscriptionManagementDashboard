@@ -8,7 +8,6 @@ public abstract class SmdEditor extends VerticalLayout {
     /**
      * 
      */
-    private static final long serialVersionUID = 6613896001702800464L;
     
     public interface ChangeHandler {
         void onChange();

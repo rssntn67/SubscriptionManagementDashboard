@@ -25,12 +25,12 @@ public class AnagraficaSearch extends SmdEditor {
 	 */
 	private static final long serialVersionUID = 7884064928998716106L;
 
-	Grid<Anagrafica> grid;
-	AnagraficaDao anagraficaDao;
+	private Grid<Anagrafica> grid;
+	private AnagraficaDao anagraficaDao;
 
-	Diocesi searchDiocesi;
-	String searchCognome;
-	Anagrafica anagrafica;
+	private Diocesi searchDiocesi;
+	private String searchCognome;
+	private Anagrafica anagrafica;
 	
 	public  AnagraficaSearch(AnagraficaDao anagraficaDao) {
 	    this.anagraficaDao = anagraficaDao;
@@ -64,14 +64,14 @@ public class AnagraficaSearch extends SmdEditor {
 		    } else {
 		        searchDiocesi = e.getSelectedItem().get(); 
 		    }
-		    list(searchCognome,searchDiocesi) ; 
+		    list() ; 
 		});
 
 		
 		filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
 		filterCognome.addValueChangeListener(e -> {
 		    searchCognome = e.getValue();
-		    list(searchCognome,searchDiocesi);		    
+		    list();		    
 		});		
 
 		grid.asSingleSelect().addValueChangeListener(e -> {
@@ -84,21 +84,25 @@ public class AnagraficaSearch extends SmdEditor {
                     changeHandler.onChange();
 		});
 
-		list(null,null);
+		list();
 
 	}
 
-	void list(String filterText, Diocesi diocesi) {
-		if (StringUtils.isEmpty(filterText) && diocesi == null) {
+	public void list() {
+		if (StringUtils.isEmpty(searchCognome) && searchDiocesi == null) {
 			grid.setItems(anagraficaDao.findAll());
-		} else if (!StringUtils.isEmpty(filterText) && diocesi == null) {
-			grid.setItems(anagraficaDao.findByCognomeStartsWithIgnoreCase(filterText));
-		} else if (StringUtils.isEmpty(filterText) && diocesi != null) {
-			grid.setItems(anagraficaDao.findByDiocesi(diocesi));
+		} else if (!StringUtils.isEmpty(searchCognome) && searchDiocesi == null) {
+			grid.setItems(anagraficaDao.findByCognomeStartsWithIgnoreCase(searchCognome));
+		} else if (StringUtils.isEmpty(searchCognome) && searchDiocesi != null) {
+			grid.setItems(anagraficaDao.findByDiocesi(searchDiocesi));
 		} else {
 			grid.setItems(
-			   anagraficaDao.findByCognomeStartsWithIgnoreCase(filterText).stream().filter( tizio -> tizio.getDiocesi().equals(diocesi)).collect(Collectors.toList()));
+			   anagraficaDao.findByCognomeStartsWithIgnoreCase(searchCognome).stream().filter( tizio -> tizio.getDiocesi().equals(searchDiocesi)).collect(Collectors.toList()));
 		}
 	}
+
+    public Anagrafica getAnagrafica() {
+        return anagrafica;
+    }
 
 }

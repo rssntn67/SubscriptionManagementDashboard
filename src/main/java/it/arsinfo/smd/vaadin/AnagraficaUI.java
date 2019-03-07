@@ -36,16 +36,17 @@ public class AnagraficaUI extends SmdHeader {
 		
 
 		editor.setWidth("100%");
-                search.setWidth("80%");
+                search.setWidth("120%");
 
 		editor.setChangeHandler(() -> {
-			editor.setVisible(false);
-			search.setVisible(true);
-			showHeader();
+                    search.list();
+                    editor.setVisible(false);
+                    search.setVisible(true);
+                    showHeader();
 		});
 		
                 search.setChangeHandler(() -> {
-                    editor.edit(search.anagrafica);
+                    editor.edit(search.getAnagrafica());
                     editor.setVisible(true);
                     search.setVisible(false);
                     hideHeader();
