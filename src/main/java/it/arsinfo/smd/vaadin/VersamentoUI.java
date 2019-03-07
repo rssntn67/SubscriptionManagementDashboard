@@ -59,10 +59,9 @@ public class VersamentoUI extends SmdHeader {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request);
+        super.init(request, "Versamenti");
 
         Assert.notNull(abbRepo, "repo must be not null");
-        Label header = new Label("Versamenti Clienti");
         residuo = new Label(); 
         avviso = new Label();
         
@@ -78,9 +77,7 @@ public class VersamentoUI extends SmdHeader {
         abbonamentiAssociati = new Grid<>(Abbonamento.class);
         abbonamentiAssociabili = new Grid<>(Abbonamento.class);
         HorizontalLayout actions = new HorizontalLayout(filterImporto,filterDataPagamento,filterDataContabile);
-        addComponents(header, info,actions, grid,abbonamentiAssociati,abbonamentiAssociabili);
-
-        header.addStyleName(ValoTheme.LABEL_H2);
+        addComponents(info,actions, grid,abbonamentiAssociati,abbonamentiAssociabili);
         
         grid.setColumns("id", "ccp.ccp","campo","campovalido",              
                         "dataPagamento","dataContabile","importo",

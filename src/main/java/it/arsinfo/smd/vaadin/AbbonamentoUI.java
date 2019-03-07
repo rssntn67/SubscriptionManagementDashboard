@@ -1,12 +1,6 @@
 package it.arsinfo.smd.vaadin;
 
 
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -18,8 +12,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
+
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path=SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
@@ -42,19 +40,16 @@ public class AbbonamentoUI extends SmdHeader {
 
 	@Override
 	protected void init(VaadinRequest request) {
-	       super.init(request);
+	       super.init(request,"Abbonamenti Clienti");
 
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Abbonamenti Clienti");
 		Button addNewBtn = new Button("Aggiungi Abbonamento", VaadinIcons.PLUS);		
 		ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
 		
 		grid = new Grid<>(Abbonamento.class);
 		AbbonamentoEditor editor = new AbbonamentoEditor(repo,rana,pubb);
 		HorizontalLayout actions = new HorizontalLayout(filterAnagrafica,addNewBtn);
-		addComponents(header,editor,actions,grid);
-
-		header.addStyleName(ValoTheme.LABEL_H2);
+		addComponents(editor,actions,grid);
 		
 		filterAnagrafica.setEmptySelectionAllowed(false);
 		filterAnagrafica.setPlaceholder("Cerca per Cliente");

@@ -2,11 +2,6 @@ package it.arsinfo.smd.vaadin;
 
 
 
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Note;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.NoteDao;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -20,9 +15,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
+
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Note;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.NoteDao;
 
 @SpringUI(path=SmdUI.URL_NOTE)
 @Title("Note Anagrafica ADP")
@@ -42,9 +40,8 @@ public class NoteUI extends SmdHeader {
 
 	@Override
 	protected void init(VaadinRequest request) {
-            super.init(request);
+            super.init(request,"Note" );
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Note");
 		Button addNewBtn = new Button("Genera Nota", VaadinIcons.PLUS);	
 		TextField filter = new TextField();
 	    ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Selezionare Cliente");
@@ -52,9 +49,7 @@ public class NoteUI extends SmdHeader {
 		grid = new Grid<>(Note.class);
 		NoteEditor editor = new NoteEditor(repo,anadao);
 		HorizontalLayout actions = new HorizontalLayout(filterAnagrafica,filter,addNewBtn);
-		addComponents(header,editor,actions,grid);
-
-		header.addStyleName(ValoTheme.LABEL_H2);
+		addComponents(editor,actions,grid);
 		
 		filter.setPlaceholder("Cerca per Descrizione");
 		filter.setValueChangeMode(ValueChangeMode.EAGER);

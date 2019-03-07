@@ -3,12 +3,6 @@ package it.arsinfo.smd.vaadin;
 
 import java.util.EnumSet;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.CampagnaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -20,8 +14,12 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
+
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path=SmdUI.URL_CAMPAGNA)
 @Title("Campagna Abbonamenti ADP")
@@ -44,18 +42,15 @@ public class CampagnaUI extends SmdHeader {
 
 	@Override
 	protected void init(VaadinRequest request) {
-	    super.init(request);
+	    super.init(request,"Campagna Abbonamenti" );
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Campagna Abbonamento");
 		Button addNewBtn = new Button("Genera Campagna Abbonamenti", VaadinIcons.PLUS);		
 	    ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
 		
 		grid = new Grid<>(Campagna.class);
 		CampagnaEditor editor = new CampagnaEditor(repo,anadao,pubdao);
 		HorizontalLayout actions = new HorizontalLayout(filterAnno,addNewBtn);
-		addComponents(header,editor,actions,grid);
-
-		header.addStyleName(ValoTheme.LABEL_H2);
+		addComponents(editor,actions,grid);
 		
 		filterAnno.setEmptySelectionAllowed(false);
 		filterAnno.setPlaceholder("Cerca per Anno");

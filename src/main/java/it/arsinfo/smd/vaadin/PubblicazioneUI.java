@@ -1,10 +1,6 @@
 package it.arsinfo.smd.vaadin;
 
 
-import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-
 import java.util.EnumSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +14,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
+
+import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path=SmdUI.URL_PUBBLICAZIONI)
 @Title("Anagrafica Pubblicazioni ADP")
@@ -37,18 +35,15 @@ public class PubblicazioneUI extends SmdHeader {
 	
 	@Override
 	protected void init(VaadinRequest request) {
-	    super.init(request);
+	    super.init(request, "Pubblicazioni");
 		Assert.notNull(repo, "repo must be not null");
-		Label header = new Label("Anagrafica Pubblicazioni");
 		TextField filterNome = new TextField();
 		ComboBox<TipoPubblicazione> filterTipo = new ComboBox<TipoPubblicazione>(null,EnumSet.allOf(TipoPubblicazione.class));
 		
 		grid = new Grid<>(Pubblicazione.class);
 		PubblicazioneEditor editor = new PubblicazioneEditor(repo);
 		HorizontalLayout actions = new HorizontalLayout(filterTipo,filterNome);
-		addComponents(header,editor,actions,grid);
-
-		header.addStyleName(ValoTheme.LABEL_H2);
+		addComponents(editor,actions,grid);
 		
 		filterTipo.setEmptySelectionAllowed(false);
 		filterTipo.setPlaceholder("Cerca per Tipo");

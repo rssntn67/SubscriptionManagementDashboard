@@ -71,11 +71,9 @@ public class IncassoUI extends SmdHeader
     Label avviso;
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request);
+        super.init(request,"Incassi");
 
         Assert.notNull(repo, "repo must be not null");
-        Label header = new Label("Incassi");
-        avviso = new Label();
         ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Selezionare C.U.A.S.",
                                                        EnumSet.allOf(Cuas.class));
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
@@ -90,9 +88,8 @@ public class IncassoUI extends SmdHeader
         gridIncasso = new Grid<>(Incasso.class);
         gridVersamento = new Grid<Versamento>(Versamento.class);
         HorizontalLayout actions = new HorizontalLayout(filterCuas,filterDataContabile);
-        addComponents(header, upload, avviso,actions, gridIncasso,gridVersamento);
+        addComponents(upload, avviso,actions, gridIncasso,gridVersamento);
 
-        header.addStyleName(ValoTheme.LABEL_H2);
         avviso.addStyleName(ValoTheme.LABEL_H3);
         avviso.setVisible(false);
         filterCuas.setEmptySelectionAllowed(false);
