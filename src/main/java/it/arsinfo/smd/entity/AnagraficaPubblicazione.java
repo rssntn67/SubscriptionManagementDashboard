@@ -1,11 +1,17 @@
 package it.arsinfo.smd.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+
+import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.Omaggio;
 
 @Entity
 public class AnagraficaPubblicazione {
@@ -23,6 +29,15 @@ public class AnagraficaPubblicazione {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
+    @Enumerated(EnumType.STRING)
+    private Omaggio omaggio = Omaggio.No;
+
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
+
+    @Enumerated(EnumType.STRING)
+    private Invio invio = Invio.Destinatario;
+
     private Integer numero = 0;
     
     public AnagraficaPubblicazione(Anagrafica intestatario, Pubblicazione pubblicazione, int numero) {
@@ -84,18 +99,18 @@ public class AnagraficaPubblicazione {
     }
     
     @Transient
-    public String getNomeDestinatario() {
-        return String.format("'%s %s'", destinatario.getNome(),destinatario.getCognome());
+    public String getCaptionDestinatario() {
+        return destinatario.getCaption();
     }
 
     @Transient
-    public String getNomeIntestatario() {
-        return String.format("'%s %s'", intestatario.getNome(),intestatario.getCognome());
+    public String getCaptionIntestatario() {
+        return intestatario.getCaption();
     }
     
     @Transient
-    public String getNomePubblicazione() {
-        return pubblicazione.getNome();
+    public String getCaptionPubblicazione() {
+        return pubblicazione.getCaption();
     }
 
 
@@ -103,6 +118,30 @@ public class AnagraficaPubblicazione {
     public String toString() {
         return String.format("AnagraficaPubblicazione[id=%d, Pubblicazione='%s', Intestatario='%s', Destinatario='%s', Numero='%d']",
                              id, pubblicazione, intestatario, destinatario, numero);
+    }
+
+    public Omaggio getOmaggio() {
+        return omaggio;
+    }
+
+    public void setOmaggio(Omaggio omaggio) {
+        this.omaggio = omaggio;
+    }
+
+    public Cassa getCassa() {
+        return cassa;
+    }
+
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
+    }
+
+    public Invio getInvio() {
+        return invio;
+    }
+
+    public void setInvio(Invio invio) {
+        this.invio = invio;
     }
 
 }

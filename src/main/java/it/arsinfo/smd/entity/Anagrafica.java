@@ -323,7 +323,7 @@ public class Anagrafica {
 
     @Transient
     public String getCaption() {
-        return this.nome + " " + this.cognome;
+        return String.format("'%s %s %s'", intestazione, nome, cognome);
     }
 
     public boolean isInRegola() {

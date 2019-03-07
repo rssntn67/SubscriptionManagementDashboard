@@ -1,8 +1,6 @@
 package it.arsinfo.smd.vaadin;
 
 import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.EmailValidator;
@@ -11,7 +9,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -23,10 +20,8 @@ import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.AnagraficaPubblicazione;
 import it.arsinfo.smd.entity.Paese;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
 
 
 public class AnagraficaEditor extends SmdEditor {
@@ -37,7 +32,6 @@ public class AnagraficaEditor extends SmdEditor {
     private static final long serialVersionUID = 4673834235533544936L;
 
     private final AnagraficaDao anagraficaDao;
-    private final AnagraficaPubblicazioneDao anagraficaPubblicazioneDao;
 
     /**
      * The currently edited customer
@@ -82,12 +76,9 @@ public class AnagraficaEditor extends SmdEditor {
 
     Binder<Anagrafica> binder = new Binder<>(Anagrafica.class);
 
-    Grid<AnagraficaPubblicazione> grid;
-
-    public AnagraficaEditor(AnagraficaDao anagraficaDao, AnagraficaPubblicazioneDao anagraficaPubblicazioneDao) {
+    public AnagraficaEditor(AnagraficaDao anagraficaDao) {
 
         this.anagraficaDao = anagraficaDao;
-        this.anagraficaPubblicazioneDao=anagraficaPubblicazioneDao;
 
         HorizontalLayout riga1 = new HorizontalLayout(diocesi, 
                                                       regioneVescovi,
@@ -141,10 +132,6 @@ public class AnagraficaEditor extends SmdEditor {
                                      )
                               );
         
-        grid = new Grid<>(AnagraficaPubblicazione.class);
-        grid.setColumns("id","numero","nomePubblicazione","nomeIntestatario","nomeDestinatario");             
-        grid.setWidth("80%");
-
         addComponents(
                       new HorizontalLayout(
                                save, cancel, delete,back
@@ -153,8 +140,7 @@ public class AnagraficaEditor extends SmdEditor {
                       riga2, 
                       riga3, 
                       riga4, 
-                      riga5,
-                      grid
+                      riga5
                   );
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
@@ -215,18 +201,6 @@ public class AnagraficaEditor extends SmdEditor {
 
         // Focus first name initially
         cognome.focus();
-        if (persisted) {
-            list();
-        }
     }
     
-    public final void list() {
-        List<AnagraficaPubblicazione> list = anagraficaPubblicazioneDao.findByIntestatario(customer);
-        list.addAll(anagraficaPubblicazioneDao.findByDestinatario(customer)
-                    .stream()
-                    .filter(ap -> customer.getId() != ap.getIntestatario().getId())
-                    .collect(Collectors.toList()));
-        grid.setItems(list);
-    }
-
 }

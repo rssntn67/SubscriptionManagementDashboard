@@ -10,6 +10,7 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path=SmdUI.URL_ANAGRAFICA)
 @Title("Anagrafica Clienti ADP")
@@ -23,6 +24,8 @@ public class AnagraficaUI extends SmdHeader {
 	@Autowired
 	AnagraficaDao anagraficaDao;
         @Autowired
+        PubblicazioneDao pubblicazioneDao;
+        @Autowired
         AnagraficaPubblicazioneDao anagraficaPubblicazioneDao;
 	
 	@Override
@@ -30,27 +33,51 @@ public class AnagraficaUI extends SmdHeader {
             super.init(request,"Anagrafica Clienti");
 		Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
                 Assert.notNull(anagraficaPubblicazioneDao, "anagraficaPubblicazioneDao must be not null");
-                AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
-		AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao, anagraficaPubblicazioneDao);
-		addComponents(editor,search);
+                AnagraficaSearch anasrc = new AnagraficaSearch(anagraficaDao);
+		AnagraficaEditor anaedt = new AnagraficaEditor(anagraficaDao);
+		AnagraficaPubblicazioneSearch anapubsrc = new AnagraficaPubblicazioneSearch(anagraficaPubblicazioneDao);
+                AnagraficaPubblicazioneEditor anapubedt = new AnagraficaPubblicazioneEditor(anagraficaPubblicazioneDao, pubblicazioneDao, anagraficaDao);
+		addComponents(anapubedt,anaedt,anapubsrc,anasrc);
 		
 
-		editor.setWidth("100%");
-                search.setWidth("120%");
+		anaedt.setWidth("100%");
+                anasrc.setWidth("120%");
+                anapubedt.setWidth("100%");
+                anapubsrc.setWidth("120%");
 
-		editor.setChangeHandler(() -> {
-                    search.list();
-                    editor.setVisible(false);
-                    search.setVisible(true);
+		anaedt.setChangeHandler(() -> {
+                    anasrc.list();
+                    anaedt.setVisible(false);
+                    anasrc.setVisible(true);
+                    anapubedt.setVisible(false);
+                    anapubsrc.setVisible(false);
                     showHeader();
 		});
 		
-                search.setChangeHandler(() -> {
-                    editor.edit(search.getAnagrafica());
-                    editor.setVisible(true);
-                    search.setVisible(false);
+                anasrc.setChangeHandler(() -> {
+                    anaedt.edit(anasrc.getAnagrafica());
+                    anaedt.setVisible(true);
+                    anasrc.setVisible(false);
+                    anapubedt.setVisible(false);
+                    anapubsrc.setVisible(true);
                     hideHeader();
                });
+                
+                anapubedt.setChangeHandler(() -> {
+                    anapubsrc.list(anasrc.getAnagrafica());
+                    anaedt.setVisible(true);
+                    anasrc.setVisible(false);
+                    anapubedt.setVisible(false);
+                    anapubsrc.setVisible(true);
+                    hideHeader();
+                });
+                
+                anapubsrc.setChangeHandler(() -> {
+                    anaedt.setVisible(true);
+                    anasrc.setVisible(false);
+                    hideHeader();
+                });
+
 
 	}
 

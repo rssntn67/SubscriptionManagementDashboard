@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -146,6 +147,11 @@ public class Pubblicazione {
 
     public void setCostoScontato(BigDecimal costoScontato) {
         this.costoScontato = costoScontato;
+    }
+
+    @Transient
+    public String getCaption() {
+        return String.format("%s active=%b", nome, active);
     }
 
 }
