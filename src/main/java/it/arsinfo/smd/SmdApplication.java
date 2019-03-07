@@ -29,11 +29,13 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.AnagraficaPubblicazione;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -145,13 +147,6 @@ public class SmdApplication {
         return versamento;
     }
 
-    // 143 | RIVISTE OMAGGIO CURIA GENERALIZIA -> Tutte in omaggio --> Questo
-    // omaggio, ma mettiamo anche la categoria curia generalizia
-    // 9 | OMAGGIO GESUITI -> Solo Messaggio li prepara Sandro e li mette in
-    // portineria
-    // quindi non vanno messi dallo spedizionere
-    // OmaggioCuriaDiocesiana va specificato
-
     static int startabbonamento = 0;
 
     /*
@@ -229,7 +224,7 @@ public class SmdApplication {
 
     @Bean
     @Transactional
-    public CommandLineRunner loadData(AnagraficaDao anagraficaDao,
+    public CommandLineRunner loadData(AnagraficaDao anagraficaDao, AnagraficaPubblicazioneDao anagraficaPubblicazioneDao,
             PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
             CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao) {
         return (args) -> {
@@ -319,10 +314,10 @@ public class SmdApplication {
             lodare.setEditore("ADP");
             lodare.setPrimaPubblicazione(Mese.GENNAIO);
             pubblicazioneDao.save(lodare);
+            
+            anagraficaPubblicazioneDao.save(new AnagraficaPubblicazione(md, blocchetti, 10));
+            anagraficaPubblicazioneDao.save(new AnagraficaPubblicazione(md, dp, blocchetti, 5));
 
-            List<Pubblicazione> pubblMd = new ArrayList<Pubblicazione>();
-            pubblMd.add(blocchetti);
-            pubblMd.add(lodare);
             Abbonamento abbonamentoMd = new Abbonamento(md);
             abbonamentoMd.addPubblicazione(blocchetti,1);
             abbonamentoMd.addPubblicazione(lodare,1);
@@ -334,11 +329,6 @@ public class SmdApplication {
             abbonamentoMd.setCost(generaCosto(abbonamentoMd));
             abbonamentoDao.save(abbonamentoMd);
 
-            List<Pubblicazione> pubblCo = new ArrayList<Pubblicazione>();
-            pubblCo.add(blocchetti);
-            pubblCo.add(lodare);
-            pubblCo.add(messaggio);
-            pubblCo.add(estratti);
             Abbonamento abbonamentoCo = new Abbonamento(co);
             abbonamentoCo.addPubblicazione(blocchetti,10);
             abbonamentoCo.addPubblicazione(lodare,10);
@@ -351,8 +341,6 @@ public class SmdApplication {
             abbonamentoCo.setCost(generaCosto(abbonamentoCo));
             abbonamentoDao.save(abbonamentoCo);
 
-            List<Pubblicazione> pubblDp = new ArrayList<Pubblicazione>();
-            pubblDp.add(lodare);
             Abbonamento abbonamentoDp = new Abbonamento(dp);
             abbonamentoDp.addPubblicazione(blocchetti,10);
             abbonamentoDp.setSpese(new BigDecimal("3.75"));
@@ -466,6 +454,27 @@ public class SmdApplication {
             log.info("--------------------------------------------");
             for (Pubblicazione mensile : pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE)) {
                 log.info(mensile.toString());
+            }
+            log.info("");
+
+            log.info("AnagraficaPubblicazione found with findByIntestatario('md'):");
+            log.info("--------------------------------------------");
+            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByIntestatario(md)) {
+                log.info(anp.toString());
+            }
+            log.info("");
+
+            log.info("AnagraficaPubblicazione found with findByDestinatario('dp'):");
+            log.info("--------------------------------------------");
+            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByDestinatario(dp)) {
+                log.info(anp.toString());
+            }
+            log.info("");
+
+            log.info("AnagraficaPubblicazione found with findByPubblicazione('blocchetti'):");
+            log.info("--------------------------------------------");
+            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByPubblicazione(blocchetti)) {
+                log.info(anp.toString());
             }
             log.info("");
 
