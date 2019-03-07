@@ -88,7 +88,7 @@ public class AbbonamentoUI extends SmdHeader {
 	
 	void listType(Anagrafica anagrafica) {
 		if (anagrafica != null ) {
-			grid.setItems(repo.findByAnagrafica(anagrafica));
+			grid.setItems(repo.findByIntestatario(anagrafica));
 		} else {
 			grid.setItems(repo.findAll());
 		}

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.data;
 
 public enum CentroDiocesano {
 	CentroDiocesanoBergamo, //020 | CENTRO DIOCESANO BERGAMO

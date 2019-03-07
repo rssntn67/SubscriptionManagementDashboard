@@ -1,4 +1,4 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.data;
 
 public enum Cuas {
     VENEZIA(3,"Venezia","C.U.A.S. reale"),

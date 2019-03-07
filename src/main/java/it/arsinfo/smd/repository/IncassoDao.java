@@ -1,7 +1,7 @@
 package it.arsinfo.smd.repository;
 
-import it.arsinfo.smd.entity.ContoCorrentePostale;
-import it.arsinfo.smd.entity.Cuas;
+import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 
 import java.util.Date;

@@ -13,9 +13,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.entity.Mese;
+import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 
@@ -69,7 +69,7 @@ public class PubblicazioneEditor extends SmdEditor {
 		binder.bind(editore, Pubblicazione::getEditore,Pubblicazione::setEditore);
 		binder.forField(costo).asRequired()
 		.withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator( f -> f.signum() == 1 , "Deve essere maggiore di 0" )
-		.bind(Pubblicazione::getCosto, Pubblicazione::setCosto);
+		.bind(Pubblicazione::getCostoUnitario, Pubblicazione::setCosto);
 		binder.forField(costoScontato).asRequired()
 		.withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator( f -> f.signum() == 1 , "Deve essere maggiore di 0" )
 		.bind(Pubblicazione::getCostoScontato, Pubblicazione::setCostoScontato);

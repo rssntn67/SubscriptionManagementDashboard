@@ -11,10 +11,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 
-	List<Abbonamento> findByAnagrafica(Anagrafica anagrafica);
+	List<Abbonamento> findByIntestatario(Anagrafica intestatario);
 	List<Abbonamento> findByCampagna(Campagna campagna);
 	List<Abbonamento> findByVersamento(Versamento versamento);
 	List<Abbonamento> findByCampo(String campo);
-	List<Abbonamento> findByPagatoAndOmaggio(boolean pagato, boolean omaggio);
+	List<Abbonamento> findByPagato(boolean pagato);
 
 }

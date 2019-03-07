@@ -23,8 +23,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.TipoDocumentoBollettino;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -157,7 +157,7 @@ public class VersamentoUI extends SmdHeader {
             abbonamentiAssociabili.setVisible(false);
         } else {
             matching = abbRepo.findByVersamento(versamento);
-            abbonamentiAssociabili.setItems(abbRepo.findByPagatoAndOmaggio(false, false));
+            abbonamentiAssociabili.setItems(abbRepo.findByPagato(false));
             abbonamentiAssociabili.setVisible(true);
         }
         avviso.setVisible(true);
@@ -172,7 +172,7 @@ public class VersamentoUI extends SmdHeader {
         
         abbonamentiAssociati.setItems(matching);
         abbonamentiAssociati.setVisible(true);
-        matching.stream().filter(abbonamento -> !abbonamento.isPagato() && !abbonamento.isOmaggio()).forEach(abbonamento -> {
+        matching.stream().filter(abbonamento -> !abbonamento.isPagato()).forEach(abbonamento -> {
                 log.info("incasso");
                 log.info(abbonamento.toString());
                 incassa(abbonamento);

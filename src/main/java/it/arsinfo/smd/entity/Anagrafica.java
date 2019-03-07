@@ -8,12 +8,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.data.CentroDiocesano;
+import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Regione;
+import it.arsinfo.smd.data.TitoloAnagrafica;
+
 @Entity
 public class Anagrafica {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private boolean inRegola;
 
     @Enumerated(EnumType.STRING)
     private Diocesi diocesi;
@@ -36,48 +43,29 @@ public class Anagrafica {
     private String email;
     private String telefono;
     private String cellulare;
-    private String note;
-    
     private String codfis;
     private String piva;
-
-    @Enumerated(EnumType.STRING)
-    private Omaggio omaggio; 
-    @Enumerated(EnumType.STRING)
-    private BmCassa bmCassa;
-
-	
-	// Aggiornamento manuale
-    private boolean consiglioNazionaleADP; //10 | CONSIGLIO NAZIONALE A.D.P.
-    private boolean presidenzaADP; //49 | CONSIGLIO PRESIDENZA ADP
-    private boolean direzioneADP; //15 | MEMBRI DIREZIONE ADP
-    private boolean caricheSocialiADP; //141 | CARICHE SOCIALI E RAPPRESENTANTI
-    private boolean delegatiRegionaliADP; //140 | DELEGATI REGIONALI
-
-	// se e' vescovo	non invio ma utilizzo gli invii per le Diocesi
-	//66 | CARDINALI // serve per le lettere, nella corrispondenza deve comparire eminenza vescovi che sono anche cardinali
-	//In Anagrafica la Curia Diocesana
-	// Viene usata soprattutto per l'invio omaggio del messaggio ai vescovi
-	// Bisogna mettere il nome del Vescovo
-	// dal sito chiesacattolicaitaliana.it
-	// I controlli vanno fatti prima di ogni invio delle riviste	
-	// Logica implementativa Associare All'indirizzo della diocesi
-	// l'Id della Diocesi.
-	// Pertanto invio al Vescovo della diocesi avendo aggiornato il Vescovo.
-			
-    private boolean presidenteDiocesano;//52 | Presidenti e Referenti DIOCESANI    
-    private boolean direttoreDiocesiano;//1 | DIRETTORE DIOCESANO	
-    private boolean direttoreZonaMilano;//00013 | DIRETTORI ZONE MILANO	
-    private boolean elencoMarisaBisi; //144 | MARISA BISI ELENCO
-    private boolean promotoreRegionale; //12 | PROMOTORI REGIONALI
-
-    @Enumerated(EnumType.STRING)
-    private Regione regionePresidenteDiocesano;
+    private String note;
+       
     
+    private boolean presidenteDiocesano;    
+    @Enumerated(EnumType.STRING)
+    private Regione regionePresidenteDiocesano;    
+    private boolean direttoreDiocesiano;	
     @Enumerated(EnumType.STRING)
     private Regione regioneDirettoreDiocesano;
+    private boolean direttoreZonaMilano;
 
-    	
+
+    private boolean consiglioNazionaleADP; 
+    private boolean presidenzaADP; 
+    private boolean direzioneADP; 
+    private boolean caricheSocialiADP; 
+    private boolean delegatiRegionaliADP;
+   
+    private boolean elencoMarisaBisi; 
+    private boolean promotoreRegionale; 
+    
     public Anagrafica(String nome, String cognome) {
         this.nome=nome;
     	this.cognome=cognome;
@@ -127,8 +115,8 @@ public class Anagrafica {
 
     @Override
     public String toString() {
-        return String.format("Anagrafica[id=%d, Nome='%s', Cognome='%s', Diocesi='%s']",
-                             id, nome, cognome, diocesi);
+        return String.format("Anagrafica[id=%d, Nome='%s', Cognome='%s', Diocesi='%s', InRegola='%b']",
+                             id, nome, cognome, diocesi, inRegola);
     }
 
     public String getCap() {
@@ -179,14 +167,6 @@ public class Anagrafica {
         this.note = note;
     }
 
-    public Omaggio getOmaggio() {
-        return omaggio;
-    }
-
-    public void setOmaggio(Omaggio omaggio) {
-        this.omaggio = omaggio;
-    }
-
     public Paese getPaese() {
         return paese;
     }
@@ -217,14 +197,6 @@ public class Anagrafica {
 
     public void setCentroDiocesano(CentroDiocesano centroDiocesano) {
         this.centroDiocesano = centroDiocesano;
-    }
-
-    public BmCassa getBmCassa() {
-        return bmCassa;
-    }
-
-    public void setBmCassa(BmCassa bmCassa) {
-        this.bmCassa = bmCassa;
     }
 
     public boolean isConsiglioNazionaleADP() {
@@ -352,5 +324,13 @@ public class Anagrafica {
     @Transient
     public String getCaption() {
         return this.nome + " " + this.cognome;
+    }
+
+    public boolean isInRegola() {
+        return inRegola;
+    }
+
+    public void setInRegola(boolean inRegola) {
+        this.inRegola = inRegola;
     }
 }

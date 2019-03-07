@@ -1,6 +1,6 @@
 package it.arsinfo.smd.repository;
 
-import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Campagna;
 
 import java.util.List;

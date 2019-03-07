@@ -13,6 +13,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.TipoAccettazioneBollettino;
+import it.arsinfo.smd.data.TipoDocumentoBollettino;
+import it.arsinfo.smd.data.TipoSostitutivoBollettino;
+
 @Entity
 public class Versamento {
 

@@ -1,11 +1,12 @@
 package it.arsinfo.smd.vaadin;
 
 
+import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Diocesi;
 import it.arsinfo.smd.repository.AnagraficaDao;
 
 import java.util.EnumSet;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -36,6 +37,8 @@ public class AnagraficaUI extends SmdHeader {
 	Grid<Anagrafica> grid;
 	@Autowired
 	AnagraficaDao repo;
+	Diocesi searchDiocesi;
+	String searchCognome;
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -60,7 +63,7 @@ public class AnagraficaUI extends SmdHeader {
 		filterCognome.setPlaceholder("Cerca per Cognome");
 		
 		
-		grid.setColumns("id", "nome", "cognome","diocesi.details","indirizzo","citta","cap","paese","email","telefono","omaggio");		
+		grid.setColumns("id", "nome", "cognome","diocesi.details","indirizzo","citta","cap","paese","email","telefono","inRegola");		
 		grid.getColumn("diocesi.details").setCaption("Diocesi");
 		grid.getColumn("id").setMaximumWidth(100);
 		
@@ -68,13 +71,24 @@ public class AnagraficaUI extends SmdHeader {
 
 		editor.setWidth("80%");
 
+		filterDiocesi.setEmptySelectionAllowed(true);
 		filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
 
-		filterDiocesi.addSelectionListener(e-> listType(e.getSelectedItem().get()));
+		filterDiocesi.addSelectionListener(e-> {
+		    if (e.getValue() == null) {
+		        searchDiocesi = null;
+		    } else {
+		        searchDiocesi = e.getSelectedItem().get(); 
+		    }
+		    list(searchCognome,searchDiocesi) ; 
+		});
 
 		
 		filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
-		filterCognome.addValueChangeListener(e -> list(e.getValue()));		
+		filterCognome.addValueChangeListener(e -> {
+		    searchCognome = e.getValue();
+		    list(searchCognome,searchDiocesi);		    
+		});		
 
 		grid.asSingleSelect().addValueChangeListener(e -> {
 			editor.edit(e.getValue());
@@ -84,26 +98,22 @@ public class AnagraficaUI extends SmdHeader {
 
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);
-			list(filterCognome.getValue());
+			list(searchCognome,searchDiocesi);
 		});
-		list(null);
+		list(null,null);
 
 	}
 
-	void list(String filterText) {
-		if (StringUtils.isEmpty(filterText)) {
+	void list(String filterText, Diocesi diocesi) {
+		if (StringUtils.isEmpty(filterText) && diocesi == null) {
 			grid.setItems(repo.findAll());
-		}
-		else {
+		} else if (!StringUtils.isEmpty(filterText) && diocesi == null) {
 			grid.setItems(repo.findByCognomeStartsWithIgnoreCase(filterText));
-		}
-	}
-	
-	void listType(Diocesi diocesi) {
-		if (diocesi != null ) {
+		} else if (StringUtils.isEmpty(filterText) && diocesi != null) {
 			grid.setItems(repo.findByDiocesi(diocesi));
 		} else {
-			grid.setItems(repo.findAll());
+			grid.setItems(
+			   repo.findByCognomeStartsWithIgnoreCase(filterText).stream().filter( tizio -> tizio.getDiocesi().equals(diocesi)).collect(Collectors.toList()));
 		}
 	}
 

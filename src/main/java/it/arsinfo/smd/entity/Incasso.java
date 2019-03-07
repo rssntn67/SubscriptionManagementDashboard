@@ -16,6 +16,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Cuas;
+
 @Entity
 public class Incasso {
 

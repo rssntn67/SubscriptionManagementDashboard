@@ -1,8 +1,8 @@
 package it.arsinfo.smd.vaadin;
 
 
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 import java.util.EnumSet;

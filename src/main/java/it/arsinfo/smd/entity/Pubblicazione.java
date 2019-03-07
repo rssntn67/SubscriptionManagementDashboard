@@ -9,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.TipoPubblicazione;
+
 @Entity
 public class Pubblicazione {
 
@@ -102,7 +105,7 @@ public class Pubblicazione {
         this.abbonamento = abbonamento;
     }
 
-    public BigDecimal getCosto() {
+    public BigDecimal getCostoUnitario() {
         return costo;
     }
 

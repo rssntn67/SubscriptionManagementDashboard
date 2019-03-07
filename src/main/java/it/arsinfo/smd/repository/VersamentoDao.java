@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.entity.ContoCorrentePostale;
+import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;
 

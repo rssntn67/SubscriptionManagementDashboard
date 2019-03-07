@@ -12,6 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Mese;
+
 @Entity
 public class Campagna {
 
@@ -19,92 +22,20 @@ public class Campagna {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private boolean estratti = false;
-    private boolean blocchetti = false;
-    private boolean lodare = false;
-    private boolean messaggio = false;
-
-    private boolean pagato = false;
-    private boolean anagraficaFlagA = false;
-    private boolean anagraficaFlagB = false;
-    private boolean anagraficaFlagC = false;
-
     @Enumerated(EnumType.STRING)
     private Anno anno;
     @Enumerated(EnumType.STRING)
     private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
     private Mese fine = Mese.DICEMBRE;
+    
+    private boolean rinnovaSoloAbbonatiInRegola;
 
     @OneToMany(cascade = { CascadeType.PERSIST })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
-
+    
     public Campagna() {
 
-    }
-
-    public boolean isAnagraficaFlagC() {
-        return anagraficaFlagC;
-    }
-
-    public void setAnagraficaFlagC(boolean anagraficaFlagC) {
-        this.anagraficaFlagC = anagraficaFlagC;
-    }
-
-    public boolean isEstratti() {
-        return estratti;
-    }
-
-    public void setEstratti(boolean estratti) {
-        this.estratti = estratti;
-    }
-
-    public boolean isBlocchetti() {
-        return blocchetti;
-    }
-
-    public void setBlocchetti(boolean blocchetti) {
-        this.blocchetti = blocchetti;
-    }
-
-    public boolean isLodare() {
-        return lodare;
-    }
-
-    public void setLodare(boolean lodare) {
-        this.lodare = lodare;
-    }
-
-    public boolean isMessaggio() {
-        return messaggio;
-    }
-
-    public void setMessaggio(boolean messaggio) {
-        this.messaggio = messaggio;
-    }
-
-    public boolean isPagato() {
-        return pagato;
-    }
-
-    public void setPagato(boolean pagato) {
-        this.pagato = pagato;
-    }
-
-    public boolean isAnagraficaFlagA() {
-        return anagraficaFlagA;
-    }
-
-    public void setAnagraficaFlagA(boolean anagraficaFlagA) {
-        this.anagraficaFlagA = anagraficaFlagA;
-    }
-
-    public boolean isAnagraficaFlagB() {
-        return anagraficaFlagB;
-    }
-
-    public void setAnagraficaFlagB(boolean anagraficaFlagB) {
-        this.anagraficaFlagB = anagraficaFlagB;
     }
 
     public Anno getAnno() {
@@ -141,6 +72,15 @@ public class Campagna {
 
     public void setAbbonamenti(List<Abbonamento> abbonamenti) {
         this.abbonamenti = abbonamenti;
+    }
+
+    public boolean isRinnovaSoloAbbonatiInRegola() {
+        return rinnovaSoloAbbonatiInRegola;
+    }
+
+    public void setRinnovaSoloAbbonatiInRegola(
+            boolean rinnovaSoloAbbonatiInRegola) {
+        this.rinnovaSoloAbbonatiInRegola = rinnovaSoloAbbonatiInRegola;
     }
 
 }

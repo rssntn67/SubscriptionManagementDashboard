@@ -1,4 +1,4 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.data;
 
 public enum TipoDocumentoBollettino {
      TIPO247(247,"premarcati Mav"),

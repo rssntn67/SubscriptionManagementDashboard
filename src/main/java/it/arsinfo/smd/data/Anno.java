@@ -1,4 +1,4 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.data;
 
 public enum Anno {
 	ANNO2018(2018),

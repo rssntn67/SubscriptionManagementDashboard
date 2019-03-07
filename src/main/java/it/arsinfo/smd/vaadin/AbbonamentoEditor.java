@@ -1,8 +1,7 @@
     package it.arsinfo.smd.vaadin;
     
-    import java.util.ArrayList;
+    import java.math.BigDecimal;
 import java.util.EnumSet;
-import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
@@ -18,12 +17,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Anno;
-import it.arsinfo.smd.entity.ContoCorrentePostale;
-import it.arsinfo.smd.entity.Mese;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -36,7 +34,6 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
         private static final long serialVersionUID = 4673834235533544936L;
     
         private final AbbonamentoDao repo;
-        private final PubblicazioneDao pubbldao;
     
         /**
          * The currently edited customer
@@ -85,7 +82,6 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
                 PubblicazioneDao pubblDao) {
     
             this.repo = repo;
-            this.pubbldao = pubblDao;
     
             addComponents(pri, sec, che, pag, pagfield, actions);
             setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
@@ -103,8 +99,8 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
             destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
     
             binder.forField(anagrafica).asRequired().withValidator(an -> an != null,
-                                                                   "Scegliere un Cliente").bind(Abbonamento::getAnagrafica,
-                                                                                                Abbonamento::setAnagrafica);
+                                                                   "Scegliere un Cliente").bind(Abbonamento::getIntestatario,
+                                                                                                Abbonamento::setIntestatario);
             binder.forField(destinatario).bind("destinatario");
             binder.forField(anno).bind("anno");
             binder.forField(inizio).bind("inizio");
@@ -148,28 +144,10 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
             if (abbonamento.getIncasso() != null) {
                 abbonamento.setPagato(true);
             } else {
-                if (abbonamento.getAnagrafica().getOmaggio() != null) {
-                    abbonamento.setOmaggio(true);
-                } else if (!abbonamento.isOmaggio()) {
-                    List<Pubblicazione> abbpub = new ArrayList<Pubblicazione>();
-                    if (abbonamento.isBlocchetti()) {
-                        abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Blocchetti"));
-                    }
-                    if (abbonamento.isEstratti()) {
-                        abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Estratti"));
-                    }
-                    if (abbonamento.isLodare()) {
-                        abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Lodare"));
-                    }
-                    if (abbonamento.isMessaggio()) {
-                        abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Messaggio"));
-                    }
-                    abbonamento.setCost(SmdApplication.getCosto(abbonamento,
-                                                                abbpub));
-                    abbonamento.setCampo(SmdApplication.generateCampo(abbonamento.getAnno(),
+                abbonamento.setCost(SmdApplication.generaCosto(abbonamento));
+                abbonamento.setCampo(SmdApplication.generateCampo(abbonamento.getAnno(),
                                                                       abbonamento.getInizio(),
                                                                       abbonamento.getFine()));
-                }
             }
             repo.save(abbonamento);
             changeHandler.onChange();
@@ -220,7 +198,7 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
             campo.setVisible(persisted);
             campo.setReadOnly(persisted);
     
-            if (persisted && abbonamento.isOmaggio()) {
+            if (persisted && abbonamento.getCost() == BigDecimal.ZERO) {
                 save.setEnabled(false);
                 cancel.setEnabled(false);
                 omaggio.setReadOnly(true);

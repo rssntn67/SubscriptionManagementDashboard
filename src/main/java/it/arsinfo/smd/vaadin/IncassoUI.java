@@ -38,7 +38,7 @@ import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdApplication;
-import it.arsinfo.smd.entity.Cuas;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;

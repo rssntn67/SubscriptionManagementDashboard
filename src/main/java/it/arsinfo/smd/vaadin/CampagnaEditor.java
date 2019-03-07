@@ -1,9 +1,6 @@
 package it.arsinfo.smd.vaadin;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
@@ -15,11 +12,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Mese;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -41,19 +38,11 @@ public class CampagnaEditor extends SmdEditor {
 	 */
 	private Campagna campagna;
 
-	private final CheckBox pagato=new CheckBox("Pagato");
-	private final CheckBox anagraficaFlagA=new CheckBox("anagraficaFlagA");
-	private final CheckBox anagraficaFlagB=new CheckBox("anagraficaFlagB");
-	private final CheckBox anagraficaFlagC=new CheckBox("anagraficaFlagC");
-
-	private final CheckBox estratti=new CheckBox("Abb. Ann. Estratti");
-    private final CheckBox blocchetti=new CheckBox("Abb. Sem. Blocchetti");
-    private final CheckBox lodare=new CheckBox("Abb. Men. Lodare e Service");
-    private final CheckBox messaggio=new CheckBox("Abb. Men. Messaggio");
+	private final CheckBox rinnovaSoloAbbonatiInRegola=new CheckBox("Selezionare per rinnovo Abbonati in Regola");
     
-    private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
-    private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio", EnumSet.allOf(Mese.class));
-    private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine", EnumSet.allOf(Mese.class));
+        private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno", EnumSet.allOf(Anno.class));
+        private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio", EnumSet.allOf(Mese.class));
+        private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine", EnumSet.allOf(Mese.class));
 
 	Button save = new Button("Save", VaadinIcons.CHECK);
 	Button cancel = new Button("Cancel");
@@ -61,19 +50,19 @@ public class CampagnaEditor extends SmdEditor {
 	
 
 	HorizontalLayout pri = new HorizontalLayout(anno,inizio,fine);
-	HorizontalLayout che = new HorizontalLayout(estratti, blocchetti,lodare,messaggio);
-	HorizontalLayout pag = new HorizontalLayout(pagato,anagraficaFlagA,anagraficaFlagB,anagraficaFlagC);
+	HorizontalLayout pag = new HorizontalLayout(rinnovaSoloAbbonatiInRegola);
 	HorizontalLayout actions = new HorizontalLayout(save, cancel, delete);
 
 	Binder<Campagna> binder = new Binder<>(Campagna.class);
-
+	
 	public CampagnaEditor(CampagnaDao repo, AnagraficaDao anadao,PubblicazioneDao pubdao) {
 		
 		this.repo=repo;
 		this.anaDao=anadao;
 		this.pubbldao=pubdao;
-		
-		addComponents(pri,che,pag,actions);
+
+	        
+		addComponents(pri, pag,actions);
 		setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
 		anno.setItemCaptionGenerator(Anno::getAnnoAsString);
@@ -101,38 +90,24 @@ public class CampagnaEditor extends SmdEditor {
 	}
 
 	void save() {
-		List<Pubblicazione> abbpub = new ArrayList<Pubblicazione>();
-		if (campagna.isBlocchetti()) {
-			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Blocchetti"));
-		}
-		if (campagna.isEstratti()) {
-			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Estratti"));
-		}
-		if (campagna.isLodare()) {
-			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Lodare"));
-		}
-		if (campagna.isMessaggio()) {
-			abbpub.addAll(pubbldao.findByNomeStartsWithIgnoreCase("Messaggio"));
-		}
-
-		anaDao.findAll().stream().forEach( anag -> {
-			Abbonamento abb = new Abbonamento(anag);
-			abb.setAnno(campagna.getAnno());
-			abb.setInizio(campagna.getInizio());
-			abb.setFine(campagna.getFine());
-			abb.setEstratti(campagna.isEstratti());
-			abb.setBlocchetti(campagna.isBlocchetti());
-			abb.setMessaggio(campagna.isMessaggio());
-			abb.setLodare(campagna.isLodare());
-			abb.setCampo(SmdApplication.generateCampo(campagna.getAnno(),campagna.getInizio(), campagna.getFine()));
-			abb.setCost(SmdApplication.getCosto(abb, abbpub));
-			if (abb.getCost().doubleValue() == BigDecimal.ZERO.doubleValue()) {
-				abb.setOmaggio(true);
-			}
-			campagna.getAbbonamenti().add(abb);
-		});
-		repo.save(campagna);
-		changeHandler.onChange();
+        anaDao.findAll().stream().forEach(anag -> {
+            Abbonamento abb = new Abbonamento(anag);
+            abb.setAnno(campagna.getAnno());
+            abb.setInizio(campagna.getInizio());
+            abb.setFine(campagna.getFine());
+            abb.setCampo(SmdApplication.generateCampo(campagna.getAnno(),
+                                                      campagna.getInizio(),
+                                                      campagna.getFine()));
+            abb.setCost(SmdApplication.generaCosto(abb));
+            campagna.getAbbonamenti().add(abb);
+        });
+        repo.save(campagna);
+        changeHandler.onChange();
+	}
+	
+	//FIXME need to get the stored value
+	public int getNumero(Anagrafica anagrafica) {
+	    return 1;
 	}
 	
 	public final void edit(Campagna c) {
@@ -162,24 +137,16 @@ public class CampagnaEditor extends SmdEditor {
 		anno.focus();
 	}
 	
-	private void setCampagnaEditable(Campagna c,boolean read) {
+    private void setCampagnaEditable(Campagna c, boolean read) {
 
-		estratti.setReadOnly(read);
-	    blocchetti.setReadOnly(read);
-	    lodare.setReadOnly(read);
-	    messaggio.setReadOnly(read);
-	    
-	    anno.setReadOnly(read);
-	    inizio.setReadOnly(read);
-	    fine.setReadOnly(read);
+        anno.setReadOnly(read);
+        inizio.setReadOnly(read);
+        fine.setReadOnly(read);
 
-		pagato.setReadOnly(read);
-		anagraficaFlagA.setReadOnly(read);
-		anagraficaFlagB.setReadOnly(read);
-		anagraficaFlagC.setReadOnly(read);
-		save.setEnabled(!read);
-		cancel.setEnabled(!read);
+        save.setEnabled(!read);
+        cancel.setEnabled(!read);
 
-	}
+    }	
+	
 	
 }
