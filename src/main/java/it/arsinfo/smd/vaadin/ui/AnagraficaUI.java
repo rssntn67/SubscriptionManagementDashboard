@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.anagrafica;
+package it.arsinfo.smd.vaadin.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -10,12 +10,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
-import it.arsinfo.smd.vaadin.ui.AbstractUI;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUiHelper.URL_ANAGRAFICA)
+@SpringUI(path = SmdUIHelper.URL_ANAGRAFICA)
 @Title("Anagrafica Clienti ADP")
-public class AnagraficaUI extends AbstractUI {
+public class AnagraficaUI extends SmdUI {
 
     /**
      * 
@@ -50,7 +50,7 @@ public class AnagraficaUI extends AbstractUI {
 
         anagraficaSearch.setChangeHandler(() -> {
             anagraficaEditor.edit(anagraficaSearch.getSelected());
-            apSubSearch.setUpper(anagraficaSearch.getSelected());
+            apSubSearch.setKey(anagraficaSearch.getSelected());
             apSubSearch.onSearch();
             anagraficaEditor.setVisible(true);
             apSubSearch.setVisible(true);

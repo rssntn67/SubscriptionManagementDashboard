@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.editor;
+package it.arsinfo.smd.vaadin.model;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,7 +9,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.entity.SmdEntity;
-import it.arsinfo.smd.vaadin.SmdChangeHandler;
 
 public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.subsearch;
+package it.arsinfo.smd.vaadin.model;
 
 import java.util.List;
 
@@ -7,9 +7,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.entity.SmdEntity;
-import it.arsinfo.smd.vaadin.SmdChangeHandler;
 
-public abstract class SmdSubSearch<T extends SmdEntity, K extends SmdEntity>
+public abstract class SmdSearchKey<T extends SmdEntity, K extends SmdEntity>
         extends SmdChangeHandler {
 
     /**
@@ -18,11 +17,11 @@ public abstract class SmdSubSearch<T extends SmdEntity, K extends SmdEntity>
     private static final long serialVersionUID = 7884064928998716106L;
 
     private final Grid<T> grid;
-    private K upper;
+    private K key;
     private T selected;
     private Button add = new Button("New", VaadinIcons.PLUS);
 
-    public SmdSubSearch(Grid<T> grid) {
+    public SmdSearchKey(Grid<T> grid) {
         this.grid = grid;
         this.grid.setWidth("80%");
 
@@ -39,12 +38,12 @@ public abstract class SmdSubSearch<T extends SmdEntity, K extends SmdEntity>
     }
 
     public void onSearch() {
-        grid.setItems(search());
+        grid.setItems(searchByKey());
     }
 
     public abstract T generate();
 
-    public abstract List<T> search();
+    public abstract List<T> searchByKey();
 
     public Grid<T> getGrid() {
         return grid;
@@ -70,12 +69,12 @@ public abstract class SmdSubSearch<T extends SmdEntity, K extends SmdEntity>
         return add;
     }
 
-    public K getUpper() {
-        return upper;
+    public K getKey() {
+        return key;
     }
 
-    public void setUpper(K upper) {
-        this.upper = upper;
+    public void setKey(K upper) {
+        this.key = upper;
     }
     
 }

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.anagrafica;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
 
@@ -18,7 +18,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.vaadin.ui.editor.SmdEditor;
+import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AnagraficaPubblicazioneEditor
         extends SmdEditor<AnagraficaPubblicazione> {

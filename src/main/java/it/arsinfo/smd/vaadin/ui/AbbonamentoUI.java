@@ -18,12 +18,12 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
-import it.arsinfo.smd.vaadin.ui.editor.AbbonamentoEditor;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path=SmdUiHelper.URL_ABBONAMENTI)
+@SpringUI(path=SmdUIHelper.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
-public class AbbonamentoUI extends AbstractUI {
+public class AbbonamentoUI extends SmdUI {
 
 	/**
 	 * 

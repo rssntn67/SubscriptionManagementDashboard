@@ -10,7 +10,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
 @SpringUI
 @Title("Gestione Abbonamenti ADP")
@@ -27,7 +27,7 @@ public class HomeUI extends UI {
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		layout.addComponents(new Label("Benvenuti nel programma gestione abbonamenti ADP")
 		);
-		layout.addComponents(SmdUiHelper.getPageLinks());
+		layout.addComponents(SmdUIHelper.getPageLinks());
 		setContent(layout);
 
 	}

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.editor;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
@@ -21,6 +21,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 

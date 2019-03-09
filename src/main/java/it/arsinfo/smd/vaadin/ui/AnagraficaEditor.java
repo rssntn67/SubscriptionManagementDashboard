@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.anagrafica;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
 
@@ -19,7 +19,7 @@ import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.vaadin.ui.editor.SmdEditor;
+import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 

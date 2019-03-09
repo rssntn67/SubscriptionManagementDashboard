@@ -21,12 +21,12 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Note;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
-import it.arsinfo.smd.vaadin.ui.editor.NoteEditor;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path=SmdUiHelper.URL_NOTE)
+@SpringUI(path=SmdUIHelper.URL_NOTE)
 @Title("Note Anagrafica ADP")
-public class NoteUI extends AbstractUI {
+public class NoteUI extends SmdUI {
 
 	/**
 	 * 

@@ -20,12 +20,12 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
-import it.arsinfo.smd.vaadin.ui.editor.CampagnaEditor;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path=SmdUiHelper.URL_CAMPAGNA)
+@SpringUI(path=SmdUIHelper.URL_CAMPAGNA)
 @Title("Campagna Abbonamenti ADP")
-public class CampagnaUI extends AbstractUI {
+public class CampagnaUI extends SmdUI {
 
 	/**
 	 * 

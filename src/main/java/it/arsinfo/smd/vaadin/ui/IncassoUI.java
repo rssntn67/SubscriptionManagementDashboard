@@ -43,11 +43,12 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUiHelper.URL_INCASSI)
+@SpringUI(path = SmdUIHelper.URL_INCASSI)
 @Title("Incassi ADP")
-public class IncassoUI extends AbstractUI
+public class IncassoUI extends SmdUI
         implements Receiver, SucceededListener {
 
     private static final Logger log = LoggerFactory.getLogger(VersamentoUI.class);

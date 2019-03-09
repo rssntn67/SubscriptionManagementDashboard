@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.model;
 
 import com.vaadin.ui.VerticalLayout;
 

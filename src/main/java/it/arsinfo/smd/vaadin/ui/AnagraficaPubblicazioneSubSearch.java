@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.anagrafica;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,10 +9,10 @@ import com.vaadin.ui.Grid;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.AnagraficaPubblicazione;
 import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
-import it.arsinfo.smd.vaadin.ui.subsearch.SmdSubSearch;
+import it.arsinfo.smd.vaadin.model.SmdSearchKey;
 
 
-public class AnagraficaPubblicazioneSubSearch extends SmdSubSearch<AnagraficaPubblicazione,Anagrafica> {
+public class AnagraficaPubblicazioneSubSearch extends SmdSearchKey<AnagraficaPubblicazione,Anagrafica> {
 
     /**
      * 
@@ -43,17 +43,17 @@ public class AnagraficaPubblicazioneSubSearch extends SmdSubSearch<AnagraficaPub
 
     @Override
     public AnagraficaPubblicazione generate() {
-        return new AnagraficaPubblicazione(getUpper());
+        return new AnagraficaPubblicazione(getKey());
     }
 
 
     @Override
-    public List<AnagraficaPubblicazione> search() {
-        Anagrafica customer = getUpper();
+    public List<AnagraficaPubblicazione> searchByKey() {
+        Anagrafica customer = getKey();
         List<AnagraficaPubblicazione> list = anagraficaPubblicazioneDao.findByIntestatario(customer);
         list.addAll(anagraficaPubblicazioneDao.findByDestinatario(customer)
                     .stream()
-                    .filter(ap -> getUpper().getId() != ap.getIntestatario().getId())
+                    .filter(ap -> getKey().getId() != ap.getIntestatario().getId())
                     .collect(Collectors.toList()));
         return list;
     }

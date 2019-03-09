@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.editor;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
 
@@ -14,6 +14,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class CampagnaEditor extends SmdEditor<Campagna> {
 

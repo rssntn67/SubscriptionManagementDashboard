@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.editor;
+package it.arsinfo.smd.vaadin.ui;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
@@ -12,6 +12,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Note;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
+import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class NoteEditor extends SmdEditor<Note> {
 

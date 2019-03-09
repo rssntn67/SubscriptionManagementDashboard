@@ -28,11 +28,12 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUiHelper.URL_VERSAMENTI)
+@SpringUI(path = SmdUIHelper.URL_VERSAMENTI)
 @Title("Abbonamenti ADP")
-public class VersamentoUI extends AbstractUI {
+public class VersamentoUI extends SmdUI {
 
     /**
      * 

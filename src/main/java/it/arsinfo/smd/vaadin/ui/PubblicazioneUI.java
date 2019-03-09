@@ -19,12 +19,12 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.vaadin.SmdUiHelper;
-import it.arsinfo.smd.vaadin.ui.editor.PubblicazioneEditor;
+import it.arsinfo.smd.vaadin.model.SmdUI;
+import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path=SmdUiHelper.URL_PUBBLICAZIONI)
+@SpringUI(path=SmdUIHelper.URL_PUBBLICAZIONI)
 @Title("Anagrafica Pubblicazioni ADP")
-public class PubblicazioneUI extends AbstractUI {
+public class PubblicazioneUI extends SmdUI {
 
 	/**
 	 * 

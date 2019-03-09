@@ -1,11 +1,11 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.model;
 
 
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Link;
 
-public class SmdUiHelper  {
+public class SmdUIHelper  {
 
 	public final static String URL_ANAGRAFICA="anagrafica";
 	public final static String URL_PUBBLICAZIONI="pubblicazioni";

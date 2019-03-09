@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.search;
+package it.arsinfo.smd.vaadin.model;
 
 import java.util.List;
 
@@ -7,7 +7,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.entity.SmdEntity;
-import it.arsinfo.smd.vaadin.SmdChangeHandler;
 
 public abstract class SmdSearch<T extends SmdEntity>
         extends SmdChangeHandler {

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin.ui.anagrafica;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -15,7 +15,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.vaadin.ui.search.SmdSearch;
+import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
