@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Note {
+public class Note implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

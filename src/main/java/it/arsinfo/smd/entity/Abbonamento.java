@@ -22,7 +22,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
-public class Abbonamento {
+public class Abbonamento implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

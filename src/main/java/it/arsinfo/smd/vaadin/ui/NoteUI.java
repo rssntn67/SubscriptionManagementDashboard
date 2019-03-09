@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 
 
@@ -21,10 +21,12 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Note;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
+import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.ui.editor.NoteEditor;
 
-@SpringUI(path=SmdUI.URL_NOTE)
+@SpringUI(path=SmdUiHelper.URL_NOTE)
 @Title("Note Anagrafica ADP")
-public class NoteUI extends SmdHeader {
+public class NoteUI extends AbstractUI {
 
 	/**
 	 * 

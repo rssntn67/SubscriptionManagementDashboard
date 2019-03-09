@@ -14,7 +14,7 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 
 @Entity
-public class Pubblicazione {
+public class Pubblicazione implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

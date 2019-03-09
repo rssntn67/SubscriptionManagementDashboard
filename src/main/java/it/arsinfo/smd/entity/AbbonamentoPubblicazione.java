@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class AbbonamentoPubblicazione {
+public class AbbonamentoPubblicazione implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

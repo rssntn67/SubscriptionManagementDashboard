@@ -19,7 +19,7 @@ import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
 
 @Entity
-public class Versamento {
+public class Versamento implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

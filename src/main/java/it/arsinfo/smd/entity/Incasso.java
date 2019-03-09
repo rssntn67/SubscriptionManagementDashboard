@@ -20,7 +20,7 @@ import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Cuas;
 
 @Entity
-public class Incasso {
+public class Incasso implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

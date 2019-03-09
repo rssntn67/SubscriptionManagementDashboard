@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,10 +28,11 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.vaadin.SmdUiHelper;
 
-@SpringUI(path = SmdUI.URL_VERSAMENTI)
+@SpringUI(path = SmdUiHelper.URL_VERSAMENTI)
 @Title("Abbonamenti ADP")
-public class VersamentoUI extends SmdHeader {
+public class VersamentoUI extends AbstractUI {
 
     /**
      * 

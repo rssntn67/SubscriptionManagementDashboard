@@ -14,7 +14,7 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 
 @Entity
-public class AnagraficaPubblicazione {
+public class AnagraficaPubblicazione implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,6 +52,10 @@ public class AnagraficaPubblicazione {
         this.numero = numero;
         this.intestatario = intestatario;
         this.destinatario = destinatario;
+    }
+    public AnagraficaPubblicazione(Anagrafica intestatario) {
+        this.intestatario = intestatario;
+        this.destinatario = intestatario;
     }
 
     public AnagraficaPubblicazione() {

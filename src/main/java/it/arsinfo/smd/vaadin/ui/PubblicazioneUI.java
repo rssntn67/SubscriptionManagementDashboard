@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 
 import java.util.EnumSet;
@@ -19,10 +19,12 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.ui.editor.PubblicazioneEditor;
 
-@SpringUI(path=SmdUI.URL_PUBBLICAZIONI)
+@SpringUI(path=SmdUiHelper.URL_PUBBLICAZIONI)
 @Title("Anagrafica Pubblicazioni ADP")
-public class PubblicazioneUI extends SmdHeader {
+public class PubblicazioneUI extends AbstractUI {
 
 	/**
 	 * 

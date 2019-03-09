@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,12 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.ui.editor.AbbonamentoEditor;
 
-@SpringUI(path=SmdUI.URL_ABBONAMENTI)
+@SpringUI(path=SmdUiHelper.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
-public class AbbonamentoUI extends SmdHeader {
+public class AbbonamentoUI extends AbstractUI {
 
 	/**
 	 * 

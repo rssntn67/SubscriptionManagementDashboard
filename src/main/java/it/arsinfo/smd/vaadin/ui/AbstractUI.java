@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 
 
@@ -7,10 +7,11 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-public abstract class SmdHeader extends UI {
+import it.arsinfo.smd.vaadin.SmdUiHelper;
+
+public abstract class AbstractUI extends com.vaadin.ui.UI {
 
 	/**
 	 * 
@@ -22,7 +23,7 @@ public abstract class SmdHeader extends UI {
 	protected void init(VaadinRequest request, String head) {
 	    header.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 	    header.addComponentAsFirst(new Label(head));
-	    header.addComponents(SmdUI.getPageLinks()
+	    header.addComponents(SmdUiHelper.getPageLinks()
 		);
 		layout.addComponent(header);
 		setContent(layout);

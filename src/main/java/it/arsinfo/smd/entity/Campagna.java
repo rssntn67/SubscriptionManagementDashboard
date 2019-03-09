@@ -16,7 +16,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
-public class Campagna {
+public class Campagna implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.vaadin;
+package it.arsinfo.smd.vaadin.ui;
 
 
 import java.util.EnumSet;
@@ -20,10 +20,12 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.vaadin.SmdUiHelper;
+import it.arsinfo.smd.vaadin.ui.editor.CampagnaEditor;
 
-@SpringUI(path=SmdUI.URL_CAMPAGNA)
+@SpringUI(path=SmdUiHelper.URL_CAMPAGNA)
 @Title("Campagna Abbonamenti ADP")
-public class CampagnaUI extends SmdHeader {
+public class CampagnaUI extends AbstractUI {
 
 	/**
 	 * 

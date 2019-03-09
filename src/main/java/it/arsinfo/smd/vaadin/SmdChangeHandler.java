@@ -2,9 +2,13 @@ package it.arsinfo.smd.vaadin;
 
 import com.vaadin.ui.VerticalLayout;
 
-public abstract class SmdEditor extends VerticalLayout {
+public abstract class SmdChangeHandler extends VerticalLayout {
 
-    ChangeHandler changeHandler;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private ChangeHandler changeHandler;
     /**
      * 
      */
@@ -17,6 +21,10 @@ public abstract class SmdEditor extends VerticalLayout {
         // ChangeHandler is notified when either save or delete
         // is clicked
         changeHandler = h;
+    }
+    
+    public  void onChange() {
+        changeHandler.onChange();
     }
 
 }

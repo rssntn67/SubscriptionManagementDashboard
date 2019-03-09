@@ -10,11 +10,12 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 
 @Entity
-public class Anagrafica {
+public class Anagrafica implements SmdEntity {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -73,6 +74,7 @@ public class Anagrafica {
     }
 
     public Anagrafica() {
+        this.nome = "";
         this.cognome = "";
         this.paese = Paese.ITALIA;
     }
