@@ -178,7 +178,7 @@ public class VersamentoUI extends SmdUI {
         });
         BigDecimal diff = versamento.getImporto();
         for (Abbonamento abbonamento: matching) {
-            diff = diff.subtract(abbonamento.getCost());
+            diff = diff.subtract(abbonamento.getCosto());
         }
         residuo.setValue("Residuo EUR: " + diff.toString());
         

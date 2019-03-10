@@ -56,9 +56,8 @@ public class AbbonamentoUI extends SmdUI {
 		filterAnagrafica.setEmptySelectionAllowed(false);
 		filterAnagrafica.setPlaceholder("Cerca per Cliente");
 		filterAnagrafica.setItems(rana.findAll());
-		filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCognome);
-		grid.setColumns("id", "anagrafica.cognome", "anagrafica.nome","contoCorrentePostale.ccp","cost","campo","data");		
-		grid.getColumn("id").setMaximumWidth(50);
+		filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
+		grid.setColumns("intestatario.caption", "cassa","costo","anno","data");		
 		grid.setWidth("80%");
 
 		editor.setWidth("80%");

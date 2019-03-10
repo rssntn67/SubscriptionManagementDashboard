@@ -32,33 +32,6 @@ public class Abbonamento implements SmdEntity {
 
     @ManyToOne
     private Anagrafica intestatario;
-
-    @ManyToOne
-    private Campagna campagna;
-    
-    @OneToMany(cascade = { CascadeType.PERSIST })
-    private List<Spedizione> spedizioni = new ArrayList<>();
-    
-    @OneToOne
-    private Versamento versamento;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date data;
-    private BigDecimal cost;
-    private BigDecimal spese = BigDecimal.ZERO;
-
-    private boolean pagato = false;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date incasso;
-
-    private String campo;
-    
-    @Enumerated(EnumType.STRING)
-    private Cassa cassa = Cassa.Ccp;
-
-    @Enumerated(EnumType.STRING)
-    private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
-    
     @Enumerated(EnumType.STRING)
     private Anno anno;
     @Enumerated(EnumType.STRING)
@@ -66,17 +39,42 @@ public class Abbonamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese fine = Mese.DICEMBRE;
 
+    @ManyToOne
+    private Campagna campagna;
+    @OneToOne
+    private Versamento versamento;
+    @OneToMany(cascade = { CascadeType.PERSIST })
+    private List<Spedizione> spedizioni = new ArrayList<>();
+
+    private BigDecimal costo;
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
+    private String campo;
+    @Enumerated(EnumType.STRING)
+    private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
+    private BigDecimal spese = BigDecimal.ZERO;
+    
+
+    private boolean pagato = false;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date incasso;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date data;
+
+    
+
     public Abbonamento() {
         this.intestatario = new Anagrafica();
         this.data = new Date();
-        this.cost = BigDecimal.ZERO;
+        this.costo = BigDecimal.ZERO;
     }
 
     public Abbonamento(Anagrafica intestatario) {
         super();
         this.intestatario = intestatario;
         this.data = new Date();
-        this.cost = BigDecimal.ZERO;
+        this.costo = BigDecimal.ZERO;
     }
 
     public Anagrafica getIntestatario() {
@@ -95,12 +93,12 @@ public class Abbonamento implements SmdEntity {
         this.data = data;
     }
 
-    public BigDecimal getCost() {
-        return cost;
+    public BigDecimal getCosto() {
+        return costo;
     }
 
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
+    public void setCosto(BigDecimal cost) {
+        this.costo = cost;
     }
 
     public Long getId() {
@@ -110,7 +108,7 @@ public class Abbonamento implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Abbonamento[id=%d, Anagrafica='%s', Costo='%f', Campo='%s', Data='%td %tb %tY %tR %tZ']",
-                                   id, intestatario, cost,
+                                   id, intestatario, costo,
                                    data, data, data, data, data, data);
     }
 
@@ -197,6 +195,23 @@ public class Abbonamento implements SmdEntity {
     
     public void addSpedizione(Pubblicazione pubblicazione, Anagrafica destinatario, int numero) {
         spedizioni.add(new Spedizione(this, pubblicazione, destinatario, numero));
+    }
+
+    public Cassa getCassa() {
+        return cassa;
+    }
+
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
+    }
+
+    public ContoCorrentePostale getContoCorrentePostale() {
+        return contoCorrentePostale;
+    }
+
+    public void setContoCorrentePostale(
+            ContoCorrentePostale contoCorrentePostale) {
+        this.contoCorrentePostale = contoCorrentePostale;
     }
 
 }

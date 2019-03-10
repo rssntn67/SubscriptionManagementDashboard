@@ -324,7 +324,7 @@ public class SmdApplication {
             abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),
                                                  abbonamentoMd.getInizio(),
                                                  abbonamentoMd.getFine()));
-            abbonamentoMd.setCost(generaCosto(abbonamentoMd));
+            abbonamentoMd.setCosto(generaCosto(abbonamentoMd));
             abbonamentoDao.save(abbonamentoMd);
 
             Abbonamento abbonamentoCo = new Abbonamento(co);
@@ -338,7 +338,7 @@ public class SmdApplication {
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
                                                  abbonamentoCo.getFine()));
-            abbonamentoCo.setCost(generaCosto(abbonamentoCo));
+            abbonamentoCo.setCosto(generaCosto(abbonamentoCo));
             abbonamentoDao.save(abbonamentoCo);
 
             Abbonamento abbonamentoDp = new Abbonamento(dp);
@@ -349,7 +349,7 @@ public class SmdApplication {
             abbonamentoDp.setCampo(generateCampo(abbonamentoDp.getAnno(),
                                                  abbonamentoDp.getInizio(),
                                                  abbonamentoDp.getFine()));
-            abbonamentoDp.setCost(generaCosto(abbonamentoDp));
+            abbonamentoDp.setCosto(generaCosto(abbonamentoDp));
             abbonamentoDao.save(abbonamentoDp);
 
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
