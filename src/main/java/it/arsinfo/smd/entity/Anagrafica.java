@@ -325,7 +325,9 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("'%s %s %s'", intestazione, nome, cognome);
+        if (intestazione != null)
+            return String.format("'%s %s %s'", intestazione, nome, cognome);
+        return String.format("'%s %s'", nome, cognome);
     }
 
     public boolean isInRegola() {

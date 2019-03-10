@@ -277,7 +277,7 @@ public class SmdApplication {
                                                          TipoPubblicazione.SEMESTRALE);
             blocchetti.setActive(true);
             blocchetti.setAbbonamento(true);
-            blocchetti.setCosto(new BigDecimal(3.00));
+            blocchetti.setCostoUnitario(new BigDecimal(3.00));
             blocchetti.setCostoScontato(new BigDecimal(2.40));
             blocchetti.setEditore("ADP");
             blocchetti.setPrimaPubblicazione(Mese.MARZO);
@@ -287,7 +287,7 @@ public class SmdApplication {
                                                        TipoPubblicazione.ANNUALE);
             estratti.setActive(true);
             estratti.setAbbonamento(true);
-            estratti.setCosto(new BigDecimal(10.00));
+            estratti.setCostoUnitario(new BigDecimal(10.00));
             estratti.setCostoScontato(new BigDecimal(10.00));
             estratti.setEditore("ADP");
             estratti.setPrimaPubblicazione(Mese.LUGLIO);
@@ -297,7 +297,7 @@ public class SmdApplication {
                                                         TipoPubblicazione.MENSILE);
             messaggio.setActive(true);
             messaggio.setAbbonamento(true);
-            messaggio.setCosto(new BigDecimal(1.25));
+            messaggio.setCostoUnitario(new BigDecimal(1.25));
             messaggio.setCostoScontato(new BigDecimal(1.25));
             messaggio.setEditore("ADP");
             messaggio.setPrimaPubblicazione(Mese.GENNAIO);
@@ -307,7 +307,7 @@ public class SmdApplication {
                                                      TipoPubblicazione.MENSILE);
             lodare.setActive(true);
             lodare.setAbbonamento(true);
-            lodare.setCosto(new BigDecimal(1.50));
+            lodare.setCostoUnitario(new BigDecimal(1.50));
             lodare.setCostoScontato(new BigDecimal(1.50));
             lodare.setEditore("ADP");
             lodare.setPrimaPubblicazione(Mese.GENNAIO);

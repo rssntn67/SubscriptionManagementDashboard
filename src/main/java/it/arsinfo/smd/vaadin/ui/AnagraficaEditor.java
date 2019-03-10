@@ -108,8 +108,6 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
 
-        setVisible(false);
-
     }
 
     @Override

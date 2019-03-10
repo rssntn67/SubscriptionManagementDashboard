@@ -70,7 +70,6 @@ public class AnagraficaPubblicazioneEditor
 
         // Configure and style components
         setSpacing(true);
-        setVisible(false);
 
     }
 

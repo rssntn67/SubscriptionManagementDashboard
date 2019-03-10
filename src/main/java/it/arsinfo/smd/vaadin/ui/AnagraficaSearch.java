@@ -78,12 +78,10 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         if (StringUtils.isEmpty(searchCognome) && searchDiocesi == null) {
             return anagraficaDao.findAll();
         } 
-        if (!StringUtils.isEmpty(searchCognome)
-                && searchDiocesi == null) {
+        if (searchDiocesi == null) {
             return anagraficaDao.findByCognomeStartsWithIgnoreCase(searchCognome);
         } 
-        if (StringUtils.isEmpty(searchCognome) 
-                && searchDiocesi != null) {
+        if (StringUtils.isEmpty(searchCognome)) {
             return anagraficaDao.findByDiocesi(searchDiocesi);
         } 
         

@@ -31,50 +31,62 @@ public class AnagraficaUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Anagrafica Clienti");
+        super.init(request, "Anagrafica");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(anagraficaPubblicazioneDao,
                        "anagraficaPubblicazioneDao must be not null");
-        AnagraficaSearch anagraficaSearch = new AnagraficaSearch(anagraficaDao);
-        AnagraficaEditor anagraficaEditor = new AnagraficaEditor(anagraficaDao);
+        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
+        AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         AnagraficaPubblicazioneSubSearch apSubSearch = new AnagraficaPubblicazioneSubSearch(anagraficaPubblicazioneDao);
         AnagraficaPubblicazioneEditor apEditor = new AnagraficaPubblicazioneEditor(anagraficaPubblicazioneDao,
                                                                                     pubblicazioneDao,
                                                                                     anagraficaDao);
-        addComponents(apEditor, anagraficaEditor, apSubSearch, anagraficaSearch);
+        addComponents(apEditor, editor, apSubSearch, search);
 
-        anagraficaEditor.setWidth("100%");
-        anagraficaSearch.setWidth("120%");
+        editor.setWidth("100%");
+        search.setWidth("120%");
         apEditor.setWidth("100%");
         apSubSearch.setWidth("120%");
 
-        anagraficaSearch.setChangeHandler(() -> {
-            anagraficaEditor.edit(anagraficaSearch.getSelected());
-            apSubSearch.setKey(anagraficaSearch.getSelected());
+        editor.setVisible(false);
+        apSubSearch.setVisible(false);
+        apEditor.setVisible(false);
+
+        search.setChangeHandler(() -> {
+            if (search.getSelected() == null) {
+                return;
+            }
+            setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
+            hideMenu();
+            editor.edit(search.getSelected());
+            apSubSearch.setKey(search.getSelected());
             apSubSearch.onSearch();
-            anagraficaEditor.setVisible(true);
-            apSubSearch.setVisible(true);
-            hideHeader();
         });
 
 
-        anagraficaEditor.setChangeHandler(() -> {
-            anagraficaSearch.onSearch();
-            anagraficaSearch.setVisible(true);
-            anagraficaEditor.setVisible(false);
-            apEditor.setVisible(false);
+        editor.setChangeHandler(() -> {
+            search.onSearch();
+            editor.setVisible(false);
             apSubSearch.setVisible(false);
-            showHeader();
+            showMenu();
+            setHeader("Anagrafica");
         });
 
         apSubSearch.setChangeHandler(() -> {
+            if (apSubSearch.getSelected() == null) {
+                return;
+            }
             apEditor.edit(apSubSearch.getSelected());
-            anagraficaEditor.setVisible(true);
+            editor.setVisible(false);
+            setHeader(String.format("Anagrafica:Pubblicazione:Edit:%s-%s",
+                                    apSubSearch.getSelected().getCaptionIntestatario(),
+                                    apSubSearch.getSelected().getCaptionPubblicazione()));
         });
 
         apEditor.setChangeHandler(() -> {
             apSubSearch.onSearch();
-            anagraficaEditor.setVisible(true);
+            setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
+            editor.setVisible(true);
             apEditor.setVisible(false);
         });
 

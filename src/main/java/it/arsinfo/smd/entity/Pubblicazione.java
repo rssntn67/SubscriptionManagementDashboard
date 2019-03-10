@@ -33,7 +33,7 @@ public class Pubblicazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese primaPubblicazione;
 
-    private BigDecimal costo;
+    private BigDecimal costoUnitario;
 
     private BigDecimal costoScontato;
 
@@ -70,7 +70,7 @@ public class Pubblicazione implements SmdEntity {
         super();
         this.nome = nome;
         this.tipo = tipo;
-        this.costo = BigDecimal.ZERO;
+        this.costoUnitario = BigDecimal.ZERO;
         this.costoScontato = BigDecimal.ZERO;
     }
 
@@ -78,7 +78,7 @@ public class Pubblicazione implements SmdEntity {
         super();
         this.nome = nome;
         this.tipo = TipoPubblicazione.UNICO;
-        this.costo = BigDecimal.ZERO;
+        this.costoUnitario = BigDecimal.ZERO;
         this.costoScontato = BigDecimal.ZERO;
     }
 
@@ -86,7 +86,7 @@ public class Pubblicazione implements SmdEntity {
         super();
         this.nome = "";
         this.tipo = TipoPubblicazione.UNICO;
-        this.costo = BigDecimal.ZERO;
+        this.costoUnitario = BigDecimal.ZERO;
         this.costoScontato = BigDecimal.ZERO;
     }
 
@@ -107,11 +107,11 @@ public class Pubblicazione implements SmdEntity {
     }
 
     public BigDecimal getCostoUnitario() {
-        return costo;
+        return costoUnitario;
     }
 
-    public void setCosto(BigDecimal costo) {
-        this.costo = costo;
+    public void setCostoUnitario(BigDecimal costo) {
+        this.costoUnitario = costo;
     }
 
     public String getAutore() {
@@ -140,7 +140,7 @@ public class Pubblicazione implements SmdEntity {
 
     public BigDecimal getCostoScontato() {
         if (costoScontato == BigDecimal.ZERO) {
-            return costo;
+            return costoUnitario;
         }
         return costoScontato;
     }

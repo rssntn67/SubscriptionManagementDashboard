@@ -36,8 +36,6 @@ public class AnagraficaPubblicazioneSubSearch extends SmdSearchKey<AnagraficaPub
         // Configure and style components
         setSpacing(true);
 
-        setVisible(false);
-
     }
     
 

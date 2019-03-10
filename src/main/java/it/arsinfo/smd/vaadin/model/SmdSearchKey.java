@@ -39,6 +39,7 @@ public abstract class SmdSearchKey<T extends SmdEntity, K extends SmdEntity>
 
     public void onSearch() {
         grid.setItems(searchByKey());
+        setVisible(true);
     }
 
     public abstract T generate();

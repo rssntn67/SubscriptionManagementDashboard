@@ -17,15 +17,17 @@ public abstract class SmdUI extends UI {
 	 */
 	private static final long serialVersionUID = 7884064928998716106L;
         private VerticalLayout layout = new VerticalLayout();
-        private HorizontalLayout header = new HorizontalLayout();
+        private HorizontalLayout menu = new HorizontalLayout();
+        private Label header = new Label("");
 	
 	protected void init(VaadinRequest request, String head) {
-	    header.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-	    header.addComponentAsFirst(new Label(head));
-	    header.addComponents(SmdUIHelper.getPageLinks()
-		);
-		layout.addComponent(header);
-		setContent(layout);
+	    
+	    menu.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+	    menu.addComponents(SmdUIHelper.getPageLinks());
+	    header.setValue(head);
+	    layout.addComponent(menu);
+	    layout.addComponent(header);
+	    setContent(layout);
 
 	}
 		
@@ -33,12 +35,15 @@ public abstract class SmdUI extends UI {
 	    layout.addComponents(components);
 	}
 	
-	protected void hideHeader() {
-	    header.setVisible(false);
+	protected void hideMenu() {
+	    menu.setVisible(false);
 	}
 	
-	protected void showHeader() {
-	    header.setVisible(true);
+	protected void showMenu() {
+	    menu.setVisible(true);
 	}
 
+	protected void setHeader(String head) {
+	    header.setValue(head);
+	}
 }

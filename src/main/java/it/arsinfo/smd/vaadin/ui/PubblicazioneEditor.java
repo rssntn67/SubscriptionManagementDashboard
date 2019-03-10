@@ -30,7 +30,7 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
                                                                                      EnumSet.allOf(TipoPubblicazione.class));
     private final ComboBox<Mese> primaPubblicazione = new ComboBox<Mese>("Prima Pubblicazione",
                                                                          EnumSet.allOf(Mese.class));
-    private final TextField costo = new TextField("Costo");
+    private final TextField costoUnitario = new TextField("Costo Unitario");
     private final TextField costoScontato = new TextField("Costo Scontato");
 
     private final CheckBox active = new CheckBox("Active");
@@ -38,7 +38,7 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
 
     HorizontalLayout basic = new HorizontalLayout(nome, tipo, autore,
                                                   editore);
-    HorizontalLayout costi = new HorizontalLayout(costo, costoScontato,
+    HorizontalLayout costi = new HorizontalLayout(costoUnitario, costoScontato,
                                                   primaPubblicazione);
     HorizontalLayout check = new HorizontalLayout(active, abbonamento);
 
@@ -56,9 +56,9 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
                     Pubblicazione::setAutore);
         getBinder().bind(editore, Pubblicazione::getEditore,
                     Pubblicazione::setEditore);
-        getBinder().forField(costo).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator(f -> f.signum() == 1,
+        getBinder().forField(costoUnitario).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator(f -> f.signum() == 1,
                                                                                                                                "Deve essere maggiore di 0").bind(Pubblicazione::getCostoUnitario,
-                                                                                                                                                                 Pubblicazione::setCosto);
+                                                                                                                                                                 Pubblicazione::setCostoUnitario);
         getBinder().forField(costoScontato).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).withValidator(f -> f.signum() == 1,
                                                                                                                                        "Deve essere maggiore di 0").bind(Pubblicazione::getCostoScontato,
                                                                                                                                                                          Pubblicazione::setCostoScontato);
@@ -72,8 +72,6 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         setSpacing(true);
 
         primaPubblicazione.setItemCaptionGenerator(Mese::getNomeBreve);
-
-        setVisible(false);
 
     }
 
