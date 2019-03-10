@@ -19,10 +19,10 @@ public class Spedizione implements SmdEntity {
     @ManyToOne
     private Anagrafica destinatario;
 
-    private Integer estratti = 0;
-    private Integer blocchetti = 0;
-    private Integer lodare = 0;
-    private Integer messaggio = 0;
+    @ManyToOne
+    private Pubblicazione pubblicazione;
+    
+    private Integer numero = 0;
 
 
     public Spedizione() {
@@ -33,40 +33,16 @@ public class Spedizione implements SmdEntity {
         this.abbonamento = abbonamento;
     }
 
+    public Spedizione(Abbonamento abbonamento, Pubblicazione pubblicazione,
+            Anagrafica destinatario, int numero) {
+        this.abbonamento= abbonamento;
+        this.pubblicazione=pubblicazione;
+        this.destinatario=destinatario;
+        this.numero=numero;
+    }
+
     public Long getId() {
         return id;
-    }
-
-    public Integer getEstratti() {
-        return estratti;
-    }
-
-    public void setEstratti(Integer estratti) {
-        this.estratti = estratti;
-    }
-
-    public Integer getBlocchetti() {
-        return blocchetti;
-    }
-
-    public void setBlocchetti(Integer blocchetti) {
-        this.blocchetti = blocchetti;
-    }
-
-    public Integer getLodare() {
-        return lodare;
-    }
-
-    public void setLodare(Integer lodare) {
-        this.lodare = lodare;
-    }
-
-    public Integer getMessaggio() {
-        return messaggio;
-    }
-
-    public void setMessaggio(Integer messaggio) {
-        this.messaggio = messaggio;
     }
 
     public Anagrafica getDestinatario() {
@@ -75,6 +51,30 @@ public class Spedizione implements SmdEntity {
 
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
+    }
+
+    public Abbonamento getAbbonamento() {
+        return abbonamento;
+    }
+
+    public void setAbbonamento(Abbonamento abbonamento) {
+        this.abbonamento = abbonamento;
+    }
+
+    public Pubblicazione getPubblicazione() {
+        return pubblicazione;
+    }
+
+    public void setPubblicazione(Pubblicazione pubblicazione) {
+        this.pubblicazione = pubblicazione;
+    }
+
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 
 }

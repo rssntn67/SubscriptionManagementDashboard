@@ -50,7 +50,6 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final TextField cellulare = new TextField("Cellulare");
     private final TextField codfis = new TextField("Cod. Fis.");
     private final TextField piva = new TextField("P.Iva");
-    private final TextField note = new TextField("Note");
     private final CheckBox presidenteDiocesano = new CheckBox("Pres. Diocesano");
     private final ComboBox<Regione> regionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",
                                                                                        EnumSet.allOf(Regione.class));
@@ -76,8 +75,8 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         HorizontalLayout riga3 = new HorizontalLayout(indirizzo, cap, citta,
                                                       paese);
         HorizontalLayout riga4 = new HorizontalLayout(email, telefono,
-                                                      cellulare, codfis, piva,
-                                                      note);
+                                                      cellulare, codfis, piva
+                                                      );
 
         HorizontalLayout riga5 = new HorizontalLayout(new VerticalLayout(inRegola,
                                                                          new Label("Incarichi Diocesani"),

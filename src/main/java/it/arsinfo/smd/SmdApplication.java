@@ -44,11 +44,11 @@ public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
 
-    public static void addAbbonamentoPubblicazione(Abbonamento abbonamento, Pubblicazione pubblicazione, int numero) {
+    public static void addSpedizione(Abbonamento abbonamento, Pubblicazione pubblicazione, Anagrafica destinatario, int numero) {
         if (abbonamento == null || pubblicazione == null || numero <= 0) {
             return;
         }
-        abbonamento.addPubblicazione(pubblicazione, numero); 
+        abbonamento.addSpedizione(pubblicazione, destinatario, numero); 
     }
     public static boolean checkCampo(String campo) {
         if (campo == null || campo.length() != 18) {
@@ -205,7 +205,7 @@ public class SmdApplication {
     public static BigDecimal generaCosto(Abbonamento abb) {
         double costo = 0.0;
             costo = abb.
-                    getListaAbbonamentoPubblicazione().
+                    getSpedizioni().
                     stream()
                     .mapToDouble(
                                  abbpubbl -> 
@@ -317,8 +317,8 @@ public class SmdApplication {
             anagraficaPubblicazioneDao.save(new AnagraficaPubblicazione(md, dp, blocchetti, 5));
 
             Abbonamento abbonamentoMd = new Abbonamento(md);
-            abbonamentoMd.addPubblicazione(blocchetti,1);
-            abbonamentoMd.addPubblicazione(lodare,1);
+            abbonamentoMd.addSpedizione(blocchetti,md,1);
+            abbonamentoMd.addSpedizione(lodare,md,1);
             abbonamentoMd.setInizio(Mese.GIUGNO);
             abbonamentoMd.setAnno(Anno.ANNO2018);
             abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),
@@ -328,11 +328,13 @@ public class SmdApplication {
             abbonamentoDao.save(abbonamentoMd);
 
             Abbonamento abbonamentoCo = new Abbonamento(co);
-            abbonamentoCo.addPubblicazione(blocchetti,10);
-            abbonamentoCo.addPubblicazione(lodare,10);
-            abbonamentoCo.addPubblicazione(estratti,5);
-            abbonamentoCo.addPubblicazione(messaggio,5);
-            abbonamentoCo.setAnno(Anno.ANNO2018);
+            abbonamentoCo.addSpedizione(blocchetti,co,10);
+            abbonamentoCo.addSpedizione(lodare,co,10);
+            abbonamentoCo.addSpedizione(estratti,co,5);
+            abbonamentoCo.addSpedizione(messaggio,co,5);
+            abbonamentoCo.addSpedizione(blocchetti,kb,10);
+            abbonamentoCo.addSpedizione(blocchetti,jb,10);
+                       abbonamentoCo.setAnno(Anno.ANNO2018);
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
                                                  abbonamentoCo.getFine()));
@@ -340,7 +342,7 @@ public class SmdApplication {
             abbonamentoDao.save(abbonamentoCo);
 
             Abbonamento abbonamentoDp = new Abbonamento(dp);
-            abbonamentoDp.addPubblicazione(blocchetti,10);
+            abbonamentoDp.addSpedizione(blocchetti,dp,10);
             abbonamentoDp.setSpese(new BigDecimal("3.75"));
             abbonamentoDp.setInizio(Mese.MAGGIO);
             abbonamentoDp.setAnno(Anno.ANNO2018);

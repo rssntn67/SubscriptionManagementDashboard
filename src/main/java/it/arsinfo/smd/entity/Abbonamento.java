@@ -35,7 +35,7 @@ public class Abbonamento implements SmdEntity {
     private Campagna campagna;
     
     @OneToMany(cascade = { CascadeType.PERSIST })
-    private List<AbbonamentoPubblicazione> listaAbbonamentoPubblicazione = new ArrayList<>();
+    private List<Spedizione> spedizioni = new ArrayList<>();
     
     @OneToOne
     private Versamento versamento;
@@ -178,17 +178,17 @@ public class Abbonamento implements SmdEntity {
         this.campo = campo;
     }
 
-    public List<AbbonamentoPubblicazione> getListaAbbonamentoPubblicazione() {
-        return new ArrayList<>(listaAbbonamentoPubblicazione);
+    public List<Spedizione> getSpedizioni() {
+        return new ArrayList<>(spedizioni);
     }
 
-    public void setListaAbbonamentoPubblicazione(
-            List<AbbonamentoPubblicazione> listaAbbonamentoPubblicazione) {
-        this.listaAbbonamentoPubblicazione = listaAbbonamentoPubblicazione;
+    public void setSpedizioni(
+            List<Spedizione> listaAbbonamentoPubblicazione) {
+        this.spedizioni = listaAbbonamentoPubblicazione;
     }
     
-    public void addPubblicazione(Pubblicazione pubblicazione, int numero) {
-        listaAbbonamentoPubblicazione.add(new AbbonamentoPubblicazione(this, pubblicazione, numero));
+    public void addSpedizione(Pubblicazione pubblicazione, Anagrafica destinatario, int numero) {
+        spedizioni.add(new Spedizione(this, pubblicazione, destinatario, numero));
     }
 
 }
