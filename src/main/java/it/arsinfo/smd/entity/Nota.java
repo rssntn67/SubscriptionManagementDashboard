@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Note implements SmdEntity {
+public class Nota implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,7 +22,7 @@ public class Note implements SmdEntity {
 
     private Date data = new Date();
 
-    public Note() {
+    public Nota() {
     }
 
     public Anagrafica getAnagrafica() {

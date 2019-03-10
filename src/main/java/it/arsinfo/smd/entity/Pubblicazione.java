@@ -151,7 +151,7 @@ public class Pubblicazione implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("%s active=%b", nome, active);
+        return nome;
     }
 
 }

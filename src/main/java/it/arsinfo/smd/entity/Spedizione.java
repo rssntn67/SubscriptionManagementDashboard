@@ -1,10 +1,16 @@
 package it.arsinfo.smd.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.Omaggio;
 
 @Entity
 public class Spedizione implements SmdEntity {
@@ -22,6 +28,12 @@ public class Spedizione implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
+    @Enumerated(EnumType.STRING)
+    private Omaggio omaggio = Omaggio.No;
+
+    @Enumerated(EnumType.STRING)
+    private Invio invio = Invio.Destinatario;
+
     private Integer numero = 0;
 
 

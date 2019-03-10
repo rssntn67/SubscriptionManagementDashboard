@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Paese;
@@ -29,6 +30,8 @@ public class Anagrafica implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Diocesi diocesi;
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
     @Enumerated(EnumType.STRING)
     private Regione regioneVescovi;
     @Enumerated(EnumType.STRING)
@@ -71,8 +74,8 @@ public class Anagrafica implements SmdEntity {
     private boolean promotoreRegionale; 
     
     @OneToMany(cascade = { CascadeType.PERSIST })
-    private List<AnagraficaPubblicazione> note;
-    
+    private List<Nota> note;
+
     public Anagrafica(String nome, String cognome) {
         this.nome=nome;
     	this.cognome=cognome;
@@ -336,11 +339,19 @@ public class Anagrafica implements SmdEntity {
         this.inRegola = inRegola;
     }
 
-    public List<AnagraficaPubblicazione> getNote() {
+    public List<Nota> getNote() {
         return note;
     }
 
-    public void setNote(List<AnagraficaPubblicazione> note) {
+    public void setNote(List<Nota> note) {
         this.note = note;
+    }
+
+    public Cassa getCassa() {
+        return cassa;
+    }
+
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
     }
 }

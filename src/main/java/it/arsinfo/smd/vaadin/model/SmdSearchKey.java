@@ -19,7 +19,7 @@ public abstract class SmdSearchKey<T extends SmdEntity, K extends SmdEntity>
     private final Grid<T> grid;
     private K key;
     private T selected;
-    private Button add = new Button("New", VaadinIcons.PLUS);
+    private Button add = new Button("Add", VaadinIcons.PLUS);
 
     public SmdSearchKey(Grid<T> grid) {
         this.grid = grid;

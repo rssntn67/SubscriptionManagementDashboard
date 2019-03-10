@@ -30,7 +30,10 @@ public abstract class SmdUI extends UI {
 	    setContent(layout);
 
 	}
-		
+	protected void setExpandRatio(Component component, float ratio) {
+	    layout.setExpandRatio(component, ratio);
+	}
+	
 	protected void addComponents(Component... components ) {
 	    layout.addComponents(components);
 	}

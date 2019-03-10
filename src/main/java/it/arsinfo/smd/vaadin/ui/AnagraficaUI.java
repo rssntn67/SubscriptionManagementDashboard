@@ -8,7 +8,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
@@ -27,7 +27,7 @@ public class AnagraficaUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazioneDao;
     @Autowired
-    AnagraficaPubblicazioneDao anagraficaPubblicazioneDao;
+    StoricoDao anagraficaPubblicazioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -37,20 +37,20 @@ public class AnagraficaUI extends SmdUI {
                        "anagraficaPubblicazioneDao must be not null");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
-        AnagraficaPubblicazioneSubSearch apSubSearch = new AnagraficaPubblicazioneSubSearch(anagraficaPubblicazioneDao);
-        AnagraficaPubblicazioneEditor apEditor = new AnagraficaPubblicazioneEditor(anagraficaPubblicazioneDao,
+        StoricoSubSearch storicoSubSearch = new StoricoSubSearch(anagraficaPubblicazioneDao);
+        StoricoEditor storicoEditor = new StoricoEditor(anagraficaPubblicazioneDao,
                                                                                     pubblicazioneDao,
                                                                                     anagraficaDao);
-        addComponents(apEditor, editor, apSubSearch, search);
-
+        addComponents(storicoEditor, editor, storicoSubSearch, search);
+        
         editor.setWidth("100%");
         search.setWidth("120%");
-        apEditor.setWidth("100%");
-        apSubSearch.setWidth("120%");
+        storicoEditor.setWidth("100%");
+        storicoSubSearch.setWidth("120%");
 
         editor.setVisible(false);
-        apSubSearch.setVisible(false);
-        apEditor.setVisible(false);
+        storicoSubSearch.setVisible(false);
+        storicoEditor.setVisible(false);
 
         search.setChangeHandler(() -> {
             if (search.getSelected() == null) {
@@ -59,35 +59,35 @@ public class AnagraficaUI extends SmdUI {
             setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
             hideMenu();
             editor.edit(search.getSelected());
-            apSubSearch.setKey(search.getSelected());
-            apSubSearch.onSearch();
+            storicoSubSearch.setKey(search.getSelected());
+            storicoSubSearch.onSearch();
         });
 
 
         editor.setChangeHandler(() -> {
             search.onSearch();
             editor.setVisible(false);
-            apSubSearch.setVisible(false);
+            storicoSubSearch.setVisible(false);
             showMenu();
             setHeader("Anagrafica");
         });
 
-        apSubSearch.setChangeHandler(() -> {
-            if (apSubSearch.getSelected() == null) {
+        storicoSubSearch.setChangeHandler(() -> {
+            if (storicoSubSearch.getSelected() == null) {
                 return;
             }
-            apEditor.edit(apSubSearch.getSelected());
+            storicoEditor.edit(storicoSubSearch.getSelected());
             editor.setVisible(false);
             setHeader(String.format("Anagrafica:Pubblicazione:Edit:%s-%s",
-                                    apSubSearch.getSelected().getCaptionIntestatario(),
-                                    apSubSearch.getSelected().getCaptionPubblicazione()));
+                                    storicoSubSearch.getSelected().getCaptionIntestatario(),
+                                    storicoSubSearch.getSelected().getCaptionPubblicazione()));
         });
 
-        apEditor.setChangeHandler(() -> {
-            apSubSearch.onSearch();
+        storicoEditor.setChangeHandler(() -> {
+            storicoSubSearch.onSearch();
             setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
             editor.setVisible(true);
-            apEditor.setVisible(false);
+            storicoEditor.setVisible(false);
         });
 
 

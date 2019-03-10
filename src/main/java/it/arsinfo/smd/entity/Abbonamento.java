@@ -19,6 +19,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
@@ -50,7 +52,13 @@ public class Abbonamento implements SmdEntity {
     private Date incasso;
 
     private String campo;
+    
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
 
+    @Enumerated(EnumType.STRING)
+    private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
+    
     @Enumerated(EnumType.STRING)
     private Anno anno;
     @Enumerated(EnumType.STRING)

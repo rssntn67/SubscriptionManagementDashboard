@@ -47,10 +47,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
         filterCognome.setPlaceholder("Cerca per Cognome");
 
-        setColumns("id", "nome", "cognome", "diocesi.details", "indirizzo",
-                   "citta", "cap", "paese", "email", "telefono", "inRegola");
-        getGrid().getColumn("diocesi.details").setCaption("Diocesi");
-        getGrid().getColumn("id").setMaximumWidth(100);
+        setColumns("nome", "cognome", "diocesi.details", 
+                   "citta", "cap", "paese", "cassa", "inRegola");
+        setColumnCamptio("diocesi.details", "Diocesi");
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);

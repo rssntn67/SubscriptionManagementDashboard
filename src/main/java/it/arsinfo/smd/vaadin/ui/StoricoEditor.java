@@ -9,19 +9,18 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.AnagraficaPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
-public class AnagraficaPubblicazioneEditor
-        extends SmdEditor<AnagraficaPubblicazione> {
+public class StoricoEditor
+        extends SmdEditor<Storico> {
 
     /**
      * 
@@ -33,17 +32,15 @@ public class AnagraficaPubblicazioneEditor
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
     private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio",
                                                                     EnumSet.allOf(Omaggio.class));
-    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
-                                                              EnumSet.allOf(Cassa.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
     private final TextField numero = new TextField("Numero");
 
-    public AnagraficaPubblicazioneEditor(
-            AnagraficaPubblicazioneDao anagraficaPubblicazioneDao,
+    public StoricoEditor(
+            StoricoDao anagraficaPubblicazioneDao,
             PubblicazioneDao pubblicazioneDao, AnagraficaDao anagraficaDao) {
 
-        super(anagraficaPubblicazioneDao, new Binder<>(AnagraficaPubblicazione.class) );
+        super(anagraficaPubblicazioneDao, new Binder<>(Storico.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("pubblicazione");
         pubblicazione.setItems(pubblicazioneDao.findAll());
@@ -62,10 +59,10 @@ public class AnagraficaPubblicazioneEditor
         addComponents(getActions(),
                       new HorizontalLayout(numero, intestatario, destinatario,
                                            pubblicazione),
-                      new HorizontalLayout(omaggio, cassa, invio));
+                      new HorizontalLayout(omaggio, invio));
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
-        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(AnagraficaPubblicazione::getNumero, AnagraficaPubblicazione::setNumero);
+        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Storico::getNumero, Storico::setNumero);
         getBinder().bindInstanceFields(this);
 
         // Configure and style components
@@ -74,7 +71,13 @@ public class AnagraficaPubblicazioneEditor
     }
 
     @Override
-    public void focus(boolean persisted, AnagraficaPubblicazione obj) {
+    public void focus(boolean persisted, Storico obj) {
+        if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
+            getSave().setEnabled(false);
+        } else {
+            getSave().setEnabled(true);
+        }
+        
         numero.focus();
     }
 

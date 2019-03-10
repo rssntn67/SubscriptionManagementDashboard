@@ -18,7 +18,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Note;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
@@ -33,7 +33,7 @@ public class NoteUI extends SmdUI {
 	 */
 	private static final long serialVersionUID = 7884064928998716106L;
 
-	Grid<Note> grid;
+	Grid<Nota> grid;
 	@Autowired
 	NoteDao repo;
 
@@ -48,7 +48,7 @@ public class NoteUI extends SmdUI {
 		TextField filter = new TextField();
 	    ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Selezionare Cliente");
 		
-		grid = new Grid<>(Note.class);
+		grid = new Grid<>(Nota.class);
 		NoteEditor editor = new NoteEditor(repo,anadao);
 		HorizontalLayout actions = new HorizontalLayout(filterAnagrafica,filter,addNewBtn);
 		addComponents(editor,actions,grid);
@@ -74,7 +74,7 @@ public class NoteUI extends SmdUI {
 			editor.edit(e.getValue());
 		});
 		
-		addNewBtn.addClickListener(e -> editor.edit(new Note()));
+		addNewBtn.addClickListener(e -> editor.edit(new Nota()));
 
 		editor.setChangeHandler(() -> {
 			editor.setVisible(false);

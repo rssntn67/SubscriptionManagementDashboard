@@ -27,13 +27,13 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.AnagraficaPubblicazione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.AnagraficaPubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -222,7 +222,7 @@ public class SmdApplication {
 
     @Bean
     @Transactional
-    public CommandLineRunner loadData(AnagraficaDao anagraficaDao, AnagraficaPubblicazioneDao anagraficaPubblicazioneDao,
+    public CommandLineRunner loadData(AnagraficaDao anagraficaDao, StoricoDao storicoDao,
             PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
             CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao) {
         return (args) -> {
@@ -313,8 +313,8 @@ public class SmdApplication {
             lodare.setPrimaPubblicazione(Mese.GENNAIO);
             pubblicazioneDao.save(lodare);
             
-            anagraficaPubblicazioneDao.save(new AnagraficaPubblicazione(md, blocchetti, 10));
-            anagraficaPubblicazioneDao.save(new AnagraficaPubblicazione(md, dp, blocchetti, 5));
+            storicoDao.save(new Storico(md, blocchetti, 10));
+            storicoDao.save(new Storico(md, dp, blocchetti, 5));
 
             Abbonamento abbonamentoMd = new Abbonamento(md);
             abbonamentoMd.addSpedizione(blocchetti,md,1);
@@ -459,21 +459,21 @@ public class SmdApplication {
 
             log.info("AnagraficaPubblicazione found with findByIntestatario('md'):");
             log.info("--------------------------------------------");
-            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByIntestatario(md)) {
+            for (Storico anp : storicoDao.findByIntestatario(md)) {
                 log.info(anp.toString());
             }
             log.info("");
 
             log.info("AnagraficaPubblicazione found with findByDestinatario('dp'):");
             log.info("--------------------------------------------");
-            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByDestinatario(dp)) {
+            for (Storico anp : storicoDao.findByDestinatario(dp)) {
                 log.info(anp.toString());
             }
             log.info("");
 
             log.info("AnagraficaPubblicazione found with findByPubblicazione('blocchetti'):");
             log.info("--------------------------------------------");
-            for (AnagraficaPubblicazione anp : anagraficaPubblicazioneDao.findByPubblicazione(blocchetti)) {
+            for (Storico anp : storicoDao.findByPubblicazione(blocchetti)) {
                 log.info(anp.toString());
             }
             log.info("");

@@ -30,8 +30,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
      */
     private static final long serialVersionUID = 4673834235533544936L;
 
-    private final ComboBox<Anagrafica> anagrafica = new ComboBox<Anagrafica>("Selezionare il cliente");
-    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Selezionare il destinatario");
+    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final TextField campo = new TextField("V Campo Poste Italiane");
     private final TextField cost = new TextField("Costo");
 
@@ -53,7 +52,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<ContoCorrentePostale> contoCorrentePostale = new ComboBox<ContoCorrentePostale>("Selezionare ccp",
                                                                                                            EnumSet.allOf(ContoCorrentePostale.class));
 
-    HorizontalLayout pri = new HorizontalLayout(anagrafica, destinatario,
+    HorizontalLayout pri = new HorizontalLayout(intestatario,
                                                 anno, inizio, fine);
     HorizontalLayout sec = new HorizontalLayout(campo, cost,
                                                 contoCorrentePostale);
@@ -77,15 +76,12 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         contoCorrentePostale.setItemCaptionGenerator(ContoCorrentePostale::getCcp);
 
-        anagrafica.setItems(anagraficaDao.findAll());
-        anagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
-        destinatario.setItems(anagraficaDao.findAll());
-        destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
+        intestatario.setItems(anagraficaDao.findAll());
+        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        getBinder().forField(anagrafica).asRequired().withValidator(an -> an != null,
+        getBinder().forField(intestatario).asRequired().withValidator(an -> an != null,
                                                                "Scegliere un Cliente").bind(Abbonamento::getIntestatario,
                                                                                             Abbonamento::setIntestatario);
-        getBinder().forField(destinatario).bind("destinatario");
         getBinder().forField(anno).bind("anno");
         getBinder().forField(inizio).bind("inizio");
         getBinder().forField(fine).bind("fine");
@@ -117,8 +113,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     public void focus(boolean persisted, Abbonamento abbonamento) {
         getCancel().setVisible(persisted);
 
-        anagrafica.setReadOnly(persisted);
-        destinatario.setReadOnly(persisted);
+        intestatario.setReadOnly(persisted);
 
         estratti.setReadOnly(persisted);
         blocchetti.setReadOnly(persisted);
@@ -172,7 +167,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         pagato.setVisible(false);
         incasso.setVisible(false);
 
-        anagrafica.focus();
+        intestatario.focus();
 
     }
 

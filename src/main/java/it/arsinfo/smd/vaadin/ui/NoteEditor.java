@@ -9,12 +9,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Note;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NoteDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
-public class NoteEditor extends SmdEditor<Note> {
+public class NoteEditor extends SmdEditor<Nota> {
 
     /**
      * 
@@ -27,7 +27,7 @@ public class NoteEditor extends SmdEditor<Note> {
 
     public NoteEditor(NoteDao repo, AnagraficaDao anadao) {
 
-        super(repo, new Binder<>(Note.class));
+        super(repo, new Binder<>(Nota.class));
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponent(anagrafica);
         pri.addComponent(data);
@@ -41,10 +41,10 @@ public class NoteEditor extends SmdEditor<Note> {
         anagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
 
         getBinder().forField(anagrafica).asRequired().withValidator(an -> an != null,
-                                                               "Scegliere un Cliente").bind(Note::getAnagrafica,
-                                                                                            Note::setAnagrafica);
-        getBinder().forField(description).bind(Note::getDescription,
-                                          Note::setDescription);
+                                                               "Scegliere un Cliente").bind(Nota::getAnagrafica,
+                                                                                            Nota::setAnagrafica);
+        getBinder().forField(description).bind(Nota::getDescription,
+                                          Nota::setDescription);
         getBinder().forField(data).withConverter(new LocalDateToDateConverter()).bind("data");
         // Configure and style components
         setSpacing(true);
@@ -54,7 +54,7 @@ public class NoteEditor extends SmdEditor<Note> {
     }
 
     @Override
-    public void focus(boolean persisted, Note obj) {
+    public void focus(boolean persisted, Nota obj) {
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(false);
         data.setReadOnly(persisted);

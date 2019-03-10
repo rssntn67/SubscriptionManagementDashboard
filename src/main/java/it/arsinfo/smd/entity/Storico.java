@@ -9,12 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 
 @Entity
-public class AnagraficaPubblicazione implements SmdEntity {
+public class Storico implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,32 +32,29 @@ public class AnagraficaPubblicazione implements SmdEntity {
     private Omaggio omaggio = Omaggio.No;
 
     @Enumerated(EnumType.STRING)
-    private Cassa cassa = Cassa.Ccp;
-
-    @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
 
     private Integer numero = 0;
     
-    public AnagraficaPubblicazione(Anagrafica intestatario, Pubblicazione pubblicazione, int numero) {
+    public Storico(Anagrafica intestatario, Pubblicazione pubblicazione, int numero) {
         this.pubblicazione = pubblicazione;
         this.numero = numero;
         this.intestatario = intestatario;
         this.destinatario = intestatario;
     }
 
-    public AnagraficaPubblicazione(Anagrafica intestatario, Anagrafica destinatario,Pubblicazione pubblicazione, int numero) {
+    public Storico(Anagrafica intestatario, Anagrafica destinatario,Pubblicazione pubblicazione, int numero) {
         this.pubblicazione = pubblicazione;
         this.numero = numero;
         this.intestatario = intestatario;
         this.destinatario = destinatario;
     }
-    public AnagraficaPubblicazione(Anagrafica intestatario) {
+    public Storico(Anagrafica intestatario) {
         this.intestatario = intestatario;
         this.destinatario = intestatario;
     }
 
-    public AnagraficaPubblicazione() {
+    public Storico() {
         super();
     }
 
@@ -114,7 +110,10 @@ public class AnagraficaPubblicazione implements SmdEntity {
     
     @Transient
     public String getCaptionPubblicazione() {
-        return pubblicazione.getCaption();
+        if (pubblicazione != null)
+            return pubblicazione.getCaption();
+        else
+            return "";
     }
 
 
@@ -130,14 +129,6 @@ public class AnagraficaPubblicazione implements SmdEntity {
 
     public void setOmaggio(Omaggio omaggio) {
         this.omaggio = omaggio;
-    }
-
-    public Cassa getCassa() {
-        return cassa;
-    }
-
-    public void setCassa(Cassa cassa) {
-        this.cassa = cassa;
     }
 
     public Invio getInvio() {
