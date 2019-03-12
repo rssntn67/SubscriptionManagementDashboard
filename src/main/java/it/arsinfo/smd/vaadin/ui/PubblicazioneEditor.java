@@ -39,7 +39,7 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
     public PubblicazioneEditor(PubblicazioneDao repo) {
 
         super(repo,new Binder<>(Pubblicazione.class));
-        setComponents(basic, costi, check, getActions());
+        setComponents(getActions(),basic, costi, check);
         
         getBinder().forField(nome).asRequired("Il Nome della Pubblicazione e' abbligatorio").bind(Pubblicazione::getNome,
                                                                                              Pubblicazione::setNome);

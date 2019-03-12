@@ -27,12 +27,19 @@ public class PubblicazioneUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Pubblicazioni");
         Assert.notNull(repo, "repo must be not null");
+        PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
         PubblicazioneSearch search = new PubblicazioneSearch(repo);
         PubblicazioneGrid grid = new PubblicazioneGrid();
         PubblicazioneEditor editor = new PubblicazioneEditor(repo);
-        addSmdComponents(editor, search, grid);
+        addSmdComponents(editor,add, search, grid);
         editor.setVisible(false);
 
+        add.setChangeHandler(()-> {
+            setHeader(String.format("Pubblicazione:Add"));
+            hideMenu();
+            editor.edit(add.generate());
+        });
+        
         search.setChangeHandler(()-> {
             grid.populate(search.find());
         });

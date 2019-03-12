@@ -35,7 +35,7 @@ public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
         setComponents(new HorizontalLayout(filterTipo,
                                            filterNome));
 
-        filterTipo.setEmptySelectionAllowed(false);
+        filterTipo.setEmptySelectionAllowed(true);
         filterTipo.setPlaceholder("Cerca per Tipo");
 
         filterNome.setPlaceholder("Cerca per Nome");
