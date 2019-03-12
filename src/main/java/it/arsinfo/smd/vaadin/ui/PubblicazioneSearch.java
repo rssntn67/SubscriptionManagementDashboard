@@ -10,7 +10,6 @@ import com.vaadin.annotations.Title;
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
@@ -24,34 +23,22 @@ import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 @Title("Anagrafica Pubblicazioni ADP")
 public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7884064928998716106L;
-
-    PubblicazioneDao pubblicazioneDao;
-
     private String searchNome;
     private TipoPubblicazione searchTipo;
 
     public PubblicazioneSearch(PubblicazioneDao pubblicazioneDao) {
-        super(new Grid<>(Pubblicazione.class));
-        this.pubblicazioneDao = pubblicazioneDao;
+        super(pubblicazioneDao);
         TextField filterNome = new TextField();
 
         ComboBox<TipoPubblicazione> filterTipo = new ComboBox<TipoPubblicazione>(null,
                                                                                  EnumSet.allOf(TipoPubblicazione.class));
-        HorizontalLayout actions = new HorizontalLayout(filterTipo,
-                                                        filterNome);
-        addComponents(actions, getGrid());
+        setComponents(new HorizontalLayout(filterTipo,
+                                           filterNome));
 
         filterTipo.setEmptySelectionAllowed(false);
         filterTipo.setPlaceholder("Cerca per Tipo");
 
         filterNome.setPlaceholder("Cerca per Nome");
-
-        setColumns("id", "nome", "tipo", "costoUnitario", "costoScontato",
-                   "primaPubblicazione");
 
         filterTipo.addSelectionListener(e -> {
             if (e.getValue() == null) {
@@ -59,38 +46,30 @@ public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
             } else {
                 searchTipo = e.getSelectedItem().get();
             }
-            onSearch();
-            ;
+            onChange();
         });
 
         filterNome.setValueChangeMode(ValueChangeMode.EAGER);
         filterNome.addValueChangeListener(e -> {
             searchNome = e.getValue();
-            onSearch();
+            onChange();
         });
 
-        onSearch();
-
     }
 
     @Override
-    public Pubblicazione generate() {
-        return new Pubblicazione();
-    }
-
-    @Override
-    public List<Pubblicazione> search() {
+    public List<Pubblicazione> find() {
         if (StringUtils.isEmpty(searchNome) && searchTipo == null) {
-            return pubblicazioneDao.findAll();
+            return findAll();
         }
 
         if (searchTipo == null) {
-            return pubblicazioneDao.findByNomeStartsWithIgnoreCase(searchNome);
+            return ((PubblicazioneDao)getRepo()).findByNomeStartsWithIgnoreCase(searchNome);
         }
         if (StringUtils.isEmpty(searchNome)) {
-            return pubblicazioneDao.findByTipo(searchTipo);
+            return ((PubblicazioneDao)getRepo()).findByTipo(searchTipo);
         }
-        return pubblicazioneDao.findByNomeStartsWithIgnoreCase(searchNome).stream().filter(p -> p.getTipo().equals(searchTipo)).collect(Collectors.toList());
+        return ((PubblicazioneDao)getRepo()).findByNomeStartsWithIgnoreCase(searchNome).stream().filter(p -> p.getTipo().equals(searchTipo)).collect(Collectors.toList());
     }
 
 }

@@ -4,7 +4,6 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.validator.EmailValidator;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -23,11 +22,6 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AnagraficaEditor extends SmdEditor<Anagrafica> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
 
     private final TextField cognome = new TextField("Cognome/Ragione Sociale");
     private final CheckBox inRegola = new CheckBox("In regola coi pagamenti");
@@ -97,16 +91,13 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                                                             elencoMarisaBisi,
                                                                                             promotoreRegionale)));
 
-        addComponents(getActions(), riga1, riga2, riga3, riga4, riga5);
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        setComponents(getActions(), riga1, riga2, riga3, riga4, riga5);
 
         getBinder().forField(cognome).asRequired();
         getBinder().forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));
         getBinder().bindInstanceFields(this);
 
         // Configure and style components
-        setSpacing(true);
-
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
 
     }
@@ -115,5 +106,4 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     public void focus(boolean persisted, Anagrafica c) {
         cognome.focus();
     }
-
 }

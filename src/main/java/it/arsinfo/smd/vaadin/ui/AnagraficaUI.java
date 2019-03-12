@@ -36,56 +36,59 @@ public class AnagraficaUI extends SmdUI {
         Assert.notNull(anagraficaPubblicazioneDao,
                        "anagraficaPubblicazioneDao must be not null");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
+        AnagraficaGrid grid = new AnagraficaGrid();
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
-        StoricoSubSearch storicoSubSearch = new StoricoSubSearch(anagraficaPubblicazioneDao);
+        StoricoByAnagrafica storicoByAnagrafica = new StoricoByAnagrafica(anagraficaPubblicazioneDao);
+        StoricoGrid storicoGrid = new StoricoGrid();
         StoricoEditor storicoEditor = new StoricoEditor(anagraficaPubblicazioneDao,
                                                                                     pubblicazioneDao,
                                                                                     anagraficaDao);
-        addComponents(storicoEditor, editor, storicoSubSearch, search);
+        addSmdComponents(storicoEditor, editor, storicoByAnagrafica,storicoGrid, search);
         
-        editor.setWidth("100%");
-        search.setWidth("120%");
-        storicoEditor.setWidth("100%");
-        storicoSubSearch.setWidth("120%");
-
         editor.setVisible(false);
-        storicoSubSearch.setVisible(false);
+        storicoByAnagrafica.setVisible(false);
+        storicoGrid.setVisible(false);
         storicoEditor.setVisible(false);
 
         search.setChangeHandler(() -> {
-            if (search.getSelected() == null) {
+            grid.populate(search.find());
+        });
+        
+        grid.setChangeHandler(() -> {
+            if (grid.getSelected() == null) {
                 return;
             }
-            setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
+            setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             hideMenu();
-            editor.edit(search.getSelected());
-            storicoSubSearch.setKey(search.getSelected());
-            storicoSubSearch.onSearch();
+            editor.edit(grid.getSelected());
+            storicoGrid.populate(storicoByAnagrafica.findByKey(grid.getSelected()));
+            storicoGrid.setVisible(true);
         });
 
 
         editor.setChangeHandler(() -> {
-            search.onSearch();
+            grid.populate(search.find());
             editor.setVisible(false);
-            storicoSubSearch.setVisible(false);
+            storicoGrid.setVisible(false);
+            storicoByAnagrafica.setVisible(false);
             showMenu();
             setHeader("Anagrafica");
         });
 
-        storicoSubSearch.setChangeHandler(() -> {
-            if (storicoSubSearch.getSelected() == null) {
+        storicoGrid.setChangeHandler(() -> {
+            if (storicoGrid.getSelected() == null) {
                 return;
             }
-            storicoEditor.edit(storicoSubSearch.getSelected());
+            storicoEditor.edit(storicoGrid.getSelected());
             editor.setVisible(false);
             setHeader(String.format("Anagrafica:Pubblicazione:Edit:%s-%s",
-                                    storicoSubSearch.getSelected().getCaptionIntestatario(),
-                                    storicoSubSearch.getSelected().getCaptionPubblicazione()));
+                                    storicoGrid.getSelected().getCaptionIntestatario(),
+                                    storicoGrid.getSelected().getCaptionPubblicazione()));
         });
 
         storicoEditor.setChangeHandler(() -> {
-            storicoSubSearch.onSearch();
-            setHeader(String.format("Anagrafica:Edit:%s", search.getSelected().getCaption()));
+            storicoGrid.populate(storicoByAnagrafica.findByKey(grid.getSelected()));
+            setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             editor.setVisible(true);
             storicoEditor.setVisible(false);
         });

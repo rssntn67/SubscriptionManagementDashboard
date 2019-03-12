@@ -13,19 +13,14 @@ import it.arsinfo.smd.entity.SmdEntity;
 public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
-
     private final JpaRepository<T, Long> repositoryDao;
 
     private T repositoryObj;
 
-    private Button save = new Button("Save", VaadinIcons.CHECK);
-    private Button cancel = new Button("Cancel");
-    private Button delete = new Button("Delete", VaadinIcons.TRASH);
-    private Button back = new Button("Back");
+    private Button save = new Button("Salva", VaadinIcons.CHECK);
+    private Button cancel = new Button("Annulla");
+    private Button delete = new Button("Cancella", VaadinIcons.TRASH);
+    private Button back = new Button("Indietro");
     private HorizontalLayout actions = new HorizontalLayout(save, cancel,
                                                             delete, back);
 
@@ -61,7 +56,7 @@ public abstract class SmdEditor<T extends SmdEntity>
         repositoryDao.save(repositoryObj);
         onChange();
     }
-
+    
     public final void edit(T c) {
         if (c == null) {
             setVisible(false);
@@ -102,6 +97,10 @@ public abstract class SmdEditor<T extends SmdEntity>
 
     public Binder<T> getBinder() {
         return binder;
+    }
+
+    public T getRepositoryObj() {
+        return repositoryObj;
     }
 
 }

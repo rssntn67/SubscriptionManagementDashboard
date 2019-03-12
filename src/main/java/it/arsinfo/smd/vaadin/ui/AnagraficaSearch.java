@@ -8,7 +8,6 @@ import org.springframework.util.StringUtils;
 
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
@@ -19,37 +18,24 @@ import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7884064928998716106L;
-
     private Diocesi searchDiocesi;
     private String searchCognome;
 
-    private AnagraficaDao anagraficaDao;
-
     public AnagraficaSearch(AnagraficaDao anagraficaDao) {
-        super(new Grid<>(Anagrafica.class));
-        this.anagraficaDao = anagraficaDao;
+        super(anagraficaDao);
         TextField filterCognome = new TextField();
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>(null,
                                                                 EnumSet.allOf(Diocesi.class));
 
-        HorizontalLayout actions = new HorizontalLayout(filterDiocesi,
-                                                        filterCognome,
-                                                        getAdd());
-        addComponents(actions, getGrid());
+        setComponents(new HorizontalLayout(filterDiocesi,
+                                       filterCognome
+                                       ));
 
         filterDiocesi.setEmptySelectionAllowed(false);
         filterDiocesi.setPlaceholder("Cerca per Diocesi");
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
 
         filterCognome.setPlaceholder("Cerca per Cognome");
-
-        setColumns("nome", "cognome", "diocesi.details", 
-                   "citta", "cap", "paese", "cassa", "inRegola");
-        setColumnCamptio("diocesi.details", "Diocesi");
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
@@ -60,39 +46,33 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             } else {
                 searchDiocesi = e.getSelectedItem().get();
             }
-            onSearch();
+            onChange();
         });
 
         filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
         filterCognome.addValueChangeListener(e -> {
             searchCognome = e.getValue();
-            onSearch();
+            onChange();
         });
-        onSearch();
 
     }
 
     @Override
-    public List<Anagrafica> search() {
+    public List<Anagrafica> find() {
         if (StringUtils.isEmpty(searchCognome) && searchDiocesi == null) {
-            return anagraficaDao.findAll();
+            return findAll();
         } 
         if (searchDiocesi == null) {
-            return anagraficaDao.findByCognomeStartsWithIgnoreCase(searchCognome);
+            return ((AnagraficaDao)getRepo()).findByCognomeStartsWithIgnoreCase(searchCognome);
         } 
         if (StringUtils.isEmpty(searchCognome)) {
-            return anagraficaDao.findByDiocesi(searchDiocesi);
+            return ((AnagraficaDao)getRepo()).findByDiocesi(searchDiocesi);
         } 
         
-        return anagraficaDao.findByCognomeStartsWithIgnoreCase(searchCognome).
+        return ((AnagraficaDao)getRepo()).findByCognomeStartsWithIgnoreCase(searchCognome).
                 stream().
                 filter(tizio -> tizio.getDiocesi().equals(searchDiocesi)).
                 collect(Collectors.toList());
-    }
-
-    @Override
-    public Anagrafica generate() {
-        return new Anagrafica();
     }
 
 }

@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.TipoAccettazioneBollettino;
 import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
@@ -33,9 +32,7 @@ public class Versamento implements SmdEntity {
     
     String progressivo;
     boolean errore;
-    @Enumerated(EnumType.STRING)
-    ContoCorrentePostale ccp;
-    
+        
     @Temporal(TemporalType.TIMESTAMP)
     Date dataPagamento;
     
@@ -90,12 +87,6 @@ public class Versamento implements SmdEntity {
     }
     public void setProgressivoBobina(String progressivoBobina) {
         this.progressivoBobina = progressivoBobina;
-    }
-    public ContoCorrentePostale getCcp() {
-        return ccp;
-    }
-    public void setCcp(ContoCorrentePostale ccp) {
-        this.ccp = ccp;
     }
     public Date getDataPagamento() {
         return dataPagamento;
@@ -178,7 +169,7 @@ public class Versamento implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Versamento[id=%d, ccp='%s', progressivo='%s',errore='%b', campo='%s',valido='%b', importo='%.2f']",
-                             id, ccp.getCcp(), progressivo,errore, campo, campovalido,importo);
+                             id, progressivo,errore, campo, campovalido,importo);
     }
 
 }

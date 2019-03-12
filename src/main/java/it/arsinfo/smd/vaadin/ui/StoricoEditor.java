@@ -4,7 +4,6 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -21,11 +20,6 @@ import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class StoricoEditor
         extends SmdEditor<Storico> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
@@ -56,17 +50,13 @@ public class StoricoEditor
         destinatario.setItems(anagraficaDao.findAll());
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        addComponents(getActions(),
+        setComponents(getActions(),
                       new HorizontalLayout(numero, intestatario, destinatario,
                                            pubblicazione),
                       new HorizontalLayout(omaggio, invio));
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-
+ 
         getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Storico::getNumero, Storico::setNumero);
         getBinder().bindInstanceFields(this);
-
-        // Configure and style components
-        setSpacing(true);
 
     }
 
@@ -79,6 +69,10 @@ public class StoricoEditor
         }
         
         numero.focus();
+    }
+
+    public Storico generate() {
+        return new Storico(intestatario.getValue());
     }
 
 }

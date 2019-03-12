@@ -3,7 +3,6 @@ package it.arsinfo.smd.vaadin.ui;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -17,11 +16,6 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class CampagnaEditor extends SmdEditor<Campagna> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
 
     private final CheckBox rinnovaSoloAbbonatiInRegola = new CheckBox("Selezionare per rinnovo Abbonati in Regola");
 
@@ -40,8 +34,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
 
         super(repo, new Binder<>(Campagna.class));
 
-        addComponents(pri, pag, getActions());
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        setComponents(pri, pag, getActions());
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
@@ -49,8 +42,6 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         fine.setItemCaptionGenerator(Mese::getNomeBreve);
 
         getBinder().bindInstanceFields(this);
-        // Configure and style components
-        setSpacing(true);
 
         setVisible(false);
 
@@ -68,5 +59,4 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         anno.focus();
 
     }
-
 }

@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -25,11 +24,6 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
@@ -66,8 +60,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
         HorizontalLayout pag = new HorizontalLayout(pagato,incasso);
 
-        addComponents(pri, sec, pub, pag, getActions());
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        setComponents(pri, sec, pub, pag, getActions());
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
@@ -99,11 +92,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
                                                                                                                       Abbonamento::setSpese);
         getBinder().forField(pagato).bind("pagato");
         getBinder().forField(incasso).withConverter(new LocalDateToDateConverter()).bind("incasso");
-
-        // Configure and style components
-        setSpacing(true);
-
-        setVisible(false);
 
     }
 
@@ -160,5 +148,4 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         intestatario.focus();
 
     }
-
 }

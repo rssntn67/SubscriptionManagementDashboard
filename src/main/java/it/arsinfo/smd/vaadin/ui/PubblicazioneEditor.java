@@ -4,7 +4,6 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -17,11 +16,6 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
 
     private final TextField nome = new TextField("Nome");
     private final TextField autore = new TextField("Autore");
@@ -45,9 +39,8 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
     public PubblicazioneEditor(PubblicazioneDao repo) {
 
         super(repo,new Binder<>(Pubblicazione.class));
-        addComponents(basic, costi, check, getActions());
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-
+        setComponents(basic, costi, check, getActions());
+        
         getBinder().forField(nome).asRequired("Il Nome della Pubblicazione e' abbligatorio").bind(Pubblicazione::getNome,
                                                                                              Pubblicazione::setNome);
         getBinder().forField(tipo).asRequired("Il Tipo di pubblicazione e' obbligatorio").bind(Pubblicazione::getTipo,
@@ -68,8 +61,7 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
                                           Pubblicazione::setAbbonamento);
         getBinder().forField(primaPubblicazione).bind(Pubblicazione::getPrimaPubblicazione,
                                                  Pubblicazione::setPrimaPubblicazione);
-        // Configure and style components
-        setSpacing(true);
+       
 
         primaPubblicazione.setItemCaptionGenerator(Mese::getNomeBreve);
 
@@ -80,5 +72,4 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         nome.focus();
 
     }
-
 }

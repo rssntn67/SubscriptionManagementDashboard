@@ -8,14 +8,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.CampagnaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_CAMPAGNA)
-@Title("Campagna Abbonamenti ADP")
-public class CampagnaUI extends SmdUI {
+@SpringUI(path = SmdUIHelper.URL_NOTE)
+@Title("Note Anagrafica ADP")
+public class NotaUI extends SmdUI {
 
     /**
      * 
@@ -23,27 +22,28 @@ public class CampagnaUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    CampagnaDao campagnaDao;
+    NotaDao notaDao;
 
     @Autowired
     AnagraficaDao anagraficaDao;
 
-    @Autowired
-    PubblicazioneDao pubblicazioneDao;
-
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Campagna");
-        Assert.notNull(campagnaDao, "campagnaDao must be not null");
+        super.init(request, "Note");
+        Assert.notNull(notaDao, "notaDao must be not null");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
-        CampagnaSearch search = new CampagnaSearch(campagnaDao);
-        CampagnaGrid grid = new CampagnaGrid();
-        CampagnaEditor editor = new CampagnaEditor(campagnaDao, anagraficaDao,
-                                                   pubblicazioneDao);
-        addSmdComponents(editor, search, grid);
+
+        NotaAdd add = new NotaAdd();
+        NotaSearch search = new NotaSearch(notaDao, anagraficaDao);
+        NotaGrid grid = new NotaGrid();
+        NotaEditor editor = new NotaEditor(notaDao, anagraficaDao);
+        addSmdComponents(add, editor, grid, search);
 
         editor.setVisible(false);
+
+        add.setChangeHandler(() -> {
+            editor.edit(add.generate());
+        });
 
         search.setChangeHandler(() -> grid.populate(search.find()));
 
@@ -52,17 +52,17 @@ public class CampagnaUI extends SmdUI {
                 return;
             }
             editor.edit(grid.getSelected());
-            setHeader("Campagna:Edit");
+            setHeader("Nota:Edit");
             hideMenu();
-
         });
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             grid.populate(search.find());
-            setHeader("Campagna");
+            setHeader("Note");
             showMenu();
         });
+
         grid.populate(search.findAll());
 
     }

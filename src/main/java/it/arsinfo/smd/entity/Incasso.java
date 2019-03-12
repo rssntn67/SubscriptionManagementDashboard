@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Cuas;
 
@@ -25,7 +26,9 @@ public class Incasso implements SmdEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
     @Enumerated(EnumType.STRING)
     Cuas cuas;
     @Enumerated(EnumType.STRING)
@@ -50,7 +53,6 @@ public class Incasso implements SmdEntity {
     
     public Incasso() {
         super();
-        // TODO Auto-generated constructor stub
     }
     public Long getId() {
         return id;
@@ -121,8 +123,15 @@ public class Incasso implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Incasso[id=%d, cuas='%s', ccp='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
-                             id, cuas, ccp.getCcp(), totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+        return String.format("Incasso[cassa='%s', cuas='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+                             cassa, cuas, totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+    }
+
+    public Cassa getCassa() {
+        return cassa;
+    }
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
     }
 
     

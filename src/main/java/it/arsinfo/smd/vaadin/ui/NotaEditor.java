@@ -2,7 +2,6 @@ package it.arsinfo.smd.vaadin.ui;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -11,29 +10,23 @@ import com.vaadin.ui.TextArea;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.NoteDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
-public class NoteEditor extends SmdEditor<Nota> {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 4673834235533544936L;
+public class NotaEditor extends SmdEditor<Nota> {
 
     private final DateField data = new DateField("data");
     private final TextArea description = new TextArea("Descrizione");
     private final ComboBox<Anagrafica> anagrafica = new ComboBox<Anagrafica>("Selezionare il cliente");
 
-    public NoteEditor(NoteDao repo, AnagraficaDao anadao) {
+    public NotaEditor(NotaDao notaDao, AnagraficaDao anadao) {
 
-        super(repo, new Binder<>(Nota.class));
+        super(notaDao, new Binder<>(Nota.class));
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponent(anagrafica);
         pri.addComponent(data);
         pri.addComponentsAndExpand(description);
-        addComponents(pri, getActions());
-        setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+        setComponents(pri, getActions());
 
         description.setWordWrap(false);
         description.setSizeFull();
@@ -46,10 +39,7 @@ public class NoteEditor extends SmdEditor<Nota> {
         getBinder().forField(description).bind(Nota::getDescription,
                                           Nota::setDescription);
         getBinder().forField(data).withConverter(new LocalDateToDateConverter()).bind("data");
-        // Configure and style components
-        setSpacing(true);
 
-        setVisible(false);
 
     }
 

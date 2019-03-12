@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NoteDao extends JpaRepository<Nota, Long> {
+public interface NotaDao extends JpaRepository<Nota, Long> {
 
 	List<Nota> findByDescriptionStartsWithIgnoreCase(String descr);
 	List<Nota> findByAnagrafica(Anagrafica anagrafica);
