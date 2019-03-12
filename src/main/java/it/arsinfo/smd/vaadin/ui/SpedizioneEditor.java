@@ -12,16 +12,15 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
-public class StoricoEditor
-        extends SmdEditor<Storico> {
+public class SpedizioneEditor
+        extends SmdEditor<Spedizione> {
 
-    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
     private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio",
@@ -30,45 +29,39 @@ public class StoricoEditor
                                                               EnumSet.allOf(Invio.class));
     private final TextField numero = new TextField("Numero");
 
-    public StoricoEditor(
-            StoricoDao anagraficaPubblicazioneDao,
+    public SpedizioneEditor(
+            SpedizioneDao anagraficaPubblicazioneDao,
             PubblicazioneDao pubblicazioneDao, AnagraficaDao anagraficaDao) {
 
-        super(anagraficaPubblicazioneDao, new Binder<>(Storico.class) );
+        super(anagraficaPubblicazioneDao, new Binder<>(Spedizione.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioneDao.findAll());
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
-
-        intestatario.setEmptySelectionAllowed(false);
-        intestatario.setPlaceholder("Intestatario");
-        intestatario.setItems(anagraficaDao.findAll());
-        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagraficaDao.findAll());
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        setComponents(getActions(),
-                      new HorizontalLayout(numero, intestatario, destinatario,
+        setComponents(new HorizontalLayout(numero, destinatario,
                                            pubblicazione),
                       new HorizontalLayout(omaggio, invio));
  
-        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Storico::getNumero, Storico::setNumero);
+        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Spedizione::getNumero, Spedizione::setNumero);
         getBinder().bindInstanceFields(this);
 
     }
 
     @Override
-    public void focus(boolean persisted, Storico obj) {
+    public void focus(boolean persisted, Spedizione obj) {
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);
         } else {
             getSave().setEnabled(true);
+            destinatario.focus();
         }
         
-        numero.focus();
     }
 
 }

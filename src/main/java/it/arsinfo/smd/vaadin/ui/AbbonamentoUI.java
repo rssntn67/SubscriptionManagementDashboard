@@ -10,6 +10,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
@@ -26,6 +27,9 @@ public class AbbonamentoUI extends SmdUI {
     AbbonamentoDao abbonamentoDao;
 
     @Autowired
+    SpedizioneDao spedizioneDao;
+
+    @Autowired
     AnagraficaDao anagraficaDao;
 
     @Autowired
@@ -38,13 +42,38 @@ public class AbbonamentoUI extends SmdUI {
         Assert.notNull(abbonamentoDao, "abbonamentoDao must be not null");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
+        Assert.notNull(spedizioneDao, "spedizioneDao must be not null");
+        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,
                                                          anagraficaDao);
         AbbonamentoGrid grid = new AbbonamentoGrid();
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,
                                                          anagraficaDao,
-                                                         pubblicazioneDao);
-        addSmdComponents(editor, grid, search);
+                                                         pubblicazioneDao,
+                                                         spedizioneDao);
+        
+        SpedizioneAdd spedizioneAdd = new SpedizioneAdd("Aggiungi spedizione");
+        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao);
+        addSmdComponents(spedizioneEditor,spedizioneAdd,editor, add,search, grid);
+
+        editor.setVisible(false);
+        spedizioneAdd.setVisible(false);
+        spedizioneEditor.setVisible(false);
+        
+        add.setChangeHandler(() -> {
+            setHeader(String.format("Abbonamento:new"));
+            hideMenu();
+            editor.edit(add.generate());
+            spedizioneAdd.setAbbonamento(editor.getRepositoryObj());
+            spedizioneAdd.setVisible(true);
+        });
+        
+        spedizioneAdd.setChangeHandler(() -> {
+            setHeader(String.format("Spedizione:new"));
+            hideMenu();
+            spedizioneEditor.edit(spedizioneAdd.generate());
+            spedizioneAdd.setVisible(true);
+        });
 
         search.setChangeHandler(() -> grid.populate(search.find()));
 

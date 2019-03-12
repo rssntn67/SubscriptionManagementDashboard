@@ -10,7 +10,7 @@ import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class IncassoEditor extends SmdEditor<Incasso> {
 
-    Grid<Versamento> gridVersamento;
+    private Grid<Versamento> gridVersamento;
    
     public IncassoEditor(IncassoDao incassoDao) {
         super(incassoDao, new Binder<>(Incasso.class));

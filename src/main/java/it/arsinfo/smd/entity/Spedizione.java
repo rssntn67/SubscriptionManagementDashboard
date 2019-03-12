@@ -88,4 +88,20 @@ public class Spedizione implements SmdEntity {
         this.numero = numero;
     }
 
+    public Omaggio getOmaggio() {
+        return omaggio;
+    }
+
+    public void setOmaggio(Omaggio omaggio) {
+        this.omaggio = omaggio;
+    }
+
+    public Invio getInvio() {
+        return invio;
+    }
+
+    public void setInvio(Invio invio) {
+        this.invio = invio;
+    }
+
 }
