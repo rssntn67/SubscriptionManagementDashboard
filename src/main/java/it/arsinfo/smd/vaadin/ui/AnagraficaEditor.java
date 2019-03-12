@@ -7,9 +7,7 @@ import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
@@ -64,34 +62,43 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     public AnagraficaEditor(AnagraficaDao anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
-        HorizontalLayout riga1 = new HorizontalLayout(diocesi, cassa, regioneVescovi,
-                                                      centroDiocesano);
-        HorizontalLayout riga2 = new HorizontalLayout(titolo, cognome, nome,
-                                                      intestazione);
-        HorizontalLayout riga3 = new HorizontalLayout(indirizzo, cap, citta,
-                                                      paese);
-        HorizontalLayout riga4 = new HorizontalLayout(email, telefono,
-                                                      cellulare, codfis, piva
+        HorizontalLayout riga1 = new HorizontalLayout(diocesi, 
+                                                      cassa, 
+                                                      regioneVescovi,
+                                                      centroDiocesano,
+                                                      regionePresidenteDiocesano,
+                                                      regioneDirettoreDiocesano
+                                                      );
+        HorizontalLayout riga2 = new HorizontalLayout(titolo, 
+                                                      cognome, 
+                                                      nome,
+                                                      indirizzo, 
+                                                      cap, 
+                                                      citta,
+                                                      intestazione
+                                                      );
+        HorizontalLayout riga3 = new HorizontalLayout(paese,
+                                                      email, 
+                                                      telefono,
+                                                      cellulare, 
+                                                      codfis, 
+                                                      piva
                                                       );
 
-        HorizontalLayout riga5 = new HorizontalLayout(new VerticalLayout(inRegola,
-                                                                         new Label("Incarichi Diocesani"),
-                                                                         new HorizontalLayout(presidenteDiocesano,
-                                                                                              direttoreDiocesiano,
-                                                                                              direttoreZonaMilano),
-                                                                         new HorizontalLayout(regionePresidenteDiocesano,
-                                                                                              regioneDirettoreDiocesano)),
-                                                      new VerticalLayout(new Label("ADP:"),
-                                                                         new HorizontalLayout(consiglioNazionaleADP,
-                                                                                              presidenzaADP,
-                                                                                              direzioneADP,
-                                                                                              caricheSocialiADP,
-                                                                                              delegatiRegionaliADP),
-                                                                         new VerticalLayout(new Label("Altre Categorie:"),
-                                                                                            elencoMarisaBisi,
-                                                                                            promotoreRegionale)));
+        HorizontalLayout riga4 = new HorizontalLayout(inRegola,
+                                                      presidenteDiocesano,
+                                                      direttoreDiocesiano,
+                                                      direttoreZonaMilano,
+                                                      consiglioNazionaleADP,
+                                                      presidenzaADP,
+                                                      direzioneADP,
+                                                      caricheSocialiADP,
+                                                      delegatiRegionaliADP,
+                                                      elencoMarisaBisi,
+                                                      promotoreRegionale
+                                                      );
 
-        setComponents(getActions(), riga1, riga2, riga3, riga4, riga5);
+        setComponents(getActions(), riga1, riga2, riga3, riga4);
 
         getBinder().forField(cognome).asRequired();
         getBinder().forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));

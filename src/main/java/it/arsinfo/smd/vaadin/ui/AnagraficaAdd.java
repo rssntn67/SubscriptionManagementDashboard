@@ -7,8 +7,8 @@ public class AnagraficaAdd extends SmdAdd<Anagrafica> {
 
 
 
-    public AnagraficaAdd() {
-        super();
+    public AnagraficaAdd(String caption) {
+        super(caption);
     }
     
     @Override

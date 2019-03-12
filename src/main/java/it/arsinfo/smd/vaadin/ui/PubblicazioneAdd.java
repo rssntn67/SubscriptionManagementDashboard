@@ -5,8 +5,8 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class PubblicazioneAdd extends SmdAdd<Pubblicazione> {
 
-    public PubblicazioneAdd() {
-        super();
+    public PubblicazioneAdd(String caption) {
+        super(caption);
     }
     
     @Override

@@ -7,8 +7,8 @@ public class AbbonamentoAdd extends SmdAdd<Abbonamento> {
 
 
 
-    public AbbonamentoAdd() {
-        super();
+    public AbbonamentoAdd(String caption) {
+        super(caption);
     }
     
     @Override

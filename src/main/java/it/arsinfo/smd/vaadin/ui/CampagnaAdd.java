@@ -7,8 +7,8 @@ public class CampagnaAdd extends SmdAdd<Campagna> {
 
 
 
-    public CampagnaAdd() {
-        super();
+    public CampagnaAdd(String caption) {
+        super(caption);
     }
     
     @Override

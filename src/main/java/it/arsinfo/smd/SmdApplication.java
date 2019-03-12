@@ -128,7 +128,6 @@ public class SmdApplication {
 	String progressivo = value.substring(8,15);
 	versamento.setProgressivo(progressivo);
 	versamento.setErrore(progressivo.equals("9999999"));
-        versamento.setCcp(ContoCorrentePostale.getByCcp(value.substring(15,27)));
         versamento.setDataPagamento(formatter.parse(value.substring(27, 33)));
         versamento.setTipoDocumento(TipoDocumentoBollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
         versamento.setImporto(new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));

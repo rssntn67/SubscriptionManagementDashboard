@@ -8,9 +8,10 @@ import it.arsinfo.smd.entity.SmdEntity;
 public abstract class SmdAdd<T extends SmdEntity>
         extends SmdChangeHandler {
 
-    private Button add = new Button("Aggiungi", VaadinIcons.PLUS);
+    private final Button add;
 
-    public SmdAdd() {
+    public SmdAdd(String caption) {
+        add = new Button(caption, VaadinIcons.PLUS);
         add.addClickListener(e -> onChange());
         setComponents(add);
 

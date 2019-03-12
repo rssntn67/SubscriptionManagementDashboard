@@ -35,20 +35,32 @@ public class AnagraficaUI extends SmdUI {
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(anagraficaPubblicazioneDao,
                        "anagraficaPubblicazioneDao must be not null");
+        AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
         AnagraficaGrid grid = new AnagraficaGrid();
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         StoricoByAnagrafica storicoByAnagrafica = new StoricoByAnagrafica(anagraficaPubblicazioneDao);
         StoricoGrid storicoGrid = new StoricoGrid();
-        StoricoEditor storicoEditor = new StoricoEditor(anagraficaPubblicazioneDao,
-                                                                                    pubblicazioneDao,
-                                                                                    anagraficaDao);
-        addSmdComponents(storicoEditor, editor, storicoByAnagrafica,storicoGrid, search);
+        StoricoEditor storicoEditor = 
+                new StoricoEditor(
+                      anagraficaPubblicazioneDao,
+                      pubblicazioneDao,
+                      anagraficaDao
+        );
+        StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
+        addSmdComponents(storicoAdd,storicoEditor, editor, storicoByAnagrafica,storicoGrid, add,search, grid);
         
         editor.setVisible(false);
         storicoByAnagrafica.setVisible(false);
         storicoGrid.setVisible(false);
         storicoEditor.setVisible(false);
+        storicoAdd.setVisible(false);
+
+        add.setChangeHandler(() -> {
+            setHeader(String.format("Anagrafica:Add"));
+            hideMenu();
+            editor.edit(add.generate());
+        });
 
         search.setChangeHandler(() -> {
             grid.populate(search.find());
@@ -61,8 +73,9 @@ public class AnagraficaUI extends SmdUI {
             setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             hideMenu();
             editor.edit(grid.getSelected());
+            storicoAdd.setIntestatario(grid.getSelected());
             storicoGrid.populate(storicoByAnagrafica.findByKey(grid.getSelected()));
-            storicoGrid.setVisible(true);
+            storicoAdd.setVisible(true);
         });
 
 
@@ -71,6 +84,7 @@ public class AnagraficaUI extends SmdUI {
             editor.setVisible(false);
             storicoGrid.setVisible(false);
             storicoByAnagrafica.setVisible(false);
+            storicoAdd.setVisible(false);
             showMenu();
             setHeader("Anagrafica");
         });
@@ -81,7 +95,7 @@ public class AnagraficaUI extends SmdUI {
             }
             storicoEditor.edit(storicoGrid.getSelected());
             editor.setVisible(false);
-            setHeader(String.format("Anagrafica:Pubblicazione:Edit:%s-%s",
+            setHeader(String.format("Storico:%s-%s",
                                     storicoGrid.getSelected().getCaptionIntestatario(),
                                     storicoGrid.getSelected().getCaptionPubblicazione()));
         });
@@ -93,6 +107,13 @@ public class AnagraficaUI extends SmdUI {
             storicoEditor.setVisible(false);
         });
 
+        storicoAdd.setChangeHandler(() -> {
+            storicoEditor.edit(storicoAdd.generate());
+            setHeader("Storico:Add");
+            editor.setVisible(false);
+        });
+
+        grid.populate(search.findAll());
 
     }
 

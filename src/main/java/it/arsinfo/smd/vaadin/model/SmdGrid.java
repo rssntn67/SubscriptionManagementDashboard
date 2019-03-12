@@ -35,7 +35,12 @@ public abstract class SmdGrid<T extends SmdEntity>
     }
     
     public void populate(List<T> items) {
-        grid.setItems(items);
+        if (items == null || items.size() == 0) {
+            setVisible(false);
+        } else {
+            grid.setItems(items);
+            setVisible(true);
+        }
     }
 
     public T getSelected() {

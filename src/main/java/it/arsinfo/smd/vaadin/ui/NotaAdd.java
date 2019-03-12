@@ -5,8 +5,8 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class NotaAdd extends SmdAdd<Nota> {
 
-    public NotaAdd() {
-        super();
+    public NotaAdd(String caption) {
+        super(caption);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class NotaUI extends SmdUI {
         Assert.notNull(notaDao, "notaDao must be not null");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
 
-        NotaAdd add = new NotaAdd();
+        NotaAdd add = new NotaAdd("Aggiungi Nota");
         NotaSearch search = new NotaSearch(notaDao, anagraficaDao);
         NotaGrid grid = new NotaGrid();
         NotaEditor editor = new NotaEditor(notaDao, anagraficaDao);
