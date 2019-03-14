@@ -193,8 +193,12 @@ public class Abbonamento implements SmdEntity {
         this.spedizioni = listaAbbonamentoPubblicazione;
     }
     
-    public void addSpedizione(Pubblicazione pubblicazione, Anagrafica destinatario, int numero) {
-        spedizioni.add(new Spedizione(this, pubblicazione, destinatario, numero));
+    public void addSpedizione(Spedizione spedizione) {
+        spedizioni.add(spedizione);
+    }
+
+    public boolean deleteSpedizione(Spedizione spedizione) {
+        return spedizioni.remove(spedizione);
     }
 
     public Cassa getCassa() {

@@ -13,9 +13,9 @@ public class StoricoGrid extends SmdGrid<Storico> {
         super(new Grid<>(Storico.class));
 
         setColumns("numero","captionPubblicazione","captionIntestatario","captionDestinatario","omaggio","invio");
-        setColumnCamptio("captionIntestatario", "Intestatario");
-        setColumnCamptio("captionDestinatario", "Destinatario");
-        setColumnCamptio("captionPubblicazione", "Pubblicazione");
+        setColumnCaption("captionIntestatario", "Intestatario");
+        setColumnCaption("captionDestinatario", "Destinatario");
+        setColumnCaption("captionPubblicazione", "Pubblicazione");
 
     }
     

@@ -12,7 +12,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
     public AbbonamentoGrid() {
         super(new Grid<>(Abbonamento.class));
         setColumns("intestatario.caption", "cassa", "costo", "anno", "data");
-        setColumnCamptio("intestatario.caption", "Intestatario");
+        setColumnCaption("intestatario.caption", "Intestatario");
     }
 
 }

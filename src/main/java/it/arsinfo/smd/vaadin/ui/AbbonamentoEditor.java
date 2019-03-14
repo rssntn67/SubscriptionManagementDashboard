@@ -9,9 +9,7 @@ import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
@@ -20,11 +18,8 @@ import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
@@ -48,29 +43,17 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final CheckBox pagato = new CheckBox("Pagato");
     private final DateField incasso = new DateField("Incassato");
 
-    private Grid<Spedizione> spedizioni;
+    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, AnagraficaDao anagraficaDao) {
 
-    private final SpedizioneDao spedizioneDao;
+        super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
-    public AbbonamentoEditor(AbbonamentoDao repo, AnagraficaDao anagraficaDao,
-            PubblicazioneDao pubblDao, SpedizioneDao spedizioneDao) {
-
-        super(repo,new Binder<>(Abbonamento.class));
-
-        this.spedizioneDao = spedizioneDao;
         HorizontalLayout pri = new HorizontalLayout(intestatario,
                                                     anno, inizio, fine);
         HorizontalLayout sec = new HorizontalLayout(costo, cassa, campo,
                                                     contoCorrentePostale,spese);
         
-        spedizioni = new Grid<Spedizione>(Spedizione.class);
 
-        spedizioni.setColumns("destinatario.caption","pubblicazione.caption","numero","omaggio","invio");
-        spedizioni.getColumn("destinatario.caption").setCaption("Destinatario");
-        spedizioni.getColumn("pubblicazione.caption").setCaption("Pubblicazione");
-        spedizioni.setWidth("100%");
-
-        setComponents(getActions(),pri, sec, pagato, incasso,new Label("Spedizioni"), spedizioni);
+        setComponents(getActions(),pri, sec, pagato, incasso);
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
@@ -143,7 +126,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         }
 
         if (persisted) {
-            spedizioni.setItems(spedizioneDao.findByAbbonamento(abbonamento));
             getSave().setEnabled(true);
             getCancel().setEnabled(true);
             pagato.setVisible(true);

@@ -27,7 +27,7 @@ public abstract class SmdGrid<T extends SmdEntity>
         grid.setColumns(columnIds);
     }
 
-    public void setColumnCamptio(String columnId, String caption) {
+    public void setColumnCaption(String columnId, String caption) {
         if (grid.getColumn(columnId) == null) {
             return;
         }

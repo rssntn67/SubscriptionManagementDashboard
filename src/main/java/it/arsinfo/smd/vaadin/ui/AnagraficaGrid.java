@@ -12,7 +12,7 @@ public class AnagraficaGrid extends SmdGrid<Anagrafica> {
 
         setColumns("nome", "cognome", "diocesi.details", 
                    "citta", "cap", "paese", "cassa", "inRegola");
-        setColumnCamptio("diocesi.details", "Diocesi");
+        setColumnCaption("diocesi.details", "Diocesi");
     }
 
 }

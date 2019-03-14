@@ -8,8 +8,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.vaadin.model.SmdGrid;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_PUBBLICAZIONI)
-@Title("Anagrafica Pubblicazioni ADP")
 public class PubblicazioneGrid extends SmdGrid<Pubblicazione> {
 
     public PubblicazioneGrid() {

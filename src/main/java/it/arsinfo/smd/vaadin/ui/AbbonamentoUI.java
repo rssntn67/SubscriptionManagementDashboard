@@ -48,17 +48,31 @@ public class AbbonamentoUI extends SmdUI {
                                                          anagraficaDao);
         AbbonamentoGrid grid = new AbbonamentoGrid();
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,
-                                                         anagraficaDao,
-                                                         pubblicazioneDao,
-                                                         spedizioneDao);
+                                                         anagraficaDao
+                                                         );
         
+        SpedizioneGrid spedizioneGrid = new SpedizioneGrid();
         SpedizioneAdd spedizioneAdd = new SpedizioneAdd("Aggiungi spedizione");
-        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao);
-        addSmdComponents(spedizioneEditor,spedizioneAdd,editor, add,search, grid);
+        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao) {
+            @Override
+            public void save() {
+                editor.getRepositoryObj().addSpedizione(getRepositoryObj());
+                onChange();
+            };
+            
+            @Override 
+            public void delete() {
+                editor.getRepositoryObj().deleteSpedizione(getRepositoryObj());
+                onChange();
+            };
+        };
+
+        addSmdComponents(spedizioneEditor,spedizioneAdd,spedizioneGrid,editor, add,search, grid);
 
         editor.setVisible(false);
-        spedizioneAdd.setVisible(false);
         spedizioneEditor.setVisible(false);
+        spedizioneAdd.setVisible(false);
+        spedizioneGrid.setVisible(false);
         
         add.setChangeHandler(() -> {
             setHeader(String.format("Abbonamento:new"));
