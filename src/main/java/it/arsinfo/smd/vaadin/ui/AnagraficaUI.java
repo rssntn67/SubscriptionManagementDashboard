@@ -1,5 +1,8 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -7,6 +10,8 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -27,31 +32,29 @@ public class AnagraficaUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazioneDao;
     @Autowired
-    StoricoDao anagraficaPubblicazioneDao;
+    StoricoDao storicoDao;
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Anagrafica");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(anagraficaPubblicazioneDao,
+        Assert.notNull(storicoDao,
                        "anagraficaPubblicazioneDao must be not null");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
-        AnagraficaGrid grid = new AnagraficaGrid();
+        AnagraficaGrid grid = new AnagraficaGrid("");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
-        StoricoByAnagrafica storicoByAnagrafica = new StoricoByAnagrafica(anagraficaPubblicazioneDao);
-        StoricoGrid storicoGrid = new StoricoGrid();
+        StoricoGrid storicoGrid = new StoricoGrid("Storico");
         StoricoEditor storicoEditor = 
                 new StoricoEditor(
-                      anagraficaPubblicazioneDao,
+                      storicoDao,
                       pubblicazioneDao,
                       anagraficaDao
         );
         StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
-        addSmdComponents(storicoAdd,storicoEditor, editor, storicoByAnagrafica,storicoGrid, add,search, grid);
+        addSmdComponents(storicoAdd,storicoEditor, editor, storicoGrid, add,search, grid);
         
         editor.setVisible(false);
-        storicoByAnagrafica.setVisible(false);
         storicoGrid.setVisible(false);
         storicoEditor.setVisible(false);
         storicoAdd.setVisible(false);
@@ -74,7 +77,7 @@ public class AnagraficaUI extends SmdUI {
             hideMenu();
             editor.edit(grid.getSelected());
             storicoAdd.setIntestatario(grid.getSelected());
-            storicoGrid.populate(storicoByAnagrafica.findByKey(grid.getSelected()));
+            storicoGrid.populate(findByCustomer(grid.getSelected()));
             storicoAdd.setVisible(true);
         });
 
@@ -83,7 +86,6 @@ public class AnagraficaUI extends SmdUI {
             grid.populate(search.find());
             editor.setVisible(false);
             storicoGrid.setVisible(false);
-            storicoByAnagrafica.setVisible(false);
             storicoAdd.setVisible(false);
             showMenu();
             setHeader("Anagrafica");
@@ -101,7 +103,7 @@ public class AnagraficaUI extends SmdUI {
         });
 
         storicoEditor.setChangeHandler(() -> {
-            storicoGrid.populate(storicoByAnagrafica.findByKey(grid.getSelected()));
+            storicoGrid.populate(findByCustomer(grid.getSelected()));
             setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             editor.setVisible(true);
             storicoEditor.setVisible(false);
@@ -115,6 +117,15 @@ public class AnagraficaUI extends SmdUI {
 
         grid.populate(search.findAll());
 
+    }
+    
+    public List<Storico> findByCustomer(Anagrafica customer) {
+        List<Storico> list = storicoDao.findByIntestatario(customer);
+        list.addAll(storicoDao.findByDestinatario(customer)
+                    .stream()
+                    .filter(ap -> customer.getId() != ap.getIntestatario().getId())
+                    .collect(Collectors.toList()));
+        return list;
     }
 
 }

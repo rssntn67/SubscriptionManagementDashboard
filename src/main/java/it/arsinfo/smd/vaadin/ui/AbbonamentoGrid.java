@@ -9,8 +9,8 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
 
     Grid<Abbonamento> grid;
 
-    public AbbonamentoGrid() {
-        super(new Grid<>(Abbonamento.class));
+    public AbbonamentoGrid(String gridName) {
+        super(new Grid<>(Abbonamento.class),gridName);
         setColumns("intestatario.caption", "cassa", "costo", "anno", "data");
         setColumnCaption("intestatario.caption", "Intestatario");
     }

@@ -29,7 +29,7 @@ public class PubblicazioneUI extends SmdUI {
         Assert.notNull(repo, "repo must be not null");
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
         PubblicazioneSearch search = new PubblicazioneSearch(repo);
-        PubblicazioneGrid grid = new PubblicazioneGrid();
+        PubblicazioneGrid grid = new PubblicazioneGrid("");
         PubblicazioneEditor editor = new PubblicazioneEditor(repo);
         addSmdComponents(editor,add, search, grid);
         editor.setVisible(false);

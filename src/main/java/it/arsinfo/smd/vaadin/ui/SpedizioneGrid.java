@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class SpedizioneGrid extends SmdGrid<Spedizione> {
 
-    public SpedizioneGrid() {
-        super(new Grid<>(Spedizione.class));
+    public SpedizioneGrid(String gridname) {
+        super(new Grid<>(Spedizione.class),gridname);
         setColumns("destinatario.caption","pubblicazione.caption","numero","omaggio","invio");
         setColumnCaption("destinatario.caption","Destinatario");
         setColumnCaption("pubblicazione.caption","Pubblicazione");

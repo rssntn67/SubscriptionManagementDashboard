@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class AnagraficaGrid extends SmdGrid<Anagrafica> {
 
-    public AnagraficaGrid() {
-        super(new Grid<>(Anagrafica.class));
+    public AnagraficaGrid(String gridName) {
+        super(new Grid<>(Anagrafica.class),gridName);
 
         setColumns("nome", "cognome", "diocesi.details", 
                    "citta", "cap", "paese", "cassa", "inRegola");

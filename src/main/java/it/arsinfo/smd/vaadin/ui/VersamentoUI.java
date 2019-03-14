@@ -35,7 +35,7 @@ public class VersamentoUI extends SmdUI {
         Assert.notNull(abbonamentoDao, "abbonamentoDao must be not null");
 
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
-        VersamentoGrid grid = new VersamentoGrid();
+        VersamentoGrid grid = new VersamentoGrid("");
         VersamentoEditor editor = new VersamentoEditor(versamentoDao,
                                                        abbonamentoDao);
         addSmdComponents(editor, grid, search);

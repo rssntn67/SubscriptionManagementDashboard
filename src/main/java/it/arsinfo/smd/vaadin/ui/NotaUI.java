@@ -35,7 +35,7 @@ public class NotaUI extends SmdUI {
 
         NotaAdd add = new NotaAdd("Aggiungi Nota");
         NotaSearch search = new NotaSearch(notaDao, anagraficaDao);
-        NotaGrid grid = new NotaGrid();
+        NotaGrid grid = new NotaGrid("");
         NotaEditor editor = new NotaEditor(notaDao, anagraficaDao);
         addSmdComponents(add, editor, grid, search);
 

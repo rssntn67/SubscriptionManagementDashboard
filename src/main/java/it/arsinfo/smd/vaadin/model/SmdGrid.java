@@ -2,6 +2,8 @@ package it.arsinfo.smd.vaadin.model;
 
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.entity.SmdEntity;
@@ -11,10 +13,12 @@ public abstract class SmdGrid<T extends SmdEntity>
 
     private final Grid<T> grid;
     private T selected;
-
-    public SmdGrid(Grid<T> grid) {
+    private final String gridName;
+    
+    public SmdGrid(Grid<T> grid, String gridName) {
         this.grid = grid;
-        this.grid.setWidth("80%");
+        this.gridName = gridName;
+        this.grid.setWidth("100%");
 
         this.grid.asSingleSelect().addValueChangeListener(e -> {
             selected = e.getValue();
@@ -22,9 +26,13 @@ public abstract class SmdGrid<T extends SmdEntity>
         });
         setComponents(this.grid);
     }
+        
 
     public void setColumns(String...columnIds) {
         grid.setColumns(columnIds);
+        if (!StringUtils.isEmpty(gridName)) {
+            grid.prependHeaderRow().join(columnIds).setText(gridName);            
+        }
     }
 
     public void setColumnCaption(String columnId, String caption) {
@@ -45,6 +53,11 @@ public abstract class SmdGrid<T extends SmdEntity>
 
     public T getSelected() {
         return selected;
+    }
+
+
+    public String getGridName() {
+        return gridName;
     }
     
 }

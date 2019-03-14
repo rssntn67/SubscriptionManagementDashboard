@@ -38,7 +38,7 @@ public class CampagnaUI extends SmdUI {
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
-        CampagnaGrid grid = new CampagnaGrid();
+        CampagnaGrid grid = new CampagnaGrid("");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao, anagraficaDao,
                                                    pubblicazioneDao);
         addSmdComponents(editor, search, grid);

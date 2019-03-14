@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class VersamentoGrid extends SmdGrid<Versamento> {
 
-    public VersamentoGrid() {
-        super(new Grid<>(Versamento.class));
+    public VersamentoGrid(String gridname) {
+        super(new Grid<>(Versamento.class),gridname);
         setColumns("ccp.ccp","campo","campovalido",              
                         "dataPagamento","dataContabile","importo",
                         "errore",

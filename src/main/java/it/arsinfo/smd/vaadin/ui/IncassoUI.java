@@ -27,7 +27,7 @@ public class IncassoUI extends SmdUI {
         super.init(request,"Incassi");
         IncassoUpload upload = new IncassoUpload();
         IncassoSearch search = new IncassoSearch(repo);
-        IncassoGrid grid = new IncassoGrid();
+        IncassoGrid grid = new IncassoGrid("");
         IncassoEditor editor = new IncassoEditor(repo);
 
         addSmdComponents(upload, editor,search, grid);

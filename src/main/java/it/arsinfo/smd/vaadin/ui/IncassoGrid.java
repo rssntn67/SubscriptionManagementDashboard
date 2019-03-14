@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class IncassoGrid extends SmdGrid<Incasso> {
 
-    public IncassoGrid() {
-        super(new Grid<>(Incasso.class));
+    public IncassoGrid(String gridname) {
+        super(new Grid<>(Incasso.class),gridname);
 
         setColumns("cuas.denominazione", "ccp.ccp", "dataContabile",
                    "totaleDocumenti", "totaleImporto", "documentiEsatti",

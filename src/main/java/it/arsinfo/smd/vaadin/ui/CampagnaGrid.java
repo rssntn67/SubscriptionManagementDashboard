@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class CampagnaGrid extends SmdGrid<Campagna> {
 
-    public CampagnaGrid() {
-        super(new Grid<>(Campagna.class));
+    public CampagnaGrid(String gridname) {
+        super(new Grid<>(Campagna.class),gridname);
 
         setColumns("anno", "inizio", "fine", "estratti", "blocchetti",
                    "lodare", "messaggio", "pagato", "anagraficaFlagA",

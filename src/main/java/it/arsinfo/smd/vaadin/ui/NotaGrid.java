@@ -7,8 +7,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 
 public class NotaGrid extends SmdGrid<Nota> {
 
-    public NotaGrid() {
-        super(new Grid<>(Nota.class));
+    public NotaGrid(String gridname) {
+        super(new Grid<>(Nota.class),gridname);
         setColumns("anagrafica.cognome", "anagrafica.nome", "data",
                    "description");
 

@@ -5,8 +5,6 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class CampagnaAdd extends SmdAdd<Campagna> {
 
-
-
     public CampagnaAdd(String caption) {
         super(caption);
     }

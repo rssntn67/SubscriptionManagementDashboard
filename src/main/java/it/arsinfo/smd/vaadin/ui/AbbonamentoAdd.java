@@ -5,8 +5,6 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class AbbonamentoAdd extends SmdAdd<Abbonamento> {
 
-
-
     public AbbonamentoAdd(String caption) {
         super(caption);
     }

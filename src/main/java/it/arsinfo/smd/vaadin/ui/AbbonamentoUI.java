@@ -1,5 +1,7 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -7,6 +9,8 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -43,15 +47,13 @@ public class AbbonamentoUI extends SmdUI {
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
         Assert.notNull(spedizioneDao, "spedizioneDao must be not null");
-        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,
-                                                         anagraficaDao);
-        AbbonamentoGrid grid = new AbbonamentoGrid();
-        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,
-                                                         anagraficaDao
-                                                         );
         
-        SpedizioneGrid spedizioneGrid = new SpedizioneGrid();
+        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagraficaDao);
+        AbbonamentoGrid grid = new AbbonamentoGrid("");
+        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagraficaDao);
+
+        SpedizioneGrid spedizioneGrid = new SpedizioneGrid("Spedizioni");
         SpedizioneAdd spedizioneAdd = new SpedizioneAdd("Aggiungi spedizione");
         SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao) {
             @Override
@@ -67,7 +69,7 @@ public class AbbonamentoUI extends SmdUI {
             };
         };
 
-        addSmdComponents(spedizioneEditor,spedizioneAdd,spedizioneGrid,editor, add,search, grid);
+        addSmdComponents(spedizioneEditor,editor,spedizioneAdd,spedizioneGrid, add,search, grid);
 
         editor.setVisible(false);
         spedizioneEditor.setVisible(false);
@@ -111,4 +113,7 @@ public class AbbonamentoUI extends SmdUI {
 
     }
 
+    public List<Spedizione> findByAbbonamaneto(Abbonamento abbonamento) {
+        return spedizioneDao.findByAbbonamento(abbonamento);
+    }
 }

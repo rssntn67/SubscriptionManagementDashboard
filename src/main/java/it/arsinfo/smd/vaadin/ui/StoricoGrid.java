@@ -9,8 +9,8 @@ import it.arsinfo.smd.vaadin.model.SmdGrid;
 public class StoricoGrid extends SmdGrid<Storico> {
 
 
-    public StoricoGrid() {
-        super(new Grid<>(Storico.class));
+    public StoricoGrid(String gridname) {
+        super(new Grid<>(Storico.class),gridname);
 
         setColumns("numero","captionPubblicazione","captionIntestatario","captionDestinatario","omaggio","invio");
         setColumnCaption("captionIntestatario", "Intestatario");

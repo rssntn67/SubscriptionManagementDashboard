@@ -5,8 +5,6 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class AnagraficaAdd extends SmdAdd<Anagrafica> {
 
-
-
     public AnagraficaAdd(String caption) {
         super(caption);
     }
