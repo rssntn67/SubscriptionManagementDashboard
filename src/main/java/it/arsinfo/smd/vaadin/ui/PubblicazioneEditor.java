@@ -41,7 +41,10 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         super(repo,new Binder<>(Pubblicazione.class));
         setComponents(getActions(),basic, costi, check);
         
-        getBinder().forField(nome).asRequired("Il Nome della Pubblicazione e' abbligatorio").bind(Pubblicazione::getNome,
+        getBinder().forField(nome)
+            .asRequired("Il Nome della Pubblicazione e' abbligatorio")
+            .withValidator(nm -> nm != null || "".equals(nm), "il nome non può essere nullo")
+            .bind(Pubblicazione::getNome,
                                                                                              Pubblicazione::setNome);
         getBinder().forField(tipo).asRequired("Il Tipo di pubblicazione e' obbligatorio").bind(Pubblicazione::getTipo,
                                                                                           Pubblicazione::setTipo);
