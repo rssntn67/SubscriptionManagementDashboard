@@ -38,6 +38,9 @@ public class PubblicazioneUI extends SmdUI {
             setHeader(String.format("Pubblicazione:Add"));
             hideMenu();
             editor.edit(add.generate());
+            add.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
         });
         
         search.setChangeHandler(()-> {
@@ -52,11 +55,15 @@ public class PubblicazioneUI extends SmdUI {
             setHeader(String.format("Pubblicazioni:Edit:%s",
                                     grid.getSelected().getCaption()));
             hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
         });
 
         editor.setChangeHandler(() -> {
             grid.populate(search.find());
             showMenu();
+            add.setVisible(true);
+            search.setVisible(true);
             setHeader("Pubblicazioni");
             editor.setVisible(false);
         });

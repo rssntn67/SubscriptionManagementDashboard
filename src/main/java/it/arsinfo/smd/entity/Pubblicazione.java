@@ -26,19 +26,19 @@ public class Pubblicazione implements SmdEntity {
 
     private String editore;
 
-    private boolean active;
+    private boolean active = true;
 
-    private boolean abbonamento;
-
-    @Enumerated(EnumType.STRING)
-    private Mese primaPubblicazione;
-
-    private BigDecimal costoUnitario;
-
-    private BigDecimal costoScontato;
+    private boolean abbonamento = false;
 
     @Enumerated(EnumType.STRING)
-    private TipoPubblicazione tipo;
+    private Mese primaPubblicazione=Mese.GENNAIO;
+
+    private BigDecimal costoUnitario=BigDecimal.ZERO;
+
+    private BigDecimal costoScontato=BigDecimal.ZERO;
+
+    @Enumerated(EnumType.STRING)
+    private TipoPubblicazione tipo=TipoPubblicazione.UNICO;
 
     public Long getId() {
         return id;
@@ -70,24 +70,16 @@ public class Pubblicazione implements SmdEntity {
         super();
         this.nome = nome;
         this.tipo = tipo;
-        this.costoUnitario = BigDecimal.ZERO;
-        this.costoScontato = BigDecimal.ZERO;
     }
 
     public Pubblicazione(String nome) {
         super();
         this.nome = nome;
-        this.tipo = TipoPubblicazione.UNICO;
-        this.costoUnitario = BigDecimal.ZERO;
-        this.costoScontato = BigDecimal.ZERO;
     }
 
     public Pubblicazione() {
         super();
-        this.nome = "";
-        this.tipo = TipoPubblicazione.UNICO;
-        this.costoUnitario = BigDecimal.ZERO;
-        this.costoScontato = BigDecimal.ZERO;
+        this.nome = "AAA";
     }
 
     public boolean isActive() {
