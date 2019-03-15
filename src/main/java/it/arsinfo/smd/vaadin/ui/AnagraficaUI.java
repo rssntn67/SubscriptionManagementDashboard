@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Storico;
@@ -48,9 +49,18 @@ public class AnagraficaUI extends SmdUI {
         StoricoEditor storicoEditor = 
                 new StoricoEditor(
                       storicoDao,
-                      pubblicazioneDao,
-                      anagraficaDao
-        );
+                      pubblicazioneDao.findAll(),
+                      anagraficaDao.findAll()
+        ) {
+            @Override
+            public void save() {
+                if (getPubblicazione().isEmpty()) {
+                    Notification.show("Pubblicazione deve essere valorizzata");
+                    return;
+                }
+                super.save();
+            }
+        };
         StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
         addSmdComponents(storicoAdd,storicoEditor, editor, storicoGrid, add,search, grid);
         
@@ -62,6 +72,9 @@ public class AnagraficaUI extends SmdUI {
         add.setChangeHandler(() -> {
             setHeader(String.format("Anagrafica:Add"));
             hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
             editor.edit(add.generate());
         });
 
@@ -75,20 +88,23 @@ public class AnagraficaUI extends SmdUI {
             }
             setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
             editor.edit(grid.getSelected());
             storicoAdd.setIntestatario(grid.getSelected());
-            storicoGrid.populate(findByCustomer(grid.getSelected()));
             storicoAdd.setVisible(true);
+            storicoGrid.populate(findByCustomer(grid.getSelected()));
         });
-
 
         editor.setChangeHandler(() -> {
             grid.populate(search.find());
             editor.setVisible(false);
+            setHeader("Anagrafica");
+            showMenu();
             storicoGrid.setVisible(false);
             storicoAdd.setVisible(false);
-            showMenu();
-            setHeader("Anagrafica");
+            add.setVisible(true);
+            search.setVisible(true);
         });
 
         storicoGrid.setChangeHandler(() -> {
@@ -96,7 +112,10 @@ public class AnagraficaUI extends SmdUI {
                 return;
             }
             storicoEditor.edit(storicoGrid.getSelected());
+            add.setVisible(false);
+            search.setVisible(false);
             editor.setVisible(false);
+            storicoAdd.setVisible(false);
             setHeader(String.format("Storico:%s-%s",
                                     storicoGrid.getSelected().getCaptionIntestatario(),
                                     storicoGrid.getSelected().getCaptionPubblicazione()));
@@ -111,7 +130,8 @@ public class AnagraficaUI extends SmdUI {
 
         storicoAdd.setChangeHandler(() -> {
             storicoEditor.edit(storicoAdd.generate());
-            setHeader("Storico:Add");
+            setHeader(String.format("Storico:Add:%s",editor.get().getCaption()));
+            storicoAdd.setVisible(false);
             editor.setVisible(false);
         });
 

@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum Diocesi {
+        DIOCESISTD("Non definita"),
 	DIOCESI000("000 | Estero"),
 	DIOCESI001("001 | Acerenza"),
 	DIOCESI002("002 | Acerra"),

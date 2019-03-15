@@ -4,6 +4,8 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.validator.BeanValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -48,7 +50,15 @@ public class SpedizioneEditor
                                            pubblicazione),
                       new HorizontalLayout(omaggio, invio));
  
-        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Spedizione::getNumero, Spedizione::setNumero);
+        getBinder()
+            .forField(numero)
+            .withConverter(new StringToIntegerConverter(""))
+            .withValidator(new IntegerRangeValidator("il numero deve essere compreso fra 1 e 5000", 1, 5000))
+            .bind(Spedizione::getNumero, Spedizione::setNumero);
+        getBinder()
+            .forField(pubblicazione)
+            .asRequired()
+            .withValidator(new BeanValidator(Pubblicazione.class, "nome"));
         getBinder().bindInstanceFields(this);
 
     }

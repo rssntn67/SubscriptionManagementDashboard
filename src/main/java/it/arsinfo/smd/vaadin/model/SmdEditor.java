@@ -15,14 +15,16 @@ public abstract class SmdEditor<T extends SmdEntity>
 
     private final JpaRepository<T, Long> repositoryDao;
 
-    private T repositoryObj;
+    private T smdObj;
 
     private Button save = new Button("Salva", VaadinIcons.CHECK);
-    private Button cancel = new Button("Annulla");
-    private Button delete = new Button("Cancella", VaadinIcons.TRASH);
+    private Button delete = new Button("Rimuovi", VaadinIcons.TRASH);
+    private Button cancel = new Button("Annulla Modifiche");
     private Button back = new Button("Indietro");
-    private HorizontalLayout actions = new HorizontalLayout(save, cancel,
-                                                            delete, back);
+    private HorizontalLayout actions = new HorizontalLayout(save, 
+                                                            delete,
+                                                            cancel,
+                                                            back);
 
     private final Binder<T> binder;
 
@@ -36,7 +38,7 @@ public abstract class SmdEditor<T extends SmdEntity>
 
         save.addClickListener(e -> save());
         delete.addClickListener(e -> delete());
-        cancel.addClickListener(e -> edit(repositoryObj));
+        cancel.addClickListener(e -> edit(smdObj));
         back.addClickListener(e -> onChange());
 
     }
@@ -48,12 +50,12 @@ public abstract class SmdEditor<T extends SmdEntity>
     }
 
     public void delete() {
-        repositoryDao.delete(repositoryObj);
+        repositoryDao.delete(smdObj);
         onChange();
     }
 
     public void save() {
-        repositoryDao.save(repositoryObj);
+        repositoryDao.save(smdObj);
         onChange();
     }
     
@@ -65,17 +67,18 @@ public abstract class SmdEditor<T extends SmdEntity>
         final boolean persisted = c.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            repositoryObj = repositoryDao.findById(c.getId()).get();
+            smdObj = repositoryDao.findById(c.getId()).get();
         } else {
-            repositoryObj = c;
+            smdObj = c;
         }
         // Bind customer properties to similarly named fields
         // Could also use annotation or "manual binding" or programmatically
         // moving values from fields to entities before saving
-        binder.setBean(repositoryObj);
+        binder.setBean(smdObj);
 
         cancel.setEnabled(persisted);
-        focus(persisted, repositoryObj);
+        delete.setEnabled(persisted);
+        focus(persisted, smdObj);
         setVisible(true);
     }
 
@@ -99,8 +102,8 @@ public abstract class SmdEditor<T extends SmdEntity>
         return binder;
     }
 
-    public T getRepositoryObj() {
-        return repositoryObj;
+    public T get() {
+        return smdObj;
     }
 
 }

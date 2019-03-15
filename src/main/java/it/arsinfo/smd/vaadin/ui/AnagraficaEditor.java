@@ -100,6 +100,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
         setComponents(getActions(), riga1, riga2, riga3, riga4);
 
+        getBinder().forField(diocesi).asRequired();
         getBinder().forField(cognome).asRequired();
         getBinder().forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));
         getBinder().bindInstanceFields(this);

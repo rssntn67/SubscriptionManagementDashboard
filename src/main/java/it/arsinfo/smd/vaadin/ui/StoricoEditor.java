@@ -1,6 +1,7 @@
 package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
@@ -13,8 +14,6 @@ import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
@@ -31,23 +30,23 @@ public class StoricoEditor
     private final TextField numero = new TextField("Numero");
 
     public StoricoEditor(
-            StoricoDao anagraficaPubblicazioneDao,
-            PubblicazioneDao pubblicazioneDao, AnagraficaDao anagraficaDao) {
+            StoricoDao storicoDao,
+            List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafiche) {
 
-        super(anagraficaPubblicazioneDao, new Binder<>(Storico.class) );
+        super(storicoDao, new Binder<>(Storico.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
-        pubblicazione.setItems(pubblicazioneDao.findAll());
+        pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
 
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
-        intestatario.setItems(anagraficaDao.findAll());
+        intestatario.setItems(anagrafiche);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
-        destinatario.setItems(anagraficaDao.findAll());
+        destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         setComponents(getActions(),
@@ -55,7 +54,12 @@ public class StoricoEditor
                                            pubblicazione),
                       new HorizontalLayout(omaggio, invio));
  
-        getBinder().forField(numero).withConverter(new StringToIntegerConverter("")).bind(Storico::getNumero, Storico::setNumero);
+        getBinder()
+            .forField(numero)
+            .withValidator(str -> str != null, "Inserire un numero")
+            .withConverter(new StringToIntegerConverter(""))
+            .withValidator(num -> num > 0,"deve essere maggiore di 0")
+            .bind(Storico::getNumero, Storico::setNumero);
         getBinder().bindInstanceFields(this);
 
     }
@@ -69,6 +73,10 @@ public class StoricoEditor
         }
         
         numero.focus();
+    }
+
+    public ComboBox<Pubblicazione> getPubblicazione() {
+        return pubblicazione;
     }
 
 }

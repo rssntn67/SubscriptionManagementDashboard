@@ -52,7 +52,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         abbonamentiAssociati.addComponentColumn(abbonamento -> {
             Button button = new Button("Dissocia");
             button.addClickListener(click -> dissocia(abbonamento));
-            button.setEnabled(getRepositoryObj().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
+            button.setEnabled(get().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
             return button;
         });
         abbonamentiAssociati.setWidth("100%");
@@ -66,7 +66,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         abbonamentiAssociabili.addComponentColumn(abbonamento -> {
             Button button = new Button("Associa");
             button.addClickListener(click -> incassa(abbonamento));
-            button.setEnabled(getRepositoryObj().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
+            button.setEnabled(get().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
             return button;
         });
         abbonamentiAssociabili.setWidth("100%");
@@ -82,15 +82,15 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         abbonamento.setPagato(false);
         abbonamento.setIncasso(null);
         abbonamentoDao.save(abbonamento);
-        edit(getRepositoryObj());
+        edit(get());
     }
 
     private void incassa(Abbonamento abbonamento) {
-        abbonamento.setVersamento(getRepositoryObj());
+        abbonamento.setVersamento(get());
         abbonamento.setPagato(true);
-        abbonamento.setIncasso(getRepositoryObj().getDataPagamento());
+        abbonamento.setIncasso(get().getDataPagamento());
         abbonamentoDao.save(abbonamento);
-        edit(getRepositoryObj());
+        edit(get());
     }
 
     @Override

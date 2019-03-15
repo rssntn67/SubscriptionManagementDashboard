@@ -29,7 +29,7 @@ public class Anagrafica implements SmdEntity {
     private boolean inRegola;
 
     @Enumerated(EnumType.STRING)
-    private Diocesi diocesi;
+    private Diocesi diocesi = Diocesi.DIOCESISTD;
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
     @Enumerated(EnumType.STRING)

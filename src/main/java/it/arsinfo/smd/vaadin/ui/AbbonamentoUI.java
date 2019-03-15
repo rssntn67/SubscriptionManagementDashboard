@@ -58,13 +58,13 @@ public class AbbonamentoUI extends SmdUI {
         SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao) {
             @Override
             public void save() {
-                editor.getRepositoryObj().addSpedizione(getRepositoryObj());
+                editor.get().addSpedizione(get());
                 onChange();
             };
             
             @Override 
             public void delete() {
-                editor.getRepositoryObj().deleteSpedizione(getRepositoryObj());
+                editor.get().deleteSpedizione(get());
                 onChange();
             };
         };
@@ -80,7 +80,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("Abbonamento:new"));
             hideMenu();
             editor.edit(add.generate());
-            spedizioneAdd.setAbbonamento(editor.getRepositoryObj());
+            spedizioneAdd.setAbbonamento(editor.get());
             spedizioneAdd.setVisible(true);
         });
         
