@@ -21,6 +21,7 @@ import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.TipoAccettazioneBollettino;
 import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -53,7 +54,7 @@ public class SmdApplication {
             return new Spedizione();
         }
         Spedizione spedizione = new Spedizione(abbonamento, pubblicazione, destinatario, numero);
-        abbonamento.addSpedizione(spedizione); 
+        abbonamento.addSpedizione(spedizione);
         return spedizione;
     }
     public static boolean checkCampo(String campo) {
@@ -173,29 +174,28 @@ public class SmdApplication {
         return campo;
     }
 
-    public static int getNumeroPubblicazioni(Abbonamento abb,
-            Pubblicazione pub) {
+    public static int getNumeroPubblicazioni(Mese inizio, Mese fine, Mese pub, TipoPubblicazione tipo) {
         int numero = 0;
-        switch (pub.getTipo()) {
+        switch (tipo) {
         case ANNUALE:
-            if (abb.getInizio().getPosizione() < pub.getPrimaPubblicazione().getPosizione()
-                    && abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()) {
+            if (inizio.getPosizione() < pub.getPosizione()
+                    && fine.getPosizione() > pub.getPosizione()) {
                 numero = 1;
             }
             break;
         case SEMESTRALE:
-            if (abb.getInizio().getPosizione() < pub.getPrimaPubblicazione().getPosizione()
-                    && abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()) {
+            if (inizio.getPosizione() < pub.getPosizione()
+                    && fine.getPosizione() > pub.getPosizione()) {
                 numero += 1;
             }
-            if (abb.getFine().getPosizione() > pub.getPrimaPubblicazione().getPosizione()
+            if (inizio.getPosizione() > pub.getPosizione()
                     + 6) {
                 numero += 1;
             }
             break;
         case MENSILE:
-            numero = abb.getFine().getPosizione()
-                    - abb.getInizio().getPosizione() + 1;
+            numero = fine.getPosizione()
+                    - inizio.getPosizione() + 1;
             break;
         case UNICO:
             numero = 1;
@@ -205,20 +205,48 @@ public class SmdApplication {
         }
         return numero;
     }
-
-    //FIXME
-    public static BigDecimal generaCosto(Abbonamento abb) {
+    
+    public static BigDecimal calcoloCostoAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;
-            costo = abb.
-                    getSpedizioni().
-                    stream()
-                    .mapToDouble(
-                                 abbpubbl -> 
-                                 abbpubbl.getPubblicazione().getCostoUnitario().doubleValue()
-                                 * abbpubbl.getNumero().doubleValue()
-                                 * getNumeroPubblicazioni(abb, abbpubbl.getPubblicazione())).sum();
+        Mese inizio = abbonamento.getInizio();
+        Mese fine = abbonamento.getFine();
+        costo = abbonamento.getSpedizioni().stream().mapToDouble(spedizione -> generaCosto(inizio, fine, spedizione)).sum();
+        return BigDecimal.valueOf(costo);
+    }
+    
+    public static double generaCosto(Mese inizio, Mese fine, Spedizione spedizione) { 
+        return generaCosto(inizio, fine, spedizione.getPubblicazione(), spedizione.getOmaggio(), spedizione.getNumero());
+    }
 
-        return BigDecimal.valueOf(costo).add(abb.getSpese());
+    public static double generaCosto(Mese inizio, Mese fine, Pubblicazione pubblicazione, Omaggio omaggio, Integer numero) {
+        double costo = 0.0;
+        switch (omaggio) {
+        case No:
+        costo =  pubblicazione.getCostoUnitario().doubleValue()
+                         * numero.doubleValue()
+                         * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
+        break;
+        
+        case ConSconto:
+            costo =  pubblicazione.getCostoScontato().doubleValue()
+            * numero.doubleValue()
+            * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
+            break;
+            
+        case CuriaDiocesiana:
+            break;
+        
+        case Gesuiti:
+            break;
+            
+        case CuriaGeneralizia:
+            break;
+            
+        default:
+            break;
+            
+        }
+        return costo;
     }
 
     public static void main(String[] args) {
@@ -329,7 +357,7 @@ public class SmdApplication {
             abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),
                                                  abbonamentoMd.getInizio(),
                                                  abbonamentoMd.getFine()));
-            abbonamentoMd.setCosto(generaCosto(abbonamentoMd));
+            abbonamentoMd.setSpese(calcoloCostoAbbonamento(abbonamentoMd));
             abbonamentoDao.save(abbonamentoMd);
 
             Abbonamento abbonamentoCo = new Abbonamento(co);
@@ -343,7 +371,7 @@ public class SmdApplication {
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
                                                  abbonamentoCo.getFine()));
-            abbonamentoCo.setCosto(generaCosto(abbonamentoCo));
+            abbonamentoCo.setSpese(calcoloCostoAbbonamento(abbonamentoCo));
             abbonamentoDao.save(abbonamentoCo);
 
             Abbonamento abbonamentoDp = new Abbonamento(dp);
@@ -354,7 +382,7 @@ public class SmdApplication {
             abbonamentoDp.setCampo(generateCampo(abbonamentoDp.getAnno(),
                                                  abbonamentoDp.getInizio(),
                                                  abbonamentoDp.getFine()));
-            abbonamentoDp.setCosto(generaCosto(abbonamentoDp));
+            abbonamentoDp.setSpese(calcoloCostoAbbonamento(abbonamentoDp));
             abbonamentoDao.save(abbonamentoDp);
 
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";

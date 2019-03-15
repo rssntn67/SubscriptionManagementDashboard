@@ -79,7 +79,6 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
     private void dissocia(Abbonamento abbonamento) {
         abbonamento.setVersamento(null);
-        abbonamento.setPagato(false);
         abbonamento.setIncasso(null);
         abbonamentoDao.save(abbonamento);
         edit(get());
@@ -87,7 +86,6 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
     private void incassa(Abbonamento abbonamento) {
         abbonamento.setVersamento(get());
-        abbonamento.setPagato(true);
         abbonamento.setIncasso(get().getDataPagamento());
         abbonamentoDao.save(abbonamento);
         edit(get());
@@ -108,7 +106,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
             abbonamentiAssociabili.setVisible(false);
         } else {
             matching = abbonamentoDao.findByVersamento(versamento);
-            abbonamentiAssociabili.setItems(abbonamentoDao.findByPagato(false));
+            abbonamentiAssociabili.setItems(abbonamentoDao.findByCostoGreaterThanAndIncassoNotNull(BigDecimal.ZERO));
             abbonamentiAssociabili.setVisible(true);
         }
         avviso.setVisible(true);
@@ -124,7 +122,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         abbonamentiAssociati.setItems(matching);
         abbonamentiAssociati.setVisible(true);
-        matching.stream().filter(abbonamento -> !abbonamento.isPagato()).forEach(abbonamento -> {
+        matching.stream().filter(abbonamento -> abbonamento.getIncasso() == null && abbonamento.getCosto() != BigDecimal.ZERO).forEach(abbonamento -> {
             log.info("incasso");
             log.info(abbonamento.toString());
             incassa(abbonamento);

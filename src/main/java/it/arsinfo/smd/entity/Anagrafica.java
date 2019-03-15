@@ -83,9 +83,6 @@ public class Anagrafica implements SmdEntity {
     }
 
     public Anagrafica() {
-        this.nome = "";
-        this.cognome = "";
-        this.paese = Paese.ITALIA;
     }
 
     public Long getId() {

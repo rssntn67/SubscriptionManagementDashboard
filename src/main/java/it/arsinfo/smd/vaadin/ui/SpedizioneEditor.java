@@ -1,11 +1,10 @@
 package it.arsinfo.smd.vaadin.ui;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.data.validator.BeanValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -15,8 +14,6 @@ import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
@@ -33,45 +30,44 @@ public class SpedizioneEditor
 
     public SpedizioneEditor(
             SpedizioneDao anagraficaPubblicazioneDao,
-            PubblicazioneDao pubblicazioneDao, AnagraficaDao anagraficaDao) {
+            List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
 
         super(anagraficaPubblicazioneDao, new Binder<>(Spedizione.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
-        pubblicazione.setItems(pubblicazioneDao.findAll());
+        pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
-        destinatario.setItems(anagraficaDao.findAll());
+        destinatario.setItems(anagrafica);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        setComponents(new HorizontalLayout(numero, destinatario,
+        setComponents(getActions(), new HorizontalLayout(numero, destinatario,
                                            pubblicazione),
                       new HorizontalLayout(omaggio, invio));
  
         getBinder()
             .forField(numero)
+            .withValidator(str -> str != null, "Inserire un numero")
             .withConverter(new StringToIntegerConverter(""))
-            .withValidator(new IntegerRangeValidator("il numero deve essere compreso fra 1 e 5000", 1, 5000))
+            .withValidator(num -> num > 0,"deve essere maggiore di 0")
             .bind(Spedizione::getNumero, Spedizione::setNumero);
         getBinder()
             .forField(pubblicazione)
             .asRequired()
-            .withValidator(new BeanValidator(Pubblicazione.class, "nome"));
+            .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
+            .bind(Spedizione::getPubblicazione,Spedizione::setPubblicazione);
         getBinder().bindInstanceFields(this);
 
     }
 
     @Override
     public void focus(boolean persisted, Spedizione obj) {
-        if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
-            getSave().setEnabled(false);
-        } else {
-            getSave().setEnabled(true);
-            destinatario.focus();
-        }
-        
+        getSave().setEnabled(!persisted);
+        getCancel().setEnabled(!persisted);
+        getDelete().setEnabled(!persisted);
+        destinatario.focus();        
     }
 
 }

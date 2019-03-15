@@ -8,7 +8,6 @@ import com.vaadin.ui.HorizontalLayout;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
@@ -16,7 +15,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Anagrafica customer;
 
     public AbbonamentoSearch(AbbonamentoDao abbonamentoDao,
-            AnagraficaDao anagraficaDao) {
+            List<Anagrafica> anagrafica) {
         super(abbonamentoDao);
 
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
@@ -25,7 +24,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
         filterAnagrafica.setEmptySelectionAllowed(false);
         filterAnagrafica.setPlaceholder("Cerca per Cliente");
-        filterAnagrafica.setItems(anagraficaDao.findAll());
+        filterAnagrafica.setItems(anagrafica);
         filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
         filterAnagrafica.addSelectionListener(e -> {
             if (e.getValue() == null) {

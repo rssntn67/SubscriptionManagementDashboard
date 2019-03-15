@@ -54,8 +54,6 @@ public class Abbonamento implements SmdEntity {
     private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
     private BigDecimal spese = BigDecimal.ZERO;
     
-
-    private boolean pagato = false;
     @Temporal(TemporalType.TIMESTAMP)
     private Date incasso;
     
@@ -110,14 +108,6 @@ public class Abbonamento implements SmdEntity {
         return String.format("Abbonamento[id=%d, Anagrafica='%s', Costo='%f', Campo='%s', Data='%td %tb %tY %tR %tZ']",
                                    id, intestatario, costo,
                                    data, data, data, data, data, data);
-    }
-
-    public boolean isPagato() {
-        return pagato;
-    }
-
-    public void setPagato(boolean pagato) {
-        this.pagato = pagato;
     }
     
     public BigDecimal getSpese() {

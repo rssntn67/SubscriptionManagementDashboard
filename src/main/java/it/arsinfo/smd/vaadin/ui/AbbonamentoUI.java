@@ -8,8 +8,12 @@ import org.springframework.util.Assert;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -48,17 +52,46 @@ public class AbbonamentoUI extends SmdUI {
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
         Assert.notNull(spedizioneDao, "spedizioneDao must be not null");
         
-        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagraficaDao);
+        List<Anagrafica> anagrafica = anagraficaDao.findAll();
+        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento", anagrafica.iterator().next());
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("");
-        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagraficaDao);
+        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica) {
+            @Override
+            public void save() {                
+                if (get().getId() == null && get().getAnno() == null) {
+                    Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null && get().getSpedizioni().isEmpty()) {
+                    Notification.show("Aggiungere Spedizione Prima di Salvare", Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null) {
+                    get().setCampo(SmdApplication.generateCampo(get().getAnno(),
+                                             get().getInizio(),
+                                             get().getFine()));
+                }
+                super.save();
+            }
+        };
 
-        SpedizioneGrid spedizioneGrid = new SpedizioneGrid("Spedizioni");
         SpedizioneAdd spedizioneAdd = new SpedizioneAdd("Aggiungi spedizione");
-        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioneDao, anagraficaDao) {
+        SpedizioneGrid spedizioneGrid = new SpedizioneGrid("Spedizioni");
+        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
+                if (get().getDestinatario() == null) {
+                    Notification.show("Selezionare il Destinatario",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                if (get().getPubblicazione() == null) {
+                    Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
                 editor.get().addSpedizione(get());
+                editor.get().setCosto(SmdApplication.calcoloCostoAbbonamento(editor.get()));
                 onChange();
             };
             
@@ -79,34 +112,59 @@ public class AbbonamentoUI extends SmdUI {
         add.setChangeHandler(() -> {
             setHeader(String.format("Abbonamento:new"));
             hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
             editor.edit(add.generate());
             spedizioneAdd.setAbbonamento(editor.get());
             spedizioneAdd.setVisible(true);
         });
         
-        spedizioneAdd.setChangeHandler(() -> {
-            setHeader(String.format("Spedizione:new"));
-            hideMenu();
-            spedizioneEditor.edit(spedizioneAdd.generate());
-            spedizioneAdd.setVisible(true);
-        });
-
         search.setChangeHandler(() -> grid.populate(search.find()));
 
         grid.setChangeHandler(() -> {
             if (grid.getSelected() == null) {
                 return;
             }
-            editor.edit(grid.getSelected());
             setHeader("Abbonamento:Edit");
             hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
+            editor.edit(grid.getSelected());
+            spedizioneAdd.setVisible(false);
+            spedizioneEditor.setVisible(false);
+            spedizioneGrid.populate(spedizioneDao.findByAbbonamento(grid.getSelected()));;
         });
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            grid.populate(search.find());
+            spedizioneAdd.setVisible(false);
+            spedizioneGrid.setVisible(false);
             setHeader("Abbonamento");
             showMenu();
+            add.setVisible(true);
+            search.setVisible(true);
+            grid.populate(search.find());
+        });
+        
+        spedizioneAdd.setChangeHandler(() -> {
+            setHeader(String.format("Spedizione:new:%s",editor.get().getIntestatario().getCaption()));
+            hideMenu();
+            spedizioneEditor.edit(spedizioneAdd.generate());
+            editor.setVisible(false);
+            spedizioneAdd.setVisible(false);
+        });
+        
+        spedizioneEditor.setChangeHandler(() -> {
+            setHeader(String.format("Abbonamento:new"));
+            spedizioneAdd.setVisible(true);
+            spedizioneEditor.setVisible(false);
+            editor.setVisible(true);
+            spedizioneGrid.populate(editor.get().getSpedizioni());
+        });
+        
+        spedizioneGrid.setChangeHandler(() -> {
+            spedizioneEditor.edit(spedizioneGrid.getSelected());
         });
 
         grid.populate(search.findAll());

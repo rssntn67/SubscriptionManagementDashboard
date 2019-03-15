@@ -33,7 +33,7 @@ public class Spedizione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
 
-    private Integer numero = 0;
+    private Integer numero = 1;
 
 
     public Spedizione() {

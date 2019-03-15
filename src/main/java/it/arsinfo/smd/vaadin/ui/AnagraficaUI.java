@@ -45,7 +45,8 @@ public class AnagraficaUI extends SmdUI {
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
         AnagraficaGrid grid = new AnagraficaGrid("");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
-        StoricoGrid storicoGrid = new StoricoGrid("Storico");
+        
+        StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
         StoricoEditor storicoEditor = 
                 new StoricoEditor(
                       storicoDao,
@@ -61,7 +62,7 @@ public class AnagraficaUI extends SmdUI {
                 super.save();
             }
         };
-        StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
+        StoricoGrid storicoGrid = new StoricoGrid("Storico");
         addSmdComponents(storicoAdd,storicoEditor, editor, storicoGrid, add,search, grid);
         
         editor.setVisible(false);

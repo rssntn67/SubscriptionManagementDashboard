@@ -11,7 +11,7 @@ public class AnagraficaAdd extends SmdAdd<Anagrafica> {
     
     @Override
     public Anagrafica generate() {
-        return new Anagrafica();
+        return new Anagrafica("Nome","Cognome");
     }
 
 }

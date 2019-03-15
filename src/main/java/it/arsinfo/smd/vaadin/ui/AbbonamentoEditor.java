@@ -2,11 +2,11 @@ package it.arsinfo.smd.vaadin.ui;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -19,7 +19,6 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
@@ -40,36 +39,45 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(ContoCorrentePostale.class));
     private final TextField spese = new TextField("Spese Spedizione");
 
-    private final CheckBox pagato = new CheckBox("Pagato");
     private final DateField incasso = new DateField("Incassato");
 
-    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, AnagraficaDao anagraficaDao) {
+    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
         HorizontalLayout pri = new HorizontalLayout(intestatario,
-                                                    anno, inizio, fine);
+                                                    anno, inizio, fine,incasso);
         HorizontalLayout sec = new HorizontalLayout(costo, cassa, campo,
                                                     contoCorrentePostale,spese);
         
 
-        setComponents(getActions(),pri, sec, pagato, incasso);
+        setComponents(getActions(),pri, sec);
+
+        intestatario.setItems(anagrafica);
+        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
+        intestatario.setEmptySelectionAllowed(false);
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
+        anno.setEmptySelectionAllowed(false);
 
         inizio.setItemCaptionGenerator(Mese::getNomeBreve);
+        inizio.setEmptySelectionAllowed(false);
+        
         fine.setItemCaptionGenerator(Mese::getNomeBreve);
+        fine.setEmptySelectionAllowed(false);
 
+        costo.setReadOnly(true);
+        cassa.setEmptySelectionAllowed(false);
+        campo.setReadOnly(true);
         contoCorrentePostale.setItemCaptionGenerator(ContoCorrentePostale::getCcp);
 
-        intestatario.setItems(anagraficaDao.findAll());
-        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        getBinder().forField(intestatario).asRequired().withValidator(an -> an != null,
-                                                               "Scegliere un Cliente").bind(Abbonamento::getIntestatario,
-                                                                                            Abbonamento::setIntestatario);
-        getBinder().forField(anno).bind("anno");
-        getBinder().forField(inizio).bind("inizio");
+        getBinder().forField(intestatario)
+            .asRequired()
+            .withValidator(an -> an != null,"Scegliere un Cliente")
+            .bind(Abbonamento::getIntestatario,Abbonamento::setIntestatario);
+        getBinder().forField(anno).asRequired().bind("anno");
+        getBinder().forField(inizio).asRequired().bind("inizio");
         getBinder().forField(fine).bind("fine");
 
         getBinder().forField(costo).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getCosto,
@@ -83,59 +91,39 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,
                                                                                                                       Abbonamento::setSpese);
-        getBinder().forField(pagato).bind("pagato");
         getBinder().forField(incasso).withConverter(new LocalDateToDateConverter()).bind("incasso");
 
     }
 
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
-        getCancel().setVisible(persisted);
 
+        getDelete().setEnabled(persisted);
         intestatario.setReadOnly(persisted);
-
-        spese.setReadOnly(persisted);
-
         anno.setReadOnly(persisted);
         inizio.setReadOnly(persisted);
         fine.setReadOnly(persisted);
-        costo.setVisible(persisted);
         costo.setReadOnly(persisted);
+        spese.setReadOnly(persisted);
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
 
         if (persisted && abbonamento.getCosto() == BigDecimal.ZERO) {
             getSave().setEnabled(false);
             getCancel().setEnabled(false);
-            pagato.setVisible(false);
-            pagato.setReadOnly(true);
             incasso.setVisible(false);
-            incasso.setReadOnly(true);
-            return;
-
-        }
-
-        if (persisted && abbonamento.isPagato()) {
-            getSave().setEnabled(false);
-            getCancel().setEnabled(false);
-            pagato.setVisible(true);
-            pagato.setReadOnly(true);
-            incasso.setVisible(true);
-            incasso.setReadOnly(true);
             return;
         }
 
-        if (persisted) {
+        if (persisted && abbonamento.getIncasso() == null) {
             getSave().setEnabled(true);
             getCancel().setEnabled(true);
-            pagato.setVisible(true);
             incasso.setVisible(true);
             return;
         }
 
         getSave().setEnabled(true);
-        getCancel().setEnabled(false);
-        pagato.setVisible(false);
+        getCancel().setEnabled(true);
         incasso.setVisible(false);
 
         intestatario.focus();
