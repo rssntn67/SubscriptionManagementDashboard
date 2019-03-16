@@ -142,8 +142,22 @@ public class Pubblicazione implements SmdEntity {
     }
 
     @Transient
+    public String getDescription() {
+        if (tipo == TipoPubblicazione.SEMESTRALE) {
+            return String.format("Pubblicata:%s,%s", 
+                                 primaPubblicazione.getNomeBreve(),
+                                 Mese.getByPosizione(primaPubblicazione.getPosizione()+6).getNomeBreve());
+        }
+        if (tipo == TipoPubblicazione.MENSILE) {
+            return "";
+        }
+        return String.format("Pubblicata:%s", 
+                             primaPubblicazione.getNomeBreve());
+        
+    }
+    @Transient
     public String getCaption() {
-        return nome;
+        return String.format("%s, %s. EUR:%f. %s", nome, tipo, costoUnitario,getDescription());
     }
 
 }
