@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
@@ -23,7 +24,7 @@ public class Campagna implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Anno anno;
+    private Anno anno = SmdApplication.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
     private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
@@ -33,10 +34,11 @@ public class Campagna implements SmdEntity {
 
     @OneToMany(cascade = { CascadeType.PERSIST })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
-    
-    public Campagna() {
 
-    }
+    @OneToMany(cascade = { CascadeType.PERSIST })
+    List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
+
+    public Campagna() {}
 
     public Anno getAnno() {
         return anno;
@@ -82,5 +84,18 @@ public class Campagna implements SmdEntity {
             boolean rinnovaSoloAbbonatiInRegola) {
         this.rinnovaSoloAbbonatiInRegola = rinnovaSoloAbbonatiInRegola;
     }
+
+    public List<CampagnaItem> getCampagnaItems() {
+        return campagnaItems;
+    }
+
+    public void setCampagnaItems(List<CampagnaItem> campagnaItems) {
+        this.campagnaItems = campagnaItems;
+    }
+    
+    public void addCampagnaItem(CampagnaItem campagnaItem) {
+        campagnaItems.add(campagnaItem);
+    }
+
 
 }

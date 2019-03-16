@@ -37,16 +37,26 @@ public class CampagnaUI extends SmdUI {
         Assert.notNull(campagnaDao, "campagnaDao must be not null");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
+        CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("");
-        CampagnaEditor editor = new CampagnaEditor(campagnaDao, anagraficaDao,
-                                                   pubblicazioneDao);
-        addSmdComponents(editor, search, grid);
+        CampagnaEditor editor = new CampagnaEditor(campagnaDao, 
+                                                   anagraficaDao.findAll(),
+                                                   pubblicazioneDao.findAll());
+        addSmdComponents(add,editor, search, grid);
 
         editor.setVisible(false);
 
-        search.setChangeHandler(() -> grid.populate(search.find()));
+        add.setChangeHandler(() -> {
+            setHeader(String.format("Campagna:Add"));
+            hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
+            editor.edit(add.generate());
+        });
 
+        search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(() -> {
             if (grid.getSelected() == null) {
                 return;
