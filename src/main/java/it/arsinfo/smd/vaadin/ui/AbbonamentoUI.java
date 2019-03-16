@@ -60,8 +60,28 @@ public class AbbonamentoUI extends SmdUI {
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica) {
             @Override
             public void save() {                
+                if (get().getId() == null && get().getInizio() == null ) {
+                    Notification.show("Selezionare Mese Inizio Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null && get().getFine() == null ) {
+                    Notification.show("Selezionare Mese Fine Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 if (get().getId() == null && get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null && get().getAnno().getAnno() < SmdApplication.getAnnoCorrente().getAnno()) {
+                    Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null  && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
+                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null && get().getAnno().getAnno() == SmdApplication.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < SmdApplication.getMeseCorrente().getPosizione()) {
+                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null && get().getSpedizioni().isEmpty()) {
@@ -73,6 +93,9 @@ public class AbbonamentoUI extends SmdUI {
                                              get().getInizio(),
                                              get().getFine()));
                 }
+                get().setCampo(SmdApplication.generateCampo(get().getAnno(), 
+                                                            get().getInizio(), 
+                                                            get().getFine()));
                 super.save();
             }
         };
@@ -91,7 +114,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 editor.get().addSpedizione(get());
-                editor.get().setCosto(SmdApplication.calcoloCostoAbbonamento(editor.get()));
+                SmdApplication.calcoloCostoAbbonamento(editor.get());
                 onChange();
             };
             
@@ -159,7 +182,8 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("Abbonamento:new"));
             spedizioneAdd.setVisible(true);
             spedizioneEditor.setVisible(false);
-            editor.setVisible(true);
+            SmdApplication.calcoloCostoAbbonamento(editor.get());
+            editor.edit(editor.get());
             spedizioneGrid.populate(editor.get().getSpedizioni());
         });
         

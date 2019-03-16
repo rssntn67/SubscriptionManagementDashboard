@@ -62,8 +62,8 @@ public class Pubblicazione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Prima Pubblicazione='%s']",
-                             id, nome, tipo, primaPubblicazione);
+        return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Prima Pubblicazione='%s', CostoUnitario='%f', CostoScontato='%f']",
+                             id, nome, tipo, primaPubblicazione,costoUnitario,costoScontato);
     }
 
     public Pubblicazione(String nome, TipoPubblicazione tipo) {

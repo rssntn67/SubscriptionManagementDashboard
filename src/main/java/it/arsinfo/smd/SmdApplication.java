@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,6 +46,13 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+    public static Anno getAnnoCorrente() {
+        return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
+    }
+
+    public static Mese getMeseCorrente() {
+        return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
+    }
 
     public static Spedizione addSpedizione(Abbonamento abbonamento, 
             Pubblicazione pubblicazione,
@@ -70,10 +78,7 @@ public class SmdApplication {
         return codicecontrollo.intValue() == valorecodice.intValue();
     }
     
-    public static boolean isVersamento(String versamento) {
-        log.info("lunghezza:"+versamento.length());
-        log.info("lunghezza:"+versamento.trim().length());
-        
+    public static boolean isVersamento(String versamento) {        
         return (
                 versamento != null && versamento.length() == 200 && versamento.trim().length() == 82);
     }
@@ -178,18 +183,17 @@ public class SmdApplication {
         int numero = 0;
         switch (tipo) {
         case ANNUALE:
-            if (inizio.getPosizione() < pub.getPosizione()
-                    && fine.getPosizione() > pub.getPosizione()) {
+            if (inizio.getPosizione() <= pub.getPosizione()
+                    && fine.getPosizione() >= pub.getPosizione()) {
                 numero = 1;
             }
             break;
         case SEMESTRALE:
-            if (inizio.getPosizione() < pub.getPosizione()
-                    && fine.getPosizione() > pub.getPosizione()) {
+            if (inizio.getPosizione() <= pub.getPosizione()
+                    && fine.getPosizione() >= pub.getPosizione()) {
                 numero += 1;
             }
-            if (inizio.getPosizione() > pub.getPosizione()
-                    + 6) {
+            if (fine.getPosizione() >= pub.getPosizione() + 6 && inizio.getPosizione() <= pub.getPosizione() + 6) {
                 numero += 1;
             }
             break;
@@ -206,12 +210,14 @@ public class SmdApplication {
         return numero;
     }
     
-    public static BigDecimal calcoloCostoAbbonamento(Abbonamento abbonamento) {
+    public static void calcoloCostoAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;
         Mese inizio = abbonamento.getInizio();
         Mese fine = abbonamento.getFine();
-        costo = abbonamento.getSpedizioni().stream().mapToDouble(spedizione -> generaCosto(inizio, fine, spedizione)).sum();
-        return BigDecimal.valueOf(costo);
+        for (Spedizione spedizione : abbonamento.getSpedizioni()) {
+            costo+= generaCosto(inizio, fine, spedizione);
+        }
+        abbonamento.setCosto(BigDecimal.valueOf(costo));
     }
     
     public static double generaCosto(Mese inizio, Mese fine, Spedizione spedizione) { 
@@ -222,15 +228,15 @@ public class SmdApplication {
         double costo = 0.0;
         switch (omaggio) {
         case No:
-        costo =  pubblicazione.getCostoUnitario().doubleValue()
-                         * numero.doubleValue()
-                         * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
+            costo = pubblicazione.getCostoUnitario().doubleValue()
+                     * numero.doubleValue()
+                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());
         break;
         
         case ConSconto:
-            costo =  pubblicazione.getCostoScontato().doubleValue()
-            * numero.doubleValue()
-            * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
+            costo = pubblicazione.getCostoScontato().doubleValue()
+                     * numero.doubleValue()
+                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
             break;
             
         case CuriaDiocesiana:
@@ -244,8 +250,8 @@ public class SmdApplication {
             
         default:
             break;
-            
-        }
+           
+        }              
         return costo;
     }
 
@@ -352,12 +358,12 @@ public class SmdApplication {
             Abbonamento abbonamentoMd = new Abbonamento(md);
             addSpedizione(abbonamentoMd,blocchetti,md,1);
             addSpedizione(abbonamentoMd,lodare,md,1);
-            abbonamentoMd.setInizio(Mese.GIUGNO);
-            abbonamentoMd.setAnno(Anno.ANNO2018);
+            addSpedizione(abbonamentoMd,estratti,md,1);
+            addSpedizione(abbonamentoMd,messaggio,md,1);
             abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),
                                                  abbonamentoMd.getInizio(),
                                                  abbonamentoMd.getFine()));
-            abbonamentoMd.setSpese(calcoloCostoAbbonamento(abbonamentoMd));
+            calcoloCostoAbbonamento(abbonamentoMd);
             abbonamentoDao.save(abbonamentoMd);
 
             Abbonamento abbonamentoCo = new Abbonamento(co);
@@ -367,22 +373,21 @@ public class SmdApplication {
             addSpedizione(abbonamentoCo,messaggio,co,5);
             addSpedizione(abbonamentoCo,blocchetti,kb,10);
             addSpedizione(abbonamentoCo,blocchetti,jb,10);
-            abbonamentoCo.setAnno(Anno.ANNO2018);
+            abbonamentoCo.setAnno(Anno.ANNO2020);
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
                                                  abbonamentoCo.getFine()));
-            abbonamentoCo.setSpese(calcoloCostoAbbonamento(abbonamentoCo));
+            calcoloCostoAbbonamento(abbonamentoCo);
             abbonamentoDao.save(abbonamentoCo);
 
             Abbonamento abbonamentoDp = new Abbonamento(dp);
             addSpedizione(abbonamentoDp,blocchetti,dp,10);
-            abbonamentoDp.setSpese(new BigDecimal("3.75"));
             abbonamentoDp.setInizio(Mese.MAGGIO);
-            abbonamentoDp.setAnno(Anno.ANNO2018);
+            abbonamentoDp.setSpese(new BigDecimal("3.75"));
             abbonamentoDp.setCampo(generateCampo(abbonamentoDp.getAnno(),
                                                  abbonamentoDp.getInizio(),
                                                  abbonamentoDp.getFine()));
-            abbonamentoDp.setSpese(calcoloCostoAbbonamento(abbonamentoDp));
+            calcoloCostoAbbonamento(abbonamentoDp);
             abbonamentoDao.save(abbonamentoDp);
 
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
@@ -583,7 +588,22 @@ public class SmdApplication {
                 log.info(incasso.toString());
             }
             
+            log.info("Anno Corrente");
+            log.info(getAnnoCorrente().getAnnoAsString());
+            log.info("Mese Corrente");
+            log.info(getMeseCorrente().getNomeBreve());
 
+            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
+            log.info("Numero: Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
+
+            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
+            log.info("Numero: Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
+            log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
 
         };
     }

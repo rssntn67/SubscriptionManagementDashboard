@@ -18,6 +18,14 @@ public enum Mese {
 	private int posizione;
 	private String code;
 	
+	public static Mese getByCode(String code) {
+	    for (Mese mese: values()) {
+	        if (mese.getCode().equals(code)) {
+	            return mese;
+	        }
+	    }
+	    return null;
+	}
 	
 	private Mese(String nome, int posizione, String cod) {
 		this.nomeBreve=nome;

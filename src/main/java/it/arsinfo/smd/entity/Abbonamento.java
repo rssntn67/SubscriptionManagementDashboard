@@ -18,6 +18,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.ContoCorrentePostale;
@@ -33,9 +34,9 @@ public class Abbonamento implements SmdEntity {
     @ManyToOne
     private Anagrafica intestatario;
     @Enumerated(EnumType.STRING)
-    private Anno anno;
+    private Anno anno = SmdApplication.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
-    private Mese inizio = Mese.GENNAIO;
+    private Mese inizio = SmdApplication.getMeseCorrente();
     @Enumerated(EnumType.STRING)
     private Mese fine = Mese.DICEMBRE;
 
@@ -46,7 +47,7 @@ public class Abbonamento implements SmdEntity {
     @OneToMany(cascade = { CascadeType.PERSIST })
     private List<Spedizione> spedizioni = new ArrayList<>();
 
-    private BigDecimal costo;
+    private BigDecimal costo = BigDecimal.ZERO;
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
     private String campo;
@@ -58,21 +59,15 @@ public class Abbonamento implements SmdEntity {
     private Date incasso;
     
     @Temporal(TemporalType.TIMESTAMP)
-    private Date data;
+    private Date data = new Date();
 
     
 
     public Abbonamento() {
-        this.intestatario = new Anagrafica();
-        this.data = new Date();
-        this.costo = BigDecimal.ZERO;
     }
 
     public Abbonamento(Anagrafica intestatario) {
-        super();
         this.intestatario = intestatario;
-        this.data = new Date();
-        this.costo = BigDecimal.ZERO;
     }
 
     public Anagrafica getIntestatario() {

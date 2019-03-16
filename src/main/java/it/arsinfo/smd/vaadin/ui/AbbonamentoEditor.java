@@ -103,7 +103,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         anno.setReadOnly(persisted);
         inizio.setReadOnly(persisted);
         fine.setReadOnly(persisted);
-        costo.setReadOnly(persisted);
         spese.setReadOnly(persisted);
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
