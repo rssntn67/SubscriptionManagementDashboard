@@ -22,7 +22,6 @@ import it.arsinfo.smd.vaadin.model.SmdEditor;
 public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
     private final TextField cognome = new TextField("Cognome/Ragione Sociale");
-    private final CheckBox inRegola = new CheckBox("In regola coi pagamenti");
     private final ComboBox<Diocesi> diocesi = new ComboBox<Diocesi>("Diocesi",
                                                                     EnumSet.allOf(Diocesi.class));
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
@@ -85,8 +84,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       piva
                                                       );
 
-        HorizontalLayout riga4 = new HorizontalLayout(inRegola,
-                                                      presidenteDiocesano,
+        HorizontalLayout riga4 = new HorizontalLayout(presidenteDiocesano,
                                                       direttoreDiocesiano,
                                                       direttoreZonaMilano,
                                                       consiglioNazionaleADP,

@@ -26,8 +26,6 @@ public class Anagrafica implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private boolean inRegola;
-
     @Enumerated(EnumType.STRING)
     private Diocesi diocesi = Diocesi.DIOCESISTD;
     @Enumerated(EnumType.STRING)
@@ -123,8 +121,8 @@ public class Anagrafica implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Anagrafica[id=%d, Nome='%s', Cognome='%s', Diocesi='%s', InRegola='%b']",
-                             id, nome, cognome, diocesi, inRegola);
+        return String.format("Anagrafica[id=%d, Nome='%s', Cognome='%s', Diocesi='%s']",
+                             id, nome, cognome, diocesi);
     }
 
     public String getCap() {
@@ -326,14 +324,6 @@ public class Anagrafica implements SmdEntity {
         if (intestazione != null)
             return String.format("'%s %s %s'", intestazione, nome, cognome);
         return String.format("'%s %s'", nome, cognome);
-    }
-
-    public boolean isInRegola() {
-        return inRegola;
-    }
-
-    public void setInRegola(boolean inRegola) {
-        this.inRegola = inRegola;
     }
 
     public List<Nota> getNote() {
