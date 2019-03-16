@@ -1,5 +1,7 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -7,6 +9,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
@@ -33,10 +36,11 @@ public class NotaUI extends SmdUI {
         Assert.notNull(notaDao, "notaDao must be not null");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
 
-        NotaAdd add = new NotaAdd("Aggiungi Nota");
-        NotaSearch search = new NotaSearch(notaDao, anagraficaDao);
+        List<Anagrafica> anagrafica = anagraficaDao.findAll();
+        NotaAdd add = new NotaAdd("Aggiungi Nota",anagrafica.iterator().next());
+        NotaSearch search = new NotaSearch(notaDao, anagrafica);
         NotaGrid grid = new NotaGrid("");
-        NotaEditor editor = new NotaEditor(notaDao, anagraficaDao);
+        NotaEditor editor = new NotaEditor(notaDao, anagrafica);
         addSmdComponents(add, editor, grid, search);
 
         editor.setVisible(false);

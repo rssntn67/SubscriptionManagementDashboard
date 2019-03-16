@@ -25,6 +25,12 @@ public class Nota implements SmdEntity {
     public Nota() {
     }
 
+    
+    public Nota(Anagrafica primoIntestatario) {
+        this.anagrafica = primoIntestatario;
+    }
+
+
     public Anagrafica getAnagrafica() {
         return anagrafica;
     }
