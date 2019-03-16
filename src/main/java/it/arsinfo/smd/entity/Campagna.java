@@ -97,5 +97,9 @@ public class Campagna implements SmdEntity {
         campagnaItems.add(campagnaItem);
     }
 
+    public boolean deleteCampagnaItem(CampagnaItem campagnaItem) {
+        return campagnaItems.remove(campagnaItem);
+    }
+
 
 }

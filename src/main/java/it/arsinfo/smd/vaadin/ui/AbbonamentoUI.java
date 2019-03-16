@@ -121,6 +121,7 @@ public class AbbonamentoUI extends SmdUI {
             @Override 
             public void delete() {
                 editor.get().deleteSpedizione(get());
+                SmdApplication.calcoloCostoAbbonamento(editor.get());
                 onChange();
             };
         };

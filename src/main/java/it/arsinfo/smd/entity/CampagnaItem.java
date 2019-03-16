@@ -10,6 +10,9 @@ import javax.persistence.ManyToOne;
 public class CampagnaItem
     implements SmdEntity {
 
+        public CampagnaItem() {
+    }
+
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
         private Long id;

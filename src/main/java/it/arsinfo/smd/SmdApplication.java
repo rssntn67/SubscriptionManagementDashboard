@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -29,6 +30,7 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -253,6 +255,10 @@ public class SmdApplication {
            
         }              
         return costo;
+    }
+
+    //FIXME
+    public static void generaCampagna(Campagna campagna, List<Anagrafica> clienti) {
     }
 
     public static void main(String[] args) {
