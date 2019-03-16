@@ -10,9 +10,7 @@ public class CampagnaGrid extends SmdGrid<Campagna> {
     public CampagnaGrid(String gridname) {
         super(new Grid<>(Campagna.class),gridname);
 
-        setColumns("anno", "inizio", "fine", "estratti", "blocchetti",
-                   "lodare", "messaggio", "pagato", "anagraficaFlagA",
-                   "anagraficaFlagB", "anagraficaFlagC");
+        setColumns("anno", "inizio", "fine","rinnovaSoloAbbonatiInRegola");
 
     }
 }
