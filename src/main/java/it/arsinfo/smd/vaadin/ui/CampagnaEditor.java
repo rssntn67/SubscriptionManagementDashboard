@@ -18,7 +18,7 @@ import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class CampagnaEditor extends SmdEditor<Campagna> {
 
-    private final CheckBox rinnovaSoloAbbonatiInRegola = new CheckBox("Selezionare per rinnovo Abbonati in Regola");
+    private final CheckBox rinnovaSoloAbbonatiInRegola = new CheckBox("Selezionare per rinnovare Solo gli Abbonati in Regola");
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
                                                            EnumSet.allOf(Anno.class));

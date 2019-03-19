@@ -89,7 +89,7 @@ public class CampagnaUI extends SmdUI {
         
         CampagnaItemAdd itemAdd = new CampagnaItemAdd("Aggiungi Pubblicazione");
         CampagnaItemGrid itemGrid = new CampagnaItemGrid("Pubblicazioni");
-        CampagnaItemEditor itemEditor = new CampagnaItemEditor(campagnaItemDao, pubblicazioneDao.findAll()) {
+        CampagnaItemEditor itemEditor = new CampagnaItemEditor(campagnaItemDao, pubblicazioneDao.findByActiveAndAbbonamento(true, true)) {
             @Override
             public void save() {
                 if (get().getPubblicazione() == null) {
