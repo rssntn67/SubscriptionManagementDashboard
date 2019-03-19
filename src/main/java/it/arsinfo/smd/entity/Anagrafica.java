@@ -326,6 +326,11 @@ public class Anagrafica implements SmdEntity {
         return String.format("'%s %s'", nome, cognome);
     }
 
+    @Transient
+    public String getHeader() {
+        return String.format("Anagrafica:Edit:%s", getCaption());
+    }
+
     public List<Nota> getNote() {
         return note;
     }

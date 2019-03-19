@@ -115,8 +115,12 @@ public class Storico implements SmdEntity {
         else
             return "";
     }
-
-
+    
+    @Transient
+    public String getHeader() {
+        return String.format("%s:Storico:Edit", intestatario.getHeader());
+    }
+    
     @Override
     public String toString() {
         return String.format("AnagraficaPubblicazione[id=%d, Pubblicazione='%s', Intestatario='%s', Destinatario='%s', Numero='%d']",

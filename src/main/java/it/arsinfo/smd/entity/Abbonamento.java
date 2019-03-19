@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
@@ -201,6 +202,16 @@ public class Abbonamento implements SmdEntity {
     public void setContoCorrentePostale(
             ContoCorrentePostale contoCorrentePostale) {
         this.contoCorrentePostale = contoCorrentePostale;
+    }
+    
+    @Transient
+    public String getCaption() {
+        return String.format("", null);
+    }
+    
+    @Transient
+    public String getHeader() {
+        return String.format("Abbonamento:%s", getCaption());
     }
 
 }

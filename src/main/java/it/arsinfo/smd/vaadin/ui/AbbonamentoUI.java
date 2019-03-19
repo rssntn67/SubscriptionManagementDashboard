@@ -181,7 +181,7 @@ public class AbbonamentoUI extends SmdUI {
         
         spedizioneEditor.setChangeHandler(() -> {
             setHeader(String.format("Abbonamento:new"));
-            spedizioneAdd.setVisible(true);
+            spedizioneAdd.setVisible(editor.get().getId() == null);
             spedizioneEditor.setVisible(false);
             SmdApplication.calcoloCostoAbbonamento(editor.get());
             editor.edit(editor.get());
