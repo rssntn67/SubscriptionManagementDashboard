@@ -127,6 +127,7 @@ public class AnagraficaUI extends SmdUI {
             setHeader(String.format("Anagrafica:Edit:%s", grid.getSelected().getCaption()));
             editor.setVisible(true);
             storicoEditor.setVisible(false);
+            storicoAdd.setVisible(true);
         });
 
         storicoAdd.setChangeHandler(() -> {

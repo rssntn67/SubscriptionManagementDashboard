@@ -11,7 +11,7 @@ public class CampagnaItem
     implements SmdEntity {
 
         public CampagnaItem() {
-    }
+        }
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
