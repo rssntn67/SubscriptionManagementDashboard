@@ -35,7 +35,7 @@ public class PubblicazioneUI extends SmdUI {
         editor.setVisible(false);
 
         add.setChangeHandler(()-> {
-            setHeader(String.format("Pubblicazione:Add"));
+            setHeader(String.format("Pubblicazione:Nuova"));
             hideMenu();
             editor.edit(add.generate());
             add.setVisible(false);
@@ -52,8 +52,7 @@ public class PubblicazioneUI extends SmdUI {
                 return;
             }
             editor.edit(grid.getSelected());
-            setHeader(String.format("Pubblicazioni:Edit:%s",
-                                    grid.getSelected().getCaption()));
+            setHeader(grid.getSelected().getHeader());
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);

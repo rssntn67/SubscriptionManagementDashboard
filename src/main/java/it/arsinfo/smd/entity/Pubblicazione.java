@@ -160,4 +160,8 @@ public class Pubblicazione implements SmdEntity {
         return String.format("%s, %s. EUR:%f. %s", nome, tipo, costoUnitario,getDescription());
     }
 
+    @Transient
+    public String getHeader() {
+        return String.format("Pubblicazione:Edit:'%s'", nome);
+    }
 }

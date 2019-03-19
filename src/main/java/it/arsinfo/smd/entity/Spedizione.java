@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
@@ -102,6 +103,11 @@ public class Spedizione implements SmdEntity {
 
     public void setInvio(Invio invio) {
         this.invio = invio;
+    }
+
+    @Transient
+    public String getHeader() {
+        return String.format("%s:Spedizione:Edit:'%s'", abbonamento.getHeader(),pubblicazione.getNome());
     }
 
 }

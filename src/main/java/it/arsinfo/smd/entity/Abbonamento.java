@@ -180,6 +180,9 @@ public class Abbonamento implements SmdEntity {
     }
     
     public void addSpedizione(Spedizione spedizione) {
+        if (spedizioni.contains(spedizione)) {
+            spedizioni.remove(spedizione);
+        }
         spedizioni.add(spedizione);
     }
 
@@ -203,15 +206,10 @@ public class Abbonamento implements SmdEntity {
             ContoCorrentePostale contoCorrentePostale) {
         this.contoCorrentePostale = contoCorrentePostale;
     }
-    
-    @Transient
-    public String getCaption() {
-        return String.format("", null);
-    }
-    
+        
     @Transient
     public String getHeader() {
-        return String.format("Abbonamento:%s", getCaption());
+        return String.format("Abbonamento:Edit:'%s %s'", intestatario.getCaption(), anno.getAnnoAsString());
     }
 
 }

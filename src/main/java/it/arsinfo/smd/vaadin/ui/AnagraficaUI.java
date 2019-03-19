@@ -71,7 +71,7 @@ public class AnagraficaUI extends SmdUI {
         storicoAdd.setVisible(false);
 
         add.setChangeHandler(() -> {
-            setHeader(String.format("Anagrafica:Add"));
+            setHeader("Anagrafica:Nuova");
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
@@ -130,7 +130,7 @@ public class AnagraficaUI extends SmdUI {
 
         storicoAdd.setChangeHandler(() -> {
             storicoEditor.edit(storicoAdd.generate());
-            setHeader(String.format("%s:Storico:Add",editor.get().getHeader()));
+            setHeader(String.format("%s:Storico:Nuovo",editor.get().getHeader()));
             storicoAdd.setVisible(false);
             editor.setVisible(false);
         });

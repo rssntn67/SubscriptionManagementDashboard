@@ -134,7 +134,7 @@ public class AbbonamentoUI extends SmdUI {
         spedizioneGrid.setVisible(false);
         
         add.setChangeHandler(() -> {
-            setHeader(String.format("Abbonamento:new"));
+            setHeader("Abbonamento:Nuovo");
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
@@ -150,7 +150,7 @@ public class AbbonamentoUI extends SmdUI {
             if (grid.getSelected() == null) {
                 return;
             }
-            setHeader("Abbonamento:Edit");
+            setHeader(grid.getSelected().getHeader());
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
@@ -163,6 +163,7 @@ public class AbbonamentoUI extends SmdUI {
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             spedizioneAdd.setVisible(false);
+            spedizioneEditor.setVisible(false);
             spedizioneGrid.setVisible(false);
             setHeader("Abbonamento");
             showMenu();
@@ -172,7 +173,7 @@ public class AbbonamentoUI extends SmdUI {
         });
         
         spedizioneAdd.setChangeHandler(() -> {
-            setHeader(String.format("Spedizione:new:%s",editor.get().getIntestatario().getCaption()));
+            setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
             hideMenu();
             spedizioneEditor.edit(spedizioneAdd.generate());
             editor.setVisible(false);
@@ -180,16 +181,26 @@ public class AbbonamentoUI extends SmdUI {
         });
         
         spedizioneEditor.setChangeHandler(() -> {
-            setHeader(String.format("Abbonamento:new"));
+            setHeader("Abbonamento:Nuovo");
             spedizioneAdd.setVisible(editor.get().getId() == null);
             spedizioneEditor.setVisible(false);
             SmdApplication.calcoloCostoAbbonamento(editor.get());
-            editor.edit(editor.get());
+            editor.edit(spedizioneEditor.get().getAbbonamento());
             spedizioneGrid.populate(editor.get().getSpedizioni());
         });
         
         spedizioneGrid.setChangeHandler(() -> {
-            spedizioneEditor.edit(spedizioneGrid.getSelected());
+            if (spedizioneGrid.getSelected() == null) {
+                return;
+            }
+            if (editor.get().getId() == null) {
+                setHeader(spedizioneGrid.getSelected().getHeader());
+                spedizioneEditor.edit(spedizioneGrid.getSelected());
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.setVisible(false);
+                spedizioneAdd.setVisible(false);
+            }
         });
 
         grid.populate(search.findAll());
