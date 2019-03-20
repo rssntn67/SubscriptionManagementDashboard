@@ -31,27 +31,61 @@ import it.arsinfo.smd.data.TipoSostitutivoBollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringBootApplication
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+    
+    public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
+        if (storico.getOmaggio() != Omaggio.No || storico.getOmaggio() != Omaggio.ConSconto) {
+            return true;
+        }
+        for (Abbonamento abb: abbonamenti) {
+            if (abb.getIntestatario().getId() == storico.getIntestatario().getId()) {
+                continue;
+            }
+            if (abb.getAnno() != getAnnoCorrente() || abb.getAnno() != getAnnoPassato()) {
+                continue;
+            }
+            for (Spedizione sped: abb.getSpedizioni()) {
+                if (sped.getPubblicazione().getId() != storico.getPubblicazione().getId()
+                        ||
+                    sped.getDestinatario().getId() != storico.getDestinatario().getId()     ) {
+                    continue;
+                }
+                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getIncasso() == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    //FIXME
+    public static void generaCampagna(Campagna campagna, List<Storico> storico) {
+    }
+
     public static Anno getAnnoCorrente() {
         return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
     }
 
+    public static Anno getAnnoPassato() {
+        Integer annoScorso = getAnnoCorrente().getAnno()-1;
+        return Anno.valueOf("ANNO"+annoScorso);
+    }
     public static Mese getMeseCorrente() {
         return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
     }
@@ -255,10 +289,6 @@ public class SmdApplication {
            
         }              
         return costo;
-    }
-
-    //FIXME
-    public static void generaCampagna(Campagna campagna, List<Anagrafica> clienti) {
     }
 
     public static void main(String[] args) {

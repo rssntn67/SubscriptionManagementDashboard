@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 
@@ -32,9 +33,14 @@ public class Storico implements SmdEntity {
     private Omaggio omaggio = Omaggio.No;
 
     @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
+
+    @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
 
     private Integer numero = 1;
+    
+    private boolean sospeso = false;
     
     public Storico(Anagrafica intestatario, Pubblicazione pubblicazione, int numero) {
         this.pubblicazione = pubblicazione;
@@ -141,6 +147,22 @@ public class Storico implements SmdEntity {
 
     public void setInvio(Invio invio) {
         this.invio = invio;
+    }
+
+    public boolean isSospeso() {
+        return sospeso;
+    }
+
+    public void setSospeso(boolean sospeso) {
+        this.sospeso = sospeso;
+    }
+
+    public Cassa getCassa() {
+        return cassa;
+    }
+
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
     }
 
 }

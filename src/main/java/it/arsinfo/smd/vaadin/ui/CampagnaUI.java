@@ -13,6 +13,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
@@ -33,6 +34,9 @@ public class CampagnaUI extends SmdUI {
 
     @Autowired
     AnagraficaDao anagraficaDao;
+
+    @Autowired
+    StoricoDao storicoDao;
 
     @Autowired
     PubblicazioneDao pubblicazioneDao;
@@ -80,7 +84,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Aggiungere Pubblicazioni Prima di Generare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                SmdApplication.generaCampagna(get(), anagraficaDao.findAll());
+                SmdApplication.generaCampagna(get(), storicoDao.findAll());
                 super.save();
             }
             

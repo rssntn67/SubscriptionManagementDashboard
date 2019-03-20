@@ -11,8 +11,10 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -34,6 +36,8 @@ public class AnagraficaUI extends SmdUI {
     PubblicazioneDao pubblicazioneDao;
     @Autowired
     StoricoDao storicoDao;
+    @Autowired
+    AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -114,6 +118,10 @@ public class AnagraficaUI extends SmdUI {
             }
             setHeader(storicoGrid.getSelected().getHeader());
             storicoEditor.edit(storicoGrid.getSelected());
+            storicoEditor.setPagamentoRegolare(
+                       SmdApplication.pagamentoRegolare(
+                               storicoGrid.getSelected(),
+                               abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
             add.setVisible(false);
             search.setVisible(false);
             editor.setVisible(false);
