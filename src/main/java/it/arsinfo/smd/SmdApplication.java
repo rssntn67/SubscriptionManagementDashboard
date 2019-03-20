@@ -626,6 +626,8 @@ public class SmdApplication {
             
             log.info("Anno Corrente");
             log.info(getAnnoCorrente().getAnnoAsString());
+            log.info("Anno Scorso");
+            log.info(getAnnoPassato().getAnnoAsString());
             log.info("Mese Corrente");
             log.info(getMeseCorrente().getNomeBreve());
 
