@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
@@ -74,10 +79,53 @@ public class SmdApplication {
         return true;
     }
     
-    //FIXME
-    public static void generaCampagna(Campagna campagna, List<Storico> storico) {
+    public static void generaCampagna(Campagna campagna, List<Storico> storici, List<Abbonamento> vecchiabb) {
+        Set<Long> campagnapubblicazioniIds = campagna.getCampagnaItems().stream().map(item -> item.getPubblicazione().getId()).collect(Collectors.toSet());
+        Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
+        Map<Long,Anagrafica>  intestatari = new HashMap<>();
+        for (Storico storico: storici) {
+            if (campagna.isRinnovaSoloAbbonatiInRegola() && !pagamentoRegolare(storico, vecchiabb)) {
+                continue;
+            }
+            if (storico.isSospeso() || !campagnapubblicazioniIds.contains(storico.getPubblicazione().getId())) {
+                continue;
+            }
+            if (!intestatari.containsKey(storico.getIntestatario().getId())) {
+                intestatari.put(storico.getIntestatario().getId(), storico.getIntestatario());
+            }
+            if (!cassaStorico.containsKey(storico.getCassa())) {
+                cassaStorico.put(storico.getCassa(), new ArrayList<>());
+            }
+            cassaStorico.get(storico.getCassa()).add(storico);
+        }
+        List<Abbonamento> abbonamenti = new ArrayList<>();
+        for (Cassa cassa: cassaStorico.keySet()) {
+            Map<Long,Abbonamento> abbti = new HashMap<>();
+            for (Storico storico: cassaStorico.get(cassa)) {
+                if (!abbti.containsKey(storico.getIntestatario().getId())) {
+                    Abbonamento abb = generateAbbonamento(storico.getIntestatario(), campagna,cassa);
+                    abbti.put(storico.getIntestatario().getId(), abb);
+                }
+                addSpedizione(abbti.get(storico.getIntestatario().getId()),storico);
+            }
+            abbonamenti.addAll(abbti.values());
+        }
+        abbonamenti.stream().forEach(abb -> calcoloCostoAbbonamento(abb));
+        campagna.setAbbonamenti(abbonamenti);
     }
-
+    
+    public static Abbonamento generateAbbonamento(Anagrafica intestatario, Campagna campagna, Cassa cassa) {
+        Abbonamento abb = new Abbonamento(intestatario);
+        abb.setCampagna(campagna);
+        abb.setAnno(campagna.getAnno());
+        abb.setInizio(campagna.getInizio());
+        abb.setFine(campagna.getFine());
+        abb.setCassa(cassa);
+        abb.setCampo(generateCampo(campagna.getAnno(), campagna.getInizio(), campagna.getFine()));
+        return abb;
+    }
+    
+    
     public static Anno getAnnoCorrente() {
         return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
     }
@@ -90,6 +138,13 @@ public class SmdApplication {
         return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
     }
 
+    public static Spedizione addSpedizione(Abbonamento abbonamento, Storico storico) {
+        Spedizione spedizione = addSpedizione(abbonamento,storico.getPubblicazione(), storico.getDestinatario(), storico.getNumero());
+        spedizione.setInvio(storico.getInvio());
+        spedizione.setOmaggio(storico.getOmaggio());
+        return spedizione;
+    }
+    
     public static Spedizione addSpedizione(Abbonamento abbonamento, 
             Pubblicazione pubblicazione,
             Anagrafica destinatario, 

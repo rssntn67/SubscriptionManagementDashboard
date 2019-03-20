@@ -57,6 +57,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
 
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
+        rinnovaSoloAbbonatiInRegola.setEnabled(persisted);
         anno.focus();
 
     }

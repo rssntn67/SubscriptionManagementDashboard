@@ -9,6 +9,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
@@ -40,6 +41,9 @@ public class CampagnaUI extends SmdUI {
 
     @Autowired
     PubblicazioneDao pubblicazioneDao;
+    
+    @Autowired
+    AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -84,7 +88,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Aggiungere Pubblicazioni Prima di Generare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                SmdApplication.generaCampagna(get(), storicoDao.findAll());
+                SmdApplication.generaCampagna(get(), storicoDao.findAll(),abbonamentoDao.findAll());
                 super.save();
             }
             
