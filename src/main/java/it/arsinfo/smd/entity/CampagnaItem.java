@@ -35,6 +35,7 @@ public class CampagnaItem
             this.campagna = campagna;
         }
 
+        
         public Pubblicazione getPubblicazione() {
             return pubblicazione;
         }

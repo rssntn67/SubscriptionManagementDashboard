@@ -27,15 +27,19 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TipoAccettazioneBollettino;
 import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
+import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -356,73 +360,6 @@ public class SmdApplication {
             PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
             CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao) {
         return (args) -> {
-            // save a couple of customers
-
-            Anagrafica jb = new Anagrafica("Jack", "Bauer");
-            jb.setDiocesi(Diocesi.DIOCESI116);
-            jb.setIndirizzo("Piazza Duomo 1");
-            jb.setCitta("Milano");
-            jb.setCap("20100");
-            jb.setEmail("jb@adp.it");
-            jb.setTelefono("+3902000009");
-            anagraficaDao.save(jb);
-
-            Anagrafica co = new Anagrafica("Chloe", "O'Brian");
-            co.setDiocesi(Diocesi.DIOCESI116);
-            co.setIndirizzo("Piazza Sant'Ambrogio 1");
-            co.setCitta("Milano");
-            co.setCap("20110");
-            co.setEmail("co@adp.it");
-            co.setTelefono("+3902000010");
-            anagraficaDao.save(co);
-
-            Anagrafica kb = new Anagrafica("Kim", "Bauer");
-            kb.setDiocesi(Diocesi.DIOCESI168);
-            kb.setIndirizzo("Piazza del Gesu' 1");
-            kb.setCitta("Roma");
-            kb.setCap("00192");
-            kb.setEmail("kb@adp.it");
-            kb.setTelefono("+3906000020");
-            anagraficaDao.save(kb);
-
-            Anagrafica dp = new Anagrafica("David", "Palmer");
-            dp.setDiocesi(Diocesi.DIOCESI168);
-            dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
-            dp.setCitta("Roma");
-            dp.setCap("00195");
-            dp.setEmail("dp@adp.it");
-            dp.setTelefono("+3906000020");
-            anagraficaDao.save(dp);
-
-            Anagrafica md = new Anagrafica("Michelle", "Dessler");
-            md.setDiocesi(Diocesi.DIOCESI126);
-            md.setIndirizzo("Via Duomo 10");
-            md.setCitta("Napoli");
-            md.setCap("80135");
-            md.setEmail("md@adp.it");
-            md.setTelefono("+39081400022");
-            anagraficaDao.save(md);
-
-            Pubblicazione blocchetti = new Pubblicazione("Blocchetti",
-                                                         TipoPubblicazione.SEMESTRALE);
-            blocchetti.setActive(true);
-            blocchetti.setAbbonamento(true);
-            blocchetti.setCostoUnitario(new BigDecimal(3.00));
-            blocchetti.setCostoScontato(new BigDecimal(2.40));
-            blocchetti.setEditore("ADP");
-            blocchetti.setPrimaPubblicazione(Mese.MARZO);
-            pubblicazioneDao.save(blocchetti);
-
-            Pubblicazione estratti = new Pubblicazione("Estratti",
-                                                       TipoPubblicazione.ANNUALE);
-            estratti.setActive(true);
-            estratti.setAbbonamento(true);
-            estratti.setCostoUnitario(new BigDecimal(10.00));
-            estratti.setCostoScontato(new BigDecimal(10.00));
-            estratti.setEditore("ADP");
-            estratti.setPrimaPubblicazione(Mese.LUGLIO);
-            pubblicazioneDao.save(estratti);
-
             Pubblicazione messaggio = new Pubblicazione("Messaggio",
                                                         TipoPubblicazione.MENSILE);
             messaggio.setActive(true);
@@ -442,28 +379,143 @@ public class SmdApplication {
             lodare.setEditore("ADP");
             lodare.setPrimaPubblicazione(Mese.GENNAIO);
             pubblicazioneDao.save(lodare);
-            
-            storicoDao.save(new Storico(md, blocchetti, 10));
-            storicoDao.save(new Storico(md, dp, blocchetti, 5));
 
-            Abbonamento abbonamentoMd = new Abbonamento(md);
-            addSpedizione(abbonamentoMd,blocchetti,md,1);
-            addSpedizione(abbonamentoMd,lodare,md,1);
-            addSpedizione(abbonamentoMd,estratti,md,1);
-            addSpedizione(abbonamentoMd,messaggio,md,1);
+            Pubblicazione blocchetti = new Pubblicazione("Blocchetti",
+                                                         TipoPubblicazione.SEMESTRALE);
+            blocchetti.setActive(true);
+            blocchetti.setAbbonamento(true);
+            blocchetti.setCostoUnitario(new BigDecimal(3.00));
+            blocchetti.setCostoScontato(new BigDecimal(2.40));
+            blocchetti.setEditore("ADP");
+            blocchetti.setPrimaPubblicazione(Mese.MARZO);
+            pubblicazioneDao.save(blocchetti);
+
+
+            Pubblicazione estratti = new Pubblicazione("Estratti",
+                                                       TipoPubblicazione.ANNUALE);
+            estratti.setActive(true);
+            estratti.setAbbonamento(true);
+            estratti.setCostoUnitario(new BigDecimal(10.00));
+            estratti.setCostoScontato(new BigDecimal(10.00));
+            estratti.setEditore("ADP");
+            estratti.setPrimaPubblicazione(Mese.LUGLIO);
+            pubblicazioneDao.save(estratti);
+
+            // save a couple of customers
+
+            Anagrafica ar = new Anagrafica("Antonio", "Russo");
+            ar.setDiocesi(Diocesi.DIOCESI116);
+            ar.setIndirizzo("Piazza Duomo 1");
+            ar.setCitta("Milano");
+            ar.setCap("20100");
+            ar.setEmail("ar@arsinfo.it");
+            ar.setTelefono("+3902000009");
+            ar.setTitolo(TitoloAnagrafica.Vescovo);
+            ar.setRegioneVescovi(Regione.LOMBARDIA);
+            anagraficaDao.save(ar);
+            
+            Storico arlodare = new Storico(ar, lodare, 1);
+            arlodare.setOmaggio(Omaggio.CuriaDiocesiana);
+            storicoDao.save(arlodare);
+            
+            Storico armessaggio = new Storico(ar, messaggio, 1);
+            armessaggio.setOmaggio(Omaggio.CuriaDiocesiana);
+            storicoDao.save(armessaggio);
+
+            Storico arblocchetti = new Storico(ar, blocchetti, 1);
+            arblocchetti.setOmaggio(Omaggio.CuriaDiocesiana);
+            storicoDao.save(arblocchetti);
+
+            Storico arestratti = new Storico(ar, estratti, 1);
+            arestratti.setOmaggio(Omaggio.CuriaDiocesiana);
+            storicoDao.save(arestratti);
+
+            Anagrafica gp = new Anagrafica("Gabriele", "Pizzo");
+            gp.setDiocesi(Diocesi.DIOCESI116);
+            gp.setIndirizzo("Piazza Sant'Ambrogio 1");
+            gp.setCitta("Milano");
+            gp.setCap("20110");
+            gp.setEmail("gp@arsinfo.it");
+            gp.setTelefono("+3902000010");
+            anagraficaDao.save(gp);
+
+            Storico gpblocchetti = new Storico(gp, blocchetti, 10);
+            gpblocchetti.setOmaggio(Omaggio.ConSconto);
+            gpblocchetti.setCassa(Cassa.Contrassegno);
+            storicoDao.save(gpblocchetti);
+            
+            Storico gpmessaggio = new Storico(gp, messaggio, 1);
+            gpmessaggio.setCassa(Cassa.Contrassegno);
+            storicoDao.save(gpmessaggio);
+
+            Anagrafica mp = new Anagrafica("Matteo", "Paro");
+            mp.setDiocesi(Diocesi.DIOCESI168);
+            mp.setIndirizzo("Piazza del Gesu' 1");
+            mp.setCitta("Roma");
+            mp.setCap("00192");
+            mp.setEmail("mp@arsinfo.it");
+            mp.setTelefono("+3906000020");
+            anagraficaDao.save(mp);
+            
+            Storico mpmessaggio = new Storico(mp, messaggio, 10);
+            mpmessaggio.setOmaggio(Omaggio.Gesuiti);
+            mpmessaggio.setInvio(Invio.AdpSede);
+            storicoDao.save(mpmessaggio);
+
+            Anagrafica dp = new Anagrafica("Davide", "Palma");
+            dp.setDiocesi(Diocesi.DIOCESI168);
+            dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
+            dp.setCitta("Roma");
+            dp.setCap("00195");
+            dp.setEmail("dp@arsinfo.it");
+            dp.setTelefono("+3906000020");
+            anagraficaDao.save(dp);
+            
+            Storico dpmessaggio = new Storico(dp, messaggio, 1);
+            dpmessaggio.setOmaggio(Omaggio.CuriaGeneralizia);
+            dpmessaggio.setInvio(Invio.AdpSede);
+            storicoDao.save(dpmessaggio);
+
+            Anagrafica ms = new Anagrafica("Michele", "Santoro");
+            ms.setDiocesi(Diocesi.DIOCESI126);
+            ms.setIndirizzo("Via Duomo 10");
+            ms.setCitta("Napoli");
+            ms.setCap("80135");
+            ms.setEmail("ms@arsinfo.it");
+            ms.setTelefono("+39081400022");
+            anagraficaDao.save(ms);
+
+            Anagrafica ps = new Anagrafica("Pasqualina", "Santoro");
+            ps.setDiocesi(Diocesi.DIOCESI126);
+            ps.setIndirizzo("Piazza Dante 10");
+            ps.setCitta("Napoli");
+            ps.setCap("80135");
+            ps.setEmail("arsinfo@adp.it");
+            ps.setTelefono("+39081400023");
+            anagraficaDao.save(ps);
+
+            
+            storicoDao.save(new Storico(ms, blocchetti, 10));
+            storicoDao.save(new Storico(ms, ps, blocchetti, 5));
+
+            Abbonamento abbonamentoMd = new Abbonamento(ms);
+            addSpedizione(abbonamentoMd,blocchetti,ms,1);
+            addSpedizione(abbonamentoMd,lodare,ms,1);
+            addSpedizione(abbonamentoMd,estratti,ms,1);
+            addSpedizione(abbonamentoMd,messaggio,ms,1);
             abbonamentoMd.setCampo(generateCampo(abbonamentoMd.getAnno(),
                                                  abbonamentoMd.getInizio(),
                                                  abbonamentoMd.getFine()));
             calcoloCostoAbbonamento(abbonamentoMd);
             abbonamentoDao.save(abbonamentoMd);
 
-            Abbonamento abbonamentoCo = new Abbonamento(co);
-            addSpedizione(abbonamentoCo,blocchetti,co,10);
-            addSpedizione(abbonamentoCo,lodare,co,10);
-            addSpedizione(abbonamentoCo,estratti,co,5);
-            addSpedizione(abbonamentoCo,messaggio,co,5);
-            addSpedizione(abbonamentoCo,blocchetti,kb,10);
-            addSpedizione(abbonamentoCo,blocchetti,jb,10);
+            Abbonamento abbonamentoCo = new Abbonamento(gp);
+            addSpedizione(abbonamentoCo,blocchetti,gp,10);
+            addSpedizione(abbonamentoCo,lodare,gp,10);
+            addSpedizione(abbonamentoCo,estratti,gp,5);
+            addSpedizione(abbonamentoCo,messaggio,gp,5);
+            addSpedizione(abbonamentoCo,blocchetti,mp,10);
+            addSpedizione(abbonamentoCo,blocchetti,ar,10);
             abbonamentoCo.setAnno(Anno.ANNO2020);
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
@@ -480,6 +532,16 @@ public class SmdApplication {
                                                  abbonamentoDp.getFine()));
             calcoloCostoAbbonamento(abbonamentoDp);
             abbonamentoDao.save(abbonamentoDp);
+            
+            Campagna campagna2018=new Campagna();
+            campagna2018.setAnno(Anno.ANNO2018);
+            campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,messaggio));
+            campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,lodare));
+            campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,blocchetti));
+            campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,estratti));
+
+            generaCampagna(campagna2018, storicoDao.findAll(), new ArrayList<>());
+            campagnaDao.save(campagna2018);
 
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
             Set<String> versamenti1= new HashSet<>();
@@ -534,11 +596,11 @@ public class SmdApplication {
             }
             log.info("");
 
-            // fetch an individual customer by ID
-            Anagrafica firstcustomer = anagraficaDao.findById(1L).get();
-            log.info("Customer found with findOne(1L):");
+            // fetch an individual pubblicazione by ID
+            Pubblicazione first = pubblicazioneDao.findById(1L).get();
+            log.info("Messaggio found with findOne(1L):");
             log.info("--------------------------------");
-            log.info(firstcustomer.toString());
+            log.info(first.toString());
             log.info("");
 
             // fetch customers by last name
@@ -564,13 +626,6 @@ public class SmdApplication {
             }
             log.info("");
 
-            // fetch an individual pubblicazione by ID
-            Pubblicazione pubblicazione1 = pubblicazioneDao.findById(6L).get();
-            log.info("Pubblicazione found with findOne(6L):");
-            log.info("--------------------------------");
-            log.info(pubblicazione1.toString());
-            log.info("");
-
             // fetch customers by last name
             log.info("Pubblicazione found with findByNameStartsWithIgnoreCase('ADP'):");
             log.info("--------------------------------------------");
@@ -588,7 +643,7 @@ public class SmdApplication {
 
             log.info("AnagraficaPubblicazione found with findByIntestatario('md'):");
             log.info("--------------------------------------------");
-            for (Storico anp : storicoDao.findByIntestatario(md)) {
+            for (Storico anp : storicoDao.findByIntestatario(ms)) {
                 log.info(anp.toString());
             }
             log.info("");
@@ -616,7 +671,7 @@ public class SmdApplication {
 
             log.info("Abbonamenti found with findByIntestatario(Md):");
             log.info("-------------------------------");
-            for (Abbonamento abbonamentomd : abbonamentoDao.findByIntestatario(md)) {
+            for (Abbonamento abbonamentomd : abbonamentoDao.findByIntestatario(ms)) {
                 log.info(abbonamentomd.toString());
             }
 
