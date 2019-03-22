@@ -138,6 +138,12 @@ public class SmdApplication {
         Integer annoScorso = getAnnoCorrente().getAnno()-1;
         return Anno.valueOf("ANNO"+annoScorso);
     }
+
+    public static Anno getAnnoProssimo() {
+        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
+        return Anno.valueOf("ANNO"+annoProssimo);
+    }
+
     public static Mese getMeseCorrente() {
         return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
     }
@@ -543,6 +549,16 @@ public class SmdApplication {
             generaCampagna(campagna2018, storicoDao.findAll(), new ArrayList<>());
             campagnaDao.save(campagna2018);
 
+            Campagna campagna2019=new Campagna();
+            campagna2019.setAnno(Anno.ANNO2019);
+            campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,messaggio));
+            campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,lodare));
+            campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,blocchetti));
+            campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,estratti));
+
+            generaCampagna(campagna2019, storicoDao.findAll(), new ArrayList<>());
+            campagnaDao.save(campagna2019);
+
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
             Set<String> versamenti1= new HashSet<>();
             versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
@@ -734,10 +750,12 @@ public class SmdApplication {
                 log.info(incasso.toString());
             }
             
-            log.info("Anno Corrente");
-            log.info(getAnnoCorrente().getAnnoAsString());
             log.info("Anno Scorso");
             log.info(getAnnoPassato().getAnnoAsString());
+            log.info("Anno Corrente");
+            log.info(getAnnoCorrente().getAnnoAsString());
+            log.info("Anno Prossimo");
+            log.info(getAnnoProssimo().getAnnoAsString());
             log.info("Mese Corrente");
             log.info(getMeseCorrente().getNomeBreve());
 

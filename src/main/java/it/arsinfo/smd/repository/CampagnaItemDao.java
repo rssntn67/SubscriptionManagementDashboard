@@ -12,5 +12,6 @@ public interface CampagnaItemDao extends JpaRepository<CampagnaItem, Long> {
 
 	List<CampagnaItem> findByCampagna(Campagna campagna);
         List<CampagnaItem> findByPubblicazione(Pubblicazione pubblicazione);
+        Long deleteByCampagna(Campagna campagna);
 
 }

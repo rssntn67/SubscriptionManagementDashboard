@@ -1,47 +1,53 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.vaadin.data.Binder;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.repository.CampagnaItemDao;
-import it.arsinfo.smd.vaadin.model.SmdEditor;
+import it.arsinfo.smd.vaadin.model.SmdChangeHandler;
 
 public class CampagnaItemEditor
-        extends SmdEditor<CampagnaItem> {
+        extends SmdChangeHandler {
 
-    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
+    private HorizontalLayout layout= new HorizontalLayout();
+    private List<Pubblicazione> selected = new ArrayList<>();
+    private Map<Long,Pubblicazione> pubblicazioni;
 
-    public CampagnaItemEditor(
-            CampagnaItemDao campagnaItemDao,
-            List<Pubblicazione> pubblicazioni) {
-
-        super(campagnaItemDao, new Binder<>(CampagnaItem.class) );
-        pubblicazione.setEmptySelectionAllowed(false);
-        pubblicazione.setPlaceholder("Pubblicazione");
-        pubblicazione.setItems(pubblicazioni);
-        pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
-
-
-        setComponents(getActions(), pubblicazione);
- 
-        getBinder()
-            .forField(pubblicazione)
-            .asRequired()
-            .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
-            .bind(CampagnaItem::getPubblicazione,CampagnaItem::setPubblicazione);
-
+    public CampagnaItemEditor(List<Pubblicazione> pubblicazioni) {
+        this.pubblicazioni=pubblicazioni.stream().collect(Collectors.toMap(p->p.getId(), p->p));
+        setComponents(layout);
     }
 
-    @Override
-    public void focus(boolean persisted, CampagnaItem obj) {
-        getSave().setEnabled(!persisted);
-        getCancel().setEnabled(!persisted);
-        getDelete().setEnabled(!persisted);
-        pubblicazione.focus();        
+    public List<Pubblicazione> getSelected() {
+        return selected;
     }
-
+        
+    public void edit(List<CampagnaItem> items, boolean persisted) {
+        layout.removeAllComponents();
+        Map<Long,CampagnaItem> persisteditemmap = 
+                items.stream().collect(Collectors.toMap(p->p.getPubblicazione().getId(), p->p));
+        pubblicazioni.values().stream().forEach(p -> {
+                CheckBox cbx = new CheckBox(p.getNome());
+                cbx.setValue(persisteditemmap.containsKey(p.getId()));
+                cbx.addValueChangeListener( e -> {
+                    if (e.getValue()) {
+                        selected.add(p);
+                    } else {
+                        selected.remove(p);
+                    }
+                });
+                cbx.setReadOnly(persisted);
+                cbx.setVisible(true);
+                layout.addComponent(cbx);
+                
+        });
+        setVisible(true);
+    }
+    
 }

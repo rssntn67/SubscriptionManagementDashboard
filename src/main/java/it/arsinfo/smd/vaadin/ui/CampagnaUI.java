@@ -1,5 +1,8 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
@@ -9,8 +12,8 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -34,9 +37,6 @@ public class CampagnaUI extends SmdUI {
     CampagnaItemDao campagnaItemDao;
 
     @Autowired
-    AnagraficaDao anagraficaDao;
-
-    @Autowired
     StoricoDao storicoDao;
 
     @Autowired
@@ -50,14 +50,32 @@ public class CampagnaUI extends SmdUI {
         super.init(request, "Campagna");
         Assert.notNull(campagnaDao, "campagnaDao must be not null");
         Assert.notNull(campagnaItemDao, "campagnaItemDao must be not null");
-        Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
+        CampagnaItemEditor campagnaItemEditor = 
+                new CampagnaItemEditor(
+                   pubblicazioneDao.findAll()
+                   .stream()
+                   .filter(p -> p.isActive() && p.isAbbonamento())
+                   .collect(Collectors.toList())
+               );
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("");
-        CampagnaEditor editor = new CampagnaEditor(campagnaDao, 
-                                                   anagraficaDao.findAll(),
-                                                   pubblicazioneDao.findAll()) {
+        CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
+            @Override
+            public void delete() {
+                if (get().getAnno() == SmdApplication.getAnnoCorrente()) {
+                    Notification.show("Non è possibile cancellare campagna dell'anno corrente", Notification.Type.ERROR_MESSAGE);
+                    return;
+                    
+                }
+                if (get().getAnno() == SmdApplication.getAnnoPassato()) {
+                    Notification.show("Non è possibile cancellare campagna dell'anno passato", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                super.delete();
+            }
+            
             @Override
             public void save() {
                 if (get().getId() == null && get().getInizio() == null ) {
@@ -84,44 +102,19 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getCampagnaItems().isEmpty()) {
-                    Notification.show("Aggiungere Pubblicazioni Prima di Generare", Notification.Type.WARNING_MESSAGE);
+                if (get().getId() == null &&  campagnaItemEditor.getSelected().isEmpty() ) {
+                    Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
+                campagnaItemEditor.getSelected().forEach(p -> get().addCampagnaItem(new CampagnaItem(get(), p)));
                 SmdApplication.generaCampagna(get(), storicoDao.findAll(),abbonamentoDao.findAll());
                 super.save();
             }
             
         };
         
-        
-        CampagnaItemAdd itemAdd = new CampagnaItemAdd("Aggiungi Pubblicazione");
-        CampagnaItemGrid itemGrid = new CampagnaItemGrid("Pubblicazioni");
-        CampagnaItemEditor itemEditor = new CampagnaItemEditor(campagnaItemDao, pubblicazioneDao.findByActiveAndAbbonamento(true, true)) {
-            @Override
-            public void save() {
-                if (get().getPubblicazione() == null) {
-                    Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                editor.get().addCampagnaItem(get());
-                onChange();
-            };
-            
-            @Override 
-            public void delete() {
-                editor.get().deleteCampagnaItem(get());
-                onChange();
-            };
-            
-        };
-        
-        addSmdComponents(itemEditor,editor,itemAdd,itemGrid, add,search, grid);
-
+        addSmdComponents(campagnaItemEditor,editor, add,search, grid);
         editor.setVisible(false);
-        itemEditor.setVisible(false);
-        itemAdd.setVisible(false);
-        itemGrid.setVisible(false);
 
         add.setChangeHandler(() -> {
             setHeader(String.format("Campagna:Add"));
@@ -130,8 +123,8 @@ public class CampagnaUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(add.generate());
-            itemAdd.setCampagna(editor.get());
-            itemAdd.setVisible(true);        });
+            campagnaItemEditor.edit(new ArrayList<>(), false);
+        });
 
         search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(() -> {
@@ -143,16 +136,12 @@ public class CampagnaUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
-            itemAdd.setVisible(false);
-            itemEditor.setVisible(false);
-            itemGrid.populate(campagnaItemDao.findByCampagna(grid.getSelected()));;
-
+            campagnaItemEditor.edit(campagnaItemDao.findByCampagna(grid.getSelected()), true);
         });
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            itemAdd.setVisible(false);
-            itemGrid.setVisible(false);
+            campagnaItemEditor.setVisible(false);
             setHeader("Campagna");
             showMenu();
             add.setVisible(true);
@@ -160,26 +149,6 @@ public class CampagnaUI extends SmdUI {
             grid.populate(search.find());
         });
         
-        itemAdd.setChangeHandler(() -> {
-            setHeader(String.format("Item:new:%s",editor.get().getAnno()));
-            hideMenu();
-            itemEditor.edit(itemAdd.generate());
-            editor.setVisible(false);
-            itemAdd.setVisible(false);
-        });
-        
-        itemEditor.setChangeHandler(() -> {
-            setHeader(String.format("Campagna:new"));
-            itemAdd.setVisible(true);
-            itemEditor.setVisible(false);
-            editor.edit(editor.get());
-            itemGrid.populate(editor.get().getCampagnaItems());
-        });
-        
-        itemGrid.setChangeHandler(() -> {
-            itemEditor.edit(itemGrid.getSelected());
-        });
-
         grid.populate(search.findAll());
 
     }

@@ -45,7 +45,7 @@ public class Abbonamento implements SmdEntity {
     private Campagna campagna;
     @OneToOne
     private Versamento versamento;
-    @OneToMany(cascade = { CascadeType.PERSIST })
+    @OneToMany(cascade = { CascadeType.ALL })
     private List<Spedizione> spedizioni = new ArrayList<>();
 
     private BigDecimal costo = BigDecimal.ZERO;

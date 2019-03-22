@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,7 +25,7 @@ public class Campagna implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Anno anno = SmdApplication.getAnnoCorrente();
+    private Anno anno = SmdApplication.getAnnoProssimo();
     @Enumerated(EnumType.STRING)
     private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
@@ -32,10 +33,10 @@ public class Campagna implements SmdEntity {
     
     private boolean rinnovaSoloAbbonatiInRegola;
 
-    @OneToMany(cascade = { CascadeType.PERSIST })
+    @OneToMany(cascade = { CascadeType.ALL })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
 
-    @OneToMany(cascade = { CascadeType.PERSIST })
+    @OneToMany(cascade = { CascadeType.ALL })
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
 
     public Campagna() {}
@@ -97,8 +98,15 @@ public class Campagna implements SmdEntity {
         campagnaItems.add(campagnaItem);
     }
 
-    public boolean deleteCampagnaItem(CampagnaItem campagnaItem) {
-        return campagnaItems.remove(campagnaItem);
+    public boolean deleteCampagnaItemByPubblicazione(Pubblicazione pubblicazione) {
+        if (campagnaItems.size() == 0) {
+            return false;
+        }
+        int size = campagnaItems.size();
+        campagnaItems =
+        campagnaItems.stream().filter(item -> item.getPubblicazione().getNome().equals(pubblicazione.getNome())).collect(Collectors.toList());
+        
+        return size != campagnaItems.size();
     }
 
 
