@@ -14,10 +14,13 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
@@ -34,10 +37,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Titolo",
                       EnumSet.allOf(TitoloAnagrafica.class));
 
-    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",
-                                                                               EnumSet.allOf(Regione.class));
-    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano",
-                                                                              EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
     private final CheckBox filterDirettoreDiocesiano = new CheckBox("Dir. Diocesano");
     private final CheckBox filterPresidenteDiocesano = new CheckBox("Pres. Diocesano");
     private final CheckBox filterDirettoreZonaMilano = new CheckBox("Dir. Zona Milano");
@@ -48,9 +49,12 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
+    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
 
-    public AnagraficaSearch(AnagraficaDao anagraficaDao) {
+    private final StoricoDao storicoDao;
+    public AnagraficaSearch(AnagraficaDao anagraficaDao, StoricoDao storicoDao) {
         super(anagraficaDao);
+        this.storicoDao = storicoDao;
         TextField filterCognome = new TextField("Ricerca per Cognome");
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Ricerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
@@ -60,6 +64,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            filterCognome,
                                            filterTitolo,
                                            filterRegioneVescovi,
+                                           filterOmaggio,
                                            filterCentroDiocesano,
                                            filterRegioneDirettoreDiocesano,
                                            filterRegionePresidenteDiocesano
@@ -106,6 +111,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
         filterRegioneDirettoreDiocesano.setPlaceholder("Seleziona Regione");
         filterRegioneDirettoreDiocesano.addSelectionListener(e -> onChange());
+        filterOmaggio.setPlaceholder("Seleziona Omaggio");
+        filterOmaggio.addSelectionListener(e ->onChange());
 
         filterDirettoreDiocesiano.addValueChangeListener(e -> onChange());
         filterPresidenteDiocesano.addValueChangeListener(e -> onChange());
@@ -137,6 +144,18 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {
 
+        if (filterOmaggio.getValue() != null) {
+            final List<Storico> storiciByOmaggio = storicoDao.findByOmaggio(filterOmaggio.getValue());
+            anagrafiche=anagrafiche.stream().filter(a -> {
+                for (Storico storicoA: storiciByOmaggio) {
+                    if (storicoA.getIntestatario().getId() == a.getId()) {
+                        return true;
+                    }
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+        
         if (filterTitolo.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterTitolo.getValue() == a.getTitolo()).collect(Collectors.toList());
         }

@@ -2,6 +2,7 @@ package it.arsinfo.smd.data;
 
 public enum Regione {
 	ABRUZZO,
+        ABRUZZOMOLISE,
 	BASILICATA,
 	CALABRIA,
 	CAMPANIA,

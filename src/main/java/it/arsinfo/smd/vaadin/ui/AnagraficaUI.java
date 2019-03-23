@@ -43,10 +43,11 @@ public class AnagraficaUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Anagrafica");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(storicoDao,
-                       "anagraficaPubblicazioneDao must be not null");
+        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
+        Assert.notNull(storicoDao,"storicoDao must be not null");
+        Assert.notNull(abbonamentoDao,"abbonamentoDao must be not null");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
-        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
+        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao,storicoDao);
         AnagraficaGrid grid = new AnagraficaGrid("");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         

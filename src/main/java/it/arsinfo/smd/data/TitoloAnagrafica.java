@@ -7,5 +7,6 @@ public enum TitoloAnagrafica {
 	Spett,
 	Vescovo,
 	VescovoAusiliare,
+        VescovoMetropolita,
 	Cardinale;
 }
