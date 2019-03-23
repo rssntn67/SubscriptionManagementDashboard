@@ -90,16 +90,20 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
+                if (get().getId() == null && !campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
+                    Notification.show("E' stata già generata la Campagna per Anno "+ get().getAnno() + ". Solo una Campagna per Anno", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 if (get().getId() == null && get().getAnno().getAnno() < SmdApplication.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null  && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Anno corrente: il Mese Inizio deve essere successivo al Mese Fine", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null && get().getAnno().getAnno() == SmdApplication.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < SmdApplication.getMeseCorrente().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Anno corrente: il Mese Inizio deve essere il Mese corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null &&  campagnaItemEditor.getSelected().isEmpty() ) {
