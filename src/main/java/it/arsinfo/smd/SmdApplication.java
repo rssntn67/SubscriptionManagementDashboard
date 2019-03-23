@@ -475,6 +475,8 @@ public class SmdApplication {
             dp.setCap("00195");
             dp.setEmail("dp@arsinfo.it");
             dp.setTelefono("+3906000020");
+            dp.setDirettoreDiocesiano(true);
+            dp.setRegioneDirettoreDiocesano(Regione.LAZIO);
             anagraficaDao.save(dp);
             
             Storico dpmessaggio = new Storico(dp, messaggio, 1);

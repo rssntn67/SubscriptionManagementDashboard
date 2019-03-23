@@ -33,6 +33,7 @@ public class Anagrafica implements SmdEntity {
     private CentroDiocesano centroDiocesano;
 
     private TitoloAnagrafica titolo;   
+    
     private String nome;
     private String cognome;
     private String intestazione;
@@ -50,15 +51,16 @@ public class Anagrafica implements SmdEntity {
     private String piva;
        
     
-    private boolean presidenteDiocesano;    
     @Enumerated(EnumType.STRING)
     private Regione regionePresidenteDiocesano;    
-    private boolean direttoreDiocesiano;	
     @Enumerated(EnumType.STRING)
     private Regione regioneDirettoreDiocesano;
+
+
+    private boolean presidenteDiocesano;    
+    private boolean direttoreDiocesiano;        
     private boolean direttoreZonaMilano;
-
-
+    
     private boolean consiglioNazionaleADP; 
     private boolean presidenzaADP; 
     private boolean direzioneADP; 
