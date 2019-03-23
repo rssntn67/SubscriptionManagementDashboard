@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
@@ -109,5 +110,9 @@ public class Campagna implements SmdEntity {
         return size != campagnaItems.size();
     }
 
+    @Transient
+    public String getCaption() {
+        return String.format("Campagna%s", anno.getAnnoAsString());
+    }
 
 }

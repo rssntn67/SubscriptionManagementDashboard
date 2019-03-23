@@ -17,6 +17,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
@@ -43,6 +44,9 @@ public class AbbonamentoUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazioneDao;
 
+    @Autowired
+    CampagnaDao campagnaDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Abbonamento");
@@ -55,7 +59,7 @@ public class AbbonamentoUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento", anagrafica.iterator().next());
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica);
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagnaDao.findAll());
         AbbonamentoGrid grid = new AbbonamentoGrid("");
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica) {
             @Override

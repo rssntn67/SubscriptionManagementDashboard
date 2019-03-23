@@ -54,5 +54,9 @@ public class CampagnaItem
             this.pubblicazione = pubblicazione;
         }
 
+        @Override
+        public String toString() {
+        return String.format("Campagna %d, Pubblicazione %d", campagna.getId(), pubblicazione.getId());
+        }
 
 }

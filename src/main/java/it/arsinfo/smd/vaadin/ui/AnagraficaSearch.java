@@ -31,14 +31,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                        filterCognome
                                        ));
 
-        filterDiocesi.setEmptySelectionAllowed(false);
-        filterDiocesi.setPlaceholder("Cerca per Diocesi");
-        filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
-
-        filterCognome.setPlaceholder("Cerca per Cognome");
-
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
+        filterDiocesi.setPlaceholder("Cerca per Diocesi");
 
         filterDiocesi.addSelectionListener(e -> {
             if (e.getValue() == null) {
@@ -49,6 +44,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             onChange();
         });
 
+        filterCognome.setPlaceholder("Cerca per Cognome");
         filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
         filterCognome.addValueChangeListener(e -> {
             searchCognome = e.getValue();

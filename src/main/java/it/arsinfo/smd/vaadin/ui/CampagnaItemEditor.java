@@ -30,6 +30,7 @@ public class CampagnaItemEditor
         
     public void edit(List<CampagnaItem> items, boolean persisted) {
         layout.removeAllComponents();
+        selected.clear();
         Map<Long,CampagnaItem> persisteditemmap = 
                 items.stream().collect(Collectors.toMap(p->p.getPubblicazione().getId(), p->p));
         pubblicazioni.values().stream().forEach(p -> {

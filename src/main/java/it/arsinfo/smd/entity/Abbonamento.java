@@ -211,5 +211,13 @@ public class Abbonamento implements SmdEntity {
     public String getHeader() {
         return String.format("Abbonamento:Edit:'%s %s'", intestatario.getCaption(), anno.getAnnoAsString());
     }
+    
+    @Transient
+    public String getCampagnaAsString() {
+        if (campagna == null) {
+            return "Non Associato a Campagna";
+        }
+        return campagna.getCaption();
+    }
 
 }
