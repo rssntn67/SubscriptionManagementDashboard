@@ -219,5 +219,15 @@ public class Abbonamento implements SmdEntity {
         }
         return campagna.getCaption();
     }
-
+    
+    @Transient
+    public String getIncassato() {
+        if (costo.doubleValue() == BigDecimal.ZERO.doubleValue() && spese.doubleValue() == BigDecimal.ZERO.doubleValue()) {
+            return "Omaggio";
+        }
+        if (incasso != null) {
+            return "Si";
+        }
+        return "No";
+    }
 }

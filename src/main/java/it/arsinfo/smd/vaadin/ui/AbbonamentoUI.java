@@ -13,6 +13,7 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -58,10 +59,11 @@ public class AbbonamentoUI extends SmdUI {
         
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        List<Campagna> campagne = campagnaDao.findAll();
         AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento", anagrafica.iterator().next());
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagnaDao.findAll());
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("");
-        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica) {
+        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
             @Override
             public void save() {                
                 if (get().getId() == null && get().getInizio() == null ) {

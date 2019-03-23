@@ -18,12 +18,14 @@ import it.arsinfo.smd.data.ContoCorrentePostale;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
+    private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio",
@@ -39,19 +41,23 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(ContoCorrentePostale.class));
     private final TextField spese = new TextField("Spese Spedizione");
 
-    private final DateField incasso = new DateField("Incassato");
+    private final DateField incasso = new DateField("Data Incasso");
 
-    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica) {
+    private final TextField incassato = new TextField("Incassato");
+    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
-        HorizontalLayout pri = new HorizontalLayout(intestatario,
+        HorizontalLayout pri = new HorizontalLayout(campagna,intestatario,
                                                     anno, inizio, fine,incasso);
-        HorizontalLayout sec = new HorizontalLayout(costo, cassa, campo,
-                                                    contoCorrentePostale,spese);
+        HorizontalLayout sec = new HorizontalLayout(incassato,costo,spese,cassa,campo,
+                                                    contoCorrentePostale);
         
 
         setComponents(getActions(),pri, sec);
+        
+        campagna.setItems(campagne);
+        campagna.setItemCaptionGenerator(Campagna::getCaption);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -76,6 +82,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .asRequired()
             .withValidator(an -> an != null,"Scegliere un Cliente")
             .bind(Abbonamento::getIntestatario,Abbonamento::setIntestatario);
+        getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
         getBinder().forField(inizio).asRequired().bind("inizio");
         getBinder().forField(fine).bind("fine");
@@ -92,6 +99,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,
                                                                                                                       Abbonamento::setSpese);
         getBinder().forField(incasso).withConverter(new LocalDateToDateConverter()).bind("incasso");
+        getBinder().forField(incassato).bind("incassato");
 
     }
 
@@ -106,26 +114,42 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         spese.setReadOnly(persisted);
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
+        contoCorrentePostale.setReadOnly(persisted);
+        campagna.setReadOnly(true);
+        incassato.setVisible(persisted);
 
-        if (persisted && abbonamento.getCosto() == BigDecimal.ZERO) {
+        if (persisted && 
+                abbonamento.getCosto().doubleValue() == BigDecimal.ZERO.doubleValue() && 
+                abbonamento.getSpese().doubleValue() == BigDecimal.ZERO.doubleValue()) {
             getSave().setEnabled(false);
             getCancel().setEnabled(false);
             incasso.setVisible(false);
-            return;
-        }
-
-        if (persisted && abbonamento.getIncasso() == null) {
+            cassa.setVisible(false);
+            campo.setVisible(false);
+            contoCorrentePostale.setVisible(false);
+        } else if (persisted && abbonamento.getIncasso() == null) {
             getSave().setEnabled(true);
             getCancel().setEnabled(true);
+            incasso.setReadOnly(false);
             incasso.setVisible(true);
-            return;
+            cassa.setReadOnly(false);
+            cassa.setVisible(true);
+        } else if (persisted && abbonamento.getIncasso() != null) {
+            getSave().setEnabled(false);
+            getCancel().setEnabled(false);
+            getDelete().setEnabled(false);
+            incasso.setReadOnly(true);
+            incasso.setVisible(true);
+            cassa.setReadOnly(true);
+            cassa.setVisible(true);
+        } else if (!persisted ){
+            getSave().setEnabled(true);
+            getCancel().setEnabled(true);
+            incasso.setVisible(false);
+            cassa.setReadOnly(false);
+            cassa.setVisible(true);
+            intestatario.focus();
         }
-
-        getSave().setEnabled(true);
-        getCancel().setEnabled(true);
-        incasso.setVisible(false);
-
-        intestatario.focus();
 
     }
 }
