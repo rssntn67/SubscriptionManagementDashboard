@@ -12,7 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.TipoAccettazioneBollettino;
 import it.arsinfo.smd.data.TipoDocumentoBollettino;
 import it.arsinfo.smd.data.TipoSostitutivoBollettino;
@@ -31,7 +33,6 @@ public class Versamento implements SmdEntity {
     String progressivoBobina;
     
     String progressivo;
-    boolean errore;
         
     @Temporal(TemporalType.TIMESTAMP)
     Date dataPagamento;
@@ -48,7 +49,6 @@ public class Versamento implements SmdEntity {
     Date dataContabile;
     
     String campo;
-    boolean campovalido;
     
     @Enumerated(EnumType.STRING)
     TipoAccettazioneBollettino tipoAccettazione;
@@ -148,17 +148,9 @@ public class Versamento implements SmdEntity {
     public void setTipoSostitutivo(TipoSostitutivoBollettino tipoSostitutivo) {
         this.tipoSostitutivo = tipoSostitutivo;
     }    
+    @Transient
     public boolean isCampovalido() {
-        return campovalido;
-    }
-    public void setCampovalido(boolean campovalido) {
-        this.campovalido = campovalido;
-    }
-    public boolean isErrore() {
-        return errore;
-    }
-    public void setErrore(boolean errore) {
-        this.errore = errore;
+        return SmdApplication.checkCampo(campo);
     }
     public String getProgressivo() {
         return progressivo;
@@ -168,8 +160,8 @@ public class Versamento implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Versamento[progressivo='%s',errore='%b', campo='%s',valido='%b', importo='%.2f']",
-                             progressivo,errore, campo, campovalido,importo);
+        return String.format("Versamento[id=%d,progressivo='%s',campo='%s',valido='%b', importo='%.2f']",
+                             id,progressivo,campo, isCampovalido(),importo);
     }
 
 }

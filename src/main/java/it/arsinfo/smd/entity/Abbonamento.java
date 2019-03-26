@@ -213,7 +213,7 @@ public class Abbonamento implements SmdEntity {
         if (costo.doubleValue() == BigDecimal.ZERO.doubleValue() && spese.doubleValue() == BigDecimal.ZERO.doubleValue()) {
             return "Omaggio";
         }
-        if (versamento.getId() != null) {
+        if (versamento != null) {
             return "Si";
         }
         return "No";

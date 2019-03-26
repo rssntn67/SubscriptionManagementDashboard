@@ -251,7 +251,6 @@ public class SmdApplication {
         versamento.setProgressivoBobina(value.substring(3, 8));
 	String progressivo = value.substring(8,15);
 	versamento.setProgressivo(progressivo);
-	versamento.setErrore(progressivo.equals("9999999"));
         versamento.setDataPagamento(formatter.parse(value.substring(27, 33)));
         versamento.setTipoDocumento(TipoDocumentoBollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
         versamento.setImporto(new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
@@ -262,7 +261,6 @@ public class SmdApplication {
         versamento.setDataContabile(formatter.parse(value.substring(55,61)));
         String campo =value.substring(61,79);
         versamento.setCampo(campo);
-        versamento.setCampovalido(checkCampo(campo));
         versamento.setTipoAccettazione(TipoAccettazioneBollettino.getTipoAccettazione(value.substring(79,81)));
         versamento.setTipoSostitutivo(TipoSostitutivoBollettino.getTipoAccettazione(value.substring(81,82)));
         return versamento;
@@ -618,6 +616,26 @@ public class SmdApplication {
             
             Incasso incasso4=generateIncasso(versamenti4, riepilogo4);
             incassoDao.save(incasso4);
+            
+            Incasso incasso5 = new Incasso();
+            incasso5.setCassa(Cassa.Contrassegno);
+            incasso5.setTotaleDocumenti(1);
+            incasso5.setDocumentiErrati(0);
+            incasso5.setDocumentiEsatti(0);
+            incasso5.setDataContabile(new Date());
+            incasso5.setImportoDocumentiErrati(BigDecimal.ZERO);
+            incasso5.setImportoDocumentiEsatti(new BigDecimal(50.0));
+            incasso5.setTotaleImporto(new BigDecimal(50.0));
+            
+            Versamento versamentoIncasso5 = new Versamento(incasso5);
+            versamentoIncasso5.setImporto(new BigDecimal(50.0));
+            versamentoIncasso5.setCampo("non applicabile");
+            versamentoIncasso5.setDataContabile(incasso5.getDataContabile());
+            versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
+            incasso5.addVersamento(versamentoIncasso5);
+            
+            incassoDao.save(incasso5);
+            
             log.info("Customers found with findAll():");
             log.info("-------------------------------");
             for (Anagrafica customer : anagraficaDao.findAll()) {
@@ -806,6 +824,28 @@ public class SmdApplication {
                     log.info(abb.getVersamento().getId().toString());
                 
             }
+            
+            log.info("Incasso di un abbonamento:");
+            log.info("-------------------------------");
+            Anagrafica intestatario = anagraficaDao.findByCognomeStartsWithIgnoreCase("Palma").iterator().next();
+            log.info("intestatario");
+            log.info(intestatario.toString());
+            Abbonamento abb = abbonamentoDao.findByIntestatario(intestatario).iterator().next();
+            log.info("abbonamento");
+            log.info(abb.toString());
+            Versamento ver = versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next();
+            log.info("versamento");
+            log.info(ver.toString());
+            
+            abb.setVersamento(ver);
+            abbonamentoDao.save(abb);
+            
+            Abbonamento abbnew = abbonamentoDao.findByIntestatario(intestatario).iterator().next();
+            log.info("incassato");
+            log.info(abbnew.getIncassato());
+            log.info("versamentoId");
+            log.info(abbnew.getVersamento().getId().toString());
+
 
         };
     }

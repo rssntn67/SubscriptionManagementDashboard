@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.ContoCorrentePostale;
@@ -121,10 +122,30 @@ public class Incasso implements SmdEntity {
         this.importoDocumentiErrati = importoDocumentiErrati;
     }
     
+    @Transient
+    public String getCcpInfo() {
+        StringBuffer sb = new StringBuffer("");
+        switch (cassa) {
+        case Ccp:
+            sb.append(cuas.getDenominazione());
+            sb.append(",ccp:");
+            sb.append(ccp.getCcp());
+            break;
+        default:
+            break;
+        }
+        return sb.toString();
+    }
+    public void addVersamento(Versamento versamento) {
+        if (versamenti.contains(versamento)) {
+            versamenti.remove(versamento);
+        }
+        versamenti.add(versamento);
+    }
     @Override
     public String toString() {
-        return String.format("Incasso[cassa='%s', cuas='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
-                             cassa, cuas, totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+        return String.format("Incasso[id=%d,cassa='%s', cuas='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+                             id,cassa, cuas, totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
     }
 
     public Cassa getCassa() {

@@ -21,7 +21,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
         gridVersamento = new Grid<Versamento>(Versamento.class);
 
         gridVersamento.setColumns("bobina", "progressivoBobina",
-                                  "progressivo","errore",
+                                  "progressivo",
                                   "dataPagamento","dataContabile","importo",
                                   "tipoDocumento.bollettino","provincia","ufficio","sportello",
                                   "tipoAccettazione.tipo","tipoSostitutivo.descr"
