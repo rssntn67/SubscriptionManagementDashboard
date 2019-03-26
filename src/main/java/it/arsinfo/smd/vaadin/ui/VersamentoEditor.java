@@ -44,11 +44,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         setComponents(info, abbonamentiAssociati, abbonamentiAssociabili);
 
-        abbonamentiAssociati.setColumns("anagrafica.cognome",
-                                        "anagrafica.nome",
-                                        "contoCorrentePostale.ccp", "cost",
-                                        "campo", "incasso", "pagato",
-                                        "omaggio");
+        abbonamentiAssociati.setColumns("intestatario.cognome",
+                                        "intestatario.nome",
+                                        "contoCorrentePostale.ccp", "costo",
+                                        "campo", "incasso", "incassato");
         abbonamentiAssociati.addComponentColumn(abbonamento -> {
             Button button = new Button("Dissocia");
             button.addClickListener(click -> dissocia(abbonamento));
@@ -58,11 +57,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         abbonamentiAssociati.setWidth("100%");
         abbonamentiAssociati.setVisible(false);
 
-        abbonamentiAssociabili.setColumns("anagrafica.cognome",
-                                          "anagrafica.nome",
-                                          "contoCorrentePostale.ccp", "cost",
-                                          "campo", "incasso", "pagato",
-                                          "omaggio");
+        abbonamentiAssociabili.setColumns("intestatario.cognome",
+                                          "intestatario.nome",
+                                          "contoCorrentePostale.ccp", "costo",
+                                          "campo", "incasso", "incassato");
         abbonamentiAssociabili.addComponentColumn(abbonamento -> {
             Button button = new Button("Associa");
             button.addClickListener(click -> incassa(abbonamento));
@@ -79,14 +77,12 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
     private void dissocia(Abbonamento abbonamento) {
         abbonamento.setVersamento(null);
-        abbonamento.setIncasso(null);
         abbonamentoDao.save(abbonamento);
         edit(get());
     }
 
     private void incassa(Abbonamento abbonamento) {
         abbonamento.setVersamento(get());
-        abbonamento.setIncasso(get().getDataPagamento());
         abbonamentoDao.save(abbonamento);
         edit(get());
     }
@@ -106,7 +102,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
             abbonamentiAssociabili.setVisible(false);
         } else {
             matching = abbonamentoDao.findByVersamento(versamento);
-            abbonamentiAssociabili.setItems(abbonamentoDao.findByCostoGreaterThanAndIncassoNotNull(BigDecimal.ZERO));
+            abbonamentiAssociabili.setItems(abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO));
             abbonamentiAssociabili.setVisible(true);
         }
         avviso.setVisible(true);
@@ -122,7 +118,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         abbonamentiAssociati.setItems(matching);
         abbonamentiAssociati.setVisible(true);
-        matching.stream().filter(abbonamento -> abbonamento.getIncasso() == null && abbonamento.getCosto() != BigDecimal.ZERO).forEach(abbonamento -> {
+        matching.stream().filter(abbonamento -> abbonamento.getVersamento() ==  null && abbonamento.getCosto() != BigDecimal.ZERO).forEach(abbonamento -> {
             log.info("incasso");
             log.info(abbonamento.toString());
             incassa(abbonamento);

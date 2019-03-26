@@ -59,7 +59,7 @@ public class SmdApplication {
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
     
     
-    
+    //FIXME pubblicazioni Uniche
     public static List<Spedizione> selectSpedizioni(List<Spedizione> spedizioni, Anno anno, Mese mese, Pubblicazione pubblicazione) {
         return spedizioni.stream()
                 .filter(s -> 
@@ -86,7 +86,7 @@ public class SmdApplication {
                     sped.getDestinatario().getId() != storico.getDestinatario().getId()     ) {
                     continue;
                 }
-                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getIncasso() == null) {
+                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getVersamento() == null) {
                     return false;
                 }
             }
@@ -342,13 +342,13 @@ public class SmdApplication {
         case No:
             costo = pubblicazione.getCostoUnitario().doubleValue()
                      * numero.doubleValue()
-                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());
+                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());
         break;
         
         case ConSconto:
             costo = pubblicazione.getCostoScontato().doubleValue()
                      * numero.doubleValue()
-                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getPrimaPubblicazione(),pubblicazione.getTipo());  
+                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());  
             break;
             
         case CuriaDiocesiana:
@@ -380,42 +380,42 @@ public class SmdApplication {
             Pubblicazione messaggio = new Pubblicazione("Messaggio",
                                                         TipoPubblicazione.MENSILE);
             messaggio.setActive(true);
-            messaggio.setAbbonamento(true);
+            messaggio.setAutore("AAVV");
             messaggio.setCostoUnitario(new BigDecimal(1.25));
             messaggio.setCostoScontato(new BigDecimal(1.25));
             messaggio.setEditore("ADP");
-            messaggio.setPrimaPubblicazione(Mese.GENNAIO);
+            messaggio.setMese(Mese.GENNAIO);
             pubblicazioneDao.save(messaggio);
 
             Pubblicazione lodare = new Pubblicazione("Lodare e Servire",
                                                      TipoPubblicazione.MENSILE);
             lodare.setActive(true);
-            lodare.setAbbonamento(true);
+            lodare.setAutore("AAVV");
             lodare.setCostoUnitario(new BigDecimal(1.50));
             lodare.setCostoScontato(new BigDecimal(1.50));
             lodare.setEditore("ADP");
-            lodare.setPrimaPubblicazione(Mese.GENNAIO);
+            lodare.setMese(Mese.GENNAIO);
             pubblicazioneDao.save(lodare);
 
             Pubblicazione blocchetti = new Pubblicazione("Blocchetti",
                                                          TipoPubblicazione.SEMESTRALE);
             blocchetti.setActive(true);
-            blocchetti.setAbbonamento(true);
+            blocchetti.setAutore("AAVV");
             blocchetti.setCostoUnitario(new BigDecimal(3.00));
             blocchetti.setCostoScontato(new BigDecimal(2.40));
             blocchetti.setEditore("ADP");
-            blocchetti.setPrimaPubblicazione(Mese.MARZO);
+            blocchetti.setMese(Mese.MARZO);
             pubblicazioneDao.save(blocchetti);
 
 
             Pubblicazione estratti = new Pubblicazione("Estratti",
                                                        TipoPubblicazione.ANNUALE);
             estratti.setActive(true);
-            estratti.setAbbonamento(true);
+            estratti.setAutore("AAVV");
             estratti.setCostoUnitario(new BigDecimal(10.00));
             estratti.setCostoScontato(new BigDecimal(10.00));
             estratti.setEditore("ADP");
-            estratti.setPrimaPubblicazione(Mese.LUGLIO);
+            estratti.setMese(Mese.LUGLIO);
             pubblicazioneDao.save(estratti);
 
             // save a couple of customers
@@ -784,6 +784,11 @@ public class SmdApplication {
             log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
             log.info(Integer.toString(getNumeroPubblicazioni(Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
 
+            log.info("Abbonamenti found per Costo > 0 e Versamenti Not Null");
+            log.info("-------------------------------");
+            for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
+                log.info(abb.toString());
+            }
         };
     }
 }

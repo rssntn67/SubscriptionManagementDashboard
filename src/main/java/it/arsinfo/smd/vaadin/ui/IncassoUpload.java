@@ -37,7 +37,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
      */
     private static final long serialVersionUID = 9190730544104714862L;
 
-    private static final Logger log = LoggerFactory.getLogger(VersamentoUI.class);
+    private static final Logger log = LoggerFactory.getLogger(IncassoUpload.class);
 
     private File file;
         

@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 
@@ -29,15 +31,15 @@ public class Pubblicazione implements SmdEntity {
 
     private boolean active = true;
 
-    private boolean abbonamento = false;
-
     @Enumerated(EnumType.STRING)
-    private Mese primaPubblicazione=Mese.GENNAIO;
+    private Mese mese=Mese.GENNAIO;
 
     private BigDecimal costoUnitario=BigDecimal.ZERO;
 
     private BigDecimal costoScontato=BigDecimal.ZERO;
 
+    @Enumerated(EnumType.STRING)
+    private Anno anno=SmdApplication.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
     private TipoPubblicazione tipo=TipoPubblicazione.UNICO;
 
@@ -64,7 +66,7 @@ public class Pubblicazione implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Prima Pubblicazione='%s', CostoUnitario='%f', CostoScontato='%f']",
-                             id, nome, tipo, primaPubblicazione,costoUnitario,costoScontato);
+                             id, nome, tipo, mese,costoUnitario,costoScontato);
     }
 
     public Pubblicazione(String nome, TipoPubblicazione tipo) {
@@ -91,14 +93,6 @@ public class Pubblicazione implements SmdEntity {
         this.active = active;
     }
 
-    public boolean isAbbonamento() {
-        return abbonamento;
-    }
-
-    public void setAbbonamento(boolean abbonamento) {
-        this.abbonamento = abbonamento;
-    }
-
     public BigDecimal getCostoUnitario() {
         return costoUnitario;
     }
@@ -123,12 +117,12 @@ public class Pubblicazione implements SmdEntity {
         this.editore = editore;
     }
 
-    public Mese getPrimaPubblicazione() {
-        return primaPubblicazione;
+    public Mese getMese() {
+        return mese;
     }
 
-    public void setPrimaPubblicazione(Mese primapubblicazione) {
-        this.primaPubblicazione = primapubblicazione;
+    public void setMese(Mese primapubblicazione) {
+        this.mese = primapubblicazione;
     }
 
     public BigDecimal getCostoScontato() {
@@ -143,16 +137,34 @@ public class Pubblicazione implements SmdEntity {
     }
 
     @Transient
-    public String getMesiUscita() {
+    public String getPubblicato() {
         final StringBuffer sb = new StringBuffer();
-        boolean first = true;
-        for (Mese m : getMesiPubblicazione()) {
-            if (!first) {
-                sb.append(",");
+        switch (tipo) {
+        case UNICO:
+            sb.append(mese.getNomeBreve());
+            sb.append(" ");
+            sb.append(anno.getAnnoAsString());
+            break;
+        case ANNUALE:
+            sb.append(mese.getNomeBreve());
+            break;
+        case SEMESTRALE:
+            boolean first = true;
+            for (Mese m : getMesiPubblicazione()) {
+                if (!first) {
+                    sb.append(",");
+                }
+                sb.append(m.getNomeBreve());
+                first=false;
             }
-            sb.append(m.getNomeBreve());
-            first=false;
+            break;
+        case MENSILE:
+            sb.append("tutti i mesi");
+            break;
+        default:
+            break;
         }
+
         return sb.toString();
     }
     
@@ -161,20 +173,30 @@ public class Pubblicazione implements SmdEntity {
         EnumSet<Mese> mesi = null;
         switch (tipo) {
         case UNICO:
-            mesi = EnumSet.of(primaPubblicazione);
             break;
         case ANNUALE:
-            mesi = EnumSet.of(primaPubblicazione);
+            mesi = EnumSet.of(mese);
             break;
         case SEMESTRALE:
-            mesi = EnumSet.of(primaPubblicazione, Mese.getByPosizione(primaPubblicazione.getPosizione()+6));
+            mesi = EnumSet.of(mese, Mese.getByPosizione(mese.getPosizione()+6));
             break;
         case MENSILE:
             mesi = EnumSet.allOf(Mese.class);
+            break;
+        default:
+            break;
         }
         return mesi;
     }
 
+    @Transient
+    public String getAttivo() {
+        if (active) {
+            return "si";
+        }
+        return "no";
+    }
+    
     @Transient
     public String getCaption() {
         return String.format("%s, %s. EUR:%f.", nome, tipo, costoUnitario);
@@ -183,5 +205,13 @@ public class Pubblicazione implements SmdEntity {
     @Transient
     public String getHeader() {
         return String.format("Pubblicazione:Edit:'%s'", nome);
+    }
+
+    public Anno getAnno() {
+        return anno;
+    }
+
+    public void setAnno(Anno anno) {
+        this.anno = anno;
     }
 }

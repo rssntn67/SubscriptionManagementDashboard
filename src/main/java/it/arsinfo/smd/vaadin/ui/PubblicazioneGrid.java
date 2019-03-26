@@ -9,8 +9,8 @@ public class PubblicazioneGrid extends SmdGrid<Pubblicazione> {
 
     public PubblicazioneGrid(String gridname) {
         super(new Grid<>(Pubblicazione.class),gridname);
-        setColumns("nome", "autore","editore","tipo", "costoUnitario", "costoScontato",
-                   "mesiUscita");
+        setColumns("nome", "autore","attivo","editore","tipo.descrizione", "costoUnitario", "costoScontato",
+                   "pubblicato");
 
     }
 

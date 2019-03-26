@@ -6,14 +6,17 @@ import com.vaadin.ui.Grid;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;
+import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class IncassoEditor extends SmdEditor<Incasso> {
 
     private Grid<Versamento> gridVersamento;
-   
-    public IncassoEditor(IncassoDao incassoDao) {
+    private final VersamentoDao versamentoDao;
+    
+    public IncassoEditor(IncassoDao incassoDao, VersamentoDao versamentoDao) {
         super(incassoDao, new Binder<>(Incasso.class));
+        this.versamentoDao = versamentoDao;
 
         gridVersamento = new Grid<Versamento>(Versamento.class);
 
@@ -36,7 +39,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
             gridVersamento.setVisible(false); 
             return;
          }
-         gridVersamento.setItems(incasso.getVersamenti());
+         gridVersamento.setItems(versamentoDao.findByIncasso(incasso));
          gridVersamento.setVisible(true); 
         
     }

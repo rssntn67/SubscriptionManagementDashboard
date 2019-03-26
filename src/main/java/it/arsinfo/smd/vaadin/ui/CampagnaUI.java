@@ -12,6 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -55,7 +56,7 @@ public class CampagnaUI extends SmdUI {
                 new CampagnaItemEditor(
                    pubblicazioneDao.findAll()
                    .stream()
-                   .filter(p -> p.isActive() && p.isAbbonamento())
+                   .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
                    .collect(Collectors.toList())
                );
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");

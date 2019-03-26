@@ -5,10 +5,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
@@ -41,15 +39,13 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(ContoCorrentePostale.class));
     private final TextField spese = new TextField("Spese Spedizione");
 
-    private final DateField incasso = new DateField("Data Incasso");
-
     private final TextField incassato = new TextField("Incassato");
     public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
         HorizontalLayout pri = new HorizontalLayout(campagna,intestatario,
-                                                    anno, inizio, fine,incasso);
+                                                    anno, inizio, fine);
         HorizontalLayout sec = new HorizontalLayout(incassato,costo,spese,cassa,campo,
                                                     contoCorrentePostale);
         
@@ -73,8 +69,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         fine.setEmptySelectionAllowed(false);
 
         costo.setReadOnly(true);
-        cassa.setEmptySelectionAllowed(false);
         campo.setReadOnly(true);
+        cassa.setEmptySelectionAllowed(false);
         contoCorrentePostale.setItemCaptionGenerator(ContoCorrentePostale::getCcp);
 
 
@@ -98,7 +94,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,
                                                                                                                       Abbonamento::setSpese);
-        getBinder().forField(incasso).withConverter(new LocalDateToDateConverter()).bind("incasso");
         getBinder().forField(incassato).bind("incassato");
 
     }
@@ -106,7 +101,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled(persisted);
+        getDelete().setEnabled(persisted && abbonamento.getVersamento() != null);
+        getSave().setEnabled(!persisted);
+        getCancel().setEnabled(!persisted);
         intestatario.setReadOnly(persisted);
         anno.setReadOnly(persisted);
         inizio.setReadOnly(persisted);
@@ -117,39 +114,19 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         contoCorrentePostale.setReadOnly(persisted);
         campagna.setReadOnly(true);
         incassato.setVisible(persisted);
+        cassa.setReadOnly(persisted);
 
         if (persisted && 
                 abbonamento.getCosto().doubleValue() == BigDecimal.ZERO.doubleValue() && 
                 abbonamento.getSpese().doubleValue() == BigDecimal.ZERO.doubleValue()) {
-            getSave().setEnabled(false);
-            getCancel().setEnabled(false);
-            incasso.setVisible(false);
             cassa.setVisible(false);
             campo.setVisible(false);
             contoCorrentePostale.setVisible(false);
-        } else if (persisted && abbonamento.getIncasso() == null) {
-            getSave().setEnabled(true);
-            getCancel().setEnabled(true);
-            incasso.setReadOnly(false);
-            incasso.setVisible(true);
-            cassa.setReadOnly(false);
-            cassa.setVisible(true);
-        } else if (persisted && abbonamento.getIncasso() != null) {
-            getSave().setEnabled(false);
-            getCancel().setEnabled(false);
-            getDelete().setEnabled(false);
-            incasso.setReadOnly(true);
-            incasso.setVisible(true);
-            cassa.setReadOnly(true);
-            cassa.setVisible(true);
         } else if (!persisted ){
-            getSave().setEnabled(true);
-            getCancel().setEnabled(true);
-            incasso.setVisible(false);
-            cassa.setReadOnly(false);
             cassa.setVisible(true);
+            contoCorrentePostale.setVisible(true);
             intestatario.focus();
         }
-
+        
     }
 }

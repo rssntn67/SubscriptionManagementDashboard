@@ -14,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -43,7 +42,7 @@ public class Abbonamento implements SmdEntity {
 
     @ManyToOne
     private Campagna campagna;
-    @OneToOne
+    @ManyToOne
     private Versamento versamento;
     @OneToMany(cascade = { CascadeType.ALL })
     private List<Spedizione> spedizioni = new ArrayList<>();
@@ -55,10 +54,7 @@ public class Abbonamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
     private BigDecimal spese = BigDecimal.ZERO;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date incasso;
-    
+        
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
 
@@ -136,14 +132,6 @@ public class Abbonamento implements SmdEntity {
 
     public void setAnno(Anno anno) {
         this.anno = anno;
-    }
-
-    public Date getIncasso() {
-        return incasso;
-    }
-
-    public void setIncasso(Date incasso) {
-        this.incasso = incasso;
     }
 
     public Campagna getCampagna() {
@@ -225,7 +213,7 @@ public class Abbonamento implements SmdEntity {
         if (costo.doubleValue() == BigDecimal.ZERO.doubleValue() && spese.doubleValue() == BigDecimal.ZERO.doubleValue()) {
             return "Omaggio";
         }
-        if (incasso != null) {
+        if (versamento.getId() != null) {
             return "Si";
         }
         return "No";
