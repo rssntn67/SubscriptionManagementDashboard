@@ -789,6 +789,24 @@ public class SmdApplication {
             for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
                 log.info(abb.toString());
             }
+
+            log.info("Abbonamenti found per Costo > 0 e Versamenti Null");
+            log.info("-------------------------------");
+            for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThanAndVersamentoNull(BigDecimal.ZERO)) {
+                log.info(abb.toString());
+            }
+
+            log.info("Abbonamenti found per Costo > 0 ");
+            log.info("-------------------------------");
+            for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThan(BigDecimal.ZERO)) {
+                log.info(abb.toString());
+                if (abb.getVersamento() == null)
+                    log.info("versamento:null");
+                else
+                    log.info(abb.getVersamento().getId().toString());
+                
+            }
+
         };
     }
 }
