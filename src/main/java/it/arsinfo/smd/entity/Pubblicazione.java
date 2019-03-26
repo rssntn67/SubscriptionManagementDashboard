@@ -1,6 +1,7 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -142,22 +143,41 @@ public class Pubblicazione implements SmdEntity {
     }
 
     @Transient
-    public String getDescription() {
-        if (tipo == TipoPubblicazione.SEMESTRALE) {
-            return String.format("Pubblicata:%s,%s", 
-                                 primaPubblicazione.getNomeBreve(),
-                                 Mese.getByPosizione(primaPubblicazione.getPosizione()+6).getNomeBreve());
+    public String getMesiUscita() {
+        final StringBuffer sb = new StringBuffer();
+        boolean first = true;
+        for (Mese m : getMesiPubblicazione()) {
+            if (!first) {
+                sb.append(",");
+            }
+            sb.append(m.getNomeBreve());
+            first=false;
         }
-        if (tipo == TipoPubblicazione.MENSILE) {
-            return "";
-        }
-        return String.format("Pubblicata:%s", 
-                             primaPubblicazione.getNomeBreve());
-        
+        return sb.toString();
     }
+    
+    @Transient
+    public EnumSet<Mese> getMesiPubblicazione() {
+        EnumSet<Mese> mesi = null;
+        switch (tipo) {
+        case UNICO:
+            mesi = EnumSet.of(primaPubblicazione);
+            break;
+        case ANNUALE:
+            mesi = EnumSet.of(primaPubblicazione);
+            break;
+        case SEMESTRALE:
+            mesi = EnumSet.of(primaPubblicazione, Mese.getByPosizione(primaPubblicazione.getPosizione()+6));
+            break;
+        case MENSILE:
+            mesi = EnumSet.allOf(Mese.class);
+        }
+        return mesi;
+    }
+
     @Transient
     public String getCaption() {
-        return String.format("%s, %s. EUR:%f. %s", nome, tipo, costoUnitario,getDescription());
+        return String.format("%s, %s. EUR:%f.", nome, tipo, costoUnitario);
     }
 
     @Transient
