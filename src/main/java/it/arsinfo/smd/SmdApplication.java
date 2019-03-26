@@ -58,6 +58,17 @@ public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
     
+    
+    
+    public static List<Spedizione> selectSpedizioni(List<Spedizione> spedizioni, Anno anno, Mese mese, Pubblicazione pubblicazione) {
+        return spedizioni.stream()
+                .filter(s -> 
+                    s.getPubblicazione().getId() == pubblicazione.getId() 
+                    && s.getAbbonamento().getAnno() == anno
+                    && pubblicazione.getMesiPubblicazione().contains(mese)
+                ).collect(Collectors.toList());
+    }
+     
     public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
         if (storico.getOmaggio() != Omaggio.No || storico.getOmaggio() != Omaggio.ConSconto) {
             return true;
