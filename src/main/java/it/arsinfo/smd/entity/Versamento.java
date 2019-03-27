@@ -32,7 +32,7 @@ public class Versamento implements SmdEntity {
     String bobina;
     String progressivoBobina;
     
-    String progressivo;
+    String progressivo="9999999";
         
     @Temporal(TemporalType.TIMESTAMP)
     Date dataPagamento;

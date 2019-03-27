@@ -57,6 +57,9 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+    public static String getProgressivoVersamento(int i) {
+        return String.format("%09d",i);
+    }
     
     public static List<Spedizione> selectSpedizioni(List<Spedizione> spedizioni, Anno anno, Mese mese, Pubblicazione pubblicazione) {
         return spedizioni.stream()

@@ -9,8 +9,8 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
 
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
-        setColumns("dataPagamento","dataContabile","importo",
-                    "campo","progressivo"
+        setColumns("progressivo","dataPagamento","dataContabile","importo",
+                    "campo"
                       );
         
         

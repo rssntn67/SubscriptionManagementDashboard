@@ -69,6 +69,8 @@ public class IncassoUI extends SmdUI {
             search.setVisible(false);
         });
         
+        versgrid.setChangeHandler(() -> {
+        });
         grid.populate(search.findAll());
 
     }
