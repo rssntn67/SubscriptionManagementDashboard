@@ -46,7 +46,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         abbonamentiAssociati.setColumns("intestatario.cognome",
                                         "intestatario.nome",
-                                        "contoCorrentePostale.ccp", "costo",
+                                        "ccp.ccp", "costo",
                                         "campo", "incasso", "incassato");
         abbonamentiAssociati.addComponentColumn(abbonamento -> {
             Button button = new Button("Dissocia");
@@ -59,7 +59,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         abbonamentiAssociabili.setColumns("intestatario.cognome",
                                           "intestatario.nome",
-                                          "contoCorrentePostale.ccp", "costo",
+                                          "ccp.ccp", "costo",
                                           "campo", "incasso", "incassato");
         abbonamentiAssociabili.addComponentColumn(abbonamento -> {
             Button button = new Button("Associa");

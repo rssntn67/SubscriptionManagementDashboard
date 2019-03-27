@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Invio;
@@ -208,7 +208,7 @@ public class SmdApplication {
         final Incasso incasso = new Incasso();
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,
                                                                           1))));
-        incasso.setCcp(ContoCorrentePostale.getByCcp(riepilogo.substring(1,
+        incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,
                                                                          13)));
         incasso.setDataContabile(formatter.parse(riepilogo.substring(13,
                                                                      19)));

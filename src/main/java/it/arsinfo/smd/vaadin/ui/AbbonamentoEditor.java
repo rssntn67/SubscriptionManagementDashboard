@@ -12,7 +12,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -35,8 +35,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
     private final TextField campo = new TextField("V Campo Poste Italiane");
-    private final ComboBox<ContoCorrentePostale> contoCorrentePostale = new ComboBox<ContoCorrentePostale>("Selezionare ccp",
-            EnumSet.allOf(ContoCorrentePostale.class));
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Selezionare ccp",
+            EnumSet.allOf(Ccp.class));
     private final TextField spese = new TextField("Spese Spedizione");
 
     private final TextField incassato = new TextField("Incassato");
@@ -47,7 +47,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout pri = new HorizontalLayout(campagna,intestatario,
                                                     anno, inizio, fine);
         HorizontalLayout sec = new HorizontalLayout(incassato,costo,spese,cassa,campo,
-                                                    contoCorrentePostale);
+                                                    ccp);
         
 
         setComponents(getActions(),pri, sec);
@@ -71,7 +71,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         costo.setReadOnly(true);
         campo.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
-        contoCorrentePostale.setItemCaptionGenerator(ContoCorrentePostale::getCcp);
+        ccp.setItemCaptionGenerator(Ccp::getCcp);
 
 
         getBinder().forField(intestatario)
@@ -89,7 +89,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(campo).asRequired().withValidator(ca -> ca != null,
                 "Deve essere definito").bind(Abbonamento::getCampo,
                                              Abbonamento::setCampo);
-        getBinder().forField(contoCorrentePostale).bind("contoCorrentePostale");
+        getBinder().forField(ccp).bind("ccp     ");
         
 
         getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,
@@ -111,7 +111,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         spese.setReadOnly(persisted);
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
-        contoCorrentePostale.setReadOnly(persisted);
+        ccp.setReadOnly(persisted);
         campagna.setReadOnly(true);
         incassato.setVisible(persisted);
         cassa.setReadOnly(persisted);
@@ -121,10 +121,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
                 abbonamento.getSpese().doubleValue() == BigDecimal.ZERO.doubleValue()) {
             cassa.setVisible(false);
             campo.setVisible(false);
-            contoCorrentePostale.setVisible(false);
+            ccp.setVisible(false);
         } else if (!persisted ){
             cassa.setVisible(true);
-            contoCorrentePostale.setVisible(true);
+            ccp.setVisible(true);
             intestatario.focus();
         }
         

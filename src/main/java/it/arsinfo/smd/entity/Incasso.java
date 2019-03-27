@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 
 @Entity
@@ -33,7 +33,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Cuas cuas;
     @Enumerated(EnumType.STRING)
-    private ContoCorrentePostale ccp;
+    private Ccp ccp;
     
     private String operazione;
         
@@ -67,10 +67,10 @@ public class Incasso implements SmdEntity {
     public void setCuas(Cuas cuas) {
         this.cuas = cuas;
     }
-    public ContoCorrentePostale getCcp() {
+    public Ccp getCcp() {
         return ccp;
     }
-    public void setCcp(ContoCorrentePostale ccp) {
+    public void setCcp(Ccp ccp) {
         this.ccp = ccp;
     }
     public List<Versamento> getVersamenti() {

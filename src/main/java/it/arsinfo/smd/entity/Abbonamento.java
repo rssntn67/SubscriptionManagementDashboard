@@ -21,7 +21,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
@@ -52,7 +52,7 @@ public class Abbonamento implements SmdEntity {
     private Cassa cassa = Cassa.Ccp;
     private String campo;
     @Enumerated(EnumType.STRING)
-    private ContoCorrentePostale contoCorrentePostale = ContoCorrentePostale.UNO;
+    private Ccp ccp = Ccp.UNO;
     private BigDecimal spese = BigDecimal.ZERO;
         
     @Temporal(TemporalType.TIMESTAMP)
@@ -186,13 +186,13 @@ public class Abbonamento implements SmdEntity {
         this.cassa = cassa;
     }
 
-    public ContoCorrentePostale getContoCorrentePostale() {
-        return contoCorrentePostale;
+    public Ccp getCcp() {
+        return ccp;
     }
 
-    public void setContoCorrentePostale(
-            ContoCorrentePostale contoCorrentePostale) {
-        this.contoCorrentePostale = contoCorrentePostale;
+    public void setCcp(
+            Ccp ccp) {
+        this.ccp = ccp;
     }
         
     @Transient

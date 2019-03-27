@@ -8,7 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.repository.IncassoDao;
@@ -18,7 +18,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
-    private final ComboBox<ContoCorrentePostale> ccp = new ComboBox<ContoCorrentePostale>("Ccp",EnumSet.allOf(ContoCorrentePostale.class));
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Ccp",EnumSet.allOf(Ccp.class));
     private final TextField operazione = new TextField("operazione");
 
 
