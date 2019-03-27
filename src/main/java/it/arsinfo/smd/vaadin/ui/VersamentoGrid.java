@@ -16,7 +16,15 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
                         "tipoAccettazione.tipo","tipoSostitutivo.descr",
                         "provincia","ufficio","sportello","bobina", "progressivoBobina"
                       );
-        
+        /*
+        setColumns("bobina", "progressivoBobina",
+                   "progressivo",
+                   "dataPagamento","dataContabile","importo",
+                   "tipoDocumento.bollettino","provincia","ufficio","sportello",
+                   "tipoAccettazione.tipo","tipoSostitutivo.descr"
+                   );
+                   */
+
     }
 
 }

@@ -1,47 +1,42 @@
 package it.arsinfo.smd.vaadin.ui;
 
-import com.vaadin.data.Binder;
-import com.vaadin.ui.Grid;
+import java.util.EnumSet;
 
+import com.vaadin.data.Binder;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
+
+import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.ContoCorrentePostale;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;
-import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class IncassoEditor extends SmdEditor<Incasso> {
-
-    private Grid<Versamento> gridVersamento;
-    private final VersamentoDao versamentoDao;
     
-    public IncassoEditor(IncassoDao incassoDao, VersamentoDao versamentoDao) {
+    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
+    private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
+    private final ComboBox<ContoCorrentePostale> ccp = new ComboBox<ContoCorrentePostale>("Ccp",EnumSet.allOf(ContoCorrentePostale.class));
+    private final TextField operazione = new TextField("operazione");
+
+
+    public IncassoEditor(IncassoDao incassoDao) {
         super(incassoDao, new Binder<>(Incasso.class));
-        this.versamentoDao = versamentoDao;
 
-        gridVersamento = new Grid<Versamento>(Versamento.class);
-
-        gridVersamento.setColumns("bobina", "progressivoBobina",
-                                  "progressivo",
-                                  "dataPagamento","dataContabile","importo",
-                                  "tipoDocumento.bollettino","provincia","ufficio","sportello",
-                                  "tipoAccettazione.tipo","tipoSostitutivo.descr"
-                                  );
-        gridVersamento.setVisible(false);
-        gridVersamento.setWidth("80%");
-        setComponents(getActions(),gridVersamento);
-
+        setComponents(getActions(), new HorizontalLayout(cassa,cuas,ccp,operazione));
+        
+        getBinder().bindInstanceFields(this);
     }
 
 
     @Override
     public void focus(boolean persisted, Incasso incasso) {
-        if (incasso == null) {
-            gridVersamento.setVisible(false); 
-            return;
-         }
-         gridVersamento.setItems(versamentoDao.findByIncasso(incasso));
-         gridVersamento.setVisible(true); 
-        
+        cassa.setReadOnly(persisted);
+        cuas.setReadOnly(persisted);
+        ccp.setReadOnly(persisted);
+        operazione.setReadOnly(persisted);
     }
 
 }

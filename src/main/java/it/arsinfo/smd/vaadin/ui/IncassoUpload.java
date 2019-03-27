@@ -45,10 +45,10 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
 
     private List<Incasso> incassi = new ArrayList<>();
 
-    public IncassoUpload() {
+    public IncassoUpload(String caption) {
         super();
 
-        Upload upload = new Upload("Aggiungi Incasso",this);
+        Upload upload = new Upload(caption,this);
         upload.setImmediateMode(false);
         upload.setButtonCaption("Avvia Download");
         upload.addSucceededListener(this);

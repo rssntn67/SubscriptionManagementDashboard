@@ -7,7 +7,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.IncassoDao;
-import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
@@ -22,20 +21,26 @@ public class IncassoUI extends SmdUI {
 
     @Autowired
     private IncassoDao repo;
-    
-   @Autowired
-   private VersamentoDao versamentoDao;
-    
+        
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
-        IncassoUpload upload = new IncassoUpload();
+        IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
+        IncassoUpload upload = new IncassoUpload("Incasso da Poste");
         IncassoSearch search = new IncassoSearch(repo);
         IncassoGrid grid = new IncassoGrid("");
-        IncassoEditor editor = new IncassoEditor(repo,versamentoDao);
+        IncassoEditor editor = new IncassoEditor(repo);
 
-        addSmdComponents(upload, editor,search, grid);
+        addSmdComponents(add,upload, editor,search, grid);
         editor.setVisible(false);
+
+        add.setChangeHandler(() -> {
+            editor.edit(add.generate());
+            add.setVisible(false);
+            upload.setVisible(false);
+            search.setVisible(false);
+        });
+        
         upload.setChangeHandler(() -> {
             upload.getIncassi().stream().forEach(incasso -> repo.save(incasso));
             grid.populate(upload.getIncassi());
@@ -43,8 +48,19 @@ public class IncassoUI extends SmdUI {
         
         search.setChangeHandler(() -> grid.populate(search.find()));
         
+        editor.setChangeHandler(() -> {
+            add.setVisible(true);
+            upload.setVisible(true);
+            search.setVisible(true);
+            editor.setVisible(false);
+            grid.populate(search.find());
+        });
+
         grid.setChangeHandler(() -> {
             editor.edit(grid.getSelected());
+            add.setVisible(false);
+            upload.setVisible(false);
+            search.setVisible(false);
         });
         
         grid.populate(search.findAll());
