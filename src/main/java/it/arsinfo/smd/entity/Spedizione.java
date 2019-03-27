@@ -110,4 +110,9 @@ public class Spedizione implements SmdEntity {
         return String.format("%s:Spedizione:Edit:'%s'", abbonamento.getHeader(),pubblicazione.getNome());
     }
 
+    @Override
+    public String toString() {
+        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s]", 
+                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio);
+    }
 }

@@ -114,5 +114,10 @@ public class Campagna implements SmdEntity {
     public String getCaption() {
         return String.format("Campagna%s", anno.getAnnoAsString());
     }
+    
+    @Override
+    public String toString() {
+        return String.format("Campagna[id=%d, anno='%s', inizio='%s', fine='%s']", id,anno, inizio,fine);
+    }
 
 }

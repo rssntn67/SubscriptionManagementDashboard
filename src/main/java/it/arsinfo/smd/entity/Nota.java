@@ -59,4 +59,10 @@ public class Nota implements SmdEntity {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Abbonamento[id=%d, Anagrafica='%d', descrizione='%s', Data='%td %tb %tY %tR %tZ', %s]",
+                             id, anagrafica.getId(), description,
+                             data, data, data, data, data);
+    }
 }

@@ -10,6 +10,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.repository.IncassoDao;
@@ -17,8 +18,9 @@ import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class IncassoSearch extends SmdSearch<Incasso> {
 
-    Cuas cuas;
-    LocalDate dataContabile;
+    private Cassa cassa;
+    private Cuas cuas;
+    private LocalDate dataContabile;
 
     public IncassoSearch(IncassoDao repo) {
         super(repo);

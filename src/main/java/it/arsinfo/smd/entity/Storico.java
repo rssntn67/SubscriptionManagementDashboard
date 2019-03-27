@@ -129,8 +129,8 @@ public class Storico implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("AnagraficaPubblicazione[id=%d, Pubblicazione='%s', Intestatario='%s', Destinatario='%s', Numero='%d']",
-                             id, pubblicazione, intestatario, destinatario, numero);
+        return String.format("Storico[id=%d, Pubblicazione='%d', Intestatario='%d', Destinatario='%d', Numero='%d', Omaggio=%s, Invio=%s, Sospeso=%b, Cassa=%s]",
+                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,omaggio,invio,sospeso,cassa);
     }
 
     public Omaggio getOmaggio() {

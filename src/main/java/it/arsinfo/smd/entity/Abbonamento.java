@@ -97,9 +97,9 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Anagrafica='%s', Costo='%f', Campo='%s', Data='%td %tb %tY %tR %tZ']",
-                                   id, intestatario, costo,
-                                   data, data, data, data, data, data);
+        return String.format("Abbonamento[id=%d, Intestatario='%d', Costo='%.2f', Spese='%.2f', Campo='%s', Data='%td %tb %tY %tR %tZ', %s]",
+                                   id, intestatario.getId(), costo,spese,campo,
+                                   data, data, data, data, data, cassa);
     }
     
     public BigDecimal getSpese() {

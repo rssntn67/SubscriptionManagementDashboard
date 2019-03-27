@@ -58,8 +58,6 @@ public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
     
-    
-    //FIXME pubblicazioni Uniche
     public static List<Spedizione> selectSpedizioni(List<Spedizione> spedizioni, Anno anno, Mese mese, Pubblicazione pubblicazione) {
         return spedizioni.stream()
                 .filter(s -> 
@@ -636,36 +634,6 @@ public class SmdApplication {
             
             incassoDao.save(incasso5);
             
-            log.info("Customers found with findAll():");
-            log.info("-------------------------------");
-            for (Anagrafica customer : anagraficaDao.findAll()) {
-                log.info(customer.toString());
-            }
-            log.info("");
-
-            // fetch an individual pubblicazione by ID
-            Pubblicazione first = pubblicazioneDao.findById(1L).get();
-            log.info("Messaggio found with findOne(1L):");
-            log.info("--------------------------------");
-            log.info(first.toString());
-            log.info("");
-
-            // fetch customers by last name
-            log.info("Customer found with findByLastNameStartsWithIgnoreCase('Bauer'):");
-            log.info("--------------------------------------------");
-            for (Anagrafica bauer : anagraficaDao.findByCognomeStartsWithIgnoreCase("Bauer")) {
-                log.info(bauer.toString());
-            }
-            log.info("");
-
-            log.info("Customer found with findByDiocesi('ROMA'):");
-            log.info("--------------------------------------------");
-            for (Anagrafica roma : anagraficaDao.findByDiocesi(Diocesi.DIOCESI168)) {
-                log.info(roma.toString());
-            }
-            log.info("");
-
-            // fetch all pubblicazioni
             log.info("Pubblicazioni found with findAll():");
             log.info("-------------------------------");
             for (Pubblicazione pubblicazione : pubblicazioneDao.findAll()) {
@@ -673,10 +641,9 @@ public class SmdApplication {
             }
             log.info("");
 
-            // fetch customers by last name
-            log.info("Pubblicazione found with findByNameStartsWithIgnoreCase('ADP'):");
+            log.info("Pubblicazione found with findByNameStartsWithIgnoreCase('Estratti'):");
             log.info("--------------------------------------------");
-            for (Pubblicazione adp : pubblicazioneDao.findByNomeStartsWithIgnoreCase("ADP")) {
+            for (Pubblicazione adp : pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti")) {
                 log.info(adp.toString());
             }
             log.info("");
@@ -688,72 +655,115 @@ public class SmdApplication {
             }
             log.info("");
 
-            log.info("AnagraficaPubblicazione found with findByIntestatario('md'):");
+            Pubblicazione first = pubblicazioneDao.findById(1L).get();
+            log.info("Messaggio found with findOne(1L):");
+            log.info("--------------------------------");
+            log.info(first.toString());
+            log.info("");
+
+            Pubblicazione second = pubblicazioneDao.findById(2L).get();
+            log.info("lodare found with findOne(2L):");
+            log.info("--------------------------------");
+            log.info(second.toString());
+            log.info("");
+            
+            log.info("Anagrafica found with findAll():");
+            log.info("-------------------------------");
+            for (Anagrafica customer : anagraficaDao.findAll()) {
+                log.info(customer.toString());
+            }
+            log.info("");
+
+            log.info("Anagrafica Russo found with findOne(5L):");
+            log.info("--------------------------------------------");
+            Anagrafica russo = anagraficaDao.findById(5L).get();
+            log.info(russo.toString());
+            log.info("");
+            
+
+            log.info("Anagrafica found with findByLastNameStartsWithIgnoreCase('Russo'):");
+            log.info("--------------------------------------------");
+            for (Anagrafica ana : anagraficaDao.findByCognomeStartsWithIgnoreCase("Russo")) {
+                log.info(ana.toString());
+            }
+            log.info("");
+
+            log.info("Anagrafica found with findByDiocesi('ROMA'):");
+            log.info("--------------------------------------------");
+            for (Anagrafica roma : anagraficaDao.findByDiocesi(Diocesi.DIOCESI168)) {
+                log.info(roma.toString());
+            }
+            log.info("");
+
+
+            log.info("Storico found with findByIntestatario('michele santoro id=17'):");
             log.info("--------------------------------------------");
             for (Storico anp : storicoDao.findByIntestatario(ms)) {
                 log.info(anp.toString());
             }
             log.info("");
 
-            log.info("AnagraficaPubblicazione found with findByDestinatario('dp'):");
+            log.info("Storico found with findByDestinatario('davide palma id=15'):");
             log.info("--------------------------------------------");
             for (Storico anp : storicoDao.findByDestinatario(dp)) {
                 log.info(anp.toString());
             }
             log.info("");
 
-            log.info("AnagraficaPubblicazione found with findByPubblicazione('blocchetti'):");
+            log.info("Storico found with findByPubblicazione('blocchetti'):");
             log.info("--------------------------------------------");
             for (Storico anp : storicoDao.findByPubblicazione(blocchetti)) {
                 log.info(anp.toString());
             }
             log.info("");
 
-            // fetch all customers
             log.info("Abbonamenti found with findAll():");
             log.info("-------------------------------");
             for (Abbonamento abbonamento : abbonamentoDao.findAll()) {
                 log.info(abbonamento.toString());
             }
+            log.info("");
 
-            log.info("Abbonamenti found with findByIntestatario(Md):");
+            log.info("Abbonamenti found with findByIntestatario(ms):");
             log.info("-------------------------------");
             for (Abbonamento abbonamentomd : abbonamentoDao.findByIntestatario(ms)) {
                 log.info(abbonamentomd.toString());
             }
-
             log.info("");
 
-            log.info("Versamenti:");
+            log.info("Campagna found with findAll():");
+            log.info("-------------------------------");
+            for (Campagna campagna : campagnaDao.findAll()) {
+                log.info(campagna.toString());
+            }
+            log.info("");
+
+            log.info("Versamenti found with findAll():");
             log.info("-------------------------------");
             for (Versamento versamento : versamentoDao.findAll()) {
                 log.info(versamento.toString());
             }
-
             log.info("");
 
-            log.info("Incassi:");
+            log.info("Incassi found with findAll():");
             log.info("-------------------------------");
             for (Incasso incasso : incassoDao.findAll()) {
                 log.info(incasso.toString());
             }
-
             log.info("");
             
-            log.info("Versamenti found by incasso1:");
+            log.info("Versamenti found by findByIncasso(incasso1):");
             log.info("-------------------------------");
             for (Versamento versamento : versamentoDao.findByIncasso(incasso1)) {
                 log.info(versamento.toString());
             }
-
             log.info("");
             
-            log.info("Versamenti found by importo 40.00:");
+            log.info("Versamenti found by findByImporto(new BigDecimal(\"40.00\"):");
             log.info("-------------------------------");
             for (Versamento versamento : versamentoDao.findByImporto(new BigDecimal("40.00"))) {
                 log.info(versamento.toString());
             }
-
             log.info("");
 
             log.info("Versamenti found by data contabile 2017-ott-06:");
@@ -762,8 +772,6 @@ public class SmdApplication {
             for (Versamento versamento : versamentoDao.findByDataContabile(formatter.parse("171006"))) {
                 log.info(versamento.toString());
             }
-
-            
             log.info("");
 
             log.info("Versamenti found by data pagamento 2017-ott-03:");
@@ -771,8 +779,6 @@ public class SmdApplication {
             for (Versamento versamento : versamentoDao.findByDataPagamento(formatter.parse("171003"))) {
                 log.info(versamento.toString());
             }
-
-            
             log.info("");
 
             log.info("Incassi found by CUAS.VENEZIA:");
@@ -780,39 +786,21 @@ public class SmdApplication {
             for (Incasso incasso : incassoDao.findByCuas(Cuas.VENEZIA)) {
                 log.info(incasso.toString());
             }
+            log.info("");
             
-            log.info("Anno Scorso");
-            log.info(getAnnoPassato().getAnnoAsString());
-            log.info("Anno Corrente");
-            log.info(getAnnoCorrente().getAnnoAsString());
-            log.info("Anno Prossimo");
-            log.info(getAnnoProssimo().getAnnoAsString());
-            log.info("Mese Corrente");
-            log.info(getMeseCorrente().getNomeBreve());
-
-            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
-            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
-            log.info("Numero: Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
-            log.info(Integer.toString(getNumeroPubblicazioni(Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
-
-            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
-            log.info("Numero: Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-            log.info(Integer.toString(getNumeroPubblicazioni(Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
-            log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-            log.info(Integer.toString(getNumeroPubblicazioni(Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
-
             log.info("Abbonamenti found per Costo > 0 e Versamenti Not Null");
             log.info("-------------------------------");
             for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
                 log.info(abb.toString());
             }
+            log.info("");
 
             log.info("Abbonamenti found per Costo > 0 e Versamenti Null");
             log.info("-------------------------------");
             for (Abbonamento abb: abbonamentoDao.findByCostoGreaterThanAndVersamentoNull(BigDecimal.ZERO)) {
                 log.info(abb.toString());
             }
+            log.info("");
 
             log.info("Abbonamenti found per Costo > 0 ");
             log.info("-------------------------------");
@@ -824,6 +812,7 @@ public class SmdApplication {
                     log.info(abb.getVersamento().getId().toString());
                 
             }
+            log.info("");
             
             log.info("Incasso di un abbonamento:");
             log.info("-------------------------------");
@@ -845,7 +834,30 @@ public class SmdApplication {
             log.info(abbnew.getIncassato());
             log.info("versamentoId");
             log.info(abbnew.getVersamento().getId().toString());
+            log.info("");
 
+
+            log.info("Anno Scorso");
+            log.info(getAnnoPassato().getAnnoAsString());
+            log.info("Anno Corrente");
+            log.info(getAnnoCorrente().getAnnoAsString());
+            log.info("Anno Prossimo");
+            log.info(getAnnoProssimo().getAnnoAsString());
+            log.info("Mese Corrente");
+            log.info(getMeseCorrente().getNomeBreve());
+            log.info("");
+
+            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
+            log.info("Numero: Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)));
+            log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
+            log.info("Numero: Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
+            log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
+            log.info(Integer.toString(getNumeroPubblicazioni(Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
+            log.info("");
 
         };
     }
