@@ -11,9 +11,7 @@ public class IncassoGrid extends SmdGrid<Incasso> {
         super(new Grid<>(Incasso.class),gridname);
 
         setColumns("cassa","dettagli", "dataContabile",
-                   "totaleDocumenti", "totaleImporto", "documentiEsatti",
-                   "importoDocumentiEsatti", "documentiErrati",
-                   "importoDocumentiErrati");
-
+                   "importo", 
+                   "esatti","errati","documenti");
     }
 }

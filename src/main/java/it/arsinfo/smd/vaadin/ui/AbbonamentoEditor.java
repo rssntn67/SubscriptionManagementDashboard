@@ -89,7 +89,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(campo).asRequired().withValidator(ca -> ca != null,
                 "Deve essere definito").bind(Abbonamento::getCampo,
                                              Abbonamento::setCampo);
-        getBinder().forField(ccp).bind("ccp     ");
+        getBinder().forField(ccp).bind("ccp");
         
 
         getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,

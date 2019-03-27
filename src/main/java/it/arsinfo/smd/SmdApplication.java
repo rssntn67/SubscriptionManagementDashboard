@@ -214,26 +214,26 @@ public class SmdApplication {
                                                                      19)));
 //	    String filler = riepilogo.substring(19,33);
 //	    String idriepilogo = riepilogo.substring(33,36);
-        incasso.setTotaleDocumenti(Integer.parseInt(riepilogo.substring(36,
+        incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,
                                                                         44)));
-        incasso.setTotaleImporto(new BigDecimal(riepilogo.substring(44, 54)
+        incasso.setImporto(new BigDecimal(riepilogo.substring(44, 54)
                 + "." + riepilogo.substring(54, 56)));
 
-        incasso.setDocumentiEsatti(Integer.parseInt(riepilogo.substring(56,
+        incasso.setEsatti(Integer.parseInt(riepilogo.substring(56,
                                                                         64)));
-        incasso.setImportoDocumentiEsatti(new BigDecimal(riepilogo.substring(64,
+        incasso.setImportoEsatti(new BigDecimal(riepilogo.substring(64,
                                                                              74)
                 + "." + riepilogo.substring(74, 76)));
 
-        incasso.setDocumentiErrati(Integer.parseInt(riepilogo.substring(76,
+        incasso.setErrati(Integer.parseInt(riepilogo.substring(76,
                                                                         84)));
-        incasso.setImportoDocumentiErrati(new BigDecimal(riepilogo.substring(84,
+        incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,
                                                                              94)
                 + "." + riepilogo.substring(94, 96)));
 
         versamenti.stream().forEach(s -> {
             try {
-                incasso.getVersamenti().add(generateVersamento(incasso,s));
+                incasso.addVersamento(generateVersamento(incasso,s));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -610,20 +610,20 @@ public class SmdApplication {
             versamenti4.add("0862740599999990000634700091710044510000000750002066172171006727700206617006437DIN                                                                                                                      \n");
             versamenti4.add("0857504199999990000634700091710034510000004000040016062171006727604001606035576DIN                                                                                                                      \n");
             versamenti4.add("0866089199999990000634700091710044510000022500018160052171006727701816005010892DIN                                                                                                                      \n");
-            // fetch all customers
             
             Incasso incasso4=generateIncasso(versamenti4, riepilogo4);
             incassoDao.save(incasso4);
             
             Incasso incasso5 = new Incasso();
             incasso5.setCassa(Cassa.Contrassegno);
-            incasso5.setTotaleDocumenti(1);
-            incasso5.setDocumentiErrati(0);
-            incasso5.setDocumentiEsatti(0);
+            incasso5.setDocumenti(1);
+            incasso5.setErrati(0);
+            incasso5.setEsatti(1);
+            incasso5.setOperazione("Ricevuto Assegno");
             incasso5.setDataContabile(new Date());
-            incasso5.setImportoDocumentiErrati(BigDecimal.ZERO);
-            incasso5.setImportoDocumentiEsatti(new BigDecimal(50.0));
-            incasso5.setTotaleImporto(new BigDecimal(50.0));
+            incasso5.setImportoErrati(BigDecimal.ZERO);
+            incasso5.setImportoEsatti(new BigDecimal(50.0));
+            incasso5.setImporto(new BigDecimal(50.0));
             
             Versamento versamentoIncasso5 = new Versamento(incasso5);
             versamentoIncasso5.setImporto(new BigDecimal(50.0));
@@ -633,7 +633,15 @@ public class SmdApplication {
             incasso5.addVersamento(versamentoIncasso5);
             
             incassoDao.save(incasso5);
+            abbonamentoDp.setVersamento(versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next());
+            abbonamentoDao.save(abbonamentoDp);
             
+            log.info("Abbonamento Palma incassato con versamento:");
+            log.info("-------------------------------");
+            log.info(abbonamentoDp.toString() + " incassato:" + abbonamentoDp.getIncassato());
+            log.info(abbonamentoDp.getVersamento().toString());
+            log.info("");
+
             log.info("Pubblicazioni found with findAll():");
             log.info("-------------------------------");
             for (Pubblicazione pubblicazione : pubblicazioneDao.findAll()) {
@@ -813,29 +821,13 @@ public class SmdApplication {
                 
             }
             log.info("");
-            
-            log.info("Incasso di un abbonamento:");
-            log.info("-------------------------------");
-            Anagrafica intestatario = anagraficaDao.findByCognomeStartsWithIgnoreCase("Palma").iterator().next();
-            log.info("intestatario");
-            log.info(intestatario.toString());
-            Abbonamento abb = abbonamentoDao.findByIntestatario(intestatario).iterator().next();
-            log.info("abbonamento");
-            log.info(abb.toString());
-            Versamento ver = versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next();
-            log.info("versamento");
-            log.info(ver.toString());
-            
-            abb.setVersamento(ver);
-            abbonamentoDao.save(abb);
-            
-            Abbonamento abbnew = abbonamentoDao.findByIntestatario(intestatario).iterator().next();
-            log.info("incassato");
-            log.info(abbnew.getIncassato());
-            log.info("versamentoId");
-            log.info(abbnew.getVersamento().getId().toString());
-            log.info("");
 
+            log.info("versamenti found by incasso5");
+            log.info("-------------------------------");
+            for (Versamento versamento: versamentoDao.findByIncasso(incasso5)) {
+                log.info(versamento.toString());
+            }
+            log.info("");
 
             log.info("Anno Scorso");
             log.info(getAnnoPassato().getAnnoAsString());

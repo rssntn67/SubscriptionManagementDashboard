@@ -9,13 +9,11 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
 
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
-        setColumns("incasso.ccp","campo","campovalido",              
-                        "dataPagamento","dataContabile","importo",
-                        "errore",
-                        "tipoDocumento.bollettino",
-                        "tipoAccettazione.tipo","tipoSostitutivo.descr",
-                        "provincia","ufficio","sportello","bobina", "progressivoBobina"
+        setColumns("dataPagamento","dataContabile","importo",
+                    "campo","progressivo"
                       );
+        
+        
         /*
         setColumns("bobina", "progressivoBobina",
                    "progressivo",
@@ -23,7 +21,12 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
                    "tipoDocumento.bollettino","provincia","ufficio","sportello",
                    "tipoAccettazione.tipo","tipoSostitutivo.descr"
                    );
-                   */
+        setColumnCaption("tipoAccettazione.descr", "Accettazione");
+        setColumnCaption("tipoSostitutivo.descr", "TipoSostitutivo");
+,
+                        "tipoDocumento.bollettino",
+                        "tipoAccettazione.descr","tipoSostitutivo.descr",
+                        "provincia","ufficio","sportello","bobina", "progressivoBobina"                   */
 
     }
 

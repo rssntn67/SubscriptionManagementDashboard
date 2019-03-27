@@ -37,20 +37,20 @@ public class Incasso implements SmdEntity {
     
     private String operazione;
         
-    @OneToMany(cascade = { CascadeType.PERSIST })
+    @OneToMany(cascade = { CascadeType.ALL })
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataContabile;
     
-    private int totaleDocumenti;
-    private BigDecimal totaleImporto;
+    private int documenti=0;
+    private BigDecimal importo=BigDecimal.ZERO;
     
-    private int documentiEsatti;
-    private BigDecimal importoDocumentiEsatti;
+    private int esatti=0;
+    private BigDecimal importoEsatti=BigDecimal.ZERO;
     
-    private int documentiErrati;
-    private BigDecimal importoDocumentiErrati;
+    private int errati=0;
+    private BigDecimal importoErrati=BigDecimal.ZERO;
     
     public Incasso() {
         super();
@@ -85,41 +85,41 @@ public class Incasso implements SmdEntity {
     public void setDataContabile(Date dataContabile) {
         this.dataContabile = dataContabile;
     }
-    public int getTotaleDocumenti() {
-        return totaleDocumenti;
+    public int getDocumenti() {
+        return documenti;
     }
-    public void setTotaleDocumenti(int totaleDocumenti) {
-        this.totaleDocumenti = totaleDocumenti;
+    public void setDocumenti(int documenti) {
+        this.documenti = documenti;
     }
-    public BigDecimal getTotaleImporto() {
-        return totaleImporto;
+    public BigDecimal getImporto() {
+        return importo;
     }
-    public void setTotaleImporto(BigDecimal totaleImporto) {
-        this.totaleImporto = totaleImporto;
+    public void setImporto(BigDecimal importo) {
+        this.importo = importo;
     }
-    public int getDocumentiEsatti() {
-        return documentiEsatti;
+    public int getEsatti() {
+        return esatti;
     }
-    public void setDocumentiEsatti(int documentiEsatti) {
-        this.documentiEsatti = documentiEsatti;
+    public void setEsatti(int esatti) {
+        this.esatti = esatti;
     }
-    public BigDecimal getImportoDocumentiEsatti() {
-        return importoDocumentiEsatti;
+    public BigDecimal getImportoEsatti() {
+        return importoEsatti;
     }
-    public void setImportoDocumentiEsatti(BigDecimal importoDocumentiEsatti) {
-        this.importoDocumentiEsatti = importoDocumentiEsatti;
+    public void setImportoEsatti(BigDecimal importoEsatti) {
+        this.importoEsatti = importoEsatti;
     }
-    public int getDocumentiErrati() {
-        return documentiErrati;
+    public int getErrati() {
+        return errati;
     }
-    public void setDocumentiErrati(int documentiErrati) {
-        this.documentiErrati = documentiErrati;
+    public void setErrati(int errati) {
+        this.errati = errati;
     }
-    public BigDecimal getImportoDocumentiErrati() {
-        return importoDocumentiErrati;
+    public BigDecimal getImportoErrati() {
+        return importoErrati;
     }
-    public void setImportoDocumentiErrati(BigDecimal importoDocumentiErrati) {
-        this.importoDocumentiErrati = importoDocumentiErrati;
+    public void setImportoErrati(BigDecimal importoErrati) {
+        this.importoErrati = importoErrati;
     }
     
     @Transient
@@ -160,7 +160,7 @@ public class Incasso implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Incasso[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
-                             id,cassa, getDettagli(), totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+                             id,cassa, getDettagli(), documenti, importo,esatti,importoEsatti,errati,importoErrati);
     }
 
     public Cassa getCassa() {
