@@ -31,26 +31,26 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
     @Enumerated(EnumType.STRING)
-    Cuas cuas;
+    private Cuas cuas;
     @Enumerated(EnumType.STRING)
-    ContoCorrentePostale ccp;
+    private ContoCorrentePostale ccp;
+    
+    private String operazione;
         
     @OneToMany(cascade = { CascadeType.PERSIST })
-    List<Versamento> versamenti = new ArrayList<Versamento>();
+    private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    Date dataContabile;
+    private Date dataContabile;
     
-    int totaleDocumenti;
-    BigDecimal totaleImporto;
+    private int totaleDocumenti;
+    private BigDecimal totaleImporto;
     
-    int documentiEsatti;
-    BigDecimal importoDocumentiEsatti;
+    private int documentiEsatti;
+    private BigDecimal importoDocumentiEsatti;
     
-    int documentiErrati;
-    BigDecimal importoDocumentiErrati;
-    
-    
+    private int documentiErrati;
+    private BigDecimal importoDocumentiErrati;
     
     public Incasso() {
         super();
@@ -123,13 +123,28 @@ public class Incasso implements SmdEntity {
     }
     
     @Transient
-    public String getCcpInfo() {
+    public String getDettagli() {
         StringBuffer sb = new StringBuffer("");
         switch (cassa) {
         case Ccp:
             sb.append(cuas.getDenominazione());
             sb.append(",ccp:");
             sb.append(ccp.getCcp());
+            break;
+        case Contante:
+            sb.append(operazione);
+            break;
+        case Contrassegno:
+            sb.append(operazione);
+            break;
+        case Bonifico:
+            sb.append(operazione);
+            break;
+        case Paypal:
+            sb.append(operazione);
+            break;
+        case Carte:
+            sb.append(operazione);
             break;
         default:
             break;
@@ -144,8 +159,8 @@ public class Incasso implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Incasso[id=%d,cassa='%s', cuas='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
-                             id,cassa, cuas, totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
+        return String.format("Incasso[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+                             id,cassa, getDettagli(), totaleDocumenti, totaleImporto,documentiEsatti,importoDocumentiEsatti,documentiErrati,importoDocumentiErrati);
     }
 
     public Cassa getCassa() {
@@ -153,6 +168,12 @@ public class Incasso implements SmdEntity {
     }
     public void setCassa(Cassa cassa) {
         this.cassa = cassa;
+    }
+    public String getOperazione() {
+        return operazione;
+    }
+    public void setOperazione(String operazione) {
+        this.operazione = operazione;
     }
 
     
