@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
+import com.vaadin.data.ValueProvider;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.entity.SmdEntity;
@@ -58,6 +60,10 @@ public abstract class SmdGrid<T extends SmdEntity>
 
     public String getGridName() {
         return gridName;
+    }
+    
+    public void addComponentColumn(ValueProvider<T,AbstractComponent> valueprovider) {
+        grid.addComponentColumn(valueprovider);
     }
     
 }

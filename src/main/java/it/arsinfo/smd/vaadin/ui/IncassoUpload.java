@@ -43,7 +43,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         
     private Label avviso = new Label();
 
-    private List<Incasso> incassi = new ArrayList<>();
+    private final List<Incasso> incassi = new ArrayList<>();
 
     public IncassoUpload(String caption) {
         super();
@@ -61,6 +61,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
 
     @Override
     public void uploadSucceeded(SucceededEvent event) {
+        incassi.clear();
         FileInputStream fstream;
         try {
             fstream = new FileInputStream(file);
@@ -137,7 +138,4 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         return incassi;
     }
 
-    public void setIncassi(List<Incasso> incassi) {
-        this.incassi = incassi;
-    }
 }

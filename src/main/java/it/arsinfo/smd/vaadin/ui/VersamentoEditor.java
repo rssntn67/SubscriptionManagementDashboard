@@ -1,141 +1,103 @@
 package it.arsinfo.smd.vaadin.ui;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
+import com.vaadin.data.converter.LocalDateToDateConverter;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.data.TipoDocumentoBollettino;
-import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.data.Accettazione;
+import it.arsinfo.smd.data.Bollettino;
+import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdEditor;
 
 public class VersamentoEditor extends SmdEditor<Versamento> {
 
-    private static final Logger log = LoggerFactory.getLogger(VersamentoEditor.class);
+    private final TextField  importo = new TextField("Importo");
+    private final TextField  residuo = new TextField("Residuo");
+    private final TextField  campo = new TextField("Campo");
+    private final TextField  progressivo = new TextField("Progressivo");
+ 
+    private final TextField  provincia = new TextField("Identificativo Provincia");
+    private final TextField  ufficio = new TextField("Identificativo Ufficio");
+    private final TextField  sportello = new TextField("Identificativo Sportello");
+    private final TextField bobina = new TextField("Bobina");
+    private final TextField progressivoBobina = new TextField("Progressivo Bobina");
+    
+    
+    private final ComboBox<Bollettino> bollettino = 
+            new ComboBox<Bollettino>("Bollettino",EnumSet.allOf(Bollettino.class));
+    private final ComboBox<Accettazione> accettazione =
+            new ComboBox<Accettazione>("Accettazione",EnumSet.allOf(Accettazione.class));;
+    private final ComboBox<Sostitutivo> sostitutivo =
+            new ComboBox<Sostitutivo>("Sostitutivo",EnumSet.allOf(Sostitutivo.class));
 
-    private Grid<Abbonamento> abbonamentiAssociabili;
-    private Grid<Abbonamento> abbonamentiAssociati;
+    private final DateField dataContabile = new DateField("Data contabile");
+    private final DateField dataPagamento = new DateField("Data pagamento");
 
-    private Label residuo = new Label();
-
-    private Label avviso = new Label();
-
-    private final AbbonamentoDao abbonamentoDao;
-
-    public VersamentoEditor(VersamentoDao versamentoDao,
-            AbbonamentoDao abbonamentoDao) {
+    public VersamentoEditor(VersamentoDao versamentoDao) {
         super(versamentoDao, new Binder<>(Versamento.class));
-        this.abbonamentoDao = abbonamentoDao;
 
-        HorizontalLayout info = new HorizontalLayout(avviso, residuo);
-        abbonamentiAssociati = new Grid<>(Abbonamento.class);
-        abbonamentiAssociabili = new Grid<>(Abbonamento.class);
+        residuo.setReadOnly(true);
+        campo.setReadOnly(true);
+        setComponents(
+                      getActions(),
+                      new HorizontalLayout(importo,residuo,campo,progressivo,dataContabile,dataPagamento),
+                      new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina),
+                      new HorizontalLayout(bollettino,accettazione,sostitutivo)
+                  );
 
-        setComponents(info, abbonamentiAssociati, abbonamentiAssociabili);
+        getBinder().forField(importo)
+            .asRequired()
+            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .bind(Versamento::getImporto,Versamento::setImporto);
+        getBinder().forField(residuo)
+            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .bind(Versamento::getResiduo,Versamento::setResiduo);
+        getBinder().forField(progressivo)
+            .asRequired()
+            .withValidator(p -> p != null, "progressivo deve essere valorizzato")
+            .bind("progressivo");
+        getBinder().forField(dataContabile)
+            .asRequired()
+            .withConverter(new LocalDateToDateConverter())
+            .bind("dataContabile");
+        getBinder().forField(dataPagamento)
+            .asRequired()
+            .withConverter(new LocalDateToDateConverter())
+            .bind("dataPagamento");
 
-        abbonamentiAssociati.setColumns("intestatario.cognome",
-                                        "intestatario.nome",
-                                        "ccp.ccp", "costo",
-                                        "campo", "incasso", "incassato");
-        abbonamentiAssociati.addComponentColumn(abbonamento -> {
-            Button button = new Button("Dissocia");
-            button.addClickListener(click -> dissocia(abbonamento));
-            button.setEnabled(get().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
-            return button;
-        });
-        abbonamentiAssociati.setWidth("100%");
-        abbonamentiAssociati.setVisible(false);
+        getBinder().bindInstanceFields(this);
 
-        abbonamentiAssociabili.setColumns("intestatario.cognome",
-                                          "intestatario.nome",
-                                          "ccp.ccp", "costo",
-                                          "campo", "incasso", "incassato");
-        abbonamentiAssociabili.addComponentColumn(abbonamento -> {
-            Button button = new Button("Associa");
-            button.addClickListener(click -> incassa(abbonamento));
-            button.setEnabled(get().getTipoDocumento() != TipoDocumentoBollettino.TIPO674);
-            return button;
-        });
-        abbonamentiAssociabili.setWidth("100%");
-        abbonamentiAssociabili.setVisible(false);
-        residuo.addStyleName(ValoTheme.LABEL_H3);
-        residuo.setVisible(false);
-        avviso.addStyleName(ValoTheme.LABEL_H3);
-        avviso.setVisible(false);
-    }
-
-    private void dissocia(Abbonamento abbonamento) {
-        abbonamento.setVersamento(null);
-        abbonamentoDao.save(abbonamento);
-        edit(get());
-    }
-
-    private void incassa(Abbonamento abbonamento) {
-        abbonamento.setVersamento(get());
-        abbonamentoDao.save(abbonamento);
-        edit(get());
     }
 
     @Override
     public void focus(boolean persisted, Versamento versamento) {
-        if (versamento == null) {
-            abbonamentiAssociabili.setVisible(false);
-            abbonamentiAssociati.setVisible(false);
-            residuo.setVisible(false);
-            avviso.setVisible(false);
-            return;
-        }
-        List<Abbonamento> matching;
-        if (versamento.getTipoDocumento() == TipoDocumentoBollettino.TIPO674) {
-            matching = abbonamentoDao.findByCampo(versamento.getCampo());
-            abbonamentiAssociabili.setVisible(false);
-        } else {
-            matching = abbonamentoDao.findByVersamento(versamento);
-            abbonamentiAssociabili.setItems(abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO));
-            abbonamentiAssociabili.setVisible(true);
-        }
-        avviso.setVisible(true);
-        residuo.setVisible(true);
+        getSave().setEnabled(!persisted);
+        getCancel().setEnabled(!persisted);
 
-        if (matching.size() == 0) {
-            residuo.setValue("Residuo EUR: "
-                    + versamento.getImporto().toString());
-            avviso.setValue("Nessun Abbonamento Trovato Per il Versamento Selezionato");
-            abbonamentiAssociati.setVisible(false);
-            return;
-        }
-
-        abbonamentiAssociati.setItems(matching);
-        abbonamentiAssociati.setVisible(true);
-        matching.stream().filter(abbonamento -> abbonamento.getVersamento() ==  null && abbonamento.getCosto() != BigDecimal.ZERO).forEach(abbonamento -> {
-            log.info("incasso");
-            log.info(abbonamento.toString());
-            incassa(abbonamento);
-        });
-        BigDecimal diff = versamento.getImporto();
-        for (Abbonamento abbonamento : matching) {
-            diff = diff.subtract(abbonamento.getCosto());
-        }
-        residuo.setValue("Residuo EUR: " + diff.toString());
-
-        if (matching.size() == 1) {
-            avviso.setValue("Trovato " + matching.size()
-                    + " Abbonamento Per il Versamento Selezionato");
-        } else {
-            avviso.setValue("Trovati " + matching.size()
-                    + " Abbonamenti Per il Versamento Selezionato");
-        }
+        importo.setReadOnly(persisted);
+        residuo.setVisible(persisted);
+        campo.setVisible(persisted);
+        progressivo.setReadOnly(persisted);
+        dataContabile.setReadOnly(persisted);
+        dataPagamento.setReadOnly(persisted);
+        
+        provincia.setReadOnly(persisted);
+        ufficio.setReadOnly(persisted);
+        sportello.setReadOnly(persisted);
+        bobina.setReadOnly(persisted);
+        progressivoBobina.setReadOnly(persisted);
+        
+        bollettino.setReadOnly(persisted);
+        sostitutivo.setReadOnly(persisted);
+        accettazione.setReadOnly(persisted);
     }
 
 }

@@ -5,7 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Button;
 
+import it.arsinfo.smd.data.Bollettino;
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
@@ -24,6 +29,8 @@ public class IncassoUI extends SmdUI {
     private IncassoDao incassoDao;
     @Autowired    
     private VersamentoDao versamentoDao;
+    @Autowired    
+    private AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -33,11 +40,28 @@ public class IncassoUI extends SmdUI {
         IncassoSearch search = new IncassoSearch(incassoDao);
         IncassoGrid grid = new IncassoGrid("");
         IncassoEditor editor = new IncassoEditor(incassoDao);
-        VersamentoGrid versgrid = new VersamentoGrid("Versamenti");
+        VersamentoGrid versGrid = new VersamentoGrid("Versamenti");
+        VersamentoEditor versEditor = new VersamentoEditor(versamentoDao);
+        AbbonamentoGrid abbonamentiAssociatiGrid = new AbbonamentoGrid("Abbonamenti Associati");
+        AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
         
-        addSmdComponents(add,upload, editor,versgrid,search, grid);
+        abbonamentiAssociatiGrid.addComponentColumn(abbonamento -> {
+            Button button = new Button("Dissocia");
+            button.addClickListener(click -> dissocia(abbonamento));
+            button.setEnabled(versEditor.get().getBollettino() != Bollettino.TIPO674);
+            return button;
+        });
+        
+        abbonamentiAssociabiliGrid.addComponentColumn(abbonamento -> {
+            Button button = new Button("Associa");
+            button.addClickListener(click -> incassa(abbonamento, versEditor.get()));
+            button.setEnabled(versEditor.get().getBollettino() != Bollettino.TIPO674);
+            return button;
+        });
+
+        addSmdComponents(add,upload, editor,abbonamentiAssociatiGrid,abbonamentiAssociabiliGrid,versEditor,versGrid,versGrid,search, grid);
         editor.setVisible(false);
-        versgrid.setVisible(false);
+        versGrid.setVisible(false);
 
         add.setChangeHandler(() -> {
             editor.edit(add.generate());
@@ -63,16 +87,28 @@ public class IncassoUI extends SmdUI {
 
         grid.setChangeHandler(() -> {
             editor.edit(grid.getSelected());
-            versgrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
+            versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
             add.setVisible(false);
             upload.setVisible(false);
             search.setVisible(false);
         });
         
-        versgrid.setChangeHandler(() -> {
+        versGrid.setChangeHandler(() -> {
+            versEditor.edit(versGrid.getSelected());
         });
         grid.populate(search.findAll());
 
+    }
+
+    
+    private void dissocia(Abbonamento abbonamento) {
+        abbonamento.setVersamento(null);
+        abbonamentoDao.save(abbonamento);
+    }
+
+    private void incassa(Abbonamento abbonamento, Versamento versamento) {
+        abbonamento.setVersamento(versamento);
+        abbonamentoDao.save(abbonamento);
     }
 
 }

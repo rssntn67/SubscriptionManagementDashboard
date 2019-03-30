@@ -1,6 +1,6 @@
 package it.arsinfo.smd.data;
 
-public enum TipoAccettazioneBollettino {
+public enum Accettazione {
      CC("CC","premarcati Mav"),
      AV("AV","AVDS"),
      DP("DP","Dematerializzato Premarcato"),
@@ -9,14 +9,14 @@ public enum TipoAccettazioneBollettino {
     String descr;
     String tipo;
     
-    public static TipoAccettazioneBollettino getTipoAccettazione(String tipo) {
-        for (TipoAccettazioneBollettino l : TipoAccettazioneBollettino.values()) {
+    public static Accettazione getTipoAccettazione(String tipo) {
+        for (Accettazione l : Accettazione.values()) {
             if (l.tipo.equals(tipo)) return l;
         }
         throw new IllegalArgumentException("Tipo Accettazione not found.");
     }
     
-    private TipoAccettazioneBollettino(String tipo,String descr) {
+    private Accettazione(String tipo,String descr) {
         this.descr=descr;
         this.tipo=tipo;        
     }

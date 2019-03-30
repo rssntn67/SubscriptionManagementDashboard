@@ -31,10 +31,10 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Regione;
-import it.arsinfo.smd.data.TipoAccettazioneBollettino;
-import it.arsinfo.smd.data.TipoDocumentoBollettino;
+import it.arsinfo.smd.data.Accettazione;
+import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.data.TipoSostitutivoBollettino;
+import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -57,6 +57,23 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
+
+    public static Versamento incassa(Versamento versamento, Abbonamento abbonamento) {
+        if (versamento == null || abbonamento == null || abbonamento.getVersamento() != null) {
+            return versamento;
+        }
+        BigDecimal residuo = versamento.getImporto();
+        
+        residuo = residuo.subtract(abbonamento.getCosto());
+        residuo = residuo.subtract(abbonamento.getSpese());
+        
+        versamento.setResiduo(versamento.getImporto().subtract(abbonamento.getCosto()).subtract(abbonamento.getSpese()));
+        abbonamento.setVersamento(versamento);
+        
+        return versamento;
+
+    }
+
     public static String getProgressivoVersamento(int i) {
         return String.format("%09d",i);
     }
@@ -250,20 +267,19 @@ public class SmdApplication {
         Versamento versamento = new Versamento(incasso);
         versamento.setBobina(value.substring(0, 3));
         versamento.setProgressivoBobina(value.substring(3, 8));
-	String progressivo = value.substring(8,15);
-	versamento.setProgressivo(progressivo);
+	versamento.setProgressivo(value.substring(8,15));
         versamento.setDataPagamento(formatter.parse(value.substring(27, 33)));
-        versamento.setTipoDocumento(TipoDocumentoBollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
+        versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
         versamento.setImporto(new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setProvincia(value.substring(46, 49));
         versamento.setUfficio(value.substring(49, 52));
         versamento.setSportello(value.substring(52, 54));
 //          value.substring(54,55);
         versamento.setDataContabile(formatter.parse(value.substring(55,61)));
-        String campo =value.substring(61,79);
-        versamento.setCampo(campo);
-        versamento.setTipoAccettazione(TipoAccettazioneBollettino.getTipoAccettazione(value.substring(79,81)));
-        versamento.setTipoSostitutivo(TipoSostitutivoBollettino.getTipoAccettazione(value.substring(81,82)));
+        versamento.setCampo(value.substring(61,79));
+        versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
+        versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
+        versamento.setResiduo(versamento.getImporto());
         return versamento;
     }
 
@@ -630,13 +646,16 @@ public class SmdApplication {
             
             Versamento versamentoIncasso5 = new Versamento(incasso5);
             versamentoIncasso5.setImporto(new BigDecimal(50.0));
-            versamentoIncasso5.setCampo("non applicabile");
+            versamentoIncasso5.setCampo(generateCampo(Anno.ANNO2019, Mese.GENNAIO, Mese.DICEMBRE));
             versamentoIncasso5.setDataContabile(incasso5.getDataContabile());
             versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
             incasso5.addVersamento(versamentoIncasso5);
             
             incassoDao.save(incasso5);
-            abbonamentoDp.setVersamento(versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next());
+            
+            
+            versamentoDao.save(
+                   incassa(versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next(), abbonamentoDp));
             abbonamentoDao.save(abbonamentoDp);
             
             log.info("Abbonamento Palma incassato con versamento:");
@@ -856,4 +875,5 @@ public class SmdApplication {
 
         };
     }
+
 }

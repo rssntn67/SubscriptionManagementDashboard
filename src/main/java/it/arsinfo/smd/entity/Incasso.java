@@ -33,7 +33,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Cuas cuas;
     @Enumerated(EnumType.STRING)
-    private Ccp ccp;
+    private Ccp ccp = Ccp.UNO;
     
     private String operazione;
         
@@ -41,7 +41,7 @@ public class Incasso implements SmdEntity {
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile;
+    private Date dataContabile = new Date();
     
     private int documenti=0;
     private BigDecimal importo=BigDecimal.ZERO;

@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,14 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdApplication;
-import it.arsinfo.smd.data.TipoAccettazioneBollettino;
-import it.arsinfo.smd.data.TipoDocumentoBollettino;
-import it.arsinfo.smd.data.TipoSostitutivoBollettino;
+import it.arsinfo.smd.data.Accettazione;
+import it.arsinfo.smd.data.Bollettino;
+import it.arsinfo.smd.data.Sostitutivo;
 
 @Entity
 public class Versamento implements SmdEntity {
@@ -26,34 +28,38 @@ public class Versamento implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
+    @OneToMany
+    private List<Abbonamento> abbonamenti; 
+    
     @ManyToOne
     private Incasso incasso;
 
-    String bobina;
-    String progressivoBobina;
+    private String bobina;
+    private String progressivoBobina;
     
-    String progressivo="9999999";
+    private String progressivo="9999999";
         
     @Temporal(TemporalType.TIMESTAMP)
-    Date dataPagamento;
+    private Date dataPagamento = new Date();
     
     @Enumerated(EnumType.STRING)
-    TipoDocumentoBollettino tipoDocumento;
+    private Bollettino bollettino;
     
-    BigDecimal importo;
-    String provincia;
-    String ufficio;
-    String sportello;
+    private BigDecimal importo = BigDecimal.ZERO;
+    private BigDecimal residuo =BigDecimal.ZERO;
+    private String provincia;
+    private String ufficio;
+    private String sportello;
     
     @Temporal(TemporalType.TIMESTAMP)
-    Date dataContabile;
+    private Date dataContabile=new Date();
     
-    String campo;
+    private String campo;
     
     @Enumerated(EnumType.STRING)
-    TipoAccettazioneBollettino tipoAccettazione;
+    private Accettazione accettazione;
     @Enumerated(EnumType.STRING)
-    TipoSostitutivoBollettino tipoSostitutivo;
+    private Sostitutivo sostitutivo;
 
     public Versamento() {
         super();
@@ -63,6 +69,7 @@ public class Versamento implements SmdEntity {
     public Versamento(Incasso incasso) {
         super();
         this.incasso=incasso;
+        this.setDataContabile(incasso.getDataContabile());
     }
     public Long getId() {
         return id;
@@ -94,11 +101,11 @@ public class Versamento implements SmdEntity {
     public void setDataPagamento(Date dataPagamento) {
         this.dataPagamento = dataPagamento;
     }
-    public TipoDocumentoBollettino getTipoDocumento() {
-        return tipoDocumento;
+    public Bollettino getBollettino() {
+        return bollettino;
     }
-    public void setTipoDocumento(TipoDocumentoBollettino tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
+    public void setBollettino(Bollettino bollettino) {
+        this.bollettino = bollettino;
     }
     public BigDecimal getImporto() {
         return importo;
@@ -136,17 +143,17 @@ public class Versamento implements SmdEntity {
     public void setCampo(String campo) {
         this.campo = campo;
     }
-    public TipoAccettazioneBollettino getTipoAccettazione() {
-        return tipoAccettazione;
+    public Accettazione getAccettazione() {
+        return accettazione;
     }
-    public void setTipoAccettazione(TipoAccettazioneBollettino tipoAccettazione) {
-        this.tipoAccettazione = tipoAccettazione;
+    public void setAccettazione(Accettazione tipoAccettazione) {
+        this.accettazione = tipoAccettazione;
     }
-    public TipoSostitutivoBollettino getTipoSostitutivo() {
-        return tipoSostitutivo;
+    public Sostitutivo getSostitutivo() {
+        return sostitutivo;
     }
-    public void setTipoSostitutivo(TipoSostitutivoBollettino tipoSostitutivo) {
-        this.tipoSostitutivo = tipoSostitutivo;
+    public void setSostitutivo(Sostitutivo tipoSostitutivo) {
+        this.sostitutivo = tipoSostitutivo;
     }    
     @Transient
     public boolean isCampovalido() {
@@ -160,8 +167,22 @@ public class Versamento implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Versamento[id=%d,progressivo='%s',campo='%s',valido='%b', importo='%.2f']",
-                             id,progressivo,campo, isCampovalido(),importo);
+        return String.format("Versamento[id=%d,progressivo='%s',campo='%s',valido='%b', importo='%.2f', residuo='%.2f']",
+                             id,progressivo,campo, isCampovalido(),importo,residuo);
+    }
+    public List<Abbonamento> getAbbonamenti() {
+        return abbonamenti;
+    }
+    public void setAbbonamenti(List<Abbonamento> abbonamenti) {
+        this.abbonamenti = abbonamenti;
+    }
+    public BigDecimal getResiduo() {
+        return residuo;
+    }
+
+
+    public void setResiduo(BigDecimal residuo) {
+        this.residuo = residuo;
     }
 
 }

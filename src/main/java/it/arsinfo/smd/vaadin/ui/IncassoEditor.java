@@ -3,9 +3,11 @@ package it.arsinfo.smd.vaadin.ui;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
@@ -30,7 +32,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
 
     private final TextField errati = new TextField("Numero Documenti Errati");
     private final TextField importoErrati = new TextField("Importo Errati");
-
+    private final DateField dataContabile = new DateField("Data contabile");
     public IncassoEditor(IncassoDao incassoDao) {
         super(incassoDao, new Binder<>(Incasso.class));
 
@@ -60,17 +62,16 @@ public class IncassoEditor extends SmdEditor<Incasso> {
             .bind(Incasso::getErrati, Incasso::setErrati);
 
         getBinder().forField(importo)
-            .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImporto,Incasso::setImporto);
         getBinder().forField(importoEsatti)
-            .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImportoEsatti,Incasso::setImportoEsatti);
         getBinder().forField(importoErrati)
-            .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImportoErrati,Incasso::setImportoErrati);
+        getBinder().forField(dataContabile)
+            .withConverter(new LocalDateToDateConverter()).bind("dataContabile");
         getBinder().bindInstanceFields(this);
         
     }
@@ -78,6 +79,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
 
     @Override
     public void focus(boolean persisted, Incasso incasso) {
+        dataContabile.setReadOnly(persisted);
         cassa.setReadOnly(persisted);
         cuas.setReadOnly(persisted);
         ccp.setReadOnly(persisted);

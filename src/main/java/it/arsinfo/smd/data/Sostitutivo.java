@@ -1,20 +1,20 @@
 package it.arsinfo.smd.data;
 
-public enum TipoSostitutivoBollettino {
+public enum Sostitutivo {
      S("S","Bollettino sostitutivo"),
      N("N","Bollettino originale");
     
     String descr;
     String tipo;
     
-    public static TipoSostitutivoBollettino getTipoAccettazione(String tipo) {
-        for (TipoSostitutivoBollettino l : TipoSostitutivoBollettino.values()) {
+    public static Sostitutivo getTipoAccettazione(String tipo) {
+        for (Sostitutivo l : Sostitutivo.values()) {
             if (l.tipo.equals(tipo)) return l;
         }
         throw new IllegalArgumentException("Tipo Sostitutivo not found.");
     }
     
-    private TipoSostitutivoBollettino(String tipo,String descr) {
+    private Sostitutivo(String tipo,String descr) {
         this.descr=descr;
         this.tipo=tipo;        
     }
