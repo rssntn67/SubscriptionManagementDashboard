@@ -58,20 +58,22 @@ public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
 
-    public static Versamento incassa(Versamento versamento, Abbonamento abbonamento) {
+    public static Versamento incassa(Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (versamento == null || abbonamento == null || abbonamento.getVersamento() != null) {
-            return versamento;
+            throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, valori null o abbonamento incassato");
         }
-        BigDecimal residuo = versamento.getImporto();
-        
-        residuo = residuo.subtract(abbonamento.getCosto());
-        residuo = residuo.subtract(abbonamento.getSpese());
-        
-        versamento.setResiduo(versamento.getImporto().subtract(abbonamento.getCosto()).subtract(abbonamento.getSpese()));
+        versamento.setResiduo(versamento.getResiduo().subtract(abbonamento.getCosto()).subtract(abbonamento.getSpese()));
         abbonamento.setVersamento(versamento);
-        
         return versamento;
+    }
 
+    public static Versamento dissocia(Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+        if (versamento == null || abbonamento == null || abbonamento.getVersamento() == null || abbonamento.getVersamento().getId() != versamento.getId()) {
+            throw new UnsupportedOperationException("Abbonamento e Versamento non sono dissociabili, valori null");
+        }        
+        versamento.setResiduo(versamento.getResiduo().add(abbonamento.getCosto()).add(abbonamento.getSpese()));
+        abbonamento.setVersamento(null);
+        return versamento;
     }
 
     public static String getProgressivoVersamento(int i) {
@@ -531,7 +533,7 @@ public class SmdApplication {
             
             storicoDao.save(new Storico(ms, blocchetti, 10));
             storicoDao.save(new Storico(ms, ps, blocchetti, 5));
-
+            
             Abbonamento abbonamentoMd = new Abbonamento(ms);
             addSpedizione(abbonamentoMd,blocchetti,ms,1);
             addSpedizione(abbonamentoMd,lodare,ms,1);
@@ -567,6 +569,55 @@ public class SmdApplication {
             calcoloCostoAbbonamento(abbonamentoDp);
             abbonamentoDao.save(abbonamentoDp);
             
+            Abbonamento telematici001 = new Abbonamento(ms);
+            addSpedizione(telematici001, blocchetti,ms,1);
+            telematici001.setCosto(new BigDecimal(15));
+            telematici001.setCampo("000000018000792609");
+            abbonamentoDao.save(telematici001);
+            
+            Abbonamento venezia002 = new Abbonamento(ms);
+            addSpedizione(venezia002, blocchetti,ms,1);
+            venezia002.setCosto(new BigDecimal(15));
+            venezia002.setCampo("000000018000854368");
+            abbonamentoDao.save(venezia002);
+
+            Abbonamento venezia003 = new Abbonamento(ms);
+            addSpedizione(venezia003, blocchetti,ms,1);
+            venezia003.setCosto(new BigDecimal(18));
+            venezia003.setCampo("000000018000263519");
+            abbonamentoDao.save(venezia003);
+
+            Abbonamento venezia004 = new Abbonamento(ms);
+            addSpedizione(venezia004, blocchetti,ms,2);
+            venezia004.setCosto(new BigDecimal(30));
+            venezia004.setCampo("000000018000254017");
+            abbonamentoDao.save(venezia004);
+
+            Abbonamento venezia005 = new Abbonamento(ms);
+            addSpedizione(venezia005, blocchetti,ms,2);
+            venezia005.setCosto(new BigDecimal(37));
+            venezia005.setCampo("000000018000761469");
+            abbonamentoDao.save(venezia005);
+
+            Abbonamento venezia006 = new Abbonamento(ms);
+            addSpedizione(venezia006, blocchetti,ms,3);
+            venezia006.setCosto(new BigDecimal(48));
+            venezia006.setCampo("000000018000253916");
+            abbonamentoDao.save(venezia006);
+
+            Abbonamento venezia007 = new Abbonamento(ms);
+            addSpedizione(venezia007, blocchetti,ms,10);
+            venezia007.setCosto(new BigDecimal(70));
+            venezia007.setCampo("000000018000800386");
+            abbonamentoDao.save(venezia007);
+            
+            Abbonamento venezia008 = new Abbonamento(ms);
+            addSpedizione(venezia008, blocchetti,ms,15);
+            venezia008.setCosto(new BigDecimal(84));
+            venezia008.setCampo("000000018000508854");
+            abbonamentoDao.save(venezia008);
+
+
             Campagna campagna2018=new Campagna();
             campagna2018.setAnno(Anno.ANNO2018);
             campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,messaggio));
