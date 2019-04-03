@@ -1,6 +1,5 @@
 package it.arsinfo.smd.vaadin.ui;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
@@ -21,6 +21,7 @@ import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.vaadin.model.SmdButton;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
@@ -48,7 +49,7 @@ public class IncassoUI extends SmdUI {
         IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
         IncassoUpload upload = new IncassoUpload("Incasso da Poste");
         IncassoSearch search = new IncassoSearch(incassoDao);
-        IncassoByCampo incassa = new IncassoByCampo();
+        SmdButton incassa = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("");
         IncassoEditor editor = new IncassoEditor(incassoDao);
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti");
@@ -126,7 +127,7 @@ public class IncassoUI extends SmdUI {
                     if (associabili.size() == 1 ) {
                         Abbonamento associabile = associabili.iterator().next();
                         log.info(associabile.toString());
-                        if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).compareTo(BigDecimal.ZERO) == 0) {
+                        if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).signum() == 0) {
                             incassa(associabile, v);
                             log.info("incassato:" + v.toString());
                         }

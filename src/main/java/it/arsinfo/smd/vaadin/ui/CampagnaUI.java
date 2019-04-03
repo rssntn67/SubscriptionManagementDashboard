@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
@@ -154,6 +156,14 @@ public class CampagnaUI extends SmdUI {
             grid.populate(search.find());
         });
         
+        grid.addComponentColumn(campagna -> {
+            Button button = new Button("Genera Anagrafica Ccp", VaadinIcons.ENVELOPES);
+            button.addClickListener(click -> {
+                Notification.show("Da realizzare", Notification.Type.WARNING_MESSAGE);
+                });
+            return button;
+        });
+
         grid.populate(search.findAll());
 
     }
