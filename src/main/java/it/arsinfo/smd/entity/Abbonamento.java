@@ -97,8 +97,8 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Intestatario='%d', Costo='%.2f', Spese='%.2f', Campo='%s', Data='%td %tb %tY %tR %tZ', %s]",
-                                   id, intestatario.getId(), costo,spese,campo,
+        return String.format("Abbonamento[id=%d, Incassato=%s , Intestatario='%d', Totale= '%.2f', Costo='%.2f', Spese='%.2f', Campo='%s', Data='%td %tb %tY %tR %tZ', %s]",
+                                   id, getIncassato(), intestatario.getId(), getTotale(),costo,spese,campo,
                                    data, data, data, data, data, cassa);
     }
     
@@ -217,5 +217,10 @@ public class Abbonamento implements SmdEntity {
             return "Si";
         }
         return "No";
+    }
+    
+    @Transient
+    public BigDecimal getTotale() {
+        return costo.add(spese);
     }
 }

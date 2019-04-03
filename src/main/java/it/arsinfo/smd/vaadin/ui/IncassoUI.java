@@ -1,5 +1,6 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Bollettino;
@@ -58,11 +60,11 @@ public class IncassoUI extends SmdUI {
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         addSmdComponents(
-                         incassa,
                          editor,
                          versEditor,
                          abbonamentiAssociatiGrid,
                          abbonamentiAssociabiliGrid,
+                         incassa,
                          versGrid,
                          add,
                          upload, 
@@ -193,13 +195,22 @@ public class IncassoUI extends SmdUI {
 
     
     private void dissocia(Abbonamento abbonamento, Versamento versamento) {
-        versamentoDao.save(SmdApplication.dissocia(versamento, abbonamento));
-        abbonamentoDao.save(abbonamento);
+        try {
+            versamentoDao.save(SmdApplication.dissocia(versamento, abbonamento));
+            abbonamentoDao.save(abbonamento);
+        } catch (UnsupportedOperationException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            
+        }
     }
 
     private void incassa(Abbonamento abbonamento, Versamento versamento) {
-        versamentoDao.save(SmdApplication.incassa(versamento, abbonamento));
-        abbonamentoDao.save(abbonamento);
+        try {
+            versamentoDao.save(SmdApplication.incassa(versamento, abbonamento));
+            abbonamentoDao.save(abbonamento);
+        } catch (UnsupportedOperationException e) {
+            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+        } 
     }
 
     private List<Abbonamento> getAssociati(Versamento versamento) {
@@ -210,14 +221,15 @@ public class IncassoUI extends SmdUI {
     }
     
     private List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null) {
+        if (versamento == null || versamento.getResiduo().compareTo(BigDecimal.ZERO) <= 0) {
             return new ArrayList<>();
         }
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
-                .filter(abb -> abb.getIncassato().equals("No") && 
-                        (versamento.getBollettino() != Bollettino.TIPO674) || versamento.getCampo().equals(abb.getCampo()))
+                .filter(abb -> abb.getIncassato().equals("No") 
+                        && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
+                        && (versamento.getBollettino() != Bollettino.TIPO674) || versamento.getCampo().equals(abb.getCampo()))
                 .collect(Collectors.toList());
     }
 }

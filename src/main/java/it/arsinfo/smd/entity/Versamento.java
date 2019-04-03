@@ -71,6 +71,14 @@ public class Versamento implements SmdEntity {
         this.incasso=incasso;
         this.setDataContabile(incasso.getDataContabile());
     }
+    
+    public Versamento(Incasso incasso, BigDecimal importo) {
+        this.incasso=incasso;
+        this.setDataContabile(incasso.getDataContabile());
+        this.importo=importo;
+        this.residuo=importo;
+    }
+
     public Long getId() {
         return id;
     }

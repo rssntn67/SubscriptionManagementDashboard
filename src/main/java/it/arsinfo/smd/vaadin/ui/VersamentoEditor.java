@@ -46,6 +46,9 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         residuo.setReadOnly(true);
         campo.setReadOnly(true);
+        bollettino.setItemCaptionGenerator(Bollettino::getBollettino);
+        accettazione.setItemCaptionGenerator(Accettazione::getDescr);
+        sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);
         setComponents(
                       getActions(),
                       new HorizontalLayout(importo,residuo,campo,progressivo,dataContabile,dataPagamento),

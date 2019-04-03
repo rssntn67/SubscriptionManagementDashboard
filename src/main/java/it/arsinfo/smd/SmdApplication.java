@@ -62,7 +62,10 @@ public class SmdApplication {
         if (versamento == null || abbonamento == null || abbonamento.getVersamento() != null) {
             throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, valori null o abbonamento incassato");
         }
-        versamento.setResiduo(versamento.getResiduo().subtract(abbonamento.getCosto()).subtract(abbonamento.getSpese()));
+        if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
+            throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, non rimane abbastanza credito sul versamento");            
+        }
+        versamento.setResiduo(versamento.getResiduo().subtract(abbonamento.getTotale()));
         abbonamento.setVersamento(versamento);
         return versamento;
     }
@@ -71,7 +74,7 @@ public class SmdApplication {
         if (versamento == null || abbonamento == null || abbonamento.getVersamento() == null || abbonamento.getVersamento().getId() != versamento.getId()) {
             throw new UnsupportedOperationException("Abbonamento e Versamento non sono dissociabili, valori null");
         }        
-        versamento.setResiduo(versamento.getResiduo().add(abbonamento.getCosto()).add(abbonamento.getSpese()));
+        versamento.setResiduo(versamento.getResiduo().add(abbonamento.getTotale()));
         abbonamento.setVersamento(null);
         return versamento;
     }
@@ -266,13 +269,12 @@ public class SmdApplication {
     private static Versamento generateVersamento(Incasso incasso,String value)
             throws ParseException {
         DateFormat formatter = new SimpleDateFormat("yyMMdd");
-        Versamento versamento = new Versamento(incasso);
+        Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setBobina(value.substring(0, 3));
         versamento.setProgressivoBobina(value.substring(3, 8));
 	versamento.setProgressivo(value.substring(8,15));
         versamento.setDataPagamento(formatter.parse(value.substring(27, 33)));
         versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
-        versamento.setImporto(new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setProvincia(value.substring(46, 49));
         versamento.setUfficio(value.substring(49, 52));
         versamento.setSportello(value.substring(52, 54));
@@ -281,7 +283,6 @@ public class SmdApplication {
         versamento.setCampo(value.substring(61,79));
         versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
-        versamento.setResiduo(versamento.getImporto());
         return versamento;
     }
 
@@ -569,8 +570,8 @@ public class SmdApplication {
             calcoloCostoAbbonamento(abbonamentoDp);
             abbonamentoDao.save(abbonamentoDp);
             
-            Abbonamento telematici001 = new Abbonamento(ms);
-            addSpedizione(telematici001, blocchetti,ms,1);
+            Abbonamento telematici001 = new Abbonamento(ar);
+            addSpedizione(telematici001, blocchetti,ar,1);
             telematici001.setCosto(new BigDecimal(15));
             telematici001.setCampo("000000018000792609");
             abbonamentoDao.save(telematici001);
@@ -616,6 +617,62 @@ public class SmdApplication {
             venezia008.setCosto(new BigDecimal(84));
             venezia008.setCampo("000000018000508854");
             abbonamentoDao.save(venezia008);
+
+            Abbonamento firenze009 = new Abbonamento(dp);
+            addSpedizione(firenze009, estratti,dp,1);
+            firenze009.setCosto(new BigDecimal(10));
+            firenze009.setCampo("000000018000686968");
+            abbonamentoDao.save(firenze009);
+            
+            Abbonamento firenze010 = new Abbonamento(dp);
+            addSpedizione(firenze010, lodare,dp,1);
+            firenze010.setCosto(new BigDecimal(15));
+            firenze010.setCampo("000000018000198318");
+            abbonamentoDao.save(firenze010);
+
+            Abbonamento firenze011 = new Abbonamento(dp);
+            addSpedizione(firenze011, lodare,dp,1);
+            firenze011.setCosto(new BigDecimal(15));
+            firenze011.setCampo("000000018000201449");
+            abbonamentoDao.save(firenze011);
+
+            Abbonamento firenze012 = new Abbonamento(dp);
+            addSpedizione(firenze012, lodare,dp,3);
+            firenze012.setCosto(new BigDecimal(33));
+            firenze012.setCampo("000000018000633491");
+            abbonamentoDao.save(firenze012);
+            
+            Abbonamento firenze013 = new Abbonamento(dp);
+            addSpedizione(firenze013, lodare,dp,10);
+            addSpedizione(firenze013, estratti,dp,10);
+            addSpedizione(firenze013, blocchetti,dp,10);
+            firenze013.setCosto(new BigDecimal(108));
+            firenze013.setCampo("000000018000196500");
+            abbonamentoDao.save(firenze013);
+            
+            Abbonamento bari014 = new Abbonamento(mp);
+            addSpedizione(bari014, lodare,mp,1);
+            bari014.setCosto(new BigDecimal(12));
+            bari014.setCampo("000000018000106227");
+            abbonamentoDao.save(bari014);
+
+            Abbonamento bari015 = new Abbonamento(mp);
+            addSpedizione(bari015, lodare,mp,3);
+            bari015.setCosto(new BigDecimal(36));
+            bari015.setCampo("000000018000077317");
+            abbonamentoDao.save(bari015);
+
+            Abbonamento bari016 = new Abbonamento(mp);
+            addSpedizione(bari016, lodare,mp,5);
+            bari016.setCosto(new BigDecimal(60));
+            bari016.setCampo("000000018000125029");
+            abbonamentoDao.save(bari016);
+
+            Abbonamento bari017 = new Abbonamento(mp);
+            addSpedizione(bari017, estratti,mp,10);
+            bari017.setCosto(new BigDecimal(67));
+            bari017.setCampo("000000018000065383");
+            abbonamentoDao.save(bari017);
 
 
             Campagna campagna2018=new Campagna();
@@ -684,37 +741,6 @@ public class SmdApplication {
             Incasso incasso4=generateIncasso(versamenti4, riepilogo4);
             incassoDao.save(incasso4);
             
-            Incasso incasso5 = new Incasso();
-            incasso5.setCassa(Cassa.Contrassegno);
-            incasso5.setDocumenti(1);
-            incasso5.setErrati(0);
-            incasso5.setEsatti(1);
-            incasso5.setOperazione("Ricevuto Assegno");
-            incasso5.setDataContabile(new Date());
-            incasso5.setImportoErrati(BigDecimal.ZERO);
-            incasso5.setImportoEsatti(new BigDecimal(50.0));
-            incasso5.setImporto(new BigDecimal(50.0));
-            
-            Versamento versamentoIncasso5 = new Versamento(incasso5);
-            versamentoIncasso5.setImporto(new BigDecimal(50.0));
-            versamentoIncasso5.setCampo(generateCampo(Anno.ANNO2019, Mese.GENNAIO, Mese.DICEMBRE));
-            versamentoIncasso5.setDataContabile(incasso5.getDataContabile());
-            versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
-            incasso5.addVersamento(versamentoIncasso5);
-            
-            incassoDao.save(incasso5);
-            
-            
-            versamentoDao.save(
-                   incassa(versamentoDao.findByImporto(new BigDecimal(40.0)).iterator().next(), abbonamentoDp));
-            abbonamentoDao.save(abbonamentoDp);
-            
-            log.info("Abbonamento Palma incassato con versamento:");
-            log.info("-------------------------------");
-            log.info(abbonamentoDp.toString() + " incassato:" + abbonamentoDp.getIncassato());
-            log.info(abbonamentoDp.getVersamento().toString());
-            log.info("");
-
             log.info("Pubblicazioni found with findAll():");
             log.info("-------------------------------");
             for (Pubblicazione pubblicazione : pubblicazioneDao.findAll()) {
@@ -895,9 +921,9 @@ public class SmdApplication {
             }
             log.info("");
 
-            log.info("versamenti found by incasso5");
+            log.info("versamenti found by incasso1");
             log.info("-------------------------------");
-            for (Versamento versamento: versamentoDao.findByIncasso(incasso5)) {
+            for (Versamento versamento: versamentoDao.findByIncasso(incasso1)) {
                 log.info(versamento.toString());
             }
             log.info("");
@@ -923,6 +949,46 @@ public class SmdApplication {
             log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
             log.info(Integer.toString(getNumeroPubblicazioni(Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)));
             log.info("");
+            
+            
+            Incasso incasso5 = new Incasso();
+            incasso5.setCassa(Cassa.Contrassegno);
+            incasso5.setDocumenti(1);
+            incasso5.setErrati(0);
+            incasso5.setEsatti(1);
+            incasso5.setOperazione("Ricevuto Assegno");
+            incasso5.setDataContabile(new Date());
+            incasso5.setImportoErrati(BigDecimal.ZERO);
+            incasso5.setImportoEsatti(abbonamentoDp.getTotale());
+            incasso5.setImporto(abbonamentoDp.getTotale());
+            
+            Versamento versamentoIncasso5 = new Versamento(incasso5,abbonamentoDp.getTotale());
+            versamentoIncasso5.setCampo(abbonamentoDp.getCampo());
+            versamentoIncasso5.setDataContabile(incasso5.getDataContabile());
+            versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
+            incasso5.addVersamento(versamentoIncasso5);
+            incassoDao.save(incasso5);
+
+            log.info("Abbonamento Palma prima di essere incassato");
+            log.info("-------------------------------");
+            log.info(abbonamentoDp.toString());
+            
+            log.info("Versamento Incasso Palma prima di essere incassato");
+            log.info("-------------------------------");
+            log.info(versamentoIncasso5.toString());
+            
+            versamentoDao.save(
+                   incassa(versamentoIncasso5, abbonamentoDp));
+            abbonamentoDao.save(abbonamentoDp);
+            
+            log.info("Abbonamento Palma dopo essere stato incassato");
+            log.info("-------------------------------");
+            log.info(abbonamentoDp.toString());
+            
+            log.info("Versamento Incasso Palma dopo essere stato incassato");
+            log.info("-------------------------------");
+            log.info(versamentoIncasso5.toString());
+
 
         };
     }
