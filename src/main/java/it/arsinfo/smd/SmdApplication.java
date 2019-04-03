@@ -22,7 +22,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -31,16 +33,15 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Regione;
-import it.arsinfo.smd.data.Accettazione;
-import it.arsinfo.smd.data.Bollettino;
-import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.Sostitutivo;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
@@ -49,7 +50,9 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
+import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
@@ -57,7 +60,32 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
-
+  
+    public static List<Prospetto> generaProspetto(Pubblicazione pubblicazione, List<Abbonamento> abbonamenti, List<Spedizione> spedizioni, Anno anno) {
+        final List<Prospetto> prospetti = new ArrayList<>();
+        pubblicazione.getMesiPubblicazione().stream().forEach(mese -> {
+            Prospetto prospetto = new Prospetto(pubblicazione, anno, mese);
+            Integer conta = 0;
+            for (Spedizione s: spedizioni) {
+                if (s.getPubblicazione().getId() != pubblicazione.getId()) {
+                    continue;
+                }
+                for (Abbonamento a: abbonamenti) {
+                    if (s.getAbbonamento().getId() == a.getId() 
+                            && a.getAnno() == anno 
+                            && a.getInizio().getPosizione() <= mese.getPosizione() 
+                            && a.getFine().getPosizione() >= mese.getPosizione() 
+                      ) {
+                            conta+=s.getNumero();
+                    }
+                }
+            }
+            prospetto.setStimato(conta);
+            prospetti.add(prospetto);
+        });
+        return prospetti;
+    }
+    
     public static Versamento incassa(Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (versamento == null || abbonamento == null || abbonamento.getVersamento() != null) {
             throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, valori null o abbonamento incassato");
@@ -393,7 +421,9 @@ public class SmdApplication {
     @Transactional
     public CommandLineRunner loadData(AnagraficaDao anagraficaDao, StoricoDao storicoDao,
             PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
-            CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao) {
+            SpedizioneDao spedizioneDao,
+            CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao,
+            ProspettoDao prospettoDao) {
         return (args) -> {
             Pubblicazione messaggio = new Pubblicazione("Messaggio",
                                                         TipoPubblicazione.MENSILE);
@@ -553,7 +583,7 @@ public class SmdApplication {
             addSpedizione(abbonamentoCo,messaggio,gp,5);
             addSpedizione(abbonamentoCo,blocchetti,mp,10);
             addSpedizione(abbonamentoCo,blocchetti,ar,10);
-            abbonamentoCo.setAnno(Anno.ANNO2020);
+            abbonamentoCo.setAnno(Anno.ANNO2018);
             abbonamentoCo.setCampo(generateCampo(abbonamentoCo.getAnno(),
                                                  abbonamentoCo.getInizio(),
                                                  abbonamentoCo.getFine()));
@@ -694,6 +724,16 @@ public class SmdApplication {
 
             generaCampagna(campagna2019, storicoDao.findAll(), new ArrayList<>());
             campagnaDao.save(campagna2019);
+
+            Campagna campagna2020=new Campagna();
+            campagna2020.setAnno(Anno.ANNO2020);
+            campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,messaggio));
+            campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,lodare));
+            campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,blocchetti));
+            campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,estratti));
+
+            generaCampagna(campagna2020, storicoDao.findAll(), new ArrayList<>());
+            campagnaDao.save(campagna2020);
 
             String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
             Set<String> versamenti1= new HashSet<>();
@@ -988,6 +1028,58 @@ public class SmdApplication {
             log.info("Versamento Incasso Palma dopo essere stato incassato");
             log.info("-------------------------------");
             log.info(versamentoIncasso5.toString());
+            
+            generaProspetto(estratti, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2018).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(estratti, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2019).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(estratti, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2020).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            
+            generaProspetto(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2018).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2019).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2020).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+
+            generaProspetto(lodare, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2018).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(lodare, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2019).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(lodare, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2020).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+
+            generaProspetto(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2018).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2019).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
+            generaProspetto(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2020).stream().forEach(p -> {
+                prospettoDao.save(p);
+                log.info(p.toString());
+            });
 
 
         };

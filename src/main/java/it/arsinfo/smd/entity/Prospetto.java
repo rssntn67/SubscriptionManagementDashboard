@@ -43,6 +43,14 @@ public class Prospetto implements SmdEntity {
     }
 
 
+    public Prospetto(Pubblicazione pubblicazione, Anno anno, Mese mese) {
+        super();
+        this.pubblicazione = pubblicazione;
+        this.anno = anno;
+        this.mese = mese;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -58,8 +66,8 @@ public class Prospetto implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Prospetto[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d]", 
-                             id,pubblicazione.getId(),stimato,definitivo);
+        return String.format("Prospetto[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d, Anno=%s, Mese=%s]", 
+                             id,pubblicazione.getId(),stimato,definitivo,anno,mese);
     }
 
 
