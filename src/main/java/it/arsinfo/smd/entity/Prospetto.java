@@ -1,5 +1,8 @@
 package it.arsinfo.smd.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -7,13 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
+import javax.persistence.OneToMany;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
 
 @Entity
 public class Prospetto implements SmdEntity {
@@ -25,14 +26,18 @@ public class Prospetto implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
+    @OneToMany
+    private List<ProspettoItem> items = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private Anno anno = SmdApplication.getAnnoCorrente();
 
     @Enumerated(EnumType.STRING)
     private Mese mese = SmdApplication.getMeseCorrente();
 
-    private Integer numero = 1;
+    private Integer definitivo = 0;
 
+    private Integer stimato = 0;
 
     public Prospetto() {
     }
@@ -51,18 +56,59 @@ public class Prospetto implements SmdEntity {
         this.pubblicazione = pubblicazione;
     }
 
-    public Integer getNumero() {
-        return numero;
-    }
-
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-
     @Override
     public String toString() {
-        return String.format("Prospetto[id=%d, Pubblicazione=%d, Numero=%d]", 
-                             id,pubblicazione.getId(),numero);
+        return String.format("Prospetto[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d]", 
+                             id,pubblicazione.getId(),stimato,definitivo);
+    }
+
+
+    public List<ProspettoItem> getItems() {
+        return items;
+    }
+
+
+    public void setItems(List<ProspettoItem> items) {
+        this.items = items;
+    }
+
+
+    public Anno getAnno() {
+        return anno;
+    }
+
+
+    public void setAnno(Anno anno) {
+        this.anno = anno;
+    }
+
+
+    public Mese getMese() {
+        return mese;
+    }
+
+
+    public void setMese(Mese mese) {
+        this.mese = mese;
+    }
+
+
+    public Integer getDefinitivo() {
+        return definitivo;
+    }
+
+
+    public void setDefinitivo(Integer definitivo) {
+        this.definitivo = definitivo;
+    }
+
+
+    public Integer getStimato() {
+        return stimato;
+    }
+
+
+    public void setStimato(Integer stimato) {
+        this.stimato = stimato;
     }
 }
