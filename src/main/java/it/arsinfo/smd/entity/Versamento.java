@@ -188,9 +188,13 @@ public class Versamento implements SmdEntity {
         return residuo;
     }
 
-
     public void setResiduo(BigDecimal residuo) {
         this.residuo = residuo;
+    }
+    
+    @Transient
+    public BigDecimal getIncassato() {
+        return importo.subtract(residuo);
     }
 
 }
