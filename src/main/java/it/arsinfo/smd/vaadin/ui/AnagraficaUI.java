@@ -13,9 +13,11 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
@@ -39,12 +41,16 @@ public class AnagraficaUI extends SmdUI {
     @Autowired
     AbbonamentoDao abbonamentoDao;
 
+    @Autowired
+    NotaDao notaDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Anagrafica");
         Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
         Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
         Assert.notNull(storicoDao,"storicoDao must be not null");
+        Assert.notNull(notaDao,"notaDao must be not null");
         Assert.notNull(abbonamentoDao,"abbonamentoDao must be not null");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao,storicoDao);
@@ -65,16 +71,27 @@ public class AnagraficaUI extends SmdUI {
                     return;
                 }
                 super.save();
+                if (!getNota().isEmpty()) {
+                    Nota nota = new Nota(get());
+                    nota.setDescription(getNota().getValue());
+                    notaDao.save(nota);
+                    getNota().clear();
+                }
             }
         };
         StoricoGrid storicoGrid = new StoricoGrid("Storico");
-        addSmdComponents(storicoAdd,storicoEditor, editor, storicoGrid, add,search, grid);
+        NotaGrid notaGrid = new NotaGrid("Note");
+        notaGrid.getGrid().setColumns("data","description");
+        notaGrid.getGrid().setHeight("200px");
         
+        addSmdComponents(storicoAdd,storicoEditor,notaGrid, editor, storicoGrid, add,search, grid);
         editor.setVisible(false);
         storicoGrid.setVisible(false);
         storicoEditor.setVisible(false);
+        notaGrid.setVisible(false);
         storicoAdd.setVisible(false);
 
+        notaGrid.setChangeHandler(() -> {});
         add.setChangeHandler(() -> {
             setHeader("Anagrafica:Nuova");
             hideMenu();
@@ -123,6 +140,7 @@ public class AnagraficaUI extends SmdUI {
                        SmdApplication.pagamentoRegolare(
                                storicoGrid.getSelected(),
                                abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
+            notaGrid.populate(notaDao.findByStorico(storicoGrid.getSelected()));
             add.setVisible(false);
             search.setVisible(false);
             editor.setVisible(false);
@@ -134,6 +152,7 @@ public class AnagraficaUI extends SmdUI {
             setHeader(grid.getSelected().getHeader());
             editor.setVisible(true);
             storicoEditor.setVisible(false);
+            notaGrid.setVisible(false);
             storicoAdd.setVisible(true);
         });
 

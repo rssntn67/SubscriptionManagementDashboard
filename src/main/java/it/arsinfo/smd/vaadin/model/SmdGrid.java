@@ -66,4 +66,7 @@ public abstract class SmdGrid<T extends SmdEntity>
         grid.addComponentColumn(valueprovider);
     }
     
+    public Grid<T> getGrid() {
+        return grid;
+    }
 }

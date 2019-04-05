@@ -11,6 +11,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Cassa;
@@ -40,6 +41,8 @@ public class StoricoEditor
 
     private final Panel pagamentoRegolare = new Panel();
     
+    private final TextArea nota = new TextArea("Aggiungi Nota");
+
     public StoricoEditor(
             StoricoDao storicoDao,
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafiche) {
@@ -48,7 +51,7 @@ public class StoricoEditor
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
-        pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
+        pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
 
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
@@ -60,11 +63,18 @@ public class StoricoEditor
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
+        HorizontalLayout pri = new HorizontalLayout();
+        pri.addComponent(numero);
+        pri.addComponent(pubblicazione);
+        pri.addComponentsAndExpand(intestatario,destinatario);
+        HorizontalLayout note = new HorizontalLayout();
+        note.addComponentsAndExpand(nota);
+
         setComponents(getActions(),
-                      new HorizontalLayout(numero, intestatario, destinatario,
-                                           pubblicazione),
+                      pri,
                       new HorizontalLayout(cassa,omaggio, invio),
-                      new HorizontalLayout(pagamentoRegolare,sospeso));
+                      new HorizontalLayout(pagamentoRegolare,sospeso),
+                      note);
  
         getBinder()
             .forField(numero)
@@ -86,7 +96,10 @@ public class StoricoEditor
         
         numero.focus();
     }
-
+    public TextArea getNota() {
+        return nota;
+    }
+    
     public ComboBox<Pubblicazione> getPubblicazione() {
         return pubblicazione;
     }
