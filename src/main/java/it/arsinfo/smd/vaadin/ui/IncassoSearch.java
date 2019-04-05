@@ -51,7 +51,11 @@ public class IncassoSearch extends SmdSearch<Incasso> {
         });
 
         filterDataContabile.addValueChangeListener(e -> {
-            dataContabile = e.getValue();
+            if (e.getValue() == null) {
+                dataContabile = null;
+            } else {
+                dataContabile = e.getValue();
+            }
             onChange();
         });
 
@@ -75,10 +79,14 @@ public class IncassoSearch extends SmdSearch<Incasso> {
                     .collect(Collectors.toList());
         }
         Stream<Incasso> incassi = ((IncassoDao) getRepo())
-                    .findByDataContabile(
+                    .findByDataContabileBetween(
                          java.util.Date.from(
                              dataContabile.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
-                         )
+                         ),
+                         java.util.Date.from(
+                                             dataContabile.plusDays(1).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()
+                                         )
+
                     )
                 .stream();
         if (cuas == null && cassa == null) {

@@ -14,7 +14,7 @@ public interface IncassoDao extends JpaRepository<Incasso, Long> {
 
 	List<Incasso> findByCuas(Cuas cuas);
 	List<Incasso> findByCcp(Ccp ccp);
-        List<Incasso> findByDataContabile(Date date);
+        List<Incasso> findByDataContabileBetween(Date start,Date end);
         List<Incasso> findByCassa(Cassa cassa);
 
 	

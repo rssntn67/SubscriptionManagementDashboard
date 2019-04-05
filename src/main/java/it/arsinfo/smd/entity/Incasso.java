@@ -45,6 +45,7 @@ public class Incasso implements SmdEntity {
     
     private int documenti=0;
     private BigDecimal importo=BigDecimal.ZERO;
+    private BigDecimal residuo=BigDecimal.ZERO;
     
     private int esatti=0;
     private BigDecimal importoEsatti=BigDecimal.ZERO;
@@ -136,15 +137,23 @@ public class Incasso implements SmdEntity {
             break;
         case Contrassegno:
             sb.append(operazione);
+            sb.append(",cc:");
+            sb.append(ccp.getCcp());
             break;
         case Bonifico:
             sb.append(operazione);
+            sb.append(",cc:");
+            sb.append(ccp.getCcp());
             break;
         case Paypal:
             sb.append(operazione);
+            sb.append(",cc:");
+            sb.append(ccp.getCcp());
             break;
         case Carte:
             sb.append(operazione);
+            sb.append(",cc:");
+            sb.append(ccp.getCcp());
             break;
         default:
             break;
@@ -174,6 +183,16 @@ public class Incasso implements SmdEntity {
     }
     public void setOperazione(String operazione) {
         this.operazione = operazione;
+    }
+    public BigDecimal getResiduo() {
+        return residuo;
+    }
+    public void setResiduo(BigDecimal residuo) {
+        this.residuo = residuo;
+    }
+    @Transient
+    public BigDecimal getIncassato() {
+        return importo.subtract(residuo);
     }
 
     

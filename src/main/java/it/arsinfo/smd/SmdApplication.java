@@ -257,14 +257,14 @@ public class SmdApplication {
     
     public static Incasso generateIncasso(Set<String> versamenti,
             String riepilogo) throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("yyMMdd");
+        DateFormat formatter = new SimpleDateFormat("yyMMddH");
         final Incasso incasso = new Incasso();
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,
                                                                           1))));
         incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,
                                                                          13)));
         incasso.setDataContabile(formatter.parse(riepilogo.substring(13,
-                                                                     19)));
+                                                                     19)+"8"));
 //	    String filler = riepilogo.substring(19,33);
 //	    String idriepilogo = riepilogo.substring(33,36);
         incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,
@@ -296,18 +296,18 @@ public class SmdApplication {
 
     private static Versamento generateVersamento(Incasso incasso,String value)
             throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("yyMMdd");
+        DateFormat formatter = new SimpleDateFormat("yyMMddH");
         Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setBobina(value.substring(0, 3));
         versamento.setProgressivoBobina(value.substring(3, 8));
 	versamento.setProgressivo(value.substring(8,15));
-        versamento.setDataPagamento(formatter.parse(value.substring(27, 33)));
+        versamento.setDataPagamento(formatter.parse(value.substring(27, 33)+"8"));
         versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
         versamento.setProvincia(value.substring(46, 49));
         versamento.setUfficio(value.substring(49, 52));
         versamento.setSportello(value.substring(52, 54));
 //          value.substring(54,55);
-        versamento.setDataContabile(formatter.parse(value.substring(55,61)));
+        versamento.setDataContabile(formatter.parse(value.substring(55,61)+"8"));
         versamento.setCampo(value.substring(61,79));
         versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
@@ -993,6 +993,7 @@ public class SmdApplication {
             
             Incasso incasso5 = new Incasso();
             incasso5.setCassa(Cassa.Contrassegno);
+            incasso5.setCcp(Ccp.DUE);
             incasso5.setDocumenti(1);
             incasso5.setErrati(0);
             incasso5.setEsatti(1);
