@@ -1,7 +1,9 @@
 package it.arsinfo.smd.data;
 
 public enum Ccp {
-    UNO("000063470009");
+    UNO("000063470009"),
+    DUE("000063470010"),
+    TRE("000063470011");
     private String ccp; 
     
     public static Ccp getByCcp(String ccp) {
