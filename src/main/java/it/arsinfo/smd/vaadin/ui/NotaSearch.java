@@ -10,58 +10,63 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class NotaSearch extends SmdSearch<Nota> {
 
     private String searchText;
-    private Anagrafica customer;
+    private Storico storico;
 
-    public NotaSearch(NotaDao notaDao, List<Anagrafica> anagrafica) {
+    public NotaSearch(NotaDao notaDao, List<Storico> storici) {
         super(notaDao);
         TextField filter = new TextField();
-        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
-
-        setComponents(new HorizontalLayout(filterAnagrafica, filter));
-
         filter.setPlaceholder("Cerca per Descrizione");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
         filter.addValueChangeListener(e -> {
             searchText = e.getValue();
             onChange();
         });
+        ComboBox<Storico> filterStorico = new ComboBox<Storico>();
+        filterStorico.setPlaceholder("Cerca per Storico");
+        filterStorico.setItems(storici);
+        filterStorico.setItemCaptionGenerator(Storico::getCaption);
 
-        filterAnagrafica.setEmptySelectionAllowed(false);
-        filterAnagrafica.setPlaceholder("Cerca per Cliente");
-        filterAnagrafica.setItems(anagrafica);
-        filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
-
-        filterAnagrafica.addSelectionListener(e -> {
+        filterStorico.addSelectionListener(e -> {
             if (e.getValue() == null) {
-                customer = null;
+                storico = null;
             } else {
-                customer = e.getSelectedItem().get();
+                storico = e.getSelectedItem().get();
             }
             onChange();
         });
+        
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addComponent(filter);
+        layout.addComponentsAndExpand(filterStorico);
 
+        setComponents(layout);
     }
 
     @Override
     public List<Nota> find() {
-        if (StringUtils.isEmpty(searchText) && customer == null) {
+        if (StringUtils.isEmpty(searchText) && storico == null) {
             return findAll();
         }
         if (StringUtils.isEmpty(searchText)) {
-            return ((NotaDao) getRepo()).findByAnagrafica(customer);
+            return ((NotaDao) getRepo()).findByStorico(storico);
         }
-        if (customer == null) {
-            ((NotaDao) getRepo()).findByDescriptionStartsWithIgnoreCase(searchText);
+        if (storico == null) {
+            return ((NotaDao) getRepo()).findByDescriptionContainingIgnoreCase(searchText);
         }
-        return ((NotaDao) getRepo()).findByDescriptionStartsWithIgnoreCase(searchText).stream().filter(n -> n.getAnagrafica().getId() == customer.getId()).collect(Collectors.toList());
+        return ((NotaDao) getRepo()).findByDescriptionContainingIgnoreCase(searchText)
+                .stream()
+                .filter(n -> 
+                n.getStorico().getId() 
+                        == storico.getId())
+                .collect(Collectors.toList());
     }
 
 }

@@ -830,7 +830,7 @@ public class SmdApplication {
 
             log.info("Anagrafica found with findByLastNameStartsWithIgnoreCase('Russo'):");
             log.info("--------------------------------------------");
-            for (Anagrafica ana : anagraficaDao.findByCognomeStartsWithIgnoreCase("Russo")) {
+            for (Anagrafica ana : anagraficaDao.findByCognomeContainingIgnoreCase("Russo")) {
                 log.info(ana.toString());
             }
             log.info("");

@@ -9,7 +9,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public interface AnagraficaDao extends JpaRepository<Anagrafica, Long> {
 
-	List<Anagrafica> findByCognomeStartsWithIgnoreCase(String lastName);
+	List<Anagrafica> findByCognomeContainingIgnoreCase(String lastName);
 	List<Anagrafica> findByDiocesi(Diocesi diocesi);
 
 }

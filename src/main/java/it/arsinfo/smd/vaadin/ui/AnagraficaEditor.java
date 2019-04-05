@@ -30,7 +30,6 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final ComboBox<TitoloAnagrafica> titolo = new ComboBox<TitoloAnagrafica>("Titolo",
                                                                                      EnumSet.allOf(TitoloAnagrafica.class));
     private final TextField nome = new TextField("Nome");
-    private final TextField intestazione = new TextField("Intestazione");
     private final TextField indirizzo = new TextField("Indirizzo");
     private final TextField cap = new TextField("CAP");
     private final TextField citta = new TextField("Citta'");
@@ -70,8 +69,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       nome,
                                                       indirizzo, 
                                                       cap, 
-                                                      citta,
-                                                      intestazione
+                                                      citta
                                                       );
         HorizontalLayout riga3 = new HorizontalLayout(paese,
                                                       email, 

@@ -32,11 +32,10 @@ public class Anagrafica implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private CentroDiocesano centroDiocesano;
 
-    private TitoloAnagrafica titolo;   
+    private TitoloAnagrafica titolo=TitoloAnagrafica.Nessuno;   
     
     private String nome;
     private String cognome;
-    private String intestazione;
     
     private String indirizzo;
     private String cap;
@@ -310,19 +309,9 @@ public class Anagrafica implements SmdEntity {
         this.titolo = titolo;
     }
 
-    public String getIntestazione() {
-        return intestazione;
-    }
-
-    public void setIntestazione(String intestazione) {
-        this.intestazione = intestazione;
-    }
-
     @Transient
     public String getCaption() {
-        if (intestazione != null)
-            return String.format("'%s %s %s'", intestazione, nome, cognome);
-        return String.format("'%s %s'", nome, cognome);
+        return String.format("'%s %s %s'", titolo.getIntestazione(), nome, cognome);
     }
 
     @Transient

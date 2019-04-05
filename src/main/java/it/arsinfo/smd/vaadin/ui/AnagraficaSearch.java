@@ -133,13 +133,13 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             return filterAll(findAll());
         }
         if (searchDiocesi == null) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCognomeStartsWithIgnoreCase(searchCognome));
+            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome));
         }
         if (StringUtils.isEmpty(searchCognome)) {
             return filterAll(((AnagraficaDao) getRepo()).findByDiocesi(searchDiocesi));
         }
 
-        return filterAll(((AnagraficaDao) getRepo()).findByCognomeStartsWithIgnoreCase(searchCognome).stream().filter(tizio -> tizio.getDiocesi().equals(searchDiocesi)).collect(Collectors.toList()));
+        return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome).stream().filter(tizio -> tizio.getDiocesi().equals(searchDiocesi)).collect(Collectors.toList()));
     }
 
     private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {

@@ -16,28 +16,20 @@ public class Nota implements SmdEntity {
     private Long id;
 
     @ManyToOne
-    private Anagrafica anagrafica;
+    private Storico storico;
 
     private String description;
 
-    private Date data = new Date();
+    private final Date data = new Date();
 
     public Nota() {
     }
 
     
-    public Nota(Anagrafica primoIntestatario) {
-        this.anagrafica = primoIntestatario;
+    public Nota(Storico storico) {
+        this.storico = storico;
     }
 
-
-    public Anagrafica getAnagrafica() {
-        return anagrafica;
-    }
-
-    public void setAnagrafica(Anagrafica anagrafica) {
-        this.anagrafica = anagrafica;
-    }
 
     public String getDescription() {
         return description;
@@ -55,14 +47,18 @@ public class Nota implements SmdEntity {
         return data;
     }
 
-    public void setData(Date data) {
-        this.data = data;
-    }
-
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Anagrafica='%d', descrizione='%s', Data='%td %tb %tY %tR %tZ', %s]",
-                             id, anagrafica.getId(), description,
+        return String.format("Abbonamento[id=%d, Storico='%d', descrizione='%s', Data='%td %tb %tY %tR %tZ', %s]",
+                             id, storico.getId(), description,
                              data, data, data, data, data);
+    }
+
+    public Storico getStorico() {
+        return storico;
+    }
+
+    public void setStorico(Storico storico) {
+        this.storico = storico;
     }
 }

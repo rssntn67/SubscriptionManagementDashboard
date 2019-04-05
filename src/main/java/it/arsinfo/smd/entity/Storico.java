@@ -1,5 +1,9 @@
 package it.arsinfo.smd.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -7,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Cassa;
@@ -29,6 +34,9 @@ public class Storico implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Nota> note = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private Omaggio omaggio = Omaggio.No;
 
@@ -47,6 +55,9 @@ public class Storico implements SmdEntity {
         this.numero = numero;
         this.intestatario = intestatario;
         this.destinatario = intestatario;
+        Nota nota= new Nota(this);
+        nota.setDescription("Creato storico");
+        note.add(nota);
     }
 
     public Storico(Anagrafica intestatario, Anagrafica destinatario,Pubblicazione pubblicazione, int numero) {
@@ -54,10 +65,16 @@ public class Storico implements SmdEntity {
         this.numero = numero;
         this.intestatario = intestatario;
         this.destinatario = destinatario;
+        Nota nota= new Nota(this);
+        nota.setDescription("Creato storico");
+        note.add(nota);
     }
     public Storico(Anagrafica intestatario) {
         this.intestatario = intestatario;
         this.destinatario = intestatario;
+        Nota nota= new Nota(this);
+        nota.setDescription("Creato storico");
+        note.add(nota);
     }
 
     public Storico() {
@@ -123,6 +140,10 @@ public class Storico implements SmdEntity {
     }
     
     @Transient
+    public String getCaption() {
+        return String.format("Intestatario:'%s', Pubblicazione:'%s', Destinatario:'%s'", intestatario.getCaption(), pubblicazione.getNome(),destinatario.getCaption());
+    }
+    @Transient
     public String getHeader() {
         return String.format("%s:Storico:Edit", intestatario.getHeader());
     }
@@ -165,4 +186,15 @@ public class Storico implements SmdEntity {
         this.cassa = cassa;
     }
 
+    public List<Nota> getNote() {
+        return note;
+    }
+
+    public void setNote(List<Nota> note) {
+        this.note = note;
+    }
+
+    public void addNota(Nota nota) {
+        note.add(nota);
+    }
 }
