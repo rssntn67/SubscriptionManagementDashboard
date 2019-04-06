@@ -12,10 +12,10 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
         setColumns("incassato",
                    "importo",
                    "residuo",
-                   "progressivo",
-                   "campo",
                    "dataPagamento",
-                   "dataContabile"
+                   "dataContabile",
+                   "progressivo",
+                   "campo"
                   );
     }
 

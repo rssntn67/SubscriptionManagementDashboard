@@ -40,19 +40,22 @@ public class Versamento implements SmdEntity {
     private String progressivo="9999999";
         
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataPagamento = new Date();
+    private Date dataPagamento = SmdApplication.getStandardDate(new Date());
     
     @Enumerated(EnumType.STRING)
     private Bollettino bollettino;
     
     private BigDecimal importo = BigDecimal.ZERO;
-    private BigDecimal residuo =BigDecimal.ZERO;
+    private BigDecimal incassato =BigDecimal.ZERO;
+    
+    private String operazione;
+
     private String provincia;
     private String ufficio;
     private String sportello;
     
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile=new Date();
+    private Date dataContabile;
     
     private String campo;
     
@@ -76,7 +79,6 @@ public class Versamento implements SmdEntity {
         this.incasso=incasso;
         this.setDataContabile(incasso.getDataContabile());
         this.importo=importo;
-        this.residuo=importo;
     }
 
     public Long getId() {
@@ -175,8 +177,8 @@ public class Versamento implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Versamento[id=%d,progressivo='%s',campo='%s',valido='%b', importo='%.2f', residuo='%.2f']",
-                             id,progressivo,campo, isCampovalido(),importo,residuo);
+        return String.format("Versamento[id=%d,Incasso=%d,progressivo='%s',campo='%s',operazione='%s'valido='%b', importo='%.2f', incassato='%.2f', residuo='%.2f']",
+                             id,incasso.getId(),progressivo,campo, operazione,isCampovalido(),importo,incassato,getResiduo());
     }
     public List<Abbonamento> getAbbonamenti() {
         return abbonamenti;
@@ -184,17 +186,28 @@ public class Versamento implements SmdEntity {
     public void setAbbonamenti(List<Abbonamento> abbonamenti) {
         this.abbonamenti = abbonamenti;
     }
+    @Transient
     public BigDecimal getResiduo() {
-        return residuo;
+        return importo.subtract(incassato);
     }
 
-    public void setResiduo(BigDecimal residuo) {
-        this.residuo = residuo;
+    public void setIncassato(BigDecimal incassato) {
+        this.incassato = incassato;
     }
     
-    @Transient
     public BigDecimal getIncassato() {
-        return importo.subtract(residuo);
+        return incassato;
     }
 
+    public String getOperazione() {
+        return operazione;
+    }
+    public void setOperazione(String operazione) {
+        this.operazione = operazione;
+    }
+
+    @Transient
+    public void setDefaultDataPagamento(Date dataPagamento) {
+        this.dataPagamento = SmdApplication.getStandardDate(dataPagamento);
+    }
 }

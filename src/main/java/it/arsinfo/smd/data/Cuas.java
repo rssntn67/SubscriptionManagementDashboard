@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum Cuas {
+    NOCCP(999999,"No CCP","Vedere Versamenti"),
     VENEZIA(3,"Venezia","C.U.A.S. reale"),
     TELEMATICI(4,"Telematici","C.U.A.S. virtuale"),
     FIRENZE(5,"Firenze","C.U.A.S. reale"),

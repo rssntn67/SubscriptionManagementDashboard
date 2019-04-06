@@ -10,8 +10,8 @@ public class IncassoGrid extends SmdGrid<Incasso> {
     public IncassoGrid(String gridname) {
         super(new Grid<>(Incasso.class),gridname);
 
-        setColumns("cassa","dettagli", "dataContabile",
-                   "importo", 
-                   "esatti","errati","documenti");
+        setColumns("incassato","importo","residuo","cassa", 
+                  "dataContabile",
+                  "dettagli");
     }
 }

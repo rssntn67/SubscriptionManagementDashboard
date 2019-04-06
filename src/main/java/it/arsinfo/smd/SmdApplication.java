@@ -60,7 +60,22 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
-  
+    private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
+    private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
+    
+    public static Date getStandardDate(Date date) {
+        return getStandardDate(unformatter.format(date));
+    }
+    
+    public static Date getStandardDate(String yyMMdd) {
+        try {
+            return formatter.parse(yyMMdd+"8");
+        } catch (ParseException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    };
+    
     public static List<Prospetto> generaProspetto(Pubblicazione pubblicazione, List<Abbonamento> abbonamenti, List<Spedizione> spedizioni, Anno anno) {
         final List<Prospetto> prospetti = new ArrayList<>();
         pubblicazione.getMesiPubblicazione().stream().forEach(mese -> {
@@ -86,23 +101,63 @@ public class SmdApplication {
         return prospetti;
     }
     
-    public static Versamento incassa(Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
-        if (versamento == null || abbonamento == null || abbonamento.getVersamento() != null) {
-            throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, valori null o abbonamento incassato");
+    public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (abbonamento == null ) {
+            log.error("incassa: Abbonamento null");
+            throw new UnsupportedOperationException("incassa: Abbonamento null");
+        }
+        if (versamento.getIncasso().getId().longValue() != incasso.getId().longValue()) {
+            log.error(String.format("incassa: Incasso e Versamento non sono associati. Incasso=%s, Versamento=%s",incasso.toString(),versamento.toString()));
+            throw new UnsupportedOperationException("incassa: Incasso e Versamento non sono associati");               
+        }
+        if (abbonamento.getVersamento() != null) {
+            log.error("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
+            throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
         }
         if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
-            throw new UnsupportedOperationException("Abbonamento e Versamento non sono associabili, non rimane abbastanza credito sul versamento");            
+            throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, non rimane abbastanza credito sul versamento");            
         }
-        versamento.setResiduo(versamento.getResiduo().subtract(abbonamento.getTotale()));
+        versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
+        incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
         abbonamento.setVersamento(versamento);
         return versamento;
     }
 
-    public static Versamento dissocia(Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
-        if (versamento == null || abbonamento == null || abbonamento.getVersamento() == null || abbonamento.getVersamento().getId() != versamento.getId()) {
-            throw new UnsupportedOperationException("Abbonamento e Versamento non sono dissociabili, valori null");
-        }        
-        versamento.setResiduo(versamento.getResiduo().add(abbonamento.getTotale()));
+    public static Versamento dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("dissocia: Incasso null");
+            throw new UnsupportedOperationException("dissocia: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("dissocia: Versamento null");
+            throw new UnsupportedOperationException("dissocia: Versamento null");
+        }
+        if (abbonamento == null ) {
+            log.error("dissocia: Abbonamento null");
+            throw new UnsupportedOperationException("dissocia: Abbonamento null");
+        }
+        if (abbonamento.getVersamento() == null ) {
+            log.error("dissocia: Abbonamento non incassato");
+            throw new UnsupportedOperationException("dissocia: Abbonamento non incassato");
+        }
+        if (versamento.getIncasso().getId().longValue() != incasso.getId().longValue()) {
+            log.error(String.format("dissocia: Incasso e Versamento non sono associati. Incasso=%s, Versamento=%s",incasso.toString(),versamento.toString()));
+            throw new UnsupportedOperationException("incassa: Incasso e Versamento non sono associati");               
+        }
+        if (abbonamento.getVersamento().getId().longValue() != versamento.getId().longValue() ) {
+            log.error(String.format("dissocia: Abbonamento e Versamento non sono associati. Abbonamento=%s, Versamento=%s",abbonamento.toString(),versamento.toString()));
+            throw new UnsupportedOperationException("dissocia: Abbonamento e Versamento non sono associati");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(abbonamento.getTotale()));
+        incasso.setIncassato(incasso.getIncassato().subtract(abbonamento.getTotale()));
         abbonamento.setVersamento(null);
         return versamento;
     }
@@ -256,58 +311,44 @@ public class SmdApplication {
     }
     
     public static Incasso generateIncasso(Set<String> versamenti,
-            String riepilogo) throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("yyMMddH");
+            String riepilogo) {
         final Incasso incasso = new Incasso();
-        incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,
-                                                                          1))));
-        incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,
-                                                                         13)));
-        incasso.setDataContabile(formatter.parse(riepilogo.substring(13,
-                                                                     19)+"8"));
+        incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
+        incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,13)));
+        incasso.setDataContabile(getStandardDate(riepilogo.substring(13,19)));
 //	    String filler = riepilogo.substring(19,33);
 //	    String idriepilogo = riepilogo.substring(33,36);
-        incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,
-                                                                        44)));
-        incasso.setImporto(new BigDecimal(riepilogo.substring(44, 54)
-                + "." + riepilogo.substring(54, 56)));
+        incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,44)));
+        incasso.setImporto(new BigDecimal(riepilogo.substring(44,54)
+                + "." + riepilogo.substring(54,56)));
 
-        incasso.setEsatti(Integer.parseInt(riepilogo.substring(56,
-                                                                        64)));
-        incasso.setImportoEsatti(new BigDecimal(riepilogo.substring(64,
-                                                                             74)
+        incasso.setEsatti(Integer.parseInt(riepilogo.substring(56,64)));
+        incasso.setImportoEsatti(new BigDecimal(riepilogo.substring(64,74)
                 + "." + riepilogo.substring(74, 76)));
 
-        incasso.setErrati(Integer.parseInt(riepilogo.substring(76,
-                                                                        84)));
-        incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,
-                                                                             94)
+        incasso.setErrati(Integer.parseInt(riepilogo.substring(76,84)));
+        incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,94)
                 + "." + riepilogo.substring(94, 96)));
 
-        versamenti.stream().forEach(s -> {
-            try {
-                incasso.addVersamento(generateVersamento(incasso,s));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        });
+        versamenti.
+            stream().
+            forEach(s -> incasso.addVersamento(generateVersamento(incasso,s)));
         return incasso;
     }
 
     private static Versamento generateVersamento(Incasso incasso,String value)
-            throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("yyMMddH");
+            {
         Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setBobina(value.substring(0, 3));
         versamento.setProgressivoBobina(value.substring(3, 8));
 	versamento.setProgressivo(value.substring(8,15));
-        versamento.setDataPagamento(formatter.parse(value.substring(27, 33)+"8"));
+        versamento.setDataPagamento(getStandardDate(value.substring(27,33)));
         versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
         versamento.setProvincia(value.substring(46, 49));
         versamento.setUfficio(value.substring(49, 52));
         versamento.setSportello(value.substring(52, 54));
 //          value.substring(54,55);
-        versamento.setDataContabile(formatter.parse(value.substring(55,61)+"8"));
+        versamento.setDataContabile(getStandardDate(value.substring(55,61)));
         versamento.setCampo(value.substring(61,79));
         versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
@@ -997,34 +1038,42 @@ public class SmdApplication {
             incasso5.setDocumenti(1);
             incasso5.setErrati(0);
             incasso5.setEsatti(1);
-            incasso5.setOperazione("Ricevuto Assegno");
-            incasso5.setDataContabile(new Date());
+            incasso5.setDefaultDataContabile(new Date());
             incasso5.setImportoErrati(BigDecimal.ZERO);
             incasso5.setImportoEsatti(abbonamentoDp.getTotale());
             incasso5.setImporto(abbonamentoDp.getTotale());
             
             Versamento versamentoIncasso5 = new Versamento(incasso5,abbonamentoDp.getTotale());
             versamentoIncasso5.setCampo(abbonamentoDp.getCampo());
-            versamentoIncasso5.setDataContabile(incasso5.getDataContabile());
-            versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
+            versamentoIncasso5.setDefaultDataPagamento(incasso5.getDataContabile());
+            versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
             incasso5.addVersamento(versamentoIncasso5);
             incassoDao.save(incasso5);
 
             log.info("Abbonamento Palma prima di essere incassato");
             log.info("-------------------------------");
             log.info(abbonamentoDp.toString());
+
+            log.info("Incasso Palma prima di essere incassato");
+            log.info("-------------------------------");
+            log.info(incasso5.toString());
             
             log.info("Versamento Incasso Palma prima di essere incassato");
             log.info("-------------------------------");
             log.info(versamentoIncasso5.toString());
             
             versamentoDao.save(
-                   incassa(versamentoIncasso5, abbonamentoDp));
+                   incassa(incasso5,versamentoIncasso5, abbonamentoDp));
+            incassoDao.save(incasso5);
             abbonamentoDao.save(abbonamentoDp);
             
             log.info("Abbonamento Palma dopo essere stato incassato");
             log.info("-------------------------------");
             log.info(abbonamentoDp.toString());
+
+            log.info("Incasso Palma dopo essere stato incassato");
+            log.info("-------------------------------");
+            log.info(incasso5.toString());
             
             log.info("Versamento Incasso Palma dopo essere stato incassato");
             log.info("-------------------------------");
@@ -1082,6 +1131,7 @@ public class SmdApplication {
                 log.info(p.toString());
             });
 
+            log.info(getStandardDate(new Date()).toString());
 
         };
     }

@@ -1,5 +1,6 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.time.ZoneId;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
@@ -22,10 +23,11 @@ public class IncassoEditor extends SmdEditor<Incasso> {
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
-    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Ccp",EnumSet.allOf(Ccp.class));
-    private final TextField operazione = new TextField("Operazione");
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Conto Corrente",EnumSet.allOf(Ccp.class));
     private final TextField documenti = new TextField("Numero Documenti");
     private final TextField importo = new TextField("Importo");
+    private final TextField incassato = new TextField("Incassato");
+    private final TextField residuo = new TextField("Residuo");
 
     private final TextField esatti = new TextField("Numero Documenti Esatti");
     private final TextField importoEsatti = new TextField("Importo Esatti");
@@ -33,23 +35,30 @@ public class IncassoEditor extends SmdEditor<Incasso> {
     private final TextField errati = new TextField("Numero Documenti Errati");
     private final TextField importoErrati = new TextField("Importo Errati");
     private final DateField dataContabile = new DateField("Data contabile");
+    
     public IncassoEditor(IncassoDao incassoDao) {
         super(incassoDao, new Binder<>(Incasso.class));
 
         setComponents(
                       getActions(), 
-                      new HorizontalLayout(cassa,cuas,ccp,operazione),
-                      new HorizontalLayout(importo,importoEsatti,importoErrati),
-                      new HorizontalLayout(documenti,esatti,errati)
+                      new HorizontalLayout(importo,incassato,residuo,dataContabile),
+                      new HorizontalLayout(cassa,cuas,ccp),
+                      new HorizontalLayout(documenti,esatti,errati,importoEsatti,importoErrati)
                       );
         
-        ccp.setItemCaptionGenerator(Ccp::getCcp);
         importo.setReadOnly(true);
+        incassato.setReadOnly(true);
+        residuo.setReadOnly(true);
         documenti.setReadOnly(true);
         importoErrati.setReadOnly(true);
         importoEsatti.setReadOnly(true);
-        esatti.setReadOnly(true);
-        errati.setReadOnly(true);
+
+        dataContabile.setDateFormat("dd/MM/yyyy");
+        cuas.setEmptySelectionAllowed(false);
+        cassa.setEmptySelectionAllowed(false);
+        ccp.setEmptySelectionAllowed(false);
+        ccp.setItemCaptionGenerator(Ccp::getCcp);
+
         getBinder().forField(documenti)
             .withConverter(new StringToIntegerConverter(""))
             .bind(Incasso::getDocumenti, Incasso::setDocumenti);
@@ -64,14 +73,20 @@ public class IncassoEditor extends SmdEditor<Incasso> {
         getBinder().forField(importo)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImporto,Incasso::setImporto);
-        getBinder().forField(importoEsatti)
+        getBinder().forField(incassato)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind(Incasso::getIncassato,Incasso::setIncassato);
+        getBinder().forField(residuo)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind(Incasso::getResiduo,null);
+       getBinder().forField(importoEsatti)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImportoEsatti,Incasso::setImportoEsatti);
         getBinder().forField(importoErrati)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind(Incasso::getImportoErrati,Incasso::setImportoErrati);
         getBinder().forField(dataContabile)
-            .withConverter(new LocalDateToDateConverter()).bind("dataContabile");
+            .withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind("dataContabile");
         getBinder().bindInstanceFields(this);
         
     }
@@ -83,7 +98,8 @@ public class IncassoEditor extends SmdEditor<Incasso> {
         cassa.setReadOnly(persisted);
         cuas.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        operazione.setReadOnly(persisted);
+        esatti.setReadOnly(persisted);
+        errati.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
     }

@@ -17,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -29,23 +30,21 @@ public class Incasso implements SmdEntity {
     private Long id;
     
     @Enumerated(EnumType.STRING)
-    private Cassa cassa = Cassa.Ccp;
+    private Cassa cassa = Cassa.Contante;
     @Enumerated(EnumType.STRING)
-    private Cuas cuas;
+    private Cuas cuas = Cuas.NOCCP;
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
-    
-    private String operazione;
-        
+            
     @OneToMany(cascade = { CascadeType.ALL })
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile = new Date();
+    private Date dataContabile = SmdApplication.getStandardDate(new Date());
     
     private int documenti=0;
     private BigDecimal importo=BigDecimal.ZERO;
-    private BigDecimal residuo=BigDecimal.ZERO;
+    private BigDecimal incassato=BigDecimal.ZERO;
     
     private int esatti=0;
     private BigDecimal importoEsatti=BigDecimal.ZERO;
@@ -126,38 +125,15 @@ public class Incasso implements SmdEntity {
     @Transient
     public String getDettagli() {
         StringBuffer sb = new StringBuffer("");
-        switch (cassa) {
-        case Ccp:
-            sb.append(cuas.getDenominazione());
-            sb.append(",ccp:");
+        if (ccp != null) {
+            sb.append("cc:");
             sb.append(ccp.getCcp());
-            break;
-        case Contante:
-            sb.append(operazione);
-            break;
-        case Contrassegno:
-            sb.append(operazione);
-            sb.append(",cc:");
-            sb.append(ccp.getCcp());
-            break;
-        case Bonifico:
-            sb.append(operazione);
-            sb.append(",cc:");
-            sb.append(ccp.getCcp());
-            break;
-        case Paypal:
-            sb.append(operazione);
-            sb.append(",cc:");
-            sb.append(ccp.getCcp());
-            break;
-        case Carte:
-            sb.append(operazione);
-            sb.append(",cc:");
-            sb.append(ccp.getCcp());
-            break;
-        default:
-            break;
         }
+        if (cuas != null)
+            sb.append(", ");
+            sb.append(cuas.getDenominazione());
+            sb.append(", ");        
+            sb.append(cuas.getNote());
         return sb.toString();
     }
     public void addVersamento(Versamento versamento) {
@@ -168,8 +144,9 @@ public class Incasso implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Incasso[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f', esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
-                             id,cassa, getDettagli(), documenti, importo,esatti,importoEsatti,errati,importoErrati);
+        return String.format(
+         "Incasso[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f',incassato='%.2f', residuo='%.2f',esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+                             id,cassa, getDettagli(), documenti, importo,incassato,getResiduo(),esatti,importoEsatti,errati,importoErrati);
     }
 
     public Cassa getCassa() {
@@ -178,22 +155,20 @@ public class Incasso implements SmdEntity {
     public void setCassa(Cassa cassa) {
         this.cassa = cassa;
     }
-    public String getOperazione() {
-        return operazione;
+    public BigDecimal getIncassato() {
+        return incassato;
     }
-    public void setOperazione(String operazione) {
-        this.operazione = operazione;
-    }
-    public BigDecimal getResiduo() {
-        return residuo;
-    }
-    public void setResiduo(BigDecimal residuo) {
-        this.residuo = residuo;
+    public void setIncassato(BigDecimal incassato) {
+        this.incassato = incassato;
     }
     @Transient
-    public BigDecimal getIncassato() {
-        return importo.subtract(residuo);
+    public BigDecimal getResiduo() {
+        return importo.subtract(incassato);
     }
 
+    @Transient
+    public void setDefaultDataContabile(Date datacontabile) {
+        this.dataContabile = SmdApplication.getStandardDate(datacontabile);
+    }
     
 }
