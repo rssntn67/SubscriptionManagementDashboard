@@ -29,7 +29,6 @@ import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 @SpringUI(path = SmdUIHelper.URL_INCASSI)
 @Title("Incassi ADP")
 public class IncassoUI extends SmdUI {
-    
     /**
      * 
      */
@@ -51,6 +50,7 @@ public class IncassoUI extends SmdUI {
         SmdButton incassa = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
         SmdButton incassaSingolo = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("");
+
         IncassoEditor editor = new IncassoEditor(incassoDao);
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti");
         VersamentoEditor versEditor = new VersamentoEditor(versamentoDao);
@@ -93,7 +93,7 @@ public class IncassoUI extends SmdUI {
             grid.populate(upload.getIncassi());
         });
         
-        search.setChangeHandler(() -> grid.populate(search.find()));
+        search.setChangeHandler(() ->grid.populate(search.find()));
 
         incassa.setChangeHandler(() -> {
             for (Incasso iiii : search.find()) {
@@ -222,7 +222,6 @@ public class IncassoUI extends SmdUI {
         });
 
         grid.populate(search.findAll());
-
     }
 
     
@@ -266,4 +265,5 @@ public class IncassoUI extends SmdUI {
                         && (versamento.getBollettino() != Bollettino.TIPO674) || versamento.getCampo().equals(abb.getCampo()))
                 .collect(Collectors.toList());
     }
+    
 }

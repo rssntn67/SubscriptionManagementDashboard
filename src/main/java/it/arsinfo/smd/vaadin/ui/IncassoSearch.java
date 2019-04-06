@@ -12,6 +12,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.repository.IncassoDao;
@@ -19,6 +20,7 @@ import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class IncassoSearch extends SmdSearch<Incasso> {
 
+    private Ccp ccp;
     private Cassa cassa;
     private Cuas cuas;
     private LocalDate dataContabile;
@@ -26,15 +28,22 @@ public class IncassoSearch extends SmdSearch<Incasso> {
     public IncassoSearch(IncassoDao repo) {
         super(repo);
 
-        ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Selezionare Cassa",
-                EnumSet.allOf(Cassa.class));
-        ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Selezionare C.U.A.S.",
-                                                       EnumSet.allOf(Cuas.class));
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
         filterDataContabile.setDateFormat("yyyy-MM-dd");
+        ComboBox<Ccp> filterCcp = new ComboBox<Ccp>("Selezionare Conto Corrente",EnumSet.allOf(Ccp.class));
+        ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Selezionare Cassa",EnumSet.allOf(Cassa.class));
+        ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Selezionare C.U.A.S.",EnumSet.allOf(Cuas.class));
 
-        setComponents(new HorizontalLayout(filterCassa,filterCuas, filterDataContabile));
+        setComponents(new HorizontalLayout(filterDataContabile,filterCcp,filterCassa,filterCuas));
 
+        filterCcp.setEmptySelectionAllowed(true);
+        filterCcp.setItemCaptionGenerator(Ccp::getCcp);
+        filterCcp.setPlaceholder("Cerca per Conto Corrente");
+        filterCcp.addSelectionListener(e -> {
+            ccp = e.getValue();
+            onChange();
+        });
+        
         filterCassa.setEmptySelectionAllowed(true);
         filterCassa.setPlaceholder("Cerca per Cassa");
         filterCassa.addSelectionListener(e -> {
@@ -63,21 +72,37 @@ public class IncassoSearch extends SmdSearch<Incasso> {
 
     @Override
     public List<Incasso> find() {
-        if (cuas == null && dataContabile == null && cassa == null) {
+        if (cuas == null && dataContabile == null && cassa == null && ccp == null) {
             return findAll();
         }
-        if (dataContabile == null && cassa == null ) {
+        if (dataContabile == null && cassa == null && ccp == null) {
             return ((IncassoDao) getRepo()).findByCuas(cuas);
         }
-        if (dataContabile == null && cuas == null) {
+        if (dataContabile == null && cuas == null && ccp == null) {
             return ((IncassoDao) getRepo()).findByCassa(cassa);
         }
-        if (dataContabile == null) {
+        if (dataContabile == null && cuas == null && cassa == null) {
+            return ((IncassoDao) getRepo()).findByCcp(ccp);
+        }
+        if (dataContabile == null && ccp == null) {
             return ((IncassoDao) getRepo()).findByCassa(cassa)
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas)
                     .collect(Collectors.toList());
         }
+        if (dataContabile == null && cuas == null) {
+            return ((IncassoDao) getRepo()).findByCassa(cassa)
+                    .stream()
+                    .filter(inc -> inc.getCcp() == ccp)
+                    .collect(Collectors.toList());
+        }
+        if (dataContabile == null && cassa == null) {
+            return ((IncassoDao) getRepo()).findByCuas(cuas)
+                    .stream()
+                    .filter(inc -> inc.getCcp() == ccp)
+                    .collect(Collectors.toList());
+        }
+
         Stream<Incasso> incassi = ((IncassoDao) getRepo())
                     .findByDataContabileBetween(
                          java.util.Date.from(
@@ -89,23 +114,44 @@ public class IncassoSearch extends SmdSearch<Incasso> {
 
                     )
                 .stream();
-        if (cuas == null && cassa == null) {
+        if (cuas == null && cassa == null && ccp == null) {
             return incassi
                 .collect(Collectors.toList());
         }
             
-        if (cassa == null) {
+        if (cassa == null && ccp == null) {
             return incassi
                 .filter(inc -> inc.getCuas() == cuas)
                 .collect(Collectors.toList());
         }
-        if (cuas == null) {
+        if (cuas == null && ccp == null) {
             return incassi
                 .filter(inc -> inc.getCassa() == cassa)
                 .collect(Collectors.toList());
         }
+        if (cassa == null && cuas == null) {
+            return incassi
+                .filter(inc -> inc.getCcp() == ccp)
+                .collect(Collectors.toList());
+        }
+        if (cassa == null) {
+            return incassi
+                .filter(inc -> inc.getCuas() == cuas && inc.getCcp() == ccp)
+                .collect(Collectors.toList());
+        }
+        if (cuas == null) {
+            return incassi
+                .filter(inc -> inc.getCassa() == cassa && inc.getCcp() == ccp)
+                .collect(Collectors.toList());
+        }
+        if (ccp == null) {
+            return incassi
+                .filter(inc -> inc.getCuas() == cuas && inc.getCassa() == cassa)
+                .collect(Collectors.toList());
+        }
+
         return incassi
-                .filter(inc -> inc.getCassa() == cassa && inc.getCuas() == cuas)            
+                .filter(inc -> inc.getCassa() == cassa && inc.getCuas() == cuas && inc.getCcp() == ccp)            
                 .collect(Collectors.toList());
     }
 

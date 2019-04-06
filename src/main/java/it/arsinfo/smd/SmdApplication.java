@@ -313,6 +313,7 @@ public class SmdApplication {
     public static Incasso generateIncasso(Set<String> versamenti,
             String riepilogo) {
         final Incasso incasso = new Incasso();
+        incasso.setCassa(Cassa.Ccp);
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
         incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,13)));
         incasso.setDataContabile(getStandardDate(riepilogo.substring(13,19)));
