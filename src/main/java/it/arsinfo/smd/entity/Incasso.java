@@ -136,12 +136,18 @@ public class Incasso implements SmdEntity {
             sb.append(cuas.getNote());
         return sb.toString();
     }
+
     public void addVersamento(Versamento versamento) {
         if (versamenti.contains(versamento)) {
             versamenti.remove(versamento);
         }
         versamenti.add(versamento);
     }
+    
+    public boolean deleteVersamento(Versamento versamento) {
+       return versamenti.remove(versamento);
+    }
+    
     @Override
     public String toString() {
         return String.format(
@@ -169,6 +175,10 @@ public class Incasso implements SmdEntity {
     @Transient
     public void setDefaultDataContabile(Date datacontabile) {
         this.dataContabile = SmdApplication.getStandardDate(datacontabile);
+    }
+    @Transient
+    public String getHeader() {
+        return String.format("Incasso:'%s %s'", cassa, ccp.getCcp());
     }
     
 }

@@ -48,7 +48,8 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
-        campo.setReadOnly(true);
+        dataContabile.setReadOnly(true);
+
         bollettino.setItemCaptionGenerator(Bollettino::getBollettino);
         accettazione.setItemCaptionGenerator(Accettazione::getDescr);
         sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);
@@ -95,7 +96,6 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         importo.setReadOnly(persisted);
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
-        dataContabile.setReadOnly(persisted);
         dataPagamento.setReadOnly(persisted);
         
         operazione.setReadOnly(persisted);

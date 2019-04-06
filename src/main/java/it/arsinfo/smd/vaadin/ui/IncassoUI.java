@@ -2,6 +2,7 @@ package it.arsinfo.smd.vaadin.ui;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,9 +52,46 @@ public class IncassoUI extends SmdUI {
         SmdButton incassaSingolo = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("");
 
-        IncassoEditor editor = new IncassoEditor(incassoDao);
+        IncassoEditor editor = new IncassoEditor(incassoDao) {
+            @Override
+            public void save() {
+                if (get().getId() == null && get().getVersamenti().isEmpty()) {
+                    Notification.show("Aggiungere Versamenti Prima di Salvare", Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                if (get().getId() == null && get().getDataContabile().after(SmdApplication.getStandardDate(new Date()))) {
+                    Notification.show("Non si può selezionare una data contabile futuro", Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+
+                super.save();
+            }
+        };
+        VersamentoAdd versAdd = new VersamentoAdd("Aggiungi Versamento");
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti");
-        VersamentoEditor versEditor = new VersamentoEditor(versamentoDao);
+        VersamentoEditor versEditor = new VersamentoEditor(versamentoDao) {
+            @Override
+            public void save() {
+                if (get().getImporto().compareTo(BigDecimal.ZERO) <= 0) {
+                    Notification.show("Importo non deve essere ZERO",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                if (get().getDataPagamento().after(get().getDataContabile())) {
+                    Notification.show("La data di pagamento deve  essere anteriore alla data contabile",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                editor.get().addVersamento(get());
+                SmdApplication.calcoloImportoIncasso(editor.get());
+                onChange();
+            }
+            
+            @Override
+            public void delete() {
+                editor.get().deleteVersamento(get());
+                SmdApplication.calcoloImportoIncasso(editor.get());
+                onChange();
+            }
+        };
         AbbonamentoGrid abbonamentiAssociatiGrid = new AbbonamentoGrid("Abbonamenti Associati");
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
@@ -62,6 +100,7 @@ public class IncassoUI extends SmdUI {
                          upload, 
                          search,
                          incassa,
+                         versAdd,
                          editor,
                          versEditor,
                          abbonamentiAssociatiGrid,
@@ -77,15 +116,22 @@ public class IncassoUI extends SmdUI {
         versEditor.setVisible(false);
         incassaSingolo.setVisible(false);
         versGrid.setVisible(false);
+        versAdd.setVisible(false);
         
         abbonamentiAssociabiliGrid.getGrid().setHeight("150px");
         abbonamentiAssociatiGrid.getGrid().setHeight("150px");
         versGrid.getGrid().setHeight("300px");
         add.setChangeHandler(() -> {
-            editor.edit(add.generate());
+            setHeader("Incasso:Nuovo");
+            hideMenu();
+            add.setVisible(false);
             upload.setVisible(false);
             search.setVisible(false);
             incassa.setVisible(false);
+            grid.setVisible(false);
+            editor.edit(add.generate());     
+            versAdd.setIncasso(editor.get());
+            versAdd.setVisible(true);
         });
         
         upload.setChangeHandler(() -> {
@@ -114,13 +160,25 @@ public class IncassoUI extends SmdUI {
             grid.populate(search.find());                
         });
 
+        versAdd.setChangeHandler(() -> {
+            setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
+            hideMenu();
+            versEditor.edit(versAdd.generate());
+            editor.setVisible(false);
+            versAdd.setVisible(false);
+
+        });
         editor.setChangeHandler(() -> {
+            showMenu();
+            setHeader("Incassi");
             grid.populate(search.find());
             add.setVisible(true);
             upload.setVisible(true);
             search.setVisible(true);
             incassa.setVisible(true);
             editor.setVisible(false);
+            versGrid.setVisible(false);
+            versAdd.setVisible(false);
             
         });
 
@@ -166,11 +224,13 @@ public class IncassoUI extends SmdUI {
         });
  
         versEditor.setChangeHandler(() -> {
+            setHeader("Incasso:Nuovo");
             versEditor.setVisible(false);
             abbonamentiAssociatiGrid.setVisible(false);
             abbonamentiAssociabiliGrid.setVisible(false);
-            versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
-            editor.edit(grid.getSelected());
+            versAdd.setVisible(true);
+            editor.edit(versEditor.get().getIncasso());
+            versGrid.populate(editor.get().getVersamenti());
         });
 
         versGrid.setChangeHandler(() -> {
@@ -262,7 +322,9 @@ public class IncassoUI extends SmdUI {
                 .stream()
                 .filter(abb -> abb.getIncassato().equals("No") 
                         && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
-                        && (versamento.getBollettino() != Bollettino.TIPO674) || versamento.getCampo().equals(abb.getCampo()))
+                        && (versamento.getBollettino() != Bollettino.TIPO674) 
+                            || abb.getCampo().equals(versamento.getCampo())
+                            )
                 .collect(Collectors.toList());
     }
     

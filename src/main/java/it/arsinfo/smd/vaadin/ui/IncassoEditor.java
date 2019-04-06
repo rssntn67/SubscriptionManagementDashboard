@@ -52,6 +52,8 @@ public class IncassoEditor extends SmdEditor<Incasso> {
         documenti.setReadOnly(true);
         importoErrati.setReadOnly(true);
         importoEsatti.setReadOnly(true);
+        esatti.setReadOnly(true);
+        errati.setReadOnly(true);
 
         dataContabile.setDateFormat("dd/MM/yyyy");
         cuas.setEmptySelectionAllowed(false);
@@ -94,12 +96,12 @@ public class IncassoEditor extends SmdEditor<Incasso> {
 
     @Override
     public void focus(boolean persisted, Incasso incasso) {
+        incassato.setVisible(persisted);
+        residuo.setVisible(persisted);
         dataContabile.setReadOnly(persisted);
         cassa.setReadOnly(persisted);
         cuas.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        esatti.setReadOnly(persisted);
-        errati.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
     }

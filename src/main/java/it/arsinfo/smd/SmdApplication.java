@@ -410,6 +410,19 @@ public class SmdApplication {
         return numero;
     }
     
+    public static void calcoloImportoIncasso(Incasso incasso) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Versamento versamento: incasso.getVersamenti()) {
+            importo=importo.add(versamento.getImporto());
+        }
+        incasso.setImporto(importo);
+        incasso.setDocumenti(incasso.getVersamenti().size());
+        incasso.setErrati(0);
+        incasso.setEsatti(incasso.getDocumenti());
+        incasso.setImportoErrati(BigDecimal.ZERO);
+        incasso.setImportoEsatti(incasso.getImporto());
+    }
+    
     public static void calcoloCostoAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;
         Mese inizio = abbonamento.getInizio();
@@ -1036,19 +1049,13 @@ public class SmdApplication {
             Incasso incasso5 = new Incasso();
             incasso5.setCassa(Cassa.Contrassegno);
             incasso5.setCcp(Ccp.DUE);
-            incasso5.setDocumenti(1);
-            incasso5.setErrati(0);
-            incasso5.setEsatti(1);
-            incasso5.setDefaultDataContabile(new Date());
-            incasso5.setImportoErrati(BigDecimal.ZERO);
-            incasso5.setImportoEsatti(abbonamentoDp.getTotale());
-            incasso5.setImporto(abbonamentoDp.getTotale());
             
             Versamento versamentoIncasso5 = new Versamento(incasso5,abbonamentoDp.getTotale());
             versamentoIncasso5.setCampo(abbonamentoDp.getCampo());
             versamentoIncasso5.setDefaultDataPagamento(incasso5.getDataContabile());
             versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
             incasso5.addVersamento(versamentoIncasso5);
+            calcoloImportoIncasso(incasso5);
             incassoDao.save(incasso5);
 
             log.info("Abbonamento Palma prima di essere incassato");
