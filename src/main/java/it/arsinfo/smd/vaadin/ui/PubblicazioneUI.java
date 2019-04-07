@@ -1,7 +1,6 @@
 package it.arsinfo.smd.vaadin.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -26,7 +25,6 @@ public class PubblicazioneUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Pubblicazioni");
-        Assert.notNull(repo, "repo must be not null");
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
         PubblicazioneSearch search = new PubblicazioneSearch(repo);
         PubblicazioneGrid grid = new PubblicazioneGrid("");

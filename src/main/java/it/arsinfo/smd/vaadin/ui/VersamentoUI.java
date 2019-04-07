@@ -1,7 +1,6 @@
 package it.arsinfo.smd.vaadin.ui;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -26,7 +25,6 @@ public class VersamentoUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
-        Assert.notNull(versamentoDao, "versamentoDao must be not null");
         
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("");

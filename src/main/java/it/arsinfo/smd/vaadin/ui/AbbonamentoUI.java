@@ -3,7 +3,6 @@ package it.arsinfo.smd.vaadin.ui;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -52,15 +51,16 @@ public class AbbonamentoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Abbonamento");
 
-        Assert.notNull(abbonamentoDao, "abbonamentoDao must be not null");
-        Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
-        Assert.notNull(spedizioneDao, "spedizioneDao must be not null");
         
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         List<Campagna> campagne = campagnaDao.findAll();
-        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento", anagrafica.iterator().next());
+        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
+        if (anagrafica.size() == 0) {
+            add.setVisible(false);
+        } else {
+            add.setPrimoIntestatario(anagrafica.iterator().next());
+        }
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("");
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {

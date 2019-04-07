@@ -6,16 +6,23 @@ import it.arsinfo.smd.vaadin.model.SmdAdd;
 
 public class AbbonamentoAdd extends SmdAdd<Abbonamento> {
 
-    private final Anagrafica primoIntestatario;
+    private Anagrafica primoIntestatario;
     
-    public AbbonamentoAdd(String caption, Anagrafica primoIntestatario) {
+    public AbbonamentoAdd(String caption) {
         super(caption);
-        this.primoIntestatario=primoIntestatario;
     }
     
     @Override
     public Abbonamento generate() {
         return new Abbonamento(primoIntestatario);
+    }
+
+    public Anagrafica getPrimoIntestatario() {
+        return primoIntestatario;
+    }
+
+    public void setPrimoIntestatario(Anagrafica primoIntestatario) {
+        this.primoIntestatario = primoIntestatario;
     }
 
 }

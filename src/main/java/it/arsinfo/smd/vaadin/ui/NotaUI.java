@@ -3,7 +3,6 @@ package it.arsinfo.smd.vaadin.ui;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -33,9 +32,6 @@ public class NotaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Note");
-        Assert.notNull(notaDao, "notaDao must be not null");
-        Assert.notNull(storicoDao, "storicoDao must be not null");
-
         List<Storico> storici = storicoDao.findAll();
         NotaSearch search = new NotaSearch(notaDao, storici);
         NotaAdd add = new NotaAdd("Aggiungi Nota");

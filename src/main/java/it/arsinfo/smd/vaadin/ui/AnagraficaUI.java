@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
@@ -18,8 +17,8 @@ import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.NotaDao;
-import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
@@ -47,11 +46,6 @@ public class AnagraficaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Anagrafica");
-        Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
-        Assert.notNull(storicoDao,"storicoDao must be not null");
-        Assert.notNull(notaDao,"notaDao must be not null");
-        Assert.notNull(abbonamentoDao,"abbonamentoDao must be not null");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao,storicoDao);
         AnagraficaGrid grid = new AnagraficaGrid("");

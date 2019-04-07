@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
@@ -51,9 +50,6 @@ public class CampagnaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
-        Assert.notNull(campagnaDao, "campagnaDao must be not null");
-        Assert.notNull(campagnaItemDao, "campagnaItemDao must be not null");
-        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
         CampagnaItemEditor campagnaItemEditor = 
                 new CampagnaItemEditor(
                    pubblicazioneDao.findAll()
