@@ -90,6 +90,8 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
     @Override
     public void focus(boolean persisted, Versamento versamento) {
+
+        getDelete().setEnabled(!persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
 

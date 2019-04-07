@@ -68,11 +68,11 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         fine.setItemCaptionGenerator(Mese::getNomeBreve);
         fine.setEmptySelectionAllowed(false);
 
+        campagna.setReadOnly(true);
         costo.setReadOnly(true);
         campo.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
-
 
         getBinder().forField(intestatario)
             .asRequired()
@@ -112,7 +112,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        campagna.setReadOnly(true);
         incassato.setVisible(persisted);
         cassa.setReadOnly(persisted);
 

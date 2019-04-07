@@ -100,8 +100,8 @@ public class IncassoUI extends SmdUI {
                          upload, 
                          search,
                          incassa,
-                         versAdd,
                          editor,
+                         versAdd,
                          versEditor,
                          abbonamentiAssociatiGrid,
                          abbonamentiAssociabiliGrid,
@@ -225,12 +225,12 @@ public class IncassoUI extends SmdUI {
  
         versEditor.setChangeHandler(() -> {
             setHeader("Incasso:Nuovo");
+            versAdd.setVisible(true);
+            versGrid.populate(editor.get().getVersamenti());
             versEditor.setVisible(false);
             abbonamentiAssociatiGrid.setVisible(false);
             abbonamentiAssociabiliGrid.setVisible(false);
-            versAdd.setVisible(true);
             editor.edit(versEditor.get().getIncasso());
-            versGrid.populate(editor.get().getVersamenti());
         });
 
         versGrid.setChangeHandler(() -> {
@@ -239,11 +239,15 @@ public class IncassoUI extends SmdUI {
                 abbonamentiAssociabiliGrid.setVisible(false);
                 abbonamentiAssociatiGrid.setVisible(false);
                 versEditor.setVisible(false);
-            } else {
+            } else if (versGrid.getSelected().getId() != null ){
                 versEditor.edit(versGrid.getSelected());
                 abbonamentiAssociatiGrid.populate(getAssociati(versGrid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(getAssociabili(versGrid.getSelected()));
                 editor.setVisible(false);
+            } else {
+                editor.setVisible(false);
+                versAdd.setVisible(false);
+                versEditor.edit(versGrid.getSelected());
             }
         });
         
