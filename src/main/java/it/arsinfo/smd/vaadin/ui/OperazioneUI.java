@@ -9,14 +9,14 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.repository.ProspettoDao;
+import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdButton;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_PROSPETTI)
-@Title("Prospetti ADP")
-public class ProspettiUI extends SmdUI {
+@SpringUI(path = SmdUIHelper.URL_OPERAZIONI)
+@Title("Operazioni ADP")
+public class OperazioneUI extends SmdUI {
 
     /**
      * 
@@ -24,14 +24,14 @@ public class ProspettiUI extends SmdUI {
     private static final long serialVersionUID = -4970387092690412856L;
 
     @Autowired
-    ProspettoDao prospettoDao;
+    OperazioneDao operazioneDao;
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Prospetti");
+        super.init(request,"Operazioni");
         
         SmdButton insolventi = new SmdButton("Insolventi", VaadinIcons.ENVELOPES);
-        ProspettoGrid grid = new ProspettoGrid("Statistiche");
+        OperazioneGrid grid = new OperazioneGrid("Operazioni");
         
         addSmdComponents(insolventi,grid);
         
@@ -45,7 +45,7 @@ public class ProspettiUI extends SmdUI {
         });
 
         grid.addComponentColumn(prospetto -> {
-            Button button = new Button("Spedizioni",VaadinIcons.ENVELOPES);
+            Button button = new Button("Spedizioniere",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
                 Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE);
             });
@@ -53,14 +53,14 @@ public class ProspettiUI extends SmdUI {
         });
         
         grid.addComponentColumn(prospetto -> {
-            Button button = new Button("Spedizioni Sede",VaadinIcons.ENVELOPES);
+            Button button = new Button("Adp Sede",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
                 Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE);
             });
             return button;
         });
         
-        grid.populate(prospettoDao.findAll());
+        grid.populate(operazioneDao.findAll());
 
      }
 

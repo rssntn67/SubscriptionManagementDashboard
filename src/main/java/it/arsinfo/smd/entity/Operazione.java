@@ -11,17 +11,13 @@ import javax.persistence.ManyToOne;
 import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
 
 @Entity
-public class Prospetto implements SmdEntity {
+public class Operazione implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
-    @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.No;
 
     @ManyToOne
     private Pubblicazione pubblicazione;
@@ -32,36 +28,26 @@ public class Prospetto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = SmdApplication.getMeseCorrente();
 
+    private Integer definitivo = 0;
+
     private Integer stimato = 0;
 
-    public Prospetto() {
+    public Operazione() {
     }
+
+
+    public Operazione(Pubblicazione pubblicazione, Anno anno, Mese mese) {
+        super();
+        this.pubblicazione = pubblicazione;
+        this.anno = anno;
+        this.mese = mese;
+    }
+
 
     public Long getId() {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return String.format("ProspettoItem[id=%d, Prospetto=%d, Omaggio=%s, Anno=%s, Mese=%s, Stimati=%d]", 
-                             id,omaggio, anno,mese,stimato);
-    }
-
-    public Omaggio getOmaggio() {
-        return omaggio;
-    }
-
-    public void setOmaggio(Omaggio omaggio) {
-        this.omaggio = omaggio;
-    }
-
-    public Integer getStimato() {
-        return stimato;
-    }
-
-    public void setStimato(Integer stimato) {
-        this.stimato = stimato;
-    }
 
     public Pubblicazione getPubblicazione() {
         return pubblicazione;
@@ -69,6 +55,12 @@ public class Prospetto implements SmdEntity {
 
     public void setPubblicazione(Pubblicazione pubblicazione) {
         this.pubblicazione = pubblicazione;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Prospetto[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d, Anno=%s, Mese=%s]", 
+                             id,pubblicazione.getId(),stimato,definitivo,anno,mese);
     }
 
     public Anno getAnno() {
@@ -85,5 +77,21 @@ public class Prospetto implements SmdEntity {
 
     public void setMese(Mese mese) {
         this.mese = mese;
+    }
+
+    public Integer getDefinitivo() {
+        return definitivo;
+    }
+
+    public void setDefinitivo(Integer definitivo) {
+        this.definitivo = definitivo;
+    }
+
+    public Integer getStimato() {
+        return stimato;
+    }
+
+    public void setStimato(Integer stimato) {
+        this.stimato = stimato;
     }
 }

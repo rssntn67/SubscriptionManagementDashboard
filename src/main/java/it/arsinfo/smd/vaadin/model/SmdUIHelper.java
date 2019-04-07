@@ -13,6 +13,7 @@ public class SmdUIHelper  {
 	public final static String URL_CAMPAGNA="campagna";
 	public final static String URL_INCASSI="incassi";
         public final static String URL_VERSAMENTI="versamenti";
+        public final static String URL_OPERAZIONI="operazioni";
 	public final static String URL_PROSPETTI="prospetti";
 	public final static String URL_NOTE="note";
 
@@ -25,7 +26,8 @@ public class SmdUIHelper  {
                     new Link("Note", new ExternalResource(URL_NOTE)),
                     new Link("Incassi", new ExternalResource(URL_INCASSI)),
                     new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)),
-                    new Link("Prospetti", new ExternalResource(URL_PROSPETTI))
+                    new Link("Prospetti", new ExternalResource(URL_PROSPETTI)),
+                    new Link("Operazioni", new ExternalResource(URL_OPERAZIONI))
 	    };
 	    return links;
 	}

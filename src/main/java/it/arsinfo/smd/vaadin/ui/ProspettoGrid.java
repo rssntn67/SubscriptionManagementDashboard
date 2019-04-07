@@ -9,7 +9,7 @@ public class ProspettoGrid extends SmdGrid<Prospetto> {
 
     public ProspettoGrid(String gridName) {
         super(new Grid<>(Prospetto.class), gridName);
-        setColumns("pubblicazione.caption", "anno","mese", "stimato","definitivo");
+        setColumns("pubblicazione.caption", "anno","mese", "omaggio","stimato");
     }
 
 }
