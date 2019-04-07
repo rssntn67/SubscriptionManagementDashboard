@@ -13,7 +13,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
@@ -88,12 +88,12 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
 
         if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(campo)) {
             return ((VersamentoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile));
+                    .findByDataContabile(Smd.getStandardDate(dataContabile));
         }
 
         if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(campo)) {
             return ((VersamentoDao) getRepo())
-                    .findByDataPagamento(SmdApplication.getStandardDate(dataPagamento));
+                    .findByDataPagamento(Smd.getStandardDate(dataPagamento));
         }
 
         if (dataContabile == null && dataPagamento == null) {
@@ -109,7 +109,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
             return ((VersamentoDao) getRepo())
                     .findByImporto(new BigDecimal(importo))
                     .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime())
+                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         }
 
@@ -117,7 +117,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
             return ((VersamentoDao) getRepo())
                     .findByImporto(new BigDecimal(importo))
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         }
 
@@ -125,7 +125,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
             return ((VersamentoDao) getRepo())
                     .findByCampoContainingIgnoreCase(campo)
                     .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime())
+                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         }
 
@@ -133,15 +133,15 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
             return ((VersamentoDao) getRepo())
                     .findByCampoContainingIgnoreCase(campo)
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         }
 
         if (StringUtils.isEmpty(campo) && StringUtils.isEmpty(importo)) {
             return ((VersamentoDao) getRepo())
-                    .findByDataPagamento(SmdApplication.getStandardDate(dataPagamento))
+                    .findByDataPagamento(Smd.getStandardDate(dataPagamento))
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         }
 
@@ -150,8 +150,8 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                     )
                     .collect(Collectors.toList());
         }
@@ -161,8 +161,8 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                     .findByCampoContainingIgnoreCase(campo)
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                     )
                     .collect(Collectors.toList());
         }
@@ -172,7 +172,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                     .findByCampoContainingIgnoreCase(campo)
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
+                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0
                     )
                     .collect(Collectors.toList());
@@ -183,7 +183,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                     .findByCampoContainingIgnoreCase(campo)
                     .stream()
                     .filter(v -> 
-                       v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                       v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0
                     )
                     .collect(Collectors.toList());
@@ -193,8 +193,8 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                 .findByCampoContainingIgnoreCase(campo)
                 .stream()
                 .filter(v -> 
-                   v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
-                && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                   v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
+                && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                 && v.getImporto().compareTo(new BigDecimal(importo)) == 0
                 )
                 .collect(Collectors.toList());

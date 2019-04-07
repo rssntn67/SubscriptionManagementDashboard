@@ -14,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
@@ -26,7 +26,7 @@ public class Campagna implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Anno anno = SmdApplication.getAnnoProssimo();
+    private Anno anno = Smd.getAnnoProssimo();
     @Enumerated(EnumType.STRING)
     private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)

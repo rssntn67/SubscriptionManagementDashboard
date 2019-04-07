@@ -16,7 +16,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Sostitutivo;
@@ -40,7 +40,7 @@ public class Versamento implements SmdEntity {
     private String progressivo="9999999";
         
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataPagamento = SmdApplication.getStandardDate(new Date());
+    private Date dataPagamento = Smd.getStandardDate(new Date());
     
     @Enumerated(EnumType.STRING)
     private Bollettino bollettino;
@@ -164,7 +164,7 @@ public class Versamento implements SmdEntity {
     }    
     @Transient
     public boolean isCampovalido() {
-        return SmdApplication.checkCampo(campo);
+        return Smd.checkCampo(campo);
     }
     public String getProgressivo() {
         return progressivo;
@@ -204,6 +204,6 @@ public class Versamento implements SmdEntity {
     }
 
     public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = SmdApplication.getStandardDate(dataPagamento);
+        this.dataPagamento = Smd.getStandardDate(dataPagamento);
     }
 }

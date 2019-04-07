@@ -15,7 +15,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
@@ -59,7 +59,7 @@ public class IncassoUI extends SmdUI {
                     Notification.show("Aggiungere Versamenti Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getDataContabile().after(SmdApplication.getStandardDate(new Date()))) {
+                if (get().getId() == null && get().getDataContabile().after(Smd.getStandardDate(new Date()))) {
                     Notification.show("Non si può selezionare una data contabile futuro", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
@@ -81,14 +81,14 @@ public class IncassoUI extends SmdUI {
                     return;
                 }
                 editor.get().addVersamento(get());
-                SmdApplication.calcoloImportoIncasso(editor.get());
+                Smd.calcoloImportoIncasso(editor.get());
                 onChange();
             }
             
             @Override
             public void delete() {
                 editor.get().deleteVersamento(get());
-                SmdApplication.calcoloImportoIncasso(editor.get());
+                Smd.calcoloImportoIncasso(editor.get());
                 onChange();
             }
         };
@@ -291,7 +291,7 @@ public class IncassoUI extends SmdUI {
     
     private void dissocia(Incasso incasso,Abbonamento abbonamento, Versamento versamento) {
         try {
-            versamentoDao.save(SmdApplication.dissocia(incasso, versamento, abbonamento));
+            versamentoDao.save(Smd.dissocia(incasso, versamento, abbonamento));
             incassoDao.save(incasso);
             abbonamentoDao.save(abbonamento);
         } catch (UnsupportedOperationException e) {
@@ -302,7 +302,7 @@ public class IncassoUI extends SmdUI {
 
     private void incassa(Incasso incasso,Abbonamento abbonamento, Versamento versamento) {
         try {
-            versamentoDao.save(SmdApplication.incassa(incasso,versamento, abbonamento));
+            versamentoDao.save(Smd.incassa(incasso,versamento, abbonamento));
             incassoDao.save(incasso);
             abbonamentoDao.save(abbonamento);
         } catch (UnsupportedOperationException e) {

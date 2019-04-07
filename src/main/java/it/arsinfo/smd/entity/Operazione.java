@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
@@ -23,10 +23,10 @@ public class Operazione implements SmdEntity {
     private Pubblicazione pubblicazione;
     
     @Enumerated(EnumType.STRING)
-    private Anno anno = SmdApplication.getAnnoCorrente();
+    private Anno anno = Smd.getAnnoCorrente();
 
     @Enumerated(EnumType.STRING)
-    private Mese mese = SmdApplication.getMeseCorrente();
+    private Mese mese = Smd.getMeseCorrente();
 
     private Integer definitivo = 0;
 

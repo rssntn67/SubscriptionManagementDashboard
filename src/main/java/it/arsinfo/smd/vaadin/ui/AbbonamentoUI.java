@@ -10,7 +10,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -78,7 +78,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() < SmdApplication.getAnnoCorrente().getAnno()) {
+                if (get().getId() == null && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -86,7 +86,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() == SmdApplication.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < SmdApplication.getMeseCorrente().getPosizione()) {
+                if (get().getId() == null && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -95,11 +95,11 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null) {
-                    get().setCampo(SmdApplication.generateCampo(get().getAnno(),
+                    get().setCampo(Smd.generateCampo(get().getAnno(),
                                              get().getInizio(),
                                              get().getFine()));
                 }
-                get().setCampo(SmdApplication.generateCampo(get().getAnno(), 
+                get().setCampo(Smd.generateCampo(get().getAnno(), 
                                                             get().getInizio(), 
                                                             get().getFine()));
                 super.save();
@@ -120,14 +120,14 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 editor.get().addSpedizione(get());
-                SmdApplication.calcoloCostoAbbonamento(editor.get());
+                Smd.calcoloCostoAbbonamento(editor.get());
                 onChange();
             };
             
             @Override 
             public void delete() {
                 editor.get().deleteSpedizione(get());
-                SmdApplication.calcoloCostoAbbonamento(editor.get());
+                Smd.calcoloCostoAbbonamento(editor.get());
                 onChange();
             };
         };
@@ -190,7 +190,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader("Abbonamento:Nuovo");
             spedizioneAdd.setVisible(editor.get().getId() == null);
             spedizioneEditor.setVisible(false);
-            SmdApplication.calcoloCostoAbbonamento(editor.get());
+            Smd.calcoloCostoAbbonamento(editor.get());
             editor.edit(spedizioneEditor.get().getAbbonamento());
             spedizioneGrid.populate(editor.get().getSpedizioni());
         });

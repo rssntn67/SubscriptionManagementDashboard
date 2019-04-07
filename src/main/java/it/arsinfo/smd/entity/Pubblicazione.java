@@ -11,7 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -39,7 +39,7 @@ public class Pubblicazione implements SmdEntity {
     private BigDecimal costoScontato=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private Anno anno=SmdApplication.getAnnoCorrente();
+    private Anno anno=Smd.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
     private TipoPubblicazione tipo=TipoPubblicazione.UNICO;
 

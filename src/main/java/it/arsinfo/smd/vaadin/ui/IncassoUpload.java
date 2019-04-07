@@ -26,7 +26,7 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.vaadin.model.SmdChangeHandler;
 
@@ -79,10 +79,10 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         try {
             Set<String> versamenti = new HashSet<>();
             while ((strLine = br.readLine()) != null)   {
-                if (SmdApplication.isVersamento(strLine)) {
+                if (Smd.isVersamento(strLine)) {
                     versamenti.add(strLine);
-                } else if (SmdApplication.isRiepilogo(strLine)) {
-                    incassi.add(SmdApplication.generateIncasso(versamenti, strLine));
+                } else if (Smd.isRiepilogo(strLine)) {
+                    incassi.add(Smd.generateIncasso(versamenti, strLine));
                     versamenti.clear();
                 } else {
                     avviso.setValue("Incasso Cancellato: Valore non riconosciuto->" + strLine);

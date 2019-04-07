@@ -18,7 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -34,9 +34,9 @@ public class Abbonamento implements SmdEntity {
     @ManyToOne
     private Anagrafica intestatario;
     @Enumerated(EnumType.STRING)
-    private Anno anno = SmdApplication.getAnnoCorrente();
+    private Anno anno = Smd.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
-    private Mese inizio = SmdApplication.getMeseCorrente();
+    private Mese inizio = Smd.getMeseCorrente();
     @Enumerated(EnumType.STRING)
     private Mese fine = Mese.DICEMBRE;
 

@@ -11,7 +11,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
@@ -137,7 +137,7 @@ public class AnagraficaUI extends SmdUI {
             setHeader(storicoGrid.getSelected().getHeader());
             storicoEditor.edit(storicoGrid.getSelected());
             storicoEditor.setPagamentoRegolare(
-                       SmdApplication.pagamentoRegolare(
+                       Smd.pagamentoRegolare(
                                storicoGrid.getSelected(),
                                abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
             notaGrid.populate(notaDao.findByStorico(storicoGrid.getSelected()));

@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -86,7 +86,7 @@ public class IncassoSearch extends SmdSearch<Incasso> {
         }
         if (cuas == null && cassa == null && ccp == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile));
+                    .findByDataContabile(Smd.getStandardDate(dataContabile));
         }
         
         if (dataContabile == null && ccp == null) {
@@ -110,49 +110,49 @@ public class IncassoSearch extends SmdSearch<Incasso> {
             
         if (cassa == null && ccp == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas)
                     .collect(Collectors.toList());
         }
         if (cuas == null && ccp == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCassa() == cassa)
                     .collect(Collectors.toList());
         }
         if (cassa == null && cuas == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (cassa == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas && inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (cuas == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCassa() == cassa && inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (ccp == null) {
             return ((IncassoDao) getRepo())
-                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                    .findByDataContabile(Smd.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas && inc.getCassa() == cassa)
                     .collect(Collectors.toList());
         }
 
         return ((IncassoDao) getRepo())
-                .findByDataContabile(SmdApplication.getStandardDate(dataContabile))
+                .findByDataContabile(Smd.getStandardDate(dataContabile))
                 .stream()
                 .filter(inc -> inc.getCassa() == cassa && inc.getCuas() == cuas && inc.getCcp() == ccp)            
                 .collect(Collectors.toList());

@@ -17,7 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -40,7 +40,7 @@ public class Incasso implements SmdEntity {
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile = SmdApplication.getStandardDate(new Date());
+    private Date dataContabile = Smd.getStandardDate(new Date());
     
     private int documenti=0;
     private BigDecimal importo=BigDecimal.ZERO;
@@ -170,7 +170,7 @@ public class Incasso implements SmdEntity {
     }
 
     public void setDataContabile(Date datacontabile) {
-        this.dataContabile = SmdApplication.getStandardDate(datacontabile);
+        this.dataContabile = Smd.getStandardDate(datacontabile);
     }
     @Transient
     public String getHeader() {

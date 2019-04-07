@@ -13,7 +13,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -67,12 +67,12 @@ public class CampagnaUI extends SmdUI {
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {
-                if (get().getAnno() == SmdApplication.getAnnoCorrente()) {
+                if (get().getAnno() == Smd.getAnnoCorrente()) {
                     Notification.show("Non è possibile cancellare campagna dell'anno corrente", Notification.Type.ERROR_MESSAGE);
                     return;
                     
                 }
-                if (get().getAnno() == SmdApplication.getAnnoPassato()) {
+                if (get().getAnno() == Smd.getAnnoPassato()) {
                     Notification.show("Non è possibile cancellare campagna dell'anno passato", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -97,7 +97,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("E' stata già generata la Campagna per Anno "+ get().getAnno() + ". Solo una Campagna per Anno", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() < SmdApplication.getAnnoCorrente().getAnno()) {
+                if (get().getId() == null && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -105,7 +105,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Anno corrente: il Mese Inizio deve essere successivo al Mese Fine", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() == SmdApplication.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < SmdApplication.getMeseCorrente().getPosizione()) {
+                if (get().getId() == null && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il Mese corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -114,7 +114,7 @@ public class CampagnaUI extends SmdUI {
                     return;
                 }
                 campagnaItemEditor.getSelected().forEach(p -> get().addCampagnaItem(new CampagnaItem(get(), p)));
-                SmdApplication.generaCampagna(get(), storicoDao.findAll(),abbonamentoDao.findAll());
+                Smd.generaCampagna(get(), storicoDao.findAll(),abbonamentoDao.findAll());
                 super.save();
             }
             
