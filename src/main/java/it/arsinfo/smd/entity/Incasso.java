@@ -82,9 +82,6 @@ public class Incasso implements SmdEntity {
     public Date getDataContabile() {
         return dataContabile;
     }
-    public void setDataContabile(Date dataContabile) {
-        this.dataContabile = dataContabile;
-    }
     public int getDocumenti() {
         return documenti;
     }
@@ -172,8 +169,7 @@ public class Incasso implements SmdEntity {
         return importo.subtract(incassato);
     }
 
-    @Transient
-    public void setDefaultDataContabile(Date datacontabile) {
+    public void setDataContabile(Date datacontabile) {
         this.dataContabile = SmdApplication.getStandardDate(datacontabile);
     }
     @Transient

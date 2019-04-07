@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,11 +65,15 @@ public class SmdApplication {
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
     
+    public static Date getStandardDate(LocalDate localDate) {
+        return SmdApplication.getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
+    }
+
     public static Date getStandardDate(Date date) {
         return getStandardDate(unformatter.format(date));
     }
     
-    public static Date getStandardDate(String yyMMdd) {
+    private static Date getStandardDate(String yyMMdd) {
         try {
             return formatter.parse(yyMMdd+"8");
         } catch (ParseException e) {
@@ -1052,7 +1058,7 @@ public class SmdApplication {
             
             Versamento versamentoIncasso5 = new Versamento(incasso5,abbonamentoDp.getTotale());
             versamentoIncasso5.setCampo(abbonamentoDp.getCampo());
-            versamentoIncasso5.setDefaultDataPagamento(incasso5.getDataContabile());
+            versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
             versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
             incasso5.addVersamento(versamentoIncasso5);
             calcoloImportoIncasso(incasso5);
@@ -1138,8 +1144,6 @@ public class SmdApplication {
                 prospettoDao.save(p);
                 log.info(p.toString());
             });
-
-            log.info(getStandardDate(new Date()).toString());
 
         };
     }

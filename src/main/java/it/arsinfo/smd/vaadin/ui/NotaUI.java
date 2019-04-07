@@ -16,7 +16,7 @@ import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
 @SpringUI(path = SmdUIHelper.URL_NOTE)
-@Title("Note Anagrafica ADP")
+@Title("Note Storico ADP")
 public class NotaUI extends SmdUI {
 
     /**

@@ -2,7 +2,6 @@ package it.arsinfo.smd.vaadin.ui;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,12 +13,14 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.SmdApplication;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
 
 public class VersamentoSearch extends SmdSearch<Versamento> {
 
+    String campo;
     String importo;
     LocalDate dataContabile;
     LocalDate dataPagamento;
@@ -35,7 +36,10 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
         TextField filterImporto = new TextField("Inserire Importo");
         filterImporto.setValueChangeMode(ValueChangeMode.LAZY);
 
-        setComponents(new HorizontalLayout(filterImporto, filterDataPagamento,
+        TextField filterCampo = new TextField("Inserire V Campo ");
+        filterCampo.setValueChangeMode(ValueChangeMode.LAZY);
+        
+        setComponents(new HorizontalLayout(filterCampo, filterImporto, filterDataPagamento,
                                            filterDataContabile));
 
         filterDataContabile.addValueChangeListener(e -> {
@@ -46,56 +50,155 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
             dataPagamento = e.getValue();
             onChange();
         });
-        filterImporto.setValueChangeMode(ValueChangeMode.LAZY);
         filterImporto.addValueChangeListener(e -> {
             importo = e.getValue();
             onChange();
         });
+        filterCampo.addValueChangeListener(e -> {
+            campo = e.getValue();
+            onChange();
+        });
+
 
     }
 
     @Override
     public List<Versamento> find() {
         if (StringUtils.isEmpty(importo) && dataContabile == null
-                && dataPagamento == null) {
+                && dataPagamento == null && StringUtils.isEmpty(campo)) {
             return findAll();
         }
+        if (!StringUtils.isEmpty(importo)) {
+            try {
+                new BigDecimal(importo);
+            } catch (NumberFormatException e) {
+                return new ArrayList<>();
+            }
+        }
+         
+        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(campo)) {
+                return ((VersamentoDao) getRepo())
+                    .findByImporto(new BigDecimal(importo));
+        }
+
+        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(importo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo);
+        }
+
+        if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(campo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByDataContabile(SmdApplication.getStandardDate(dataContabile));
+        }
+
+        if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(campo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByDataPagamento(SmdApplication.getStandardDate(dataPagamento));
+        }
+
         if (dataContabile == null && dataPagamento == null) {
-            try {
-                return ((VersamentoDao) getRepo()).findByImporto(new BigDecimal(importo));
-            } catch (NumberFormatException e) {
-                return new ArrayList<>();
-            }
-        }
-        if (StringUtils.isEmpty(importo) && dataPagamento == null) {
-            return ((VersamentoDao) getRepo()).findByDataContabile(java.util.Date.from(dataContabile.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v-> v.getImporto().compareTo(new BigDecimal(importo)) == 0)
+                    .collect(Collectors.toList());
         }
 
-        if (StringUtils.isEmpty(importo) && dataContabile == null) {
-            return ((VersamentoDao) getRepo()).findByDataPagamento(java.util.Date.from(dataPagamento.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+
+        if (dataContabile == null && StringUtils.isEmpty(campo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByImporto(new BigDecimal(importo))
+                    .stream()
+                    .filter(v -> v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime())
+                    .collect(Collectors.toList());
         }
 
-        if (dataContabile == null) {
-            try {
-                return ((VersamentoDao) getRepo()).findByImporto(new BigDecimal(importo)).stream().filter(v -> v.getDataPagamento().getTime() == java.util.Date.from(dataPagamento.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime()).collect(Collectors.toList());
-            } catch (NumberFormatException e) {
-                return new ArrayList<>();
-            }
+        if (dataPagamento == null && StringUtils.isEmpty(campo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByImporto(new BigDecimal(importo))
+                    .stream()
+                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .collect(Collectors.toList());
+        }
+
+        if (dataContabile == null && StringUtils.isEmpty(importo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v -> v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime())
+                    .collect(Collectors.toList());
+        }
+
+        if (dataPagamento == null && StringUtils.isEmpty(importo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .collect(Collectors.toList());
+        }
+
+        if (StringUtils.isEmpty(campo) && StringUtils.isEmpty(importo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByDataPagamento(SmdApplication.getStandardDate(dataPagamento))
+                    .stream()
+                    .filter(v -> v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime())
+                    .collect(Collectors.toList());
+        }
+
+        if (StringUtils.isEmpty(campo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByImporto(new BigDecimal(importo))
+                    .stream()
+                    .filter(v -> 
+                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                    )
+                    .collect(Collectors.toList());
+        }
+
+        if (StringUtils.isEmpty(importo)) {
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v -> 
+                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                    )
+                    .collect(Collectors.toList());
         }
 
         if (dataPagamento == null) {
-            try {
-                return ((VersamentoDao) getRepo()).findByImporto(new BigDecimal(importo)).stream().filter(v -> v.getDataContabile().getTime() == java.util.Date.from(dataContabile.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime()).collect(Collectors.toList());
-            } catch (NumberFormatException e) {
-                return new ArrayList<>();
-            }
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v -> 
+                       v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
+                    && v.getImporto().compareTo(new BigDecimal(importo)) == 0
+                    )
+                    .collect(Collectors.toList());
+            
         }
+        if (dataContabile == null) {
+            return ((VersamentoDao) getRepo())
+                    .findByCampoContainingIgnoreCase(campo)
+                    .stream()
+                    .filter(v -> 
+                       v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                    && v.getImporto().compareTo(new BigDecimal(importo)) == 0
+                    )
+                    .collect(Collectors.toList());
+            
+        }
+        return ((VersamentoDao) getRepo())
+                .findByCampoContainingIgnoreCase(campo)
+                .stream()
+                .filter(v -> 
+                   v.getDataContabile().getTime() == SmdApplication.getStandardDate(dataContabile).getTime()
+                && v.getDataPagamento().getTime() == SmdApplication.getStandardDate(dataPagamento).getTime()
+                && v.getImporto().compareTo(new BigDecimal(importo)) == 0
+                )
+                .collect(Collectors.toList());
 
-        try {
-            return ((VersamentoDao) getRepo()).findByImporto(new BigDecimal(importo)).stream().filter(v -> v.getDataContabile().getTime() == java.util.Date.from(dataContabile.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime()
-                    && v.getDataPagamento().getTime() == java.util.Date.from(dataPagamento.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime()).collect(Collectors.toList());
-        } catch (NumberFormatException e) {
-            return new ArrayList<>();
-        }
     }
+        
 }

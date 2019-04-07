@@ -108,9 +108,6 @@ public class Versamento implements SmdEntity {
     public Date getDataPagamento() {
         return dataPagamento;
     }
-    public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = dataPagamento;
-    }
     public Bollettino getBollettino() {
         return bollettino;
     }
@@ -206,8 +203,7 @@ public class Versamento implements SmdEntity {
         this.operazione = operazione;
     }
 
-    @Transient
-    public void setDefaultDataPagamento(Date dataPagamento) {
+    public void setDataPagamento(Date dataPagamento) {
         this.dataPagamento = SmdApplication.getStandardDate(dataPagamento);
     }
 }
