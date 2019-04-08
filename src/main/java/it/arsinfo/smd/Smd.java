@@ -32,6 +32,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
+import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
@@ -60,29 +61,91 @@ public class Smd {
         return null;
     };
 
-    public static List<Operazione> generaOperazioni(Pubblicazione pubblicazione, List<Abbonamento> abbonamenti, List<Spedizione> spedizioni, Anno anno) {
-        final List<Operazione> prospetti = new ArrayList<>();
-        pubblicazione.getMesiPubblicazione().stream().forEach(mese -> {
-            Operazione prospetto = new Operazione(pubblicazione, anno, mese);
-            Integer conta = 0;
-            for (Spedizione s: spedizioni) {
-                if (s.getPubblicazione().getId() != pubblicazione.getId()) {
-                    continue;
-                }
-                for (Abbonamento a: abbonamenti) {
-                    if (s.getAbbonamento().getId() == a.getId() 
-                            && a.getAnno() == anno 
-                            && a.getInizio().getPosizione() <= mese.getPosizione() 
-                            && a.getFine().getPosizione() >= mese.getPosizione() 
-                      ) {
-                            conta+=s.getNumero();
-                    }
+    public static List<Prospetto> generaProspetti(List<Pubblicazione> pubblicazione, List<Abbonamento> abbonamenti, List<Spedizione> spedizioni, Anno anno, Mese mese) {
+        return null;
+    }
+
+    public static List<Operazione> generaOperazioni(
+            List<Pubblicazione> pubblicazioni, 
+            List<Abbonamento> abbonamenti, 
+            List<Spedizione> spedizioni, 
+            Anno anno,
+            Set<Mese> mesi
+        ) {
+        List<Operazione> operazioni = new ArrayList<>();
+        pubblicazioni.stream().forEach(pubblicazione -> {
+            pubblicazione.getMesiPubblicazione()
+                .stream()
+                .filter(mese -> mesi.contains(mese))
+                .map(mese -> operazioni.add(generaOperazione(pubblicazione, abbonamenti, spedizioni, anno, mese))
+            );
+        });
+        return operazioni;
+    }
+
+    public static List<Operazione> generaOperazioni(
+            Pubblicazione pubblicazione, 
+            List<Abbonamento> abbonamenti, 
+            List<Spedizione> spedizioni, 
+            Anno anno, 
+            Set<Mese> mesi) {
+
+        return pubblicazione.getMesiPubblicazione()
+                .stream()
+                .filter(mese -> mesi.contains(mese))
+                .map(mese -> generaOperazione(pubblicazione, abbonamenti, spedizioni, anno, mese))
+                .collect(Collectors.toList());
+    }
+    
+    public static List<Operazione> generaOperazioni(
+            List<Pubblicazione> pubblicazioni, 
+            List<Abbonamento> abbonamenti, 
+            List<Spedizione> spedizioni, 
+            Anno anno) {
+        List<Operazione> operazioni = new ArrayList<>();
+        pubblicazioni.stream().forEach(pubblicazione -> {
+            pubblicazione.getMesiPubblicazione().stream().map(mese -> 
+            operazioni.add(generaOperazione(pubblicazione, abbonamenti, spedizioni, anno, mese)
+                ));
+        });
+        return operazioni;
+    }
+
+    public static List<Operazione> generaOperazioni(
+                    Pubblicazione pubblicazione, 
+                    List<Abbonamento> abbonamenti, 
+                    List<Spedizione> spedizioni, 
+                    Anno anno) {
+        return pubblicazione.getMesiPubblicazione().stream().map(mese -> 
+            generaOperazione(pubblicazione, abbonamenti, spedizioni, anno, mese)
+        ).collect(Collectors.toList());
+    }
+    
+    private static Operazione generaOperazione(
+            Pubblicazione pubblicazione, 
+            List<Abbonamento> abbonamenti, 
+            List<Spedizione> spedizioni, 
+            Anno anno, Mese mese) {
+        Operazione operazione = new Operazione(pubblicazione, anno, mese);
+        Integer conta = 0;
+        for (Spedizione s: spedizioni) {
+            if (s.getPubblicazione().getId() != pubblicazione.getId()) {
+                continue;
+            }
+            for (Abbonamento a: abbonamenti) {
+                if (s.getAbbonamento().getId() == a.getId() 
+                        && a.getAnno() == anno 
+                        && a.getInizio().getPosizione() <= mese.getPosizione() 
+                        && a.getFine().getPosizione() >= mese.getPosizione() 
+                  ) {
+                        conta+=s.getNumero();
                 }
             }
-            prospetto.setStimato(conta);
-            prospetti.add(prospetto);
-        });
-        return prospetti;
+        }
+        operazione.setStimato(conta);
+        return operazione;
+        
+        
     }
     
     public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
