@@ -95,13 +95,8 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null) {
-                    get().setCampo(Smd.generateCampo(get().getAnno(),
-                                             get().getInizio(),
-                                             get().getFine()));
+                    Smd.calcoloAbbonamento((get()));
                 }
-                get().setCampo(Smd.generateCampo(get().getAnno(), 
-                                                            get().getInizio(), 
-                                                            get().getFine()));
                 super.save();
             }
         };
@@ -120,14 +115,14 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 editor.get().addSpedizione(get());
-                Smd.calcoloCostoAbbonamento(editor.get());
+                Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
             
             @Override 
             public void delete() {
                 editor.get().deleteSpedizione(get());
-                Smd.calcoloCostoAbbonamento(editor.get());
+                Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
         };
@@ -190,7 +185,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader("Abbonamento:Nuovo");
             spedizioneAdd.setVisible(editor.get().getId() == null);
             spedizioneEditor.setVisible(false);
-            Smd.calcoloCostoAbbonamento(editor.get());
+            Smd.calcoloAbbonamento(editor.get());
             editor.edit(spedizioneEditor.get().getAbbonamento());
             spedizioneGrid.populate(editor.get().getSpedizioni());
         });

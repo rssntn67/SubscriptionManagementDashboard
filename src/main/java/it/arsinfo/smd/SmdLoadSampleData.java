@@ -25,7 +25,6 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -77,9 +76,7 @@ public class SmdLoadSampleData implements Runnable {
         this.prospettoDao=prospettoDao;
     }
     
-    @Override
-    public void run() {
-        log.info("Start Loading Sample Data");
+    public Pubblicazione getMessaggio() {
         Pubblicazione messaggio = new Pubblicazione("Messaggio",
                                                     TipoPubblicazione.MENSILE);
         messaggio.setActive(true);
@@ -88,8 +85,10 @@ public class SmdLoadSampleData implements Runnable {
         messaggio.setCostoScontato(new BigDecimal(1.25));
         messaggio.setEditore("ADP");
         messaggio.setMese(Mese.GENNAIO);
-        pubblicazioneDao.save(messaggio);
-
+        return messaggio;
+    }
+    
+    public Pubblicazione getLodare() {
         Pubblicazione lodare = new Pubblicazione("Lodare e Servire",
                                                  TipoPubblicazione.MENSILE);
         lodare.setActive(true);
@@ -98,8 +97,10 @@ public class SmdLoadSampleData implements Runnable {
         lodare.setCostoScontato(new BigDecimal(1.50));
         lodare.setEditore("ADP");
         lodare.setMese(Mese.GENNAIO);
-        pubblicazioneDao.save(lodare);
+        return lodare;
+    }
 
+    public Pubblicazione getBlocchetti() {
         Pubblicazione blocchetti = new Pubblicazione("Blocchetti",
                                                      TipoPubblicazione.SEMESTRALE);
         blocchetti.setActive(true);
@@ -108,9 +109,10 @@ public class SmdLoadSampleData implements Runnable {
         blocchetti.setCostoScontato(new BigDecimal(2.40));
         blocchetti.setEditore("ADP");
         blocchetti.setMese(Mese.MARZO);
-        pubblicazioneDao.save(blocchetti);
-
-
+        return blocchetti;
+    }
+    
+    public Pubblicazione getEstratti() {
         Pubblicazione estratti = new Pubblicazione("Estratti",
                                                    TipoPubblicazione.ANNUALE);
         estratti.setActive(true);
@@ -119,10 +121,10 @@ public class SmdLoadSampleData implements Runnable {
         estratti.setCostoScontato(new BigDecimal(10.00));
         estratti.setEditore("ADP");
         estratti.setMese(Mese.LUGLIO);
-        pubblicazioneDao.save(estratti);
-
-        // save a couple of customers
-
+        return estratti;
+    }
+    
+    public Anagrafica getAR() {
         Anagrafica ar = new Anagrafica("Antonio", "Russo");
         ar.setDiocesi(Diocesi.DIOCESI116);
         ar.setIndirizzo("Piazza Duomo 1");
@@ -132,24 +134,10 @@ public class SmdLoadSampleData implements Runnable {
         ar.setTelefono("+3902000009");
         ar.setTitolo(TitoloAnagrafica.Vescovo);
         ar.setRegioneVescovi(Regione.LOMBARDIA);
-        anagraficaDao.save(ar);
-        
-        Storico arlodare = new Storico(ar, lodare, 1);
-        arlodare.setOmaggio(Omaggio.CuriaDiocesiana);
-        storicoDao.save(arlodare);
-        
-        Storico armessaggio = new Storico(ar, messaggio, 1);
-        armessaggio.setOmaggio(Omaggio.CuriaDiocesiana);
-        storicoDao.save(armessaggio);
-
-        Storico arblocchetti = new Storico(ar, blocchetti, 1);
-        arblocchetti.setOmaggio(Omaggio.CuriaDiocesiana);
-        storicoDao.save(arblocchetti);
-
-        Storico arestratti = new Storico(ar, estratti, 1);
-        arestratti.setOmaggio(Omaggio.CuriaDiocesiana);
-        storicoDao.save(arestratti);
-
+        return ar;
+    }
+    
+    public Anagrafica getGP() {
         Anagrafica gp = new Anagrafica("Gabriele", "Pizzo");
         gp.setDiocesi(Diocesi.DIOCESI116);
         gp.setIndirizzo("Piazza Sant'Ambrogio 1");
@@ -157,33 +145,25 @@ public class SmdLoadSampleData implements Runnable {
         gp.setCap("20110");
         gp.setEmail("gp@arsinfo.it");
         gp.setTelefono("+3902000010");
-        anagraficaDao.save(gp);
-
-        Storico gpblocchetti = new Storico(gp, blocchetti, 10);
-        gpblocchetti.setOmaggio(Omaggio.ConSconto);
-        gpblocchetti.setCassa(Cassa.Contrassegno);
-        storicoDao.save(gpblocchetti);
-        
-        Storico gpmessaggio = new Storico(gp, messaggio, 1);
-        gpmessaggio.setCassa(Cassa.Contrassegno);
-        storicoDao.save(gpmessaggio);
-
+        return gp;
+    }
+    
+    public Anagrafica getMP() {
         Anagrafica mp = new Anagrafica("Matteo", "Paro");
         mp.setDiocesi(Diocesi.DIOCESI168);
+        mp.setTitolo(TitoloAnagrafica.Religioso);
         mp.setIndirizzo("Piazza del Gesu' 1");
         mp.setCitta("Roma");
         mp.setCap("00192");
         mp.setEmail("mp@arsinfo.it");
         mp.setTelefono("+3906000020");
-        anagraficaDao.save(mp);
-        
-        Storico mpmessaggio = new Storico(mp, messaggio, 10);
-        mpmessaggio.setOmaggio(Omaggio.Gesuiti);
-        mpmessaggio.setInvio(Invio.AdpSede);
-        storicoDao.save(mpmessaggio);
-
+        return mp;
+    }
+    
+    public Anagrafica getDP() {
         Anagrafica dp = new Anagrafica("Davide", "Palma");
         dp.setDiocesi(Diocesi.DIOCESI168);
+        dp.setTitolo(TitoloAnagrafica.Sacerdote);
         dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
         dp.setCitta("Roma");
         dp.setCap("00195");
@@ -191,13 +171,10 @@ public class SmdLoadSampleData implements Runnable {
         dp.setTelefono("+3906000020");
         dp.setDirettoreDiocesiano(true);
         dp.setRegioneDirettoreDiocesano(Regione.LAZIO);
-        anagraficaDao.save(dp);
-        
-        Storico dpmessaggio = new Storico(dp, messaggio, 1);
-        dpmessaggio.setOmaggio(Omaggio.CuriaGeneralizia);
-        dpmessaggio.setInvio(Invio.AdpSede);
-        storicoDao.save(dpmessaggio);
-
+        return dp;
+    }
+    
+    public Anagrafica getMS() {
         Anagrafica ms = new Anagrafica("Michele", "Santoro");
         ms.setDiocesi(Diocesi.DIOCESI126);
         ms.setIndirizzo("Via Duomo 10");
@@ -205,8 +182,10 @@ public class SmdLoadSampleData implements Runnable {
         ms.setCap("80135");
         ms.setEmail("ms@arsinfo.it");
         ms.setTelefono("+39081400022");
-        anagraficaDao.save(ms);
-
+        return ms;
+    }
+    
+    public Anagrafica getPS() {
         Anagrafica ps = new Anagrafica("Pasqualina", "Santoro");
         ps.setDiocesi(Diocesi.DIOCESI126);
         ps.setIndirizzo("Piazza Dante 10");
@@ -214,47 +193,74 @@ public class SmdLoadSampleData implements Runnable {
         ps.setCap("80135");
         ps.setEmail("arsinfo@adp.it");
         ps.setTelefono("+39081400023");
+        return ps;
+    }
+    
+    @Override
+    public void run() {
+        log.info("Start Loading Sample Data");
+        
+        Pubblicazione messaggio = getMessaggio();
+        Pubblicazione lodare = getLodare();
+        Pubblicazione blocchetti = getBlocchetti();
+        Pubblicazione estratti = getEstratti();
+        pubblicazioneDao.save(messaggio);
+        pubblicazioneDao.save(lodare);
+        pubblicazioneDao.save(blocchetti);
+        pubblicazioneDao.save(estratti);
+
+        Anagrafica ar=getAR();
+        anagraficaDao.save(ar);
+        storicoDao.save(Smd.getStoricoBy(ar, messaggio, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(Smd.getStoricoBy(ar, lodare, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(Smd.getStoricoBy(ar, blocchetti, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(Smd.getStoricoBy(ar, estratti, 10,Omaggio.CuriaDiocesiana));
+
+        Anagrafica gp=getGP();
+        anagraficaDao.save(gp);
+        storicoDao.save(Smd.getStoricoBy(gp, messaggio, 10,Cassa.Contrassegno));
+        storicoDao.save(Smd.getStoricoBy(gp, lodare, 10,Cassa.Contrassegno));
+        storicoDao.save(Smd.getStoricoBy(gp, blocchetti, 10,Cassa.Contrassegno,Omaggio.ConSconto));
+        
+        Anagrafica mp = getMP();
+        anagraficaDao.save(mp);
+        storicoDao.save(Smd.getStoricoBy(mp, messaggio, 10,Invio.AdpSede,Omaggio.Gesuiti));
+        storicoDao.save(Smd.getStoricoBy(mp, lodare, 10,Invio.AdpSede,Omaggio.Gesuiti));
+
+        Anagrafica dp = getDP();
+        anagraficaDao.save(dp);
+        storicoDao.save(Smd.getStoricoBy(dp, messaggio, 10,Invio.AdpSede,Omaggio.CuriaGeneralizia));
+
+        Anagrafica ms = getMS();
+        anagraficaDao.save(ms);
+        Anagrafica ps = getPS();
         anagraficaDao.save(ps);
-
+        storicoDao.save(Smd.getStoricoBy(ms, blocchetti, 1));
+        storicoDao.save(Smd.getStoricoBy(ms, ps, blocchetti, 2));
         
-        storicoDao.save(new Storico(ms, blocchetti, 10));
-        storicoDao.save(new Storico(ms, ps, blocchetti, 5));
-        
-        Abbonamento abbonamentoMd = new Abbonamento(ms);
-        Smd.addSpedizione(abbonamentoMd,blocchetti,ms,1);
-        Smd.addSpedizione(abbonamentoMd,lodare,ms,1);
-        Smd.addSpedizione(abbonamentoMd,estratti,ms,1);
-        Smd.addSpedizione(abbonamentoMd,messaggio,ms,1);
-        abbonamentoMd.setAnno(Anno.ANNO2017);
-        abbonamentoMd.setCampo(Smd.generateCampo(abbonamentoMd.getAnno(),
-                                             abbonamentoMd.getInizio(),
-                                             abbonamentoMd.getFine()));
-        Smd.calcoloCostoAbbonamento(abbonamentoMd);
-        abbonamentoDao.save(abbonamentoMd);
+        Abbonamento abbonamentoMs = new Abbonamento(ms);
+        Smd.addSpedizione(abbonamentoMs,blocchetti,ms,1);
+        Smd.addSpedizione(abbonamentoMs,lodare,ms,1);
+        Smd.addSpedizione(abbonamentoMs,estratti,ms,1);
+        Smd.addSpedizione(abbonamentoMs,messaggio,ms,1);
+        Smd.calcoloAbbonamento(abbonamentoMs);
+        abbonamentoDao.save(abbonamentoMs);
 
-        Abbonamento abbonamentoCo = new Abbonamento(gp);
-        Smd.addSpedizione(abbonamentoCo,blocchetti,gp,10);
-        Smd.addSpedizione(abbonamentoCo,lodare,gp,10);
-        Smd.addSpedizione(abbonamentoCo,estratti,gp,5);
-        Smd.addSpedizione(abbonamentoCo,messaggio,gp,5);
-        Smd.addSpedizione(abbonamentoCo,blocchetti,mp,10);
-        Smd.addSpedizione(abbonamentoCo,blocchetti,ar,10);
-        abbonamentoCo.setAnno(Anno.ANNO2017);
-        abbonamentoCo.setCampo(Smd.generateCampo(abbonamentoCo.getAnno(),
-                                             abbonamentoCo.getInizio(),
-                                             abbonamentoCo.getFine()));
-        Smd.calcoloCostoAbbonamento(abbonamentoCo);
-        abbonamentoDao.save(abbonamentoCo);
+        Abbonamento abbonamentoGp = new Abbonamento(gp);
+        Smd.addSpedizione(abbonamentoGp,blocchetti,gp,1);
+        Smd.addSpedizione(abbonamentoGp,lodare,gp,1);
+        Smd.addSpedizione(abbonamentoGp,estratti,gp,1);
+        Smd.addSpedizione(abbonamentoGp,messaggio,gp,1);
+        Smd.addSpedizione(abbonamentoGp,blocchetti,mp,2);
+        Smd.addSpedizione(abbonamentoGp,blocchetti,ar,3);
+        Smd.calcoloAbbonamento(abbonamentoGp);
+        abbonamentoDao.save(abbonamentoGp);
 
         Abbonamento abbonamentoDp = new Abbonamento(dp);
-        Smd.addSpedizione(abbonamentoDp,blocchetti,dp,10);
+        Smd.addSpedizione(abbonamentoDp,blocchetti,dp,1);
         abbonamentoDp.setInizio(Mese.MAGGIO);
         abbonamentoDp.setSpese(new BigDecimal("3.75"));
-        abbonamentoDp.setAnno(Anno.ANNO2017);
-        abbonamentoDp.setCampo(Smd.generateCampo(abbonamentoDp.getAnno(),
-                                             abbonamentoDp.getInizio(),
-                                             abbonamentoDp.getFine()));
-        Smd.calcoloCostoAbbonamento(abbonamentoDp);
+        Smd.calcoloAbbonamento(abbonamentoDp);
         abbonamentoDao.save(abbonamentoDp);
         
         Abbonamento telematici001 = new Abbonamento(ar);
@@ -378,7 +384,6 @@ public class SmdLoadSampleData implements Runnable {
         bari017.setCampo("000000018000065383");
         abbonamentoDao.save(bari017);
 
-
         Campagna campagna2018=new Campagna();
         campagna2018.setAnno(Anno.ANNO2018);
         campagna2018.addCampagnaItem(new CampagnaItem(campagna2018,messaggio));
@@ -388,16 +393,6 @@ public class SmdLoadSampleData implements Runnable {
 
         Smd.generaCampagna(campagna2018, storicoDao.findAll(), new ArrayList<>());
         campagnaDao.save(campagna2018);
-
-        Campagna campagna2017=new Campagna();
-        campagna2017.setAnno(Anno.ANNO2017);
-        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,messaggio));
-        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,lodare));
-        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,blocchetti));
-        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,estratti));
-
-        Smd.generaCampagna(campagna2017, storicoDao.findAll(), new ArrayList<>());
-        campagnaDao.save(campagna2017);
 
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();

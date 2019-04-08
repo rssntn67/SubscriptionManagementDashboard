@@ -23,6 +23,7 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Sostitutivo;
@@ -31,6 +32,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -43,6 +45,123 @@ public class Smd {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
+
+    public static Storico getStoricoBy(Anagrafica intestatario) {
+        Storico storico= new Storico();
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Cassa cassa
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setCassa(cassa);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Cassa cassa,
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        storico.setCassa(cassa);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Invio invio,
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        storico.setInvio(invio);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Anagrafica destinatario,
+            Pubblicazione pubblicazione, 
+            int numero) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(destinatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
 
     public static Date getStandardDate(LocalDate localDate) {
         return Smd.getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
@@ -281,7 +400,7 @@ public class Smd {
             }
             abbonamenti.addAll(abbti.values());
         }
-        abbonamenti.stream().forEach(abb -> calcoloCostoAbbonamento(abb));
+        abbonamenti.stream().forEach(abb -> calcoloAbbonamento(abb));
         campagna.setAbbonamenti(abbonamenti);
     }
     
@@ -292,7 +411,6 @@ public class Smd {
         abb.setInizio(campagna.getInizio());
         abb.setFine(campagna.getFine());
         abb.setCassa(cassa);
-        abb.setCampo(generateCampo(campagna.getAnno(), campagna.getInizio(), campagna.getFine()));
         return abb;
     }
     
@@ -473,7 +591,7 @@ public class Smd {
         incasso.setImportoEsatti(incasso.getImporto());
     }
     
-    public static void calcoloCostoAbbonamento(Abbonamento abbonamento) {
+    public static void calcoloAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;
         Mese inizio = abbonamento.getInizio();
         Mese fine = abbonamento.getFine();
@@ -481,6 +599,7 @@ public class Smd {
             costo+= generaCosto(inizio, fine, spedizione);
         }
         abbonamento.setCosto(BigDecimal.valueOf(costo));
+        abbonamento.setCampo(generateCampo(abbonamento.getAnno(), abbonamento.getInizio(), abbonamento.getFine()));
     }
     
     public static double generaCosto(Mese inizio, Mese fine, Spedizione spedizione) { 

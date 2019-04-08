@@ -49,33 +49,6 @@ public class Storico implements SmdEntity {
     private Integer numero = 1;
     
     private boolean sospeso = false;
-    
-    public Storico(Anagrafica intestatario, Pubblicazione pubblicazione, int numero) {
-        this.pubblicazione = pubblicazione;
-        this.numero = numero;
-        this.intestatario = intestatario;
-        this.destinatario = intestatario;
-        Nota nota= new Nota(this);
-        nota.setDescription("Creato storico");
-        note.add(nota);
-    }
-
-    public Storico(Anagrafica intestatario, Anagrafica destinatario,Pubblicazione pubblicazione, int numero) {
-        this.pubblicazione = pubblicazione;
-        this.numero = numero;
-        this.intestatario = intestatario;
-        this.destinatario = destinatario;
-        Nota nota= new Nota(this);
-        nota.setDescription("Creato storico");
-        note.add(nota);
-    }
-    public Storico(Anagrafica intestatario) {
-        this.intestatario = intestatario;
-        this.destinatario = intestatario;
-        Nota nota= new Nota(this);
-        nota.setDescription("Creato storico");
-        note.add(nota);
-    }
 
     public Storico() {
         super();

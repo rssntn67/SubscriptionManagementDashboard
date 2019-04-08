@@ -46,6 +46,11 @@ public class SmdUnitTests {
     }
 
     @Test
+    public void testAbbonamentoPubblicazioneMensile() {
+        
+    }
+
+    @Test
     public void testAnnoMese() {
         Calendar now = Calendar.getInstance();
         now.setTime(new Date());
