@@ -24,7 +24,9 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
+import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -209,6 +211,10 @@ public class SmdApplicationTests {
         log.info("-------------------------------");
         for (Abbonamento abbonamento : abbonamentoDao.findAll()) {
             log.info(abbonamento.toString());
+            for (Spedizione spedizione: abbonamento.getSpedizioni()) {
+                log.info(spedizione.toString());
+                
+            }
         }
         log.info("");
 
@@ -313,6 +319,13 @@ public class SmdApplicationTests {
         log.info("-------------------------------");
         for (Operazione operazione : operazioneDao.findAll()) {
             log.info(operazione.toString());
+        }
+        log.info("");
+
+        log.info("prospetti found by findAll");
+        log.info("-------------------------------");
+        for (Prospetto prospetto : prospettoDao.findAll()) {
+            log.info(prospetto.toString());
         }
         log.info("");
 

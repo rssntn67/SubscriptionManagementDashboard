@@ -59,7 +59,7 @@ public class Operazione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Prospetto[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d, Anno=%s, Mese=%s]", 
+        return String.format("Operazione[id=%d, Pubblicazione=%d, Stimato=%d, Definitivo=%d, Anno=%s, Mese=%s]", 
                              id,pubblicazione.getId(),stimato,definitivo,anno,mese);
     }
 

@@ -25,6 +25,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -248,13 +249,16 @@ public class SmdLoadSampleData implements Runnable {
 
         Abbonamento abbonamentoGp = new Abbonamento(gp);
         Smd.addSpedizione(abbonamentoGp,blocchetti,gp,1);
+        Smd.addSpedizione(abbonamentoGp,blocchetti,mp,2);
+        Smd.addSpedizione(abbonamentoGp,blocchetti,ar,2);
         Smd.addSpedizione(abbonamentoGp,lodare,gp,1);
         Smd.addSpedizione(abbonamentoGp,estratti,gp,1);
         Smd.addSpedizione(abbonamentoGp,messaggio,gp,1);
-        Smd.addSpedizione(abbonamentoGp,blocchetti,mp,2);
-        Smd.addSpedizione(abbonamentoGp,blocchetti,ar,3);
         Smd.calcoloAbbonamento(abbonamentoGp);
         abbonamentoDao.save(abbonamentoGp);
+        Spedizione spedizioneGptoar = spedizioneDao.findByDestinatario(ar).iterator().next();
+        spedizioneGptoar.setNumero(3);
+        spedizioneDao.save(spedizioneGptoar);
 
         Abbonamento abbonamentoDp = new Abbonamento(dp);
         Smd.addSpedizione(abbonamentoDp,blocchetti,dp,1);
@@ -459,27 +463,18 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso5);
         abbonamentoDao.save(abbonamentoDp);
                 
-        Smd.generaOperazioni(
-                 pubblicazioneDao.findAll(), 
-                 abbonamentoDao.findByAnno(Anno.ANNO2018), 
-                 spedizioneDao.findAll(),
-                 Anno.ANNO2018,
-                 EnumSet.allOf(Mese.class))
-            .stream()
-            .forEach(p -> {
-                operazioneDao.save(p);
-        });
-        Smd.generaProspetti(
-                             pubblicazioneDao.findAll(), 
-                             abbonamentoDao.findByAnno(Anno.ANNO2018), 
-                             spedizioneDao.findAll(),
+        Smd.generaOperazioni(pubblicazioneDao.findAll(),
+                             abbonamentoDao.findByAnno(Anno.ANNO2018),
                              Anno.ANNO2018,
-                             EnumSet.allOf(Mese.class),
-                             EnumSet.allOf(Omaggio.class))
-                        .stream()
-                        .forEach(p -> {
-                            prospettoDao.save(p);
-                    });
+                             EnumSet.allOf(Mese.class)).stream().forEach(p -> {
+                                 operazioneDao.save(p);
+                             });
+        Smd.generaProspetti(pubblicazioneDao.findAll(),
+                            abbonamentoDao.findByAnno(Anno.ANNO2018),
+                            Anno.ANNO2018, EnumSet.allOf(Mese.class),
+                            EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
+                                prospettoDao.save(p);
+                            });
         log.info("End Loading Sample Data");
    
     }

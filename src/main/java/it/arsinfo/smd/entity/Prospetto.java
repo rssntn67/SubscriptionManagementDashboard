@@ -51,7 +51,7 @@ public class Prospetto implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("ProspettoItem[id=%d, Prospetto=%d, Omaggio=%s, Anno=%s, Mese=%s, Stimati=%d]", 
+        return String.format("Prospetto[id=%d, Omaggio=%s, Anno=%s, Mese=%s, Stimati=%d]", 
                              id,omaggio, anno,mese,stimato);
     }
 

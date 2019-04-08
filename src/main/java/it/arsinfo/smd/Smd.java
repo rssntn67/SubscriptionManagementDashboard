@@ -183,7 +183,6 @@ public class Smd {
     public static List<Prospetto> generaProspetti(
             List<Pubblicazione> pubblicazioni, 
             List<Abbonamento> abbonamenti, 
-            List<Spedizione> spedizioni, 
             Anno anno, 
             Set<Mese> mesi,
             Set<Omaggio> omaggi) {
@@ -196,27 +195,29 @@ public class Smd {
                     .stream()
                     .filter(mese -> mesi.contains(mese))
                     .forEach(mese -> 
-                        prospetti.add(generaProspetto(pubblicazione, abbonamenti, spedizioni, anno, mese, omaggio))
+                        prospetti.add(generaProspetto(pubblicazione, abbonamenti, anno, mese, omaggio))
                     );
             });
         });
         return prospetti;
     }
 
-    private static Prospetto generaProspetto(Pubblicazione pubblicazione, List<Abbonamento> abbonamenti, List<Spedizione> spedizioni, Anno anno, Mese mese, Omaggio omaggio) {
-        Prospetto prospetto = new Prospetto(pubblicazione, anno, mese, omaggio);
+    private static Prospetto generaProspetto(Pubblicazione pubblicazione,
+            List<Abbonamento> abbonamenti, Anno anno, Mese mese,
+            Omaggio omaggio) {
+        Prospetto prospetto = new Prospetto(pubblicazione, anno, mese,
+                                            omaggio);
         Integer conta = 0;
-        for (Spedizione s: spedizioni) {
-            if (s.getPubblicazione().getId() != pubblicazione.getId() || s.getOmaggio() != omaggio) {
-                continue;
-            }
-            for (Abbonamento a: abbonamenti) {
-                if (s.getAbbonamento().getId() == a.getId() 
-                        && a.getAnno() == anno 
-                        && a.getInizio().getPosizione() <= mese.getPosizione() 
-                        && a.getFine().getPosizione() >= mese.getPosizione() 
-                  ) {
-                        conta+=s.getNumero();
+        for (Abbonamento a : abbonamenti) {
+            if (a.getAnno() == anno
+                    && a.getInizio().getPosizione() <= mese.getPosizione()
+                    && a.getFine().getPosizione() >= mese.getPosizione()) {
+                for (Spedizione s : a.getSpedizioni()) {
+                    if (s.getPubblicazione().getId() != pubblicazione.getId()
+                            || s.getOmaggio() != omaggio) {
+                        continue;
+                    }
+                    conta += s.getNumero();
                 }
             }
         }
@@ -227,7 +228,6 @@ public class Smd {
     public static List<Operazione> generaOperazioni(
             List<Pubblicazione> pubblicazioni, 
             List<Abbonamento> abbonamenti, 
-            List<Spedizione> spedizioni, 
             Anno anno,
             Set<Mese> mesi
         ) {
@@ -236,7 +236,7 @@ public class Smd {
             pubblicazione.getMesiPubblicazione()
                 .stream()
                 .filter(mese -> mesi.contains(mese))
-                .forEach(mese -> operazioni.add(generaOperazione(pubblicazione, abbonamenti, spedizioni, anno, mese))
+                .forEach(mese -> operazioni.add(generaOperazione(pubblicazione, abbonamenti, anno, mese))
             );
         });
         return operazioni;
@@ -246,20 +246,18 @@ public class Smd {
     private static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<Abbonamento> abbonamenti, 
-            List<Spedizione> spedizioni, 
             Anno anno, Mese mese) {
         Operazione operazione = new Operazione(pubblicazione, anno, mese);
         Integer conta = 0;
-        for (Spedizione s: spedizioni) {
-            if (s.getPubblicazione().getId() != pubblicazione.getId()) {
-                continue;
-            }
             for (Abbonamento a: abbonamenti) {
-                if (s.getAbbonamento().getId() == a.getId() 
-                        && a.getAnno() == anno 
+                if ( a.getAnno() == anno 
                         && a.getInizio().getPosizione() <= mese.getPosizione() 
                         && a.getFine().getPosizione() >= mese.getPosizione() 
                   ) {
+                    for (Spedizione s: a.getSpedizioni()) {
+                        if (s.getPubblicazione().getId() != pubblicazione.getId()) {
+                            continue;
+                        }
                         conta+=s.getNumero();
                 }
             }
