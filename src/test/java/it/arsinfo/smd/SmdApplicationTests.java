@@ -1,6 +1,11 @@
 package it.arsinfo.smd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.Assert;
 
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
@@ -66,54 +70,67 @@ public class SmdApplicationTests {
     private NotaDao notaDao;
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
+    
     @Test
     public void contextLoads() {
-        Assert.notNull(abbonamentoDao, "abbonamentoDao must be not null");
-        Assert.notNull(anagraficaDao, "anagraficaDao must be not null");
-        Assert.notNull(pubblicazioneDao, "pubblicazioneDao must be not null");
-        Assert.notNull(spedizioneDao, "spedizioneDao must be not null");
-        Assert.notNull(storicoDao, "storicoDao must be not null");
-        Assert.notNull(notaDao, "notaDao must be not null");
-        Assert.notNull(campagnaDao, "campagnaDao must be not null");
-        Assert.notNull(campagnaItemDao, "campagnaItemDao must be not null");
-        Assert.notNull(notaDao, "notaDao must be not null");
-        Assert.notNull(storicoDao, "storicoDao must be not null");
-        Assert.notNull(versamentoDao, "versamentoDao must be not null");
-        Assert.notNull(incassoDao, "incassoDao must be not null");
-        Assert.notNull(operazioneDao, "operazioneDao must be not null");
-        Assert.notNull(prospettoDao, "prospettoDao must be not null");
+        assertNotNull(abbonamentoDao);
+        assertNotNull(anagraficaDao);
+        assertNotNull(pubblicazioneDao);
+        assertNotNull(spedizioneDao);
+        assertNotNull(storicoDao);
+        assertNotNull(notaDao);
+        assertNotNull(campagnaDao);
+        assertNotNull(campagnaItemDao);
+        assertNotNull(notaDao);
+        assertNotNull(storicoDao);
+        assertNotNull(versamentoDao);
+        assertNotNull(incassoDao);
+        assertNotNull(operazioneDao);
+        assertNotNull(prospettoDao);
     }
 
     @Test
     public void testSmd() {
-        SmdLoadSampleData loaddata = new SmdLoadSampleData(anagraficaDao,
-                                                           storicoDao,
-                                                           pubblicazioneDao,
-                                                           abbonamentoDao,
-                                                           spedizioneDao,
-                                                           campagnaDao,
-                                                           incassoDao,
-                                                           versamentoDao,
-                                                           operazioneDao);
-        loaddata.run();
+        new SmdLoadSampleData(
+                              anagraficaDao, 
+                              storicoDao, 
+                              pubblicazioneDao, 
+                              abbonamentoDao, 
+                              spedizioneDao, 
+                              campagnaDao, 
+                              incassoDao, 
+                              versamentoDao, 
+                              operazioneDao).run();
+
         log.info("Pubblicazioni found with findAll():");
         log.info("-------------------------------");
-        for (Pubblicazione pubblicazione : pubblicazioneDao.findAll()) {
+        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        assertEquals(4, pubblicazioni.size());
+        for (Pubblicazione pubblicazione : pubblicazioni) {
+            assertEquals("AAVV", pubblicazione.getAutore());
+            assertEquals("ADP", pubblicazione.getEditore());
+            assertEquals(Smd.getAnnoCorrente(), pubblicazione.getAnno());
+            assertTrue(pubblicazione.isActive());
             log.info(pubblicazione.toString());
         }
         log.info("");
 
         log.info("Pubblicazione found with findByNameStartsWithIgnoreCase('Estratti'):");
+        pubblicazioni = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti");
+        assertEquals(1, pubblicazioni.size());
+        Pubblicazione estratti = pubblicazioni.iterator().next();
         log.info("--------------------------------------------");
-        for (Pubblicazione adp : pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti")) {
-            log.info(adp.toString());
-        }
+        log.info(estratti.toString());
+        assertEquals(Mese.LUGLIO, estratti.getMese());
+        assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         log.info("");
 
         log.info("Pubblicazione found with findByTipo('MENSILE'):");
         log.info("--------------------------------------------");
-        for (Pubblicazione mensile : pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE)) {
+        pubblicazioni = pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE);
+        assertEquals(2, pubblicazioni.size());
+        for (Pubblicazione mensile : pubblicazioni) {
+            assertEquals(TipoPubblicazione.MENSILE, mensile.getTipo());
             log.info(mensile.toString());
         }
         log.info("");
@@ -121,12 +138,18 @@ public class SmdApplicationTests {
         Pubblicazione first = pubblicazioneDao.findById(1L).get();
         log.info("Messaggio found with findOne(1L):");
         log.info("--------------------------------");
+        assertEquals(Long.parseLong("1"), first.getId().longValue());
+        assertEquals(TipoPubblicazione.MENSILE, first.getTipo());
+        assertEquals("Messaggio", first.getNome());
         log.info(first.toString());
         log.info("");
 
         Pubblicazione second = pubblicazioneDao.findById(2L).get();
         log.info("lodare found with findOne(2L):");
         log.info("--------------------------------");
+        assertEquals(Long.parseLong("2"), second.getId().longValue());
+        assertEquals(TipoPubblicazione.MENSILE, second.getTipo());
+        assertEquals("Lodare e Servire", second.getNome());
         log.info(second.toString());
         log.info("");
 
@@ -292,43 +315,6 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Anno Scorso");
-        log.info(Smd.getAnnoPassato().getAnnoAsString());
-        log.info("Anno Corrente");
-        log.info(Smd.getAnnoCorrente().getAnnoAsString());
-        log.info("Anno Prossimo");
-        log.info(Smd.getAnnoProssimo().getAnnoAsString());
-        log.info("Mese Corrente");
-        log.info(Smd.getMeseCorrente().getNomeBreve());
-        log.info("");
-
-        log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
-        log.info(Integer.toString(Smd.getNumeroPubblicazioni(Mese.MARZO,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.ANNUALE)));
-        log.info("Numero: Mese.APRILE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.ANNUALE)");
-        log.info(Integer.toString(Smd.getNumeroPubblicazioni(Mese.APRILE,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.ANNUALE)));
-        log.info("Numero: Mese.MARZO, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-        log.info(Integer.toString(Smd.getNumeroPubblicazioni(Mese.MARZO,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.SEMESTRALE)));
-        log.info("Numero: Mese.SETTEMBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-        log.info(Integer.toString(Smd.getNumeroPubblicazioni(Mese.SETTEMBRE,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.SEMESTRALE)));
-        log.info("Numero: Mese.OTTOBRE, Mese.DICEMBRE, Mese.MARZO, TipoPubblicazione.SEMESTRALE)");
-        log.info(Integer.toString(Smd.getNumeroPubblicazioni(Mese.OTTOBRE,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.SEMESTRALE)));
-        log.info("");
-
     }
-
+    
 }

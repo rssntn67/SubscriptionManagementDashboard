@@ -178,7 +178,11 @@ public class Pubblicazione implements SmdEntity {
             mesi = EnumSet.of(mese);
             break;
         case SEMESTRALE:
-            mesi = EnumSet.of(mese, Mese.getByPosizione(mese.getPosizione()+6));
+            if (mese.getPosizione() > 6) {
+                mesi = EnumSet.of(mese, Mese.getByPosizione(mese.getPosizione()-6));
+            } else {
+                mesi = EnumSet.of(mese, Mese.getByPosizione(mese.getPosizione()+6));
+            }
             break;
         case MENSILE:
             mesi = EnumSet.allOf(Mese.class);

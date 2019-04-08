@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -34,6 +37,8 @@ import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 public class SmdLoadSampleData implements Runnable {
+
+    private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     private AnagraficaDao anagraficaDao; 
     private StoricoDao storicoDao;
@@ -70,6 +75,7 @@ public class SmdLoadSampleData implements Runnable {
     
     @Override
     public void run() {
+        log.info("Start Loading Sample Data");
         Pubblicazione messaggio = new Pubblicazione("Messaggio",
                                                     TipoPubblicazione.MENSILE);
         messaggio.setActive(true);
@@ -445,46 +451,17 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso5);
         abbonamentoDao.save(abbonamentoDp);
                 
-        Smd.generaOperazioni(estratti, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2018).stream().forEach(p -> {
+        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2018).stream().forEach(p -> {
             prospettoDao.save(p);
         });
-        Smd.generaOperazioni(estratti, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2019).stream().forEach(p -> {
+        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2019).stream().forEach(p -> {
             prospettoDao.save(p);
         });
-        Smd.generaOperazioni(estratti, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2020).stream().forEach(p -> {
+        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2020).stream().forEach(p -> {
             prospettoDao.save(p);
         });
-        
-        Smd.generaOperazioni(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2018).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2019).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(blocchetti, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(blocchetti),Anno.ANNO2020).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-
-        Smd.generaOperazioni(lodare, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2018).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(lodare, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2019).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(lodare, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(lodare),Anno.ANNO2020).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-
-        Smd.generaOperazioni(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2018).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2019).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(messaggio, abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(messaggio),Anno.ANNO2020).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-
+        log.info("End Loading Sample Data");
+   
     }
 
 }

@@ -38,9 +38,8 @@ public class SmdApplication {
             OperazioneDao operazioneDao) {
         return (args) -> {
             if (loadSampleData != null && loadSampleData.equals("true")) {
-                (new Thread
-                    (
-                     new SmdLoadSampleData(
+                
+                     new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 
                       pubblicazioneDao, 
@@ -49,10 +48,7 @@ public class SmdApplication {
                       campagnaDao, 
                       incassoDao, 
                       versamentoDao, 
-                      operazioneDao)
-                    )
-                )
-                .start();
+                      operazioneDao)).start();
             }
             
         };
