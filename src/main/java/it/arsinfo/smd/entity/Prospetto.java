@@ -37,6 +37,14 @@ public class Prospetto implements SmdEntity {
     public Prospetto() {
     }
 
+    public Prospetto(Pubblicazione pubblicazione, Anno anno, Mese mese,
+            Omaggio omaggio) {
+        this.pubblicazione=pubblicazione;
+        this.anno=anno;
+        this.mese=mese;
+        this.omaggio=omaggio;
+    }
+
     public Long getId() {
         return id;
     }

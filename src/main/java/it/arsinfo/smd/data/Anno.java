@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum Anno {
+        ANNO2017(2017),
         ANNO2018(2018),
 	ANNO2019(2019),
 	ANNO2020(2020),

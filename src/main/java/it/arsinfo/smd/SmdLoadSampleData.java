@@ -2,6 +2,7 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -40,15 +42,16 @@ public class SmdLoadSampleData implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    private AnagraficaDao anagraficaDao; 
-    private StoricoDao storicoDao;
-    private PubblicazioneDao pubblicazioneDao;
-    private AbbonamentoDao abbonamentoDao;
-    private SpedizioneDao spedizioneDao;
-    private CampagnaDao campagnaDao;
-    private IncassoDao incassoDao; 
-    private VersamentoDao versamentoDao;
-    private OperazioneDao prospettoDao;
+    private final AnagraficaDao anagraficaDao; 
+    private final StoricoDao storicoDao;
+    private final PubblicazioneDao pubblicazioneDao;
+    private final AbbonamentoDao abbonamentoDao;
+    private final SpedizioneDao spedizioneDao;
+    private final CampagnaDao campagnaDao;
+    private final IncassoDao incassoDao; 
+    private final VersamentoDao versamentoDao;
+    private final OperazioneDao operazioneDao;
+    private final ProspettoDao prospettoDao;
     
     public SmdLoadSampleData(
             AnagraficaDao anagraficaDao, 
@@ -59,7 +62,8 @@ public class SmdLoadSampleData implements Runnable {
             CampagnaDao campagnaDao, 
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
-            OperazioneDao operazioneDao
+            OperazioneDao operazioneDao,
+            ProspettoDao prospettoDao
     ) {
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
@@ -69,8 +73,8 @@ public class SmdLoadSampleData implements Runnable {
         this.campagnaDao=campagnaDao;
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
-        this.prospettoDao=operazioneDao;
-        
+        this.operazioneDao=operazioneDao;
+        this.prospettoDao=prospettoDao;
     }
     
     @Override
@@ -221,6 +225,7 @@ public class SmdLoadSampleData implements Runnable {
         Smd.addSpedizione(abbonamentoMd,lodare,ms,1);
         Smd.addSpedizione(abbonamentoMd,estratti,ms,1);
         Smd.addSpedizione(abbonamentoMd,messaggio,ms,1);
+        abbonamentoMd.setAnno(Anno.ANNO2017);
         abbonamentoMd.setCampo(Smd.generateCampo(abbonamentoMd.getAnno(),
                                              abbonamentoMd.getInizio(),
                                              abbonamentoMd.getFine()));
@@ -234,7 +239,7 @@ public class SmdLoadSampleData implements Runnable {
         Smd.addSpedizione(abbonamentoCo,messaggio,gp,5);
         Smd.addSpedizione(abbonamentoCo,blocchetti,mp,10);
         Smd.addSpedizione(abbonamentoCo,blocchetti,ar,10);
-        abbonamentoCo.setAnno(Anno.ANNO2018);
+        abbonamentoCo.setAnno(Anno.ANNO2017);
         abbonamentoCo.setCampo(Smd.generateCampo(abbonamentoCo.getAnno(),
                                              abbonamentoCo.getInizio(),
                                              abbonamentoCo.getFine()));
@@ -245,6 +250,7 @@ public class SmdLoadSampleData implements Runnable {
         Smd.addSpedizione(abbonamentoDp,blocchetti,dp,10);
         abbonamentoDp.setInizio(Mese.MAGGIO);
         abbonamentoDp.setSpese(new BigDecimal("3.75"));
+        abbonamentoDp.setAnno(Anno.ANNO2017);
         abbonamentoDp.setCampo(Smd.generateCampo(abbonamentoDp.getAnno(),
                                              abbonamentoDp.getInizio(),
                                              abbonamentoDp.getFine()));
@@ -255,71 +261,83 @@ public class SmdLoadSampleData implements Runnable {
         Smd.addSpedizione(telematici001, blocchetti,ar,1);
         telematici001.setCosto(new BigDecimal(15));
         telematici001.setCampo("000000018000792609");
+        telematici001.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(telematici001);
         
         Abbonamento venezia002 = new Abbonamento(ms);
         Smd.addSpedizione(venezia002, blocchetti,ms,1);
         venezia002.setCosto(new BigDecimal(15));
         venezia002.setCampo("000000018000854368");
+        venezia002.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia002);
 
         Abbonamento venezia003 = new Abbonamento(ms);
         Smd.addSpedizione(venezia003, blocchetti,ms,1);
         venezia003.setCosto(new BigDecimal(18));
         venezia003.setCampo("000000018000263519");
+        venezia003.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia003);
 
         Abbonamento venezia004 = new Abbonamento(ms);
         Smd.addSpedizione(venezia004, blocchetti,ms,2);
         venezia004.setCosto(new BigDecimal(30));
         venezia004.setCampo("000000018000254017");
+        venezia004.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia004);
 
         Abbonamento venezia005 = new Abbonamento(ms);
         Smd.addSpedizione(venezia005, blocchetti,ms,2);
         venezia005.setCosto(new BigDecimal(37));
         venezia005.setCampo("000000018000761469");
+        venezia005.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia005);
 
         Abbonamento venezia006 = new Abbonamento(ms);
         Smd.addSpedizione(venezia006, blocchetti,ms,3);
         venezia006.setCosto(new BigDecimal(48));
         venezia006.setCampo("000000018000253916");
+        venezia006.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia006);
 
         Abbonamento venezia007 = new Abbonamento(ms);
         Smd.addSpedizione(venezia007, blocchetti,ms,10);
         venezia007.setCosto(new BigDecimal(70));
         venezia007.setCampo("000000018000800386");
+        venezia007.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia007);
         
         Abbonamento venezia008 = new Abbonamento(ms);
         Smd.addSpedizione(venezia008, blocchetti,ms,15);
         venezia008.setCosto(new BigDecimal(84));
         venezia008.setCampo("000000018000508854");
+        venezia008.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(venezia008);
 
         Abbonamento firenze009 = new Abbonamento(dp);
         Smd.addSpedizione(firenze009, estratti,dp,1);
         firenze009.setCosto(new BigDecimal(10));
         firenze009.setCampo("000000018000686968");
+        firenze009.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(firenze009);
         
         Abbonamento firenze010 = new Abbonamento(dp);
         Smd.addSpedizione(firenze010, lodare,dp,1);
         firenze010.setCosto(new BigDecimal(15));
         firenze010.setCampo("000000018000198318");
+        firenze010.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(firenze010);
 
         Abbonamento firenze011 = new Abbonamento(dp);
         Smd.addSpedizione(firenze011, lodare,dp,1);
         firenze011.setCosto(new BigDecimal(15));
         firenze011.setCampo("000000018000201449");
+        firenze011.setAnno(Anno.ANNO2017);
         abbonamentoDao.save(firenze011);
 
         Abbonamento firenze012 = new Abbonamento(dp);
         Smd.addSpedizione(firenze012, lodare,dp,3);
         firenze012.setCosto(new BigDecimal(33));
+        firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCampo("000000018000633491");
         abbonamentoDao.save(firenze012);
         
@@ -328,30 +346,35 @@ public class SmdLoadSampleData implements Runnable {
         Smd.addSpedizione(firenze013, estratti,dp,10);
         Smd.addSpedizione(firenze013, blocchetti,dp,10);
         firenze013.setCosto(new BigDecimal(108));
+        firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCampo("000000018000196500");
         abbonamentoDao.save(firenze013);
         
         Abbonamento bari014 = new Abbonamento(mp);
         Smd.addSpedizione(bari014, lodare,mp,1);
         bari014.setCosto(new BigDecimal(12));
+        bari014.setAnno(Anno.ANNO2017);
         bari014.setCampo("000000018000106227");
         abbonamentoDao.save(bari014);
 
         Abbonamento bari015 = new Abbonamento(mp);
         Smd.addSpedizione(bari015, lodare,mp,3);
         bari015.setCosto(new BigDecimal(36));
+        bari015.setAnno(Anno.ANNO2017);
         bari015.setCampo("000000018000077317");
         abbonamentoDao.save(bari015);
 
         Abbonamento bari016 = new Abbonamento(mp);
         Smd.addSpedizione(bari016, lodare,mp,5);
         bari016.setCosto(new BigDecimal(60));
+        bari016.setAnno(Anno.ANNO2017);
         bari016.setCampo("000000018000125029");
         abbonamentoDao.save(bari016);
 
         Abbonamento bari017 = new Abbonamento(mp);
         Smd.addSpedizione(bari017, estratti,mp,10);
         bari017.setCosto(new BigDecimal(67));
+        bari017.setAnno(Anno.ANNO2017);
         bari017.setCampo("000000018000065383");
         abbonamentoDao.save(bari017);
 
@@ -366,25 +389,15 @@ public class SmdLoadSampleData implements Runnable {
         Smd.generaCampagna(campagna2018, storicoDao.findAll(), new ArrayList<>());
         campagnaDao.save(campagna2018);
 
-        Campagna campagna2019=new Campagna();
-        campagna2019.setAnno(Anno.ANNO2019);
-        campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,messaggio));
-        campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,lodare));
-        campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,blocchetti));
-        campagna2019.addCampagnaItem(new CampagnaItem(campagna2019,estratti));
+        Campagna campagna2017=new Campagna();
+        campagna2017.setAnno(Anno.ANNO2017);
+        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,messaggio));
+        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,lodare));
+        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,blocchetti));
+        campagna2017.addCampagnaItem(new CampagnaItem(campagna2018,estratti));
 
-        Smd.generaCampagna(campagna2019, storicoDao.findAll(), new ArrayList<>());
-        campagnaDao.save(campagna2019);
-
-        Campagna campagna2020=new Campagna();
-        campagna2020.setAnno(Anno.ANNO2020);
-        campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,messaggio));
-        campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,lodare));
-        campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,blocchetti));
-        campagna2020.addCampagnaItem(new CampagnaItem(campagna2020,estratti));
-
-        Smd.generaCampagna(campagna2020, storicoDao.findAll(), new ArrayList<>());
-        campagnaDao.save(campagna2020);
+        Smd.generaCampagna(campagna2017, storicoDao.findAll(), new ArrayList<>());
+        campagnaDao.save(campagna2017);
 
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();
@@ -451,15 +464,27 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso5);
         abbonamentoDao.save(abbonamentoDp);
                 
-        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2018), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2018).stream().forEach(p -> {
-            prospettoDao.save(p);
+        Smd.generaOperazioni(
+                 pubblicazioneDao.findAll(), 
+                 abbonamentoDao.findByAnno(Anno.ANNO2018), 
+                 spedizioneDao.findAll(),
+                 Anno.ANNO2018,
+                 EnumSet.allOf(Mese.class))
+            .stream()
+            .forEach(p -> {
+                operazioneDao.save(p);
         });
-        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2019), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2019).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
-        Smd.generaOperazioni(pubblicazioneDao.findAll(), abbonamentoDao.findByAnno(Anno.ANNO2020), spedizioneDao.findByPubblicazione(estratti),Anno.ANNO2020).stream().forEach(p -> {
-            prospettoDao.save(p);
-        });
+        Smd.generaProspetti(
+                             pubblicazioneDao.findAll(), 
+                             abbonamentoDao.findByAnno(Anno.ANNO2018), 
+                             spedizioneDao.findAll(),
+                             Anno.ANNO2018,
+                             EnumSet.allOf(Mese.class),
+                             EnumSet.allOf(Omaggio.class))
+                        .stream()
+                        .forEach(p -> {
+                            prospettoDao.save(p);
+                    });
         log.info("End Loading Sample Data");
    
     }

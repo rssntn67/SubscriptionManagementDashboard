@@ -13,6 +13,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -35,7 +36,7 @@ public class SmdApplication {
             PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
             SpedizioneDao spedizioneDao,
             CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao,
-            OperazioneDao operazioneDao) {
+            OperazioneDao operazioneDao, ProspettoDao prospettoDao) {
         return (args) -> {
             if (loadSampleData != null && loadSampleData.equals("true")) {
                 
@@ -48,7 +49,8 @@ public class SmdApplication {
                       campagnaDao, 
                       incassoDao, 
                       versamentoDao, 
-                      operazioneDao)).start();
+                      operazioneDao,
+                      prospettoDao)).start();
             }
             
         };

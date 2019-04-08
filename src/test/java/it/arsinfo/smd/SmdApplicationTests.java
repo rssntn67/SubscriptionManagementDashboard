@@ -100,7 +100,8 @@ public class SmdApplicationTests {
                               campagnaDao, 
                               incassoDao, 
                               versamentoDao, 
-                              operazioneDao).run();
+                              operazioneDao,
+                              prospettoDao).run();
 
         log.info("Pubblicazioni found with findAll():");
         log.info("-------------------------------");
