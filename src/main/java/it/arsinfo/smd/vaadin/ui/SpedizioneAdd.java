@@ -14,7 +14,9 @@ public class SpedizioneAdd extends SmdAdd<Spedizione> {
     
     @Override
     public Spedizione generate() {
-        return new Spedizione(abbonamento);
+        Spedizione spedizione = new Spedizione();
+        spedizione.setAbbonamento(abbonamento);
+        return spedizione;
     }
 
     public Abbonamento getAbbonamento() {

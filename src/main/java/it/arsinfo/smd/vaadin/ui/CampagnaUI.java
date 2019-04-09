@@ -14,7 +14,6 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
@@ -109,8 +108,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                campagnaItemEditor.getSelected().forEach(p -> get().addCampagnaItem(new CampagnaItem(get(), p)));
-                Smd.generaCampagna(get(), storicoDao.findAll(),abbonamentoDao.findAll());
+                Smd.generaCampagna(get(),storicoDao.findAll(),abbonamentoDao.findAll(),campagnaItemEditor.getSelected());
                 super.save();
             }
             

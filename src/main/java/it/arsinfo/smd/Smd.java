@@ -9,10 +9,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +24,14 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -44,127 +43,212 @@ public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
-    static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
+    static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
+    public static Anno getAnnoCorrente() {
+        return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
+    }
+    public static Anno getAnnoPassato() {
+        Integer annoScorso = getAnnoCorrente().getAnno()-1;
+        return Anno.valueOf("ANNO"+annoScorso);
+    }
+    public static Anno getAnnoProssimo() {
+        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
+        return Anno.valueOf("ANNO"+annoProssimo);
+    }
+    public static Mese getMeseCorrente() {
+        return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
+    }
+    public static String getProgressivoVersamento(int i) {
+        return String.format("%09d",i);
+    }
+    public static Campagna generaCampagna(final Campagna campagna, List<Storico> storici, List<Abbonamento> vecchiabb, List<Pubblicazione> pubblicazioni) {
+        final Set<Long> campagnapubblicazioniIds = new HashSet<>();
+        pubblicazioni.stream().forEach(p -> {
+            CampagnaItem ci = new CampagnaItem();
+            ci.setCampagna(campagna);
+            ci.setPubblicazione(p);
+            campagna.addCampagnaItem(ci);
+            campagnapubblicazioniIds.add(p.getId());            
+        });
 
-    public static Storico getStoricoBy(Anagrafica intestatario) {
-        Storico storico= new Storico();
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
+        final Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
+        storici.stream().filter(storico -> 
+            (!storico.isSospeso() && campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()))
+            && 
+            (!campagna.isRinnovaSoloAbbonatiInRegola() || pagamentoRegolare(storico, vecchiabb)
+            ))
+        .forEach(storico -> { 
+            if (!cassaStorico.containsKey(storico.getCassa())) {
+                cassaStorico.put(storico.getCassa(), new ArrayList<>());
+            }
+            cassaStorico.get(storico.getCassa()).add(storico);
+        });
+        
+        List<Abbonamento> abbonamenti = new ArrayList<>();
+        for (Cassa cassa: cassaStorico.keySet()) {
+            Map<Long,Abbonamento> abbti = new HashMap<>();
+            for (Storico storico: cassaStorico.get(cassa)) {
+                if (!abbti.containsKey(storico.getIntestatario().getId())) {
+                    Abbonamento abb = new Abbonamento();
+                    abb.setIntestatario(storico.getIntestatario());
+                    abb.setCampagna(campagna);
+                    abb.setAnno(campagna.getAnno());
+                    abb.setInizio(campagna.getInizio());
+                    abb.setFine(campagna.getFine());
+                    abb.setCassa(cassa);
+                    abbti.put(storico.getIntestatario().getId(), abb);
+                }
+                Abbonamento abbonamento= abbti.get(storico.getIntestatario().getId());
+                Spedizione spedizione = new Spedizione();
+                spedizione.setAbbonamento(abbonamento);
+                spedizione.setPubblicazione(storico.getPubblicazione());
+                spedizione.setDestinatario(storico.getDestinatario());
+                spedizione.setNumero(storico.getNumero());
+                spedizione.setInvio(storico.getInvio());
+                spedizione.setOmaggio(storico.getOmaggio());
+                abbonamento.addSpedizione(spedizione);
+            }
+            abbonamenti.addAll(abbti.values());
+        }
+        abbonamenti.stream().forEach(abb -> calcoloAbbonamento(abb));
+        campagna.setAbbonamenti(abbonamenti);
+        return campagna;
+    }    
+    public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
+        if (storico.getOmaggio() != Omaggio.No || storico.getOmaggio() != Omaggio.ConSconto) {
+            return true;
+        }
+        for (Abbonamento abb: abbonamenti) {
+            if (abb.getIntestatario().getId() == storico.getIntestatario().getId()) {
+                continue;
+            }
+            if (abb.getAnno() != getAnnoCorrente() || abb.getAnno() != getAnnoPassato()) {
+                continue;
+            }
+            for (Spedizione sped: abb.getSpedizioni()) {
+                if (sped.getPubblicazione().getId() != storico.getPubblicazione().getId()
+                        ||
+                    sped.getDestinatario().getId() != storico.getDestinatario().getId()     ) {
+                    continue;
+                }
+                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getVersamento() == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    public static void calcoloAbbonamento(Abbonamento abbonamento) {
+        double costo = 0.0;
+        Mese inizio = abbonamento.getInizio();
+        Mese fine = abbonamento.getFine();
+        for (Spedizione spedizione : abbonamento.getSpedizioni()) {
+            costo+= calcolaCosto(inizio, fine, spedizione.getPubblicazione(),spedizione.getOmaggio(),spedizione.getNumero());
+        }
+        abbonamento.setCosto(BigDecimal.valueOf(costo));
+        abbonamento.setCampo(generaVCampo(abbonamento.getAnno(), abbonamento.getInizio(), abbonamento.getFine()));
+    }
+    
+    /*
+     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
+     * riservati al correntista che intende utilizzare tale campo 2 caratteri
+     * numerici di controcodice pari al resto della divisione dei primi 16
+     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
+     * controcodice: 00 - 92)
+     */
+    public static String generaVCampo(Anno anno, Mese inizio, Mese fine) {
+        // primi 2 caratteri anno
+        String campo = anno.getAnnoAsString().substring(2, 4);
+        // 3-16
+        campo += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
+        campo += String.format("%02d", Long.parseLong(campo) % 93);
+        return campo;
+    }
+    public static boolean checkCampo(String campo) {
+        if (campo == null || campo.length() != 18) {
+            return false;
+            
+        }
+        
+        String codice = campo.substring(0, 16);
+        
+        Long valorecodice = (Long.parseLong(codice) % 93);
+        Integer codicecontrollo = Integer.parseInt(campo.substring(16,18));
+        return codicecontrollo.intValue() == valorecodice.intValue();
     }
 
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
+    public static int calcolaNumeroPubblicazioni(Mese inizio, Mese fine, Mese pub, TipoPubblicazione tipo) {
+        int numero = 0;
+        switch (tipo) {
+        case ANNUALE:
+            if (inizio.getPosizione() <= pub.getPosizione()
+                    && fine.getPosizione() >= pub.getPosizione()) {
+                numero = 1;
+            }
+            break;
+        case SEMESTRALE:
+            if (inizio.getPosizione() <= pub.getPosizione()
+                    && fine.getPosizione() >= pub.getPosizione()) {
+                numero += 1;
+            }
+            if (fine.getPosizione() >= pub.getPosizione() + 6 && inizio.getPosizione() <= pub.getPosizione() + 6) {
+                numero += 1;
+            }
+            break;
+        case MENSILE:
+            numero = fine.getPosizione()
+                    - inizio.getPosizione() + 1;
+            break;
+        case UNICO:
+            numero = 1;
+            break;
+        default:
+            break;
+        }
+        return numero;
     }
 
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
+    public static double calcolaCosto(
+            Mese inizio, 
+            Mese fine, 
             Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa,
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Invio invio,
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        storico.setInvio(invio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Anagrafica destinatario,
-            Pubblicazione pubblicazione, 
-            int numero) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(destinatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
+            Omaggio omaggio, 
+            Integer numero) throws UnsupportedOperationException {
+        if (inizio == null || fine == null || inizio.getPosizione() > fine.getPosizione() || pubblicazione == null || omaggio == null
+                || numero == null || pubblicazione.getMese() ==  null || pubblicazione.getTipo() == null )
+            throw new UnsupportedOperationException("Valori non ammissibili");
+        double costo = 0.0;
+        switch (omaggio) {
+        case No:
+            costo = pubblicazione.getCostoUnitario().doubleValue()
+                     * numero.doubleValue()
+                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());
+        break;
+        
+        case ConSconto:
+            costo = pubblicazione.getCostoScontato().doubleValue()
+                     * numero.doubleValue()
+                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());  
+            break;
+            
+        case CuriaDiocesiana:
+            break;
+        
+        case Gesuiti:
+            break;
+            
+        case CuriaGeneralizia:
+            break;
+            
+        default:
+            break;
+           
+        }              
+        return costo;
     }
 
     public static Date getStandardDate(LocalDate localDate) {
-        return Smd.getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
+        return getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
     }
 
     public static Date getStandardDate(Date date) {
@@ -202,7 +286,7 @@ public class Smd {
         return prospetti;
     }
 
-    private static Prospetto generaProspetto(Pubblicazione pubblicazione,
+    public static Prospetto generaProspetto(Pubblicazione pubblicazione,
             List<Abbonamento> abbonamenti, Anno anno, Mese mese,
             Omaggio omaggio) {
         Prospetto prospetto = new Prospetto(pubblicazione, anno, mese,
@@ -243,7 +327,7 @@ public class Smd {
     }
 
     
-    private static Operazione generaOperazione(
+    public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<Abbonamento> abbonamenti, 
             Anno anno, Mese mese) {
@@ -328,139 +412,6 @@ public class Smd {
         abbonamento.setVersamento(null);
         return versamento;
     }
-
-    public static String getProgressivoVersamento(int i) {
-        return String.format("%09d",i);
-    }
-    
-    public static List<Spedizione> selectSpedizioni(List<Spedizione> spedizioni, Anno anno, Mese mese, Pubblicazione pubblicazione) {
-        return spedizioni.stream()
-                .filter(s -> 
-                    s.getPubblicazione().getId() == pubblicazione.getId() 
-                    && s.getAbbonamento().getAnno() == anno
-                    && pubblicazione.getMesiPubblicazione().contains(mese)
-                ).collect(Collectors.toList());
-    }
-     
-    public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
-        if (storico.getOmaggio() != Omaggio.No || storico.getOmaggio() != Omaggio.ConSconto) {
-            return true;
-        }
-        for (Abbonamento abb: abbonamenti) {
-            if (abb.getIntestatario().getId() == storico.getIntestatario().getId()) {
-                continue;
-            }
-            if (abb.getAnno() != getAnnoCorrente() || abb.getAnno() != getAnnoPassato()) {
-                continue;
-            }
-            for (Spedizione sped: abb.getSpedizioni()) {
-                if (sped.getPubblicazione().getId() != storico.getPubblicazione().getId()
-                        ||
-                    sped.getDestinatario().getId() != storico.getDestinatario().getId()     ) {
-                    continue;
-                }
-                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getVersamento() == null) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    public static void generaCampagna(Campagna campagna, List<Storico> storici, List<Abbonamento> vecchiabb) {
-        Set<Long> campagnapubblicazioniIds = campagna.getCampagnaItems().stream().map(item -> item.getPubblicazione().getId()).collect(Collectors.toSet());
-        Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
-        Map<Long,Anagrafica>  intestatari = new HashMap<>();
-        for (Storico storico: storici) {
-            if (campagna.isRinnovaSoloAbbonatiInRegola() && !pagamentoRegolare(storico, vecchiabb)) {
-                continue;
-            }
-            if (storico.isSospeso() || !campagnapubblicazioniIds.contains(storico.getPubblicazione().getId())) {
-                continue;
-            }
-            if (!intestatari.containsKey(storico.getIntestatario().getId())) {
-                intestatari.put(storico.getIntestatario().getId(), storico.getIntestatario());
-            }
-            if (!cassaStorico.containsKey(storico.getCassa())) {
-                cassaStorico.put(storico.getCassa(), new ArrayList<>());
-            }
-            cassaStorico.get(storico.getCassa()).add(storico);
-        }
-        List<Abbonamento> abbonamenti = new ArrayList<>();
-        for (Cassa cassa: cassaStorico.keySet()) {
-            Map<Long,Abbonamento> abbti = new HashMap<>();
-            for (Storico storico: cassaStorico.get(cassa)) {
-                if (!abbti.containsKey(storico.getIntestatario().getId())) {
-                    Abbonamento abb = generateAbbonamento(storico.getIntestatario(), campagna,cassa);
-                    abbti.put(storico.getIntestatario().getId(), abb);
-                }
-                addSpedizione(abbti.get(storico.getIntestatario().getId()),storico);
-            }
-            abbonamenti.addAll(abbti.values());
-        }
-        abbonamenti.stream().forEach(abb -> calcoloAbbonamento(abb));
-        campagna.setAbbonamenti(abbonamenti);
-    }
-    
-    public static Abbonamento generateAbbonamento(Anagrafica intestatario, Campagna campagna, Cassa cassa) {
-        Abbonamento abb = new Abbonamento(intestatario);
-        abb.setCampagna(campagna);
-        abb.setAnno(campagna.getAnno());
-        abb.setInizio(campagna.getInizio());
-        abb.setFine(campagna.getFine());
-        abb.setCassa(cassa);
-        return abb;
-    }
-    
-    
-    public static Anno getAnnoCorrente() {
-        return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
-    }
-
-    public static Anno getAnnoPassato() {
-        Integer annoScorso = getAnnoCorrente().getAnno()-1;
-        return Anno.valueOf("ANNO"+annoScorso);
-    }
-
-    public static Anno getAnnoProssimo() {
-        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
-        return Anno.valueOf("ANNO"+annoProssimo);
-    }
-
-    public static Mese getMeseCorrente() {
-        return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
-    }
-
-    public static Spedizione addSpedizione(Abbonamento abbonamento, Storico storico) {
-        Spedizione spedizione = addSpedizione(abbonamento,storico.getPubblicazione(), storico.getDestinatario(), storico.getNumero());
-        spedizione.setInvio(storico.getInvio());
-        spedizione.setOmaggio(storico.getOmaggio());
-        return spedizione;
-    }
-    
-    public static Spedizione addSpedizione(Abbonamento abbonamento, 
-            Pubblicazione pubblicazione,
-            Anagrafica destinatario, 
-            int numero) {
-        if (abbonamento == null || pubblicazione == null || numero <= 0) {
-            return new Spedizione();
-        }
-        Spedizione spedizione = new Spedizione(abbonamento, pubblicazione, destinatario, numero);
-        abbonamento.addSpedizione(spedizione);
-        return spedizione;
-    }
-    public static boolean checkCampo(String campo) {
-        if (campo == null || campo.length() != 18) {
-            return false;
-            
-        }
-        
-        String codice = campo.substring(0, 16);
-        
-        Long valorecodice = (Long.parseLong(codice) % 93);
-        Integer codicecontrollo = Integer.parseInt(campo.substring(16,18));
-        return codicecontrollo.intValue() == valorecodice.intValue();
-    }
     
     public static boolean isVersamento(String versamento) {        
         return (
@@ -521,60 +472,6 @@ public class Smd {
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
         return versamento;
     }
-
-    static int startabbonamento = 0;
-
-    /*
-     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
-     * riservati al correntista che intende utilizzare tale campo 2 caratteri
-     * numerici di controcodice pari al resto della divisione dei primi 16
-     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
-     * controcodice: 00 - 92)
-     */
-    public static String generateCampo(Anno anno, Mese inizio, Mese fine) {
-        // primi 4 caratteri anno
-        String campo = anno.getAnnoAsString();
-        // 5 e 6 inizio
-        campo += inizio.getCode();
-        // 7 e 8 fine
-        campo += fine.getCode();
-        // 9-16
-        startabbonamento++;
-        campo += String.format("%08d", startabbonamento);
-        campo += String.format("%02d", Long.parseLong(campo) % 93);
-        return campo;
-    }
-
-    public static int getNumeroPubblicazioni(Mese inizio, Mese fine, Mese pub, TipoPubblicazione tipo) {
-        int numero = 0;
-        switch (tipo) {
-        case ANNUALE:
-            if (inizio.getPosizione() <= pub.getPosizione()
-                    && fine.getPosizione() >= pub.getPosizione()) {
-                numero = 1;
-            }
-            break;
-        case SEMESTRALE:
-            if (inizio.getPosizione() <= pub.getPosizione()
-                    && fine.getPosizione() >= pub.getPosizione()) {
-                numero += 1;
-            }
-            if (fine.getPosizione() >= pub.getPosizione() + 6 && inizio.getPosizione() <= pub.getPosizione() + 6) {
-                numero += 1;
-            }
-            break;
-        case MENSILE:
-            numero = fine.getPosizione()
-                    - inizio.getPosizione() + 1;
-            break;
-        case UNICO:
-            numero = 1;
-            break;
-        default:
-            break;
-        }
-        return numero;
-    }
     
     public static void calcoloImportoIncasso(Incasso incasso) {
         BigDecimal importo = BigDecimal.ZERO;
@@ -588,51 +485,4 @@ public class Smd {
         incasso.setImportoErrati(BigDecimal.ZERO);
         incasso.setImportoEsatti(incasso.getImporto());
     }
-    
-    public static void calcoloAbbonamento(Abbonamento abbonamento) {
-        double costo = 0.0;
-        Mese inizio = abbonamento.getInizio();
-        Mese fine = abbonamento.getFine();
-        for (Spedizione spedizione : abbonamento.getSpedizioni()) {
-            costo+= generaCosto(inizio, fine, spedizione);
-        }
-        abbonamento.setCosto(BigDecimal.valueOf(costo));
-        abbonamento.setCampo(generateCampo(abbonamento.getAnno(), abbonamento.getInizio(), abbonamento.getFine()));
-    }
-    
-    public static double generaCosto(Mese inizio, Mese fine, Spedizione spedizione) { 
-        return generaCosto(inizio, fine, spedizione.getPubblicazione(), spedizione.getOmaggio(), spedizione.getNumero());
-    }
-
-    public static double generaCosto(Mese inizio, Mese fine, Pubblicazione pubblicazione, Omaggio omaggio, Integer numero) {
-        double costo = 0.0;
-        switch (omaggio) {
-        case No:
-            costo = pubblicazione.getCostoUnitario().doubleValue()
-                     * numero.doubleValue()
-                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());
-        break;
-        
-        case ConSconto:
-            costo = pubblicazione.getCostoScontato().doubleValue()
-                     * numero.doubleValue()
-                     * getNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());  
-            break;
-            
-        case CuriaDiocesiana:
-            break;
-        
-        case Gesuiti:
-            break;
-            
-        case CuriaGeneralizia:
-            break;
-            
-        default:
-            break;
-           
-        }              
-        return costo;
-    }
-
 }

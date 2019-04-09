@@ -14,7 +14,9 @@ public class AbbonamentoAdd extends SmdAdd<Abbonamento> {
     
     @Override
     public Abbonamento generate() {
-        return new Abbonamento(primoIntestatario);
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setIntestatario(primoIntestatario);
+        return abbonamento;
     }
 
     public Anagrafica getPrimoIntestatario() {

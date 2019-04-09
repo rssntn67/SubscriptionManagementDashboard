@@ -72,12 +72,6 @@ public class Anagrafica implements SmdEntity {
     @OneToMany(cascade = { CascadeType.PERSIST })
     private List<Nota> note;
 
-    public Anagrafica(String nome, String cognome) {
-        this.nome=nome;
-    	this.cognome=cognome;
-    	this.paese=Paese.ITALIA;
-    }
-
     public Anagrafica() {
     }
 

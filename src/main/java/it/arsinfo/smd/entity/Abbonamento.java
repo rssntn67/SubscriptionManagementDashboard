@@ -64,10 +64,6 @@ public class Abbonamento implements SmdEntity {
     public Abbonamento() {
     }
 
-    public Abbonamento(Anagrafica intestatario) {
-        this.intestatario = intestatario;
-    }
-
     public Anagrafica getIntestatario() {
         return intestatario;
     }

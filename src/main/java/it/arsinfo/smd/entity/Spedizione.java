@@ -40,19 +40,6 @@ public class Spedizione implements SmdEntity {
     public Spedizione() {
     }
 
-    public Spedizione(Abbonamento abbonamento) {
-        super();
-        this.abbonamento = abbonamento;
-    }
-
-    public Spedizione(Abbonamento abbonamento, Pubblicazione pubblicazione,
-            Anagrafica destinatario, int numero) {
-        this.abbonamento= abbonamento;
-        this.pubblicazione=pubblicazione;
-        this.destinatario=destinatario;
-        this.numero=numero;
-    }
-
     public Long getId() {
         return id;
     }

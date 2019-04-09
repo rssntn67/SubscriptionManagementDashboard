@@ -44,16 +44,6 @@ public class CampagnaItem
             this.pubblicazione = pubblicazione;
         }
 
-        public CampagnaItem(Campagna campagna) {
-            this.campagna = campagna;
-        }
-
-        public CampagnaItem(Campagna campagna, Pubblicazione pubblicazione) {
-            super();
-            this.campagna = campagna;
-            this.pubblicazione = pubblicazione;
-        }
-
         @Override
         public String toString() {
             return String.format("CampagnaItem[id=%d, Campagna=%d Pubblicazione=%d]", 
