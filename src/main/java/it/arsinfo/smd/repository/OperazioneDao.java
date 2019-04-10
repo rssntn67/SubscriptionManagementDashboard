@@ -12,6 +12,8 @@ import it.arsinfo.smd.entity.Pubblicazione;
 public interface OperazioneDao extends JpaRepository<Operazione, Long> {
 
 	List<Operazione> findByAnno(Anno anno);
+        List<Operazione> findByPubblicazione(Pubblicazione anno);
+        List<Operazione> findByMese(Mese anno);
         List<Operazione> findByAnnoAndMese(Anno anno,Mese mese);
         List<Operazione> findByAnnoAndPubblicazione(Anno anno,Pubblicazione pubblicazione);
         List<Operazione> findByAnnoAndMeseAndPubblicazione(Anno anno,Mese mese,Pubblicazione pubblicazione);

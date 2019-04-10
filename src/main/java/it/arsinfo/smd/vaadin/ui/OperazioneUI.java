@@ -10,6 +10,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdButton;
 import it.arsinfo.smd.vaadin.model.SmdUI;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
@@ -25,18 +26,23 @@ public class OperazioneUI extends SmdUI {
 
     @Autowired
     OperazioneDao operazioneDao;
-    
+
+    @Autowired
+    PubblicazioneDao pubblicazioneDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Operazioni");
         
         SmdButton insolventi = new SmdButton("Insolventi", VaadinIcons.ENVELOPES);
+        OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioneDao.findAll());
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         
-        addSmdComponents(insolventi,grid);
+        addSmdComponents(insolventi,search,grid);
         
         insolventi.setChangeHandler(()-> Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE));
-        
+
+        search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(()-> {
             if (grid.getSelected() == null) {
                 return;

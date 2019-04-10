@@ -347,9 +347,7 @@ public class Smd {
             }
         }
         operazione.setStimato(conta);
-        return operazione;
-        
-        
+        return operazione;        
     }
     
     public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {

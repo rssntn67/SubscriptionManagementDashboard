@@ -49,8 +49,8 @@ public class CampagnaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
-        CampagnaItemEditor campagnaItemEditor = 
-                new CampagnaItemEditor(
+        CampagnaItemsEditor campagnaItemEditor = 
+                new CampagnaItemsEditor(
                    pubblicazioneDao.findAll()
                    .stream()
                    .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
@@ -150,8 +150,10 @@ public class CampagnaUI extends SmdUI {
             grid.populate(search.find());
         });
         
+        campagnaItemEditor.setChangeHandler(() -> {});
+
         grid.addComponentColumn(campagna -> {
-            Button button = new Button("Genera Anagrafica Ccp", VaadinIcons.ENVELOPES);
+            Button button = new Button("Genera Ccp", VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
                 Notification.show("Da realizzare", Notification.Type.WARNING_MESSAGE);
                 });

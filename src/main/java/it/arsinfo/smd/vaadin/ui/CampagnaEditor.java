@@ -30,7 +30,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
     public CampagnaEditor(CampagnaDao repo) {
 
         super(repo, new Binder<>(Campagna.class));
-        setComponents(pri, pag, getActions());
+        setComponents(getActions(),pri, pag);
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
