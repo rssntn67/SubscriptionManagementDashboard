@@ -6,9 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.util.StringUtils;
 
-import com.vaadin.annotations.Title;
 import com.vaadin.shared.ui.ValueChangeMode;
-import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -17,10 +15,7 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdSearch;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_PUBBLICAZIONI)
-@Title("Anagrafica Pubblicazioni ADP")
 public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
 
     private String searchNome;
