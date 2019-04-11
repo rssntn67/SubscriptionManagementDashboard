@@ -48,9 +48,12 @@ public class OperazioneUI extends SmdUI {
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
-        addSmdComponents(insolventi,generaShow,genera,search,grid);
+        OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
+        
+        addSmdComponents(insolventi,generaShow,genera,editor,search,grid);
         
         genera.setVisible(false);
+        editor.setVisible(false);
 
         generaShow.setChangeHandler(() -> {
             insolventi.setVisible(false);
@@ -72,12 +75,24 @@ public class OperazioneUI extends SmdUI {
             if (grid.getSelected() == null) {
                 return;
             }
-            Notification.show(grid.getSelected().toString());   
+            insolventi.setVisible(false);
+            generaShow.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
+            editor.edit(grid.getSelected());   
+        });
+        
+        editor.setChangeHandler(() -> {
+            editor.setVisible(false);
+            insolventi.setVisible(true);
+            generaShow.setVisible(true);
+            search.setVisible(true);
+            grid.populate(search.find());;            
         });
 
         grid.addComponentColumn(op -> {
             Button button = new Button("Rigenera",VaadinIcons.ENVELOPES);
-            button.setEnabled(op.getDefinitivo() == null);
+            button.setEnabled(!op.chiuso());
             button.addClickListener(click -> {
                 operazioneDao.save(
                    Smd.generaOperazione(op.getPubblicazione(), 

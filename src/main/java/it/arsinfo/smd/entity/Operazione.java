@@ -1,5 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import java.beans.Transient;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,7 +30,7 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Smd.getMeseCorrente();
 
-    private Integer definitivo;
+    private Integer definitivo = 0;
 
     private Integer stimato = 0;
 
@@ -93,5 +95,16 @@ public class Operazione implements SmdEntity {
 
     public void setStimato(Integer stimato) {
         this.stimato = stimato;
+    }
+    
+    @Transient
+    public boolean chiuso() {
+        if (stimato == 0 && 0 == definitivo) {
+            return true;
+        }
+        if (stimato >= 0 && definitivo > 0) {
+            return true;
+        }
+        return false;
     }
 }
