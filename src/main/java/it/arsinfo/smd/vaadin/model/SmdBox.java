@@ -2,30 +2,27 @@
 package it.arsinfo.smd.vaadin.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.entity.SmdEntity;
-
-public abstract class SmdBox<T extends SmdEntity>
-    extends SmdChangeHandler {
+public abstract class SmdBox<T> {
 
     private HorizontalLayout layout= new HorizontalLayout();
     private List<T> selected = new ArrayList<>();
-    private final List<T> provided;
+    private final Collection<T> provided;
 
-    public SmdBox(List<T> provided) {
+    public SmdBox(Collection<T> provided) {
         this.provided=provided;
-        setComponents(layout);
     }
 
     public List<T> getSelected() {
         return selected;
     }
 
-    public List<T> getProvided() {
+    public Collection<T> getProvided() {
         return provided;
     }
     
@@ -38,11 +35,9 @@ public abstract class SmdBox<T extends SmdEntity>
             } else {
                 selected.remove(t);
             }
-            onChange();
         });
         cbx.setReadOnly(getReadOnly(t, persisted));
         return cbx;
-
     }
 
     public void edit(boolean persisted) {
@@ -52,6 +47,7 @@ public abstract class SmdBox<T extends SmdEntity>
         provided.stream().forEach(t -> {
             layout.addComponent(generaBox(t,false,persisted));                
         });
+        layout.setVisible(true);
     }
 
     public abstract boolean getReadOnly(T t, boolean persisted);
@@ -63,6 +59,5 @@ public abstract class SmdBox<T extends SmdEntity>
 
     public void setLayout(HorizontalLayout layout) {
         this.layout = layout;
-    }
-    
+    }    
 }

@@ -1,5 +1,7 @@
 package it.arsinfo.smd.vaadin.ui;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -9,6 +11,9 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdButton;
@@ -30,18 +35,38 @@ public class OperazioneUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazioneDao;
 
+    @Autowired
+    AbbonamentoDao abbonamentoDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Operazioni");
+        List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdButton insolventi = new SmdButton("Insolventi", VaadinIcons.ENVELOPES);
-        OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioneDao.findAll());
+        SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
+        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
+        OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
+        addSmdComponents(insolventi,generaShow,genera,search,grid);
         
-        addSmdComponents(insolventi,search,grid);
-        
-        insolventi.setChangeHandler(()-> Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE));
+        genera.setVisible(false);
 
+        generaShow.setChangeHandler(() -> {
+            insolventi.setVisible(false);
+            generaShow.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
+            genera.edit();
+        }); 
+        genera.setChangeHandler(() -> {
+            insolventi.setVisible(true);
+            generaShow.setVisible(true);
+            genera.setVisible(false);
+            search.setVisible(true);
+            grid.setVisible(true);
+        }); 
+        insolventi.setChangeHandler(()-> Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE));
         search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(()-> {
             if (grid.getSelected() == null) {
@@ -50,7 +75,22 @@ public class OperazioneUI extends SmdUI {
             Notification.show(grid.getSelected().toString());   
         });
 
-        grid.addComponentColumn(prospetto -> {
+        grid.addComponentColumn(op -> {
+            Button button = new Button("Rigenera",VaadinIcons.ENVELOPES);
+            button.setEnabled(op.getDefinitivo() == null);
+            button.addClickListener(click -> {
+                operazioneDao.save(
+                   Smd.generaOperazione(op.getPubblicazione(), 
+                                        abbonamentoDao.findByAnno(op.getAnno()),
+                                        op.getAnno(), 
+                                        op.getMese()));
+                operazioneDao.delete(op);
+                grid.populate(search.find());
+            });
+            return button;
+        });
+
+        grid.addComponentColumn(op -> {
             Button button = new Button("Spedizioniere",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
                 Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE);
@@ -58,7 +98,7 @@ public class OperazioneUI extends SmdUI {
             return button;
         });
         
-        grid.addComponentColumn(prospetto -> {
+        grid.addComponentColumn(op -> {
             Button button = new Button("Adp Sede",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
                 Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE);

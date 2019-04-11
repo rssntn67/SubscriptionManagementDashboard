@@ -31,18 +31,10 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
     }
 
     private Integer getTotaleDefinitivo(List<Operazione> items) {
-        Integer totale = 0;
-        for (Operazione oper:items) {
-            totale=totale+(oper.getDefinitivo());
-        }
-        return totale;    
+        return items.stream().filter(o -> o.getDefinitivo() != null).mapToInt(o -> o.getDefinitivo()).sum();
     }
 
     private Integer getTotaleStimato(List<Operazione> items) {
-        Integer totale = 0;
-        for (Operazione oper:items) {
-            totale=totale+(oper.getStimato());
-        }
-        return totale;    
+        return items.stream().filter(o -> o.getStimato() != null).mapToInt(o -> o.getStimato()).sum();
     }
 }

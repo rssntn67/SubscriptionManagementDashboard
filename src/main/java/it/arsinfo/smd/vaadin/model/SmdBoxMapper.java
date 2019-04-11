@@ -21,7 +21,7 @@ public abstract class SmdBoxMapper<T extends SmdEntity, K extends SmdEntity>
         getProvided().stream().forEach(t -> {
             getLayout().addComponent(generaBox(t,matchers.contains(t.getId()),persisted));                
         });
-        setVisible(true);
+        getLayout().setVisible(true);
     }
 
     public abstract Set<Long> match(List<K> items);
