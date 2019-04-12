@@ -1,7 +1,6 @@
 package it.arsinfo.smd.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,10 +9,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
 @EnableWebSecurity
@@ -52,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// Allow access to static resources ("/VAADIN/**")
 		reg = reg.antMatchers("/VAADIN/**").permitAll();
 		// Require authentication for all URLS ("/**")
+		reg = reg.antMatchers(SmdUIHelper.URL_USER).hasAnyAuthority(Role.ADMIN.name());
 		reg = reg.antMatchers("/**").hasAnyAuthority(UserInfo.getRoleNames());
 		HttpSecurity sec = reg.and();
 

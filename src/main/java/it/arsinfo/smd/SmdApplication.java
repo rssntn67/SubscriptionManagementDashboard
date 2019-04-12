@@ -48,13 +48,14 @@ public class SmdApplication {
         return (args) -> {
             UserInfo administrator = userInfoDao.findByUsername("admin");
             if (administrator == null) {
-                log.info("creato user admin/admin");
                 administrator = new UserInfo("admin", passwordEncoder.encode("admin"), Role.ADMIN);
                 userInfoDao.save(administrator);
+                log.info("creato user admin/admin");
             }
 
             if (loadSampleData != null && loadSampleData.equals("true")) {
-                
+                userInfoDao.save(new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER));
+                log.info("creato user adp/adp");
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 

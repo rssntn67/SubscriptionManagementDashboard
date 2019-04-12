@@ -8,6 +8,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import it.arsinfo.smd.security.SecurityUtils;
+
 public abstract class SmdUI extends UI {
 
     /**
@@ -21,7 +23,7 @@ public abstract class SmdUI extends UI {
     protected void init(VaadinRequest request, String head) {
 
         menu.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        menu.addComponents(SmdUIHelper.getPageLinks());
+        menu.addComponents(SmdUIHelper.getPageLinks(SecurityUtils.getUsername()));
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
