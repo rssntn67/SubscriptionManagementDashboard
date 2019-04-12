@@ -51,6 +51,8 @@ public class OperazioneEditor
         mese.setEmptySelectionAllowed(false);
         mese.setReadOnly(true);
         
+        stimato.setReadOnly(true);
+        
         getBinder()
             .forField(definitivo)
             .withValidator(str -> str != null, "Inserire un numero")
