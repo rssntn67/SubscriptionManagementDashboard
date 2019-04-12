@@ -13,6 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Cuas;
@@ -40,7 +46,11 @@ import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.security.RedirectAuthenticationSuccessHandler;
+import it.arsinfo.smd.security.SecurityConfig;
+import it.arsinfo.smd.security.UserDetailsServiceImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -70,11 +80,25 @@ public class SmdApplicationTests {
     private ProspettoDao prospettoDao;
     @Autowired
     private NotaDao notaDao;
+    @Autowired
+    private UserInfoDao userInfoDao;
+
+    @Autowired
+    private SecurityConfig securityConfig;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     
     @Test
-    public void contextLoads() {
+    public void testContextLoads() {
         assertNotNull(abbonamentoDao);
         assertNotNull(anagraficaDao);
         assertNotNull(pubblicazioneDao);
@@ -89,6 +113,38 @@ public class SmdApplicationTests {
         assertNotNull(incassoDao);
         assertNotNull(operazioneDao);
         assertNotNull(prospettoDao);
+        assertNotNull(userInfoDao);
+        assertNotNull(securityConfig);
+        assertNotNull(userDetailsService);
+        assertTrue(userDetailsService instanceof UserDetailsServiceImpl);
+        assertNotNull(passwordEncoder);
+        assertTrue(passwordEncoder instanceof BCryptPasswordEncoder);
+        assertNotNull(authenticationSuccessHandler);
+        assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);
+   }
+
+    @Test 
+    public void testAuthenticateAdmin() {
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("admin", "admin");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+    }
+    
+    @Test 
+    public void testAuthenticateAdp() {
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("adp", "adp");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+            assertTrue(false);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
     }
 
     @Test

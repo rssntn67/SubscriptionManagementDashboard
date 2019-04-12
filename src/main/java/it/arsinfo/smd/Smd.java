@@ -17,6 +17,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Anno;
@@ -39,7 +43,13 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 
+@Configuration
 public class Smd {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+    }
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
