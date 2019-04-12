@@ -1,28 +1,8 @@
 <!DOCTYPE html>
 <html>
-<!-- 
-Hint to Vaadin that if this page is ever sent back as response to a UIDL request, the user should be redirected.
-
-Vaadin-Refresh: context://login.html
--->
 <head>
   <title>Gestione Abbonamenti ADP</title>
-  
-  <link rel="shortcut icon" href="VAADIN/themes/apptheme/favicon.ico" />
-  
-  <link rel="icon" sizes="192x192" href="VAADIN/themes/apptheme/icon-192.png">
-  <link rel="icon" sizes="96x96" href="VAADIN/themes/apptheme/icon-96.png">
-  
-  <link rel="apple-touch-icon" sizes="192x192" href="VAADIN/themes/apptheme/icon-192.png">
-  <link rel="apple-touch-icon" sizes="96x96" href="VAADIN/themes/apptheme/icon-96.png">
-  
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-  
-  <!-- Enable these to hide browser controls when app is started from homescreen:
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  -->
-    
+      
   <script type="text/javascript">
     var init = function() {
       if (window.location.hash) {
@@ -49,13 +29,12 @@ Vaadin-Refresh: context://login.html
 		}
 		
     html {
-     background: linear-gradient(145deg, #484962 30%, #d06b41 100%);
+     background: linear-gradient(145deg, #484962 50%, #d06b41 100%);
     }
     @media (min-width: 1000px) {
       /* load on wide screens */
       body {
         background-color: transparent;
-        background-image: url(VAADIN/themes/apptheme/bg.jpg);
         background-size: cover;
       }
     }
@@ -67,7 +46,7 @@ Vaadin-Refresh: context://login.html
       width: 60px;
       height: 60px;
       border-radius: 100%;
-      background-image: url(VAADIN/themes/apptheme/icon-96.png);
+      background-image: url(VAADIN/themes/smdtheme/adp.png);
       background-size: contain;
       background-repeat: no-repeat;
       background-color: rgba(255,255,255,0.2);
@@ -196,7 +175,7 @@ Vaadin-Refresh: context://login.html
 			border-color: red;
 		}
 		.error form:after {
-			content: "The username and password you entered do not match our records. Please double-check and try again.";
+			content: "Username o passward errate. Riprovare";
 			display: block;
 			border: 1px solid red;
 			border-radius: 4px;
