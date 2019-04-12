@@ -194,19 +194,19 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        Pubblicazione first = pubblicazioneDao.findById(1L).get();
-        log.info("Messaggio found with findOne(1L):");
+        Pubblicazione first = pubblicazioneDao.findById(2L).get();
+        log.info("Messaggio found with findOne(2L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("1"), first.getId().longValue());
+        assertEquals(Long.parseLong("2"), first.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, first.getTipo());
         assertEquals("Messaggio", first.getNome());
         log.info(first.toString());
         log.info("");
 
-        Pubblicazione second = pubblicazioneDao.findById(2L).get();
-        log.info("lodare found with findOne(2L):");
+        Pubblicazione second = pubblicazioneDao.findById(3L).get();
+        log.info("lodare found with findOne(3L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("2"), second.getId().longValue());
+        assertEquals(Long.parseLong("3"), second.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, second.getTipo());
         assertEquals("Lodare e Servire", second.getNome());
         log.info(second.toString());
@@ -214,20 +214,24 @@ public class SmdApplicationTests {
 
         log.info("Anagrafica found with findAll():");
         log.info("-------------------------------");
-        for (Anagrafica customer : anagraficaDao.findAll()) {
+        List<Anagrafica> anagrafiche = anagraficaDao.findAll();
+        assertEquals(6, anagrafiche.size());
+        for (Anagrafica customer : anagrafiche) {
             log.info(customer.toString());
         }
         log.info("");
 
-        log.info("Anagrafica Russo found with findOne(5L):");
+        log.info("Anagrafica Russo found with findOne(6L):");
         log.info("--------------------------------------------");
-        Anagrafica russo = anagraficaDao.findById(5L).get();
+        Anagrafica russo = anagraficaDao.findById(6L).get();
+        assertEquals("Russo", russo.getCognome());
         log.info(russo.toString());
         log.info("");
 
         log.info("Anagrafica found with findByLastNameStartsWithIgnoreCase('Russo'):");
         log.info("--------------------------------------------");
-        for (Anagrafica ana : anagraficaDao.findByCognomeContainingIgnoreCase("Russo")) {
+        for (Anagrafica ana : anagraficaDao.findByCognomeContainingIgnoreCase("rUsSo")) {
+            assertEquals("Russo", ana.getCognome());
             log.info(ana.toString());
         }
         log.info("");
@@ -235,6 +239,7 @@ public class SmdApplicationTests {
         log.info("Anagrafica found with findByDiocesi('ROMA'):");
         log.info("--------------------------------------------");
         for (Anagrafica roma : anagraficaDao.findByDiocesi(Diocesi.DIOCESI168)) {
+            assertEquals(Diocesi.DIOCESI168, roma.getDiocesi());
             log.info(roma.toString());
         }
         log.info("");
