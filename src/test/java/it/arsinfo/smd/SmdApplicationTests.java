@@ -141,9 +141,9 @@ public class SmdApplicationTests {
                 new UsernamePasswordAuthenticationToken("adp", "adp");
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
-            assertTrue(false);
         } catch (Exception e) {
             log.info(e.getMessage());
+            assertTrue(false);
         }
     }
 
@@ -159,7 +159,18 @@ public class SmdApplicationTests {
                               incassoDao, 
                               versamentoDao, 
                               operazioneDao,
-                              prospettoDao).run();
+                              prospettoDao,
+                              userInfoDao,
+                              passwordEncoder).run();
+
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("adp", "adp");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
 
         log.info("Pubblicazioni found with findAll():");
         log.info("-------------------------------");

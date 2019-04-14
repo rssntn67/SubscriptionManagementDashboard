@@ -40,11 +40,19 @@ public class SmdApplication {
 
     @Bean
     @Transactional
-    public CommandLineRunner loadData(AnagraficaDao anagraficaDao, StoricoDao storicoDao,
-            PubblicazioneDao pubblicazioneDao, AbbonamentoDao abbonamentoDao,
+    public CommandLineRunner loadData(
+            AnagraficaDao anagraficaDao, 
+            StoricoDao storicoDao,
+            PubblicazioneDao pubblicazioneDao, 
+            AbbonamentoDao abbonamentoDao,
             SpedizioneDao spedizioneDao,
-            CampagnaDao campagnaDao, IncassoDao incassoDao, VersamentoDao versamentoDao,
-            OperazioneDao operazioneDao, ProspettoDao prospettoDao, UserInfoDao userInfoDao, PasswordEncoder passwordEncoder) {
+            CampagnaDao campagnaDao, 
+            IncassoDao incassoDao, 
+            VersamentoDao versamentoDao,
+            OperazioneDao operazioneDao, 
+            ProspettoDao prospettoDao, 
+            UserInfoDao userInfoDao, 
+            PasswordEncoder passwordEncoder) {
         return (args) -> {
             UserInfo administrator = userInfoDao.findByUsername("admin");
             if (administrator == null) {
@@ -54,8 +62,6 @@ public class SmdApplication {
             }
 
             if (loadSampleData != null && loadSampleData.equals("true")) {
-                userInfoDao.save(new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER));
-                log.info("creato user adp/adp");
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 
@@ -66,7 +72,10 @@ public class SmdApplication {
                       incassoDao, 
                       versamentoDao, 
                       operazioneDao,
-                      prospettoDao)).start();
+                      prospettoDao,
+                      userInfoDao,
+                      passwordEncoder
+                      )).start();
             }
             
         };

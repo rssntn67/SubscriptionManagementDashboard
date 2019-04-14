@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -31,7 +32,9 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -41,6 +44,7 @@ import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 public class SmdLoadSampleData implements Runnable {
@@ -57,7 +61,8 @@ public class SmdLoadSampleData implements Runnable {
     private final VersamentoDao versamentoDao;
     private final OperazioneDao operazioneDao;
     private final ProspettoDao prospettoDao;
-    
+    private final UserInfoDao userInfoDao;
+    private final PasswordEncoder passwordEncoder;
     public static Storico getStoricoBy(
             Anagrafica intestatario, 
             Pubblicazione pubblicazione, 
@@ -137,7 +142,9 @@ public class SmdLoadSampleData implements Runnable {
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao,
-            ProspettoDao prospettoDao
+            ProspettoDao prospettoDao,
+            UserInfoDao userInfoDao,
+            PasswordEncoder passwordEncoder
     ) {
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
@@ -149,6 +156,8 @@ public class SmdLoadSampleData implements Runnable {
         this.versamentoDao=versamentoDao;
         this.operazioneDao=operazioneDao;
         this.prospettoDao=prospettoDao;
+        this.userInfoDao=userInfoDao;
+        this.passwordEncoder=passwordEncoder;
     }
     
     public static Pubblicazione getMessaggio() {
@@ -636,6 +645,11 @@ public class SmdLoadSampleData implements Runnable {
                             EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
                                 prospettoDao.save(p);
                             });
+        
+        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER);
+        adp.setLocked(true);
+        userInfoDao.save(adp);
+        log.info("creato user adp/adp");
         log.info("End Loading Sample Data");
    
     }
