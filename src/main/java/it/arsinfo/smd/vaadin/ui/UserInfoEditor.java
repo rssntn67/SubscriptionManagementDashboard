@@ -11,6 +11,7 @@ import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.BeanValidator;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
@@ -32,14 +33,15 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
     private final ComboBox<Role> role = new ComboBox<Role>("Selezionare il ruolo",EnumSet.allOf(Role.class));
     private final PasswordField password = new PasswordField("password");
     private final PasswordField confirm = new PasswordField("confirm");
-
+    private final CheckBox locked = new CheckBox("locked");
     private final Button resetPassword = new Button("Reset Password");
 
     private boolean passwordRequired;
     public UserInfoEditor(UserInfoDao repo, PasswordEncoder passwordEncoder) {
         super(repo, new Binder<>(UserInfo.class));
-        setComponents(getActions(),username,role,password,confirm,resetPassword);
+        setComponents(getActions(),username,role,locked,password,confirm,resetPassword);
         
+        getBinder().forField(locked).bind("locked");
         getBinder().forField(username).asRequired().bind("username");
         getBinder().forField(role).asRequired().bind("role");
         getBinder().forField(password).withValidator(passwordValidator)
@@ -56,32 +58,39 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
         setVisible(false);
     }
     
-    private void resetPassword() {
+    private boolean checkPassword() {
         if (password.isEmpty()) {
             Notification.show("Il reset della Password è fallito",
                               "il campo password deve essere valorizzato",
                               Notification.Type.HUMANIZED_MESSAGE);
-            return;
+            return false;
         }
         
         if (!SecurityUtils.verify(password.getValue())) {
             Notification.show("Il reset della Password è fallito",
                               "la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale",
                               Notification.Type.HUMANIZED_MESSAGE);
-            return;
+            return false;
         }
 
         if (confirm.isEmpty())  {
             Notification.show("Il reset della Password è fallito",
                               "il campo confirm deve essere valorizzato",
                               Notification.Type.HUMANIZED_MESSAGE);
-            return;
+            return false;
         }
         
         if (!confirm.getValue().equals(password.getValue())) {
             Notification.show("Il reset della Password è fallito",
                               "le password non corrispondono",
                               Notification.Type.HUMANIZED_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void resetPassword() {
+        if (!checkPassword()) {
             return;
         }
         super.save();
@@ -90,17 +99,25 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
 
     @Override 
     public void save() {
-        resetPassword();
+        super.save();
+        Notification.show("User salvato",Notification.Type.HUMANIZED_MESSAGE);
     }
 
     @Override
     public void focus(boolean persisted, UserInfo obj) {
-        this.passwordRequired = !persisted;
+        resetPassword.setEnabled(persisted && obj.isLocked());
+        passwordRequired = !persisted;
         password.setRequiredIndicatorVisible(passwordRequired);
+        password.setReadOnly(!persisted ||(persisted && obj.isLocked()));
+        confirm.setVisible(!persisted ||(persisted && obj.isLocked()));
     }
     
     private Validator<String> passwordValidator = new Validator<String>() {
 
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         BeanValidator passwordBeanValidator = new BeanValidator(UserInfo.class, "passwordHash");
 
         @Override
