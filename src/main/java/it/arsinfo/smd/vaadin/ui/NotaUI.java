@@ -12,9 +12,8 @@ import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_NOTE)
+@SpringUI(path = SmdUI.URL_NOTE)
 @Title("Note Storico ADP")
 public class NotaUI extends SmdUI {
 

@@ -1,10 +1,5 @@
 package it.arsinfo.smd.security;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,37 +33,12 @@ public class SecurityUtils {
 	}
 
 	/**
-	 * Check if currently signed-in user is in the role with the given role
-	 * name.
-	 *
-	 * @param role
-	 *            the role to check for
-	 * @return <code>true</code> if user is in the role, <code>false</code>
-	 *         otherwise
-	 */
-	public static boolean isCurrentUserInRole(String role) {
-		return getUserRoles().stream().filter(roleName -> roleName.equals(Objects.requireNonNull(role))).findAny()
-				.isPresent();
-	}
-
-	/**
-	 * Gets the roles the currently signed-in user belongs to.
-	 *
-	 * @return a set of all roles the currently signed-in user belongs to.
-	 */
-	public static Set<String> getUserRoles() {
-		SecurityContext context = SecurityContextHolder.getContext();
-		return context.getAuthentication().getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toSet());
-	}
-
-	/**
 	 * Gets the user object for the current user.
 	 *
 	 * @return the user object
 	 */
-	public static UserInfo getCurrentUser(UserInfoDao userService) {
-		return userService.findByUsername(SecurityUtils.getUsername());
+	public static UserInfo getCurrentUser(UserInfoDao userInfoDao) {
+		return userInfoDao.findByUsername(SecurityUtils.getUsername());
 	}
 
 	public static boolean verify(String password) {

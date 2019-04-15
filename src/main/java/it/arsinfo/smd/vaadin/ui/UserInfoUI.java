@@ -10,10 +10,9 @@ import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path=SmdUIHelper.URL_USER)
-@Title("Gestione Accesso User")
+@SpringUI(path=SmdUI.URL_USER)
+@Title("Amministrazione Utenti")
 public class UserInfoUI extends SmdUI {
 
     Grid<it.arsinfo.smd.entity.UserInfo> grid;
@@ -30,7 +29,7 @@ public class UserInfoUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Users");
-        UserInfoAdd add = new UserInfoAdd("Aggiungi User");
+        UserInfoAdd add = new UserInfoAdd("Aggiungi Utente");
         UserInfoGrid grid = new UserInfoGrid("Users");
         UserInfoEditor editor = new UserInfoEditor(userInfoDao,passwordEncoder);
         

@@ -15,9 +15,8 @@ import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdButton;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_PROSPETTI)
+@SpringUI(path = SmdUI.URL_PROSPETTI)
 @Title("Statistiche ADP")
 public class ProspettoUI extends SmdUI {
 

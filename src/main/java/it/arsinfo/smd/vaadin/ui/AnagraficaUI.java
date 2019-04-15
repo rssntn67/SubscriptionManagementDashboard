@@ -20,9 +20,8 @@ import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_ANAGRAFICA)
+@SpringUI(path = SmdUI.URL_ANAGRAFICA)
 @Title("Anagrafica Clienti ADP")
 public class AnagraficaUI extends SmdUI {
 

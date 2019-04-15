@@ -8,9 +8,8 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_PUBBLICAZIONI)
+@SpringUI(path = SmdUI.URL_PUBBLICAZIONI)
 @Title("Anagrafica Pubblicazioni ADP")
 public class PubblicazioneUI extends SmdUI {
 

@@ -14,7 +14,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 
 import com.vaadin.spring.annotation.SpringComponent;
 
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
+import it.arsinfo.smd.vaadin.model.SmdUI;
 
 /**
  * Redirects to the application after successful authentication.
@@ -29,7 +29,7 @@ public class RedirectAuthenticationSuccessHandler implements AuthenticationSucce
 	private ServletContext servletContext;
 
 	public RedirectAuthenticationSuccessHandler() {
-		location = SmdUIHelper.APP_URL;
+		location = SmdUI.APP_URL;
 	}
 
 	private String getAbsoluteUrl(String url) {

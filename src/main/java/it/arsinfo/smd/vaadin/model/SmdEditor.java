@@ -106,4 +106,8 @@ public abstract class SmdEditor<T extends SmdEntity>
         return smdObj;
     }
 
+    public JpaRepository<T, Long> getRepositoryDao() {
+        return repositoryDao;
+    }
+
 }

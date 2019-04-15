@@ -9,9 +9,8 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.VersamentoDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_VERSAMENTI)
+@SpringUI(path = SmdUI.URL_VERSAMENTI)
 @Title("Versamenti")
 public class VersamentoUI extends SmdUI {
 

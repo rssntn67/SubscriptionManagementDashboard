@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
+import it.arsinfo.smd.vaadin.model.SmdUI;
 
 @EnableWebSecurity
 @Configuration
@@ -51,15 +51,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// Allow access to static resources ("/VAADIN/**")
 		reg = reg.antMatchers("/VAADIN/**").permitAll();
 		// Require authentication for all URLS ("/**")
-		reg = reg.antMatchers(SmdUIHelper.URL_USER).hasAnyAuthority(Role.ADMIN.name());
+		reg = reg.antMatchers(SmdUI.URL_USER).hasAnyAuthority(Role.ADMIN.name());
 		reg = reg.antMatchers("/**").hasAnyAuthority(UserInfo.getRoleNames());
 		HttpSecurity sec = reg.and();
 
 		// Allow access to login page without login
 		FormLoginConfigurer<HttpSecurity> login = sec.formLogin().permitAll();
-		login = login.loginPage(SmdUIHelper.URL_LOGIN).loginProcessingUrl(SmdUIHelper.URL_LOGIN_PROCESSING)
-				.failureUrl(SmdUIHelper.URL_LOGIN_FAILURE).successHandler(successHandler);
-		login.and().logout().logoutSuccessUrl(SmdUIHelper.URL_LOGOUT);
+		login = login.loginPage(SmdUI.URL_LOGIN).loginProcessingUrl(SmdUI.URL_LOGIN_PROCESSING)
+				.failureUrl(SmdUI.URL_LOGIN_FAILURE).successHandler(successHandler);
+		login.and().logout().logoutSuccessUrl(SmdUI.URL_LOGOUT);
 	}
 
 }

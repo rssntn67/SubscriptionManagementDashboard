@@ -18,9 +18,8 @@ import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.vaadin.model.SmdButton;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_OPERAZIONI)
+@SpringUI(path = SmdUI.URL_OPERAZIONI)
 @Title("Operazioni ADP")
 public class OperazioneUI extends SmdUI {
 

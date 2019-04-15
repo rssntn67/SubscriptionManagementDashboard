@@ -21,9 +21,8 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.vaadin.model.SmdUI;
-import it.arsinfo.smd.vaadin.model.SmdUIHelper;
 
-@SpringUI(path = SmdUIHelper.URL_ABBONAMENTI)
+@SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
 public class AbbonamentoUI extends SmdUI {
 
