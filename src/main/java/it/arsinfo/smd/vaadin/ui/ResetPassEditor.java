@@ -31,7 +31,8 @@ public class ResetPassEditor extends SmdEditor<UserInfo> {
     public ResetPassEditor(UserInfoDao repo, PasswordEncoder passwordEncoder) {
         super(repo, new Binder<>(UserInfo.class));
         setComponents(
-                      new HorizontalLayout(password,confirm,resetPassword)
+                      new HorizontalLayout(password,confirm),
+                      resetPassword
                       );
         
         getBinder().forField(password).withValidator(passwordValidator)
