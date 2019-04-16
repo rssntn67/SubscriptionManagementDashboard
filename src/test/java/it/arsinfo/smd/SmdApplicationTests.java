@@ -48,9 +48,9 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.security.RedirectAuthenticationSuccessHandler;
-import it.arsinfo.smd.security.SecurityConfig;
-import it.arsinfo.smd.security.UserDetailsServiceImpl;
+import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
+import it.arsinfo.smd.ui.security.SecurityConfig;
+import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
