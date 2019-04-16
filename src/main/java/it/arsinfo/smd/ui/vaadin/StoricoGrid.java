@@ -11,11 +11,11 @@ public class StoricoGrid extends SmdGrid<Storico> {
     public StoricoGrid(String gridname) {
         super(new Grid<>(Storico.class),gridname);
 
-        setColumns("numero","captionPubblicazione","captionIntestatario","captionDestinatario","omaggio","invio","sospeso","cassa");
+        setColumns("numero","captionPubblicazione","captionIntestatario","captionDestinatario","omaggio","invio","decodeSospeso","cassa");
         setColumnCaption("captionIntestatario", "Intestatario");
         setColumnCaption("captionDestinatario", "Destinatario");
         setColumnCaption("captionPubblicazione", "Pubblicazione");
-
+        setColumnCaption("decodeSospeso", "Sospeso");
     }
     
 }

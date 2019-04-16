@@ -10,8 +10,6 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Cassa;
@@ -25,7 +23,6 @@ import it.arsinfo.smd.repository.StoricoDao;
 public class StoricoEditor
         extends SmdEditor<Storico> {
 
-    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
     private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio",
@@ -38,9 +35,9 @@ public class StoricoEditor
 
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
 
-    private final Panel pagamentoRegolare = new Panel();
+    private final Label pagamentoRegolare = new Label();
     
-    private final TextArea nota = new TextArea("Aggiungi Nota");
+    private final TextField nota = new TextField("Aggiungi Nota");
 
     public StoricoEditor(
             StoricoDao storicoDao,
@@ -52,28 +49,25 @@ public class StoricoEditor
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
 
-        intestatario.setEmptySelectionAllowed(false);
-        intestatario.setPlaceholder("Intestatario");
-        intestatario.setItems(anagrafiche);
-        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
-
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         HorizontalLayout pri = new HorizontalLayout();
-        pri.addComponent(numero);
+        pri.addComponentsAndExpand(destinatario);
         pri.addComponent(pubblicazione);
-        pri.addComponentsAndExpand(intestatario,destinatario);
-        HorizontalLayout note = new HorizontalLayout();
-        note.addComponentsAndExpand(nota);
+        pri.addComponent(numero);
+        pri.addComponents(cassa,omaggio,invio);
 
+        HorizontalLayout sec = new HorizontalLayout();
+        sec.addComponents(sospeso);
+        sec.addComponentsAndExpand(nota);
         setComponents(getActions(),
                       pri,
-                      new HorizontalLayout(cassa,omaggio, invio),
-                      new HorizontalLayout(pagamentoRegolare,sospeso),
-                      note);
+                      sec,
+                      pagamentoRegolare
+                      );
  
         getBinder()
             .forField(numero)
@@ -87,6 +81,7 @@ public class StoricoEditor
 
     @Override
     public void focus(boolean persisted, Storico obj) {
+        pubblicazione.setReadOnly(persisted);
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);
         } else {
@@ -95,20 +90,19 @@ public class StoricoEditor
         
         numero.focus();
     }
-    public TextArea getNota() {
+    public TextField getNota() {
         return nota;
     }
     
     public ComboBox<Pubblicazione> getPubblicazione() {
         return pubblicazione;
     }
-    
     public void setPagamentoRegolare(boolean isRegolare) {
-        if (isRegolare) {
-            pagamentoRegolare.setContent(new Label("<b>Pagamenti Regolari</b>",ContentMode.HTML));
-        } else {
-            pagamentoRegolare.setContent(new Label("<b>Pagamenti Non Regolari</b>",ContentMode.HTML));            
-        }
+        pagamentoRegolare.setContentMode(ContentMode.HTML);
+        if (isRegolare)
+            pagamentoRegolare.setValue("<b><font color=\"green\">In regola col pagamento</font></b>");
+        else
+            pagamentoRegolare.setValue("<b><font color=\"red\">Non in regola col pagamento</font></b>");
     }
 
 }

@@ -54,6 +54,12 @@ public class Smd {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
+    public static String decodeForGrid(boolean status) {
+        if (status) {
+            return "si";
+        }
+        return "no";
+    }
     public static Anno getAnnoCorrente() {
         return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
     }
@@ -123,16 +129,41 @@ public class Smd {
         abbonamenti.stream().forEach(abb -> calcoloAbbonamento(abb));
         campagna.setAbbonamenti(abbonamenti);
         return campagna;
-    }    
+    }
+    
+    public static List<Abbonamento> abbonamentiNonInRegola(List<Storico> storici, List<Abbonamento> abbonamenti) {
+        return null;
+    }
+    
     public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
-        if (storico.getOmaggio() != Omaggio.No || storico.getOmaggio() != Omaggio.ConSconto) {
-            return true;
+        boolean pagamentoRegolare = true;
+        switch (storico.getOmaggio()) {
+        case No:
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            break;
+
+        case ConSconto:    
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            break;
+
+        case CuriaDiocesiana:
+            break;
+        case CuriaGeneralizia:
+            break;
+        case Gesuiti:
+            break;
+        default:
+            break;
         }
+        return pagamentoRegolare;
+    }
+    
+    private static boolean checkVersamento(Storico storico, List<Abbonamento> abbonamenti) {
         for (Abbonamento abb: abbonamenti) {
-            if (abb.getIntestatario().getId() == storico.getIntestatario().getId()) {
+            if (abb.getIntestatario().getId() != storico.getIntestatario().getId()) {
                 continue;
             }
-            if (abb.getAnno() != getAnnoCorrente() || abb.getAnno() != getAnnoPassato()) {
+            if (abb.getAnno() != getAnnoCorrente()) {
                 continue;
             }
             for (Spedizione sped: abb.getSpedizioni()) {

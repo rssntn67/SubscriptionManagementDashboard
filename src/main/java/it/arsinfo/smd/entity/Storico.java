@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
@@ -107,7 +108,7 @@ public class Storico implements SmdEntity {
     @Transient
     public String getCaptionPubblicazione() {
         if (pubblicazione != null)
-            return pubblicazione.getCaption();
+            return pubblicazione.getNome();
         else
             return "";
     }
@@ -169,5 +170,10 @@ public class Storico implements SmdEntity {
 
     public void addNota(Nota nota) {
         note.add(nota);
+    }
+    
+    @Transient
+    public String getDecodeSospeso() {
+        return Smd.decodeForGrid(sospeso);
     }
 }

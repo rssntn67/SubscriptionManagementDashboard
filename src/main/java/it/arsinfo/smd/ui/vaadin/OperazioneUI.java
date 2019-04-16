@@ -40,39 +40,34 @@ public class OperazioneUI extends SmdUI {
         super.init(request,"Operazioni");
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
-        SmdButton insolventi = new SmdButton("Insolventi", VaadinIcons.ENVELOPES);
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
         
-        addSmdComponents(insolventi,generaShow,genera,editor,search,grid);
+        addSmdComponents(generaShow,genera,editor,search,grid);
         
         genera.setVisible(false);
         editor.setVisible(false);
 
         generaShow.setChangeHandler(() -> {
-            insolventi.setVisible(false);
             generaShow.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
             genera.edit();
         }); 
         genera.setChangeHandler(() -> {
-            insolventi.setVisible(true);
             generaShow.setVisible(true);
             genera.setVisible(false);
             search.setVisible(true);
             grid.setVisible(true);
         }); 
-        insolventi.setChangeHandler(()-> Notification.show("Non ancora supportato", Notification.Type.WARNING_MESSAGE));
         search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(()-> {
             if (grid.getSelected() == null) {
                 return;
             }
-            insolventi.setVisible(false);
             generaShow.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
@@ -81,7 +76,6 @@ public class OperazioneUI extends SmdUI {
         
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            insolventi.setVisible(true);
             generaShow.setVisible(true);
             search.setVisible(true);
             grid.populate(search.find());;            

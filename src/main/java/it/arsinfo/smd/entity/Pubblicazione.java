@@ -194,11 +194,8 @@ public class Pubblicazione implements SmdEntity {
     }
 
     @Transient
-    public String getAttivo() {
-        if (active) {
-            return "si";
-        }
-        return "no";
+    public String getDecodeAttivo() {
+        return Smd.decodeForGrid(active);
     }
     
     @Transient

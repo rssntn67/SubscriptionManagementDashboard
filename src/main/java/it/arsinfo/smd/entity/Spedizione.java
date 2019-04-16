@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 
@@ -36,6 +37,7 @@ public class Spedizione implements SmdEntity {
 
     private Integer numero = 1;
 
+    private boolean sospesa=false;
 
     public Spedizione() {
     }
@@ -101,5 +103,18 @@ public class Spedizione implements SmdEntity {
     public String toString() {
         return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s]", 
                              id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio);
+    }
+
+    public boolean isSospesa() {
+        return sospesa;
+    }
+
+    public void setSospesa(boolean sospesa) {
+        this.sospesa = sospesa;
+    }
+    
+    @Transient
+    public String getDecodeSospesa() {
+        return Smd.decodeForGrid(sospesa);
     }
 }

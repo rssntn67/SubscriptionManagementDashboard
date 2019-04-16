@@ -76,14 +76,24 @@ public class AnagraficaUI extends SmdUI {
         notaGrid.getGrid().setColumns("data","description");
         notaGrid.getGrid().setHeight("200px");
         
-        addSmdComponents(storicoAdd,storicoEditor,notaGrid, editor, storicoGrid, add,search, grid);
-        editor.setVisible(false);
-        storicoGrid.setVisible(false);
-        storicoEditor.setVisible(false);
-        notaGrid.setVisible(false);
+        addSmdComponents(
+                         storicoAdd,
+                         editor, 
+                         storicoEditor,
+                         storicoGrid, 
+                         notaGrid,
+                         add,
+                         search, 
+                         grid);
+
         storicoAdd.setVisible(false);
+        storicoEditor.setVisible(false);
+        storicoGrid.setVisible(false);
+        notaGrid.setVisible(false);
+        editor.setVisible(false);
 
         notaGrid.setChangeHandler(() -> {});
+        
         add.setChangeHandler(() -> {
             setHeader("Anagrafica:Nuova");
             hideMenu();
