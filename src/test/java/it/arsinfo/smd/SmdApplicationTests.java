@@ -2,6 +2,7 @@ package it.arsinfo.smd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -311,10 +312,17 @@ public class SmdApplicationTests {
 
         log.info("Abbonamenti found with findAll():");
         log.info("-------------------------------");
-        for (Abbonamento abbonamento : abbonamentoDao.findAll()) {
+        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
+        assertEquals(30, abbonamenti.size());
+        for (Abbonamento abbonamento : abbonamenti) {
             log.info(abbonamento.toString());
             for (Spedizione spedizione: abbonamento.getSpedizioni()) {
                 log.info(spedizione.toString());
+                if (abbonamento.getCampagna() == null) {
+                    assertNull(spedizione.getStorico());
+                } else {
+                    assertNotNull(spedizione.getStorico());
+                }
                 
             }
         }
@@ -322,15 +330,25 @@ public class SmdApplicationTests {
 
         log.info("Abbonamenti found with findByIntestatario(ms):");
         log.info("-------------------------------");
-        for (Abbonamento abbonamentomd : abbonamentoDao.findByIntestatario(ms)) {
-            log.info(abbonamentomd.toString());
+        abbonamenti = abbonamentoDao.findByIntestatario(ms);
+        assertEquals(10, abbonamenti.size());
+        for (Abbonamento abbonamentoms : abbonamenti) {
+            assertEquals(ms.getId().longValue(), abbonamentoms.getIntestatario().getId().longValue());
+            log.info(abbonamentoms.toString());
         }
         log.info("");
 
         log.info("Campagna found with findAll():");
         log.info("-------------------------------");
-        for (Campagna campagna : campagnaDao.findAll()) {
+        List<Campagna> campagne = campagnaDao.findAll();
+        assertEquals(2, campagne.size());
+        for (Campagna campagna : campagne) {
             log.info(campagna.toString());
+            abbonamenti = abbonamentoDao.findByCampagna(campagna);
+            assertEquals(5, abbonamenti.size());
+            for (Abbonamento abbonamento: abbonamenti) {
+                assertEquals(campagna.getId().longValue(), abbonamento.getCampagna().getId().longValue());
+            }
         }
         log.info("");
 
@@ -430,6 +448,22 @@ public class SmdApplicationTests {
             log.info(prospetto.toString());
         }
         log.info("");
+        
+        log.info("stato Storico found by findAll");
+        log.info("-------------------------------");
+        abbonamenti = abbonamentoDao.findAll();
+        for (Storico storico : storicoDao.findAll()) {
+            log.info(storico.toString());
+            StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
+            log.info("StatoStoricoCalcolato: " + ss.getDescr());
+            if (storico.getOmaggio() == Omaggio.No || storico.getOmaggio() == Omaggio.ConSconto) {
+                assertEquals(StatoStorico.NPR, ss);
+            } else {
+                assertEquals(StatoStorico.O, ss);                
+            }
+        }
+        log.info("");
+        
 
     }
     

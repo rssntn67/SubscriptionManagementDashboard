@@ -113,6 +113,7 @@ public class Smd {
                 abbonamento.setCassa(cassa);
                 for (Storico storico: cassaStorico.get(cassa)) {
                     Spedizione spedizione = new Spedizione();
+                    spedizione.setStorico(storico);
                     spedizione.setAbbonamento(abbonamento);
                     spedizione.setPubblicazione(storico.getPubblicazione());
                     spedizione.setDestinatario(storico.getDestinatario());
@@ -160,9 +161,8 @@ public class Smd {
                     || abb.getAnno().getAnno() != getAnnoCorrente().getAnno()) {
                 continue;
             }
-            //FIXME
             for (Spedizione sped: abb.getSpedizioni()) {
-                if (sped.getId() != storico.getId()) {
+                if (sped.getStorico().getId() != storico.getId()) {
                     continue;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {

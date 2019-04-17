@@ -29,6 +29,9 @@ public class Spedizione implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
+    @ManyToOne
+    private Storico storico;
+    
     @Enumerated(EnumType.STRING)
     private Omaggio omaggio = Omaggio.No;
 
@@ -101,8 +104,12 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s]", 
+        if (storico == null) {
+            return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s]", 
                              id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio);
+        }
+        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Storico=%d]", 
+                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio, storico.getId());
     }
 
     public boolean isSospesa() {
@@ -116,5 +123,13 @@ public class Spedizione implements SmdEntity {
     @Transient
     public String getDecodeSospesa() {
         return Smd.decodeForGrid(sospesa);
+    }
+
+    public Storico getStorico() {
+        return storico;
+    }
+
+    public void setStorico(Storico storico) {
+        this.storico = storico;
     }
 }
