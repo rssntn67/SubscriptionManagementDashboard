@@ -132,7 +132,7 @@ public class Smd {
     }
         
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
-        StatoStorico pagamentoRegolare = StatoStorico.O;
+        StatoStorico pagamentoRegolare = StatoStorico.S;
         switch (storico.getOmaggio()) {
         case No:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
@@ -143,12 +143,16 @@ public class Smd {
             break;
 
         case CuriaDiocesiana:
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
         case CuriaGeneralizia:
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
         case Gesuiti:
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
         default:
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
         }
         return pagamentoRegolare;
@@ -165,12 +169,18 @@ public class Smd {
                 if (sped.getStorico().getId() != storico.getId()) {
                     continue;
                 }
+                if (abb.getTotale().signum() == 0 ) {
+                    return StatoStorico.PR;
+                }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
                     return StatoStorico.NPR;
                 }
+                if (abb.getTotale().signum() > 0 &&  abb.getVersamento() != null) {
+                    return StatoStorico.PR;
+                }
             }
         }
-        return StatoStorico.PR;
+        return StatoStorico.S;
     }
     public static void calcoloAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;
