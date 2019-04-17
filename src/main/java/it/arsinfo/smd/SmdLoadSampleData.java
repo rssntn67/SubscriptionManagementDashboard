@@ -589,18 +589,18 @@ public class SmdLoadSampleData implements Runnable {
 
         campagnaDao.save(
                  Smd.generaCampagna(
+                                    storicoDao,
                     getCampagnaBy(Anno.ANNO2018),
-                    storicoDao.findAll(),
-                    new ArrayList<>(),
+                    anagraficaDao.findAll(),
                     pubblicazioneDao.findAll()
                 )
              );
 
         campagnaDao.save(
                          Smd.generaCampagna(
+                            storicoDao,
                             getCampagnaBy(Anno.ANNO2019),
-                            storicoDao.findAll(),
-                            new ArrayList<>(),
+                            anagraficaDao.findAll(),
                             pubblicazioneDao.findAll()
                         )
                      );

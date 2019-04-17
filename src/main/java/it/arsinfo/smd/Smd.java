@@ -31,8 +31,10 @@ import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Sostitutivo;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Incasso;
@@ -42,6 +44,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.repository.StoricoDao;
 
 @Configuration
 public class Smd {
@@ -77,7 +80,7 @@ public class Smd {
     public static String getProgressivoVersamento(int i) {
         return String.format("%09d",i);
     }
-    public static Campagna generaCampagna(final Campagna campagna, List<Storico> storici, List<Abbonamento> vecchiabb, List<Pubblicazione> pubblicazioni) {
+    public static Campagna generaCampagna(StoricoDao storicoDao,final Campagna campagna, List<Anagrafica> anagrafiche, List<Pubblicazione> pubblicazioni) {
         final Set<Long> campagnapubblicazioniIds = new HashSet<>();
         pubblicazioni.stream().forEach(p -> {
             CampagnaItem ci = new CampagnaItem();
@@ -87,56 +90,48 @@ public class Smd {
             campagnapubblicazioniIds.add(p.getId());            
         });
 
-        final Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
-        storici.stream().filter(storico -> 
-            (!storico.isSospeso() && campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()))
-            && 
-            (!campagna.isRinnovaSoloAbbonatiInRegola() || pagamentoRegolare(storico, vecchiabb)
-            ))
-        .forEach(storico -> { 
-            if (!cassaStorico.containsKey(storico.getCassa())) {
-                cassaStorico.put(storico.getCassa(), new ArrayList<>());
-            }
-            cassaStorico.get(storico.getCassa()).add(storico);
-        });
-        
-        List<Abbonamento> abbonamenti = new ArrayList<>();
-        for (Cassa cassa: cassaStorico.keySet()) {
-            Map<Long,Abbonamento> abbti = new HashMap<>();
-            for (Storico storico: cassaStorico.get(cassa)) {
-                if (!abbti.containsKey(storico.getIntestatario().getId())) {
-                    Abbonamento abb = new Abbonamento();
-                    abb.setIntestatario(storico.getIntestatario());
-                    abb.setCampagna(campagna);
-                    abb.setAnno(campagna.getAnno());
-                    abb.setInizio(campagna.getInizio());
-                    abb.setFine(campagna.getFine());
-                    abb.setCassa(cassa);
-                    abbti.put(storico.getIntestatario().getId(), abb);
+        final List<Abbonamento> abbonamenti = new ArrayList<>();
+        anagrafiche.stream().forEach(a -> {
+            final Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
+            storicoDao.findByIntestatario(a).stream()
+            .filter(storico -> 
+                (campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()) &&
+                (!campagna.isRinnovaSoloAbbonatiInRegola() || storico.getStatoStorico() != StatoStorico.NPR)))
+            .forEach(storico -> { 
+                if (!cassaStorico.containsKey(storico.getCassa())) {
+                    cassaStorico.put(storico.getCassa(), new ArrayList<>());
                 }
-                Abbonamento abbonamento= abbti.get(storico.getIntestatario().getId());
-                Spedizione spedizione = new Spedizione();
-                spedizione.setAbbonamento(abbonamento);
-                spedizione.setPubblicazione(storico.getPubblicazione());
-                spedizione.setDestinatario(storico.getDestinatario());
-                spedizione.setNumero(storico.getNumero());
-                spedizione.setInvio(storico.getInvio());
-                spedizione.setOmaggio(storico.getOmaggio());
-                abbonamento.addSpedizione(spedizione);
+                cassaStorico.get(storico.getCassa()).add(storico);
+            });
+            for (Cassa cassa: cassaStorico.keySet()) {
+                Abbonamento abbonamento = new Abbonamento();
+                abbonamento.setIntestatario(a);
+                abbonamento.setCampagna(campagna);
+                abbonamento.setAnno(campagna.getAnno());
+                abbonamento.setInizio(campagna.getInizio());
+                abbonamento.setFine(campagna.getFine());
+                abbonamento.setCassa(cassa);
+                for (Storico storico: cassaStorico.get(cassa)) {
+                    Spedizione spedizione = new Spedizione();
+                    spedizione.setAbbonamento(abbonamento);
+                    spedizione.setPubblicazione(storico.getPubblicazione());
+                    spedizione.setDestinatario(storico.getDestinatario());
+                    spedizione.setNumero(storico.getNumero());
+                    spedizione.setInvio(storico.getInvio());
+                    spedizione.setOmaggio(storico.getOmaggio());
+                    abbonamento.addSpedizione(spedizione);
+                }
+                calcoloAbbonamento(abbonamento);
+                abbonamenti.add(abbonamento);
             }
-            abbonamenti.addAll(abbti.values());
-        }
-        abbonamenti.stream().forEach(abb -> calcoloAbbonamento(abb));
+            
+        });        
         campagna.setAbbonamenti(abbonamenti);
         return campagna;
     }
-    
-    public static List<Abbonamento> abbonamentiNonInRegola(List<Storico> storici, List<Abbonamento> abbonamenti) {
-        return null;
-    }
-    
-    public static boolean pagamentoRegolare(Storico storico, List<Abbonamento> abbonamenti) {
-        boolean pagamentoRegolare = true;
+        
+    public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
+        StatoStorico pagamentoRegolare = StatoStorico.O;
         switch (storico.getOmaggio()) {
         case No:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
@@ -158,26 +153,24 @@ public class Smd {
         return pagamentoRegolare;
     }
     
-    private static boolean checkVersamento(Storico storico, List<Abbonamento> abbonamenti) {
+    private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti) {
         for (Abbonamento abb: abbonamenti) {
-            if (abb.getIntestatario().getId() != storico.getIntestatario().getId()) {
+            if (abb.getIntestatario().getId() != storico.getIntestatario().getId() 
+                    || abb.getCampagna() == null
+                    || abb.getAnno().getAnno() != getAnnoCorrente().getAnno()) {
                 continue;
             }
-            if (abb.getAnno() != getAnnoCorrente()) {
-                continue;
-            }
+            //FIXME
             for (Spedizione sped: abb.getSpedizioni()) {
-                if (sped.getPubblicazione().getId() != storico.getPubblicazione().getId()
-                        ||
-                    sped.getDestinatario().getId() != storico.getDestinatario().getId()     ) {
+                if (sped.getId() != storico.getId()) {
                     continue;
                 }
-                if (abb.getCosto() != BigDecimal.ZERO && sped.getOmaggio() == storico.getOmaggio() && abb.getVersamento() == null) {
-                    return false;
+                if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
+                    return StatoStorico.NPR;
                 }
             }
         }
-        return true;
+        return StatoStorico.PR;
     }
     public static void calcoloAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;

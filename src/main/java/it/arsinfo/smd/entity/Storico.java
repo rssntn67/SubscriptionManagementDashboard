@@ -14,10 +14,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.StatoStorico;
 
 @Entity
 public class Storico implements SmdEntity {
@@ -49,7 +49,8 @@ public class Storico implements SmdEntity {
 
     private Integer numero = 1;
     
-    private boolean sospeso = false;
+    @Enumerated(EnumType.STRING)
+    private StatoStorico statoStorico = StatoStorico.N;
 
     public Storico() {
         super();
@@ -124,8 +125,8 @@ public class Storico implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, Pubblicazione='%d', Intestatario='%d', Destinatario='%d', Numero='%d', Omaggio=%s, Invio=%s, Sospeso=%b, Cassa=%s]",
-                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,omaggio,invio,sospeso,cassa);
+        return String.format("Storico[id=%d, Pubblicazione='%d', Intestatario='%d', Destinatario='%d', Numero='%d', Omaggio=%s, Invio=%s, Stato=%b, Cassa=%s]",
+                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,omaggio,invio,statoStorico,cassa);
     }
 
     public Omaggio getOmaggio() {
@@ -142,14 +143,6 @@ public class Storico implements SmdEntity {
 
     public void setInvio(Invio invio) {
         this.invio = invio;
-    }
-
-    public boolean isSospeso() {
-        return sospeso;
-    }
-
-    public void setSospeso(boolean sospeso) {
-        this.sospeso = sospeso;
     }
 
     public Cassa getCassa() {
@@ -171,9 +164,13 @@ public class Storico implements SmdEntity {
     public void addNota(Nota nota) {
         note.add(nota);
     }
-    
-    @Transient
-    public String getDecodeSospeso() {
-        return Smd.decodeForGrid(sospeso);
+
+    public StatoStorico getStatoStorico() {
+        return statoStorico;
     }
+
+    public void setStatoStorico(StatoStorico statoStorico) {
+        this.statoStorico = statoStorico;
+    }
+    
 }

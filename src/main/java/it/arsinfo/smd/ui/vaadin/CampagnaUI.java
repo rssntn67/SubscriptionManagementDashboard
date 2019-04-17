@@ -14,7 +14,7 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
@@ -36,14 +36,14 @@ public class CampagnaUI extends SmdUI {
     CampagnaItemDao campagnaItemDao;
 
     @Autowired
+    AnagraficaDao anagraficaDao;
+
+    @Autowired
     StoricoDao storicoDao;
 
     @Autowired
     PubblicazioneDao pubblicazioneDao;
     
-    @Autowired
-    AbbonamentoDao abbonamentoDao;
-
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
@@ -106,7 +106,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                Smd.generaCampagna(get(),storicoDao.findAll(),abbonamentoDao.findAll(),campagnaItemEditor.getSelected());
+                Smd.generaCampagna(storicoDao,get(),anagraficaDao.findAll(),campagnaItemEditor.getSelected());
                 super.save();
             }
             

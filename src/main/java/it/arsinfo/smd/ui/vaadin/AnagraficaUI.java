@@ -10,12 +10,12 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -37,9 +37,10 @@ public class AnagraficaUI extends SmdUI {
     StoricoDao storicoDao;
     @Autowired
     AbbonamentoDao abbonamentoDao;
-
     @Autowired
     NotaDao notaDao;
+    @Autowired
+    CampagnaDao campagnaDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -137,11 +138,12 @@ public class AnagraficaUI extends SmdUI {
                 return;
             }
             setHeader(storicoGrid.getSelected().getHeader());
+            //FIXME to be better defined (the status should be calculated based on the user operation
+            //storicoGrid.getSelected().
+            //    setStatoStorico(Smd.getStatoStorico(storicoGrid.getSelected(),
+            //                   abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
+            //storicoDao.save(storicoGrid.getSelected());
             storicoEditor.edit(storicoGrid.getSelected());
-            storicoEditor.setPagamentoRegolare(
-                       Smd.pagamentoRegolare(
-                               storicoGrid.getSelected(),
-                               abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
             notaGrid.populate(notaDao.findByStorico(storicoGrid.getSelected()));
             add.setVisible(false);
             search.setVisible(false);

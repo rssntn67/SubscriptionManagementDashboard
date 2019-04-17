@@ -24,6 +24,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -205,22 +207,31 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        Pubblicazione first = pubblicazioneDao.findById(2L).get();
+        Pubblicazione messaggio = pubblicazioneDao.findById(2L).get();
         log.info("Messaggio found with findOne(2L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("2"), first.getId().longValue());
-        assertEquals(TipoPubblicazione.MENSILE, first.getTipo());
-        assertEquals("Messaggio", first.getNome());
-        log.info(first.toString());
+        assertEquals(Long.parseLong("2"), messaggio.getId().longValue());
+        assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
+        assertEquals("Messaggio", messaggio.getNome());
+        log.info(messaggio.toString());
         log.info("");
 
-        Pubblicazione second = pubblicazioneDao.findById(3L).get();
+        Pubblicazione lodare = pubblicazioneDao.findById(3L).get();
         log.info("lodare found with findOne(3L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("3"), second.getId().longValue());
-        assertEquals(TipoPubblicazione.MENSILE, second.getTipo());
-        assertEquals("Lodare e Servire", second.getNome());
-        log.info(second.toString());
+        assertEquals(Long.parseLong("3"), lodare.getId().longValue());
+        assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
+        assertEquals("Lodare e Servire", lodare.getNome());
+        log.info(lodare.toString());
+        log.info("");
+
+        Pubblicazione blocchetti = pubblicazioneDao.findById(4L).get();
+        log.info("lodare found with findOne(4L):");
+        log.info("--------------------------------");
+        assertEquals(Long.parseLong("4"), blocchetti.getId().longValue());
+        assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
+        assertEquals("Blocchetti", blocchetti.getNome());
+        log.info(blocchetti.toString());
         log.info("");
 
         log.info("Anagrafica found with findAll():");
@@ -241,7 +252,9 @@ public class SmdApplicationTests {
 
         log.info("Anagrafica found with findByLastNameStartsWithIgnoreCase('Russo'):");
         log.info("--------------------------------------------");
-        for (Anagrafica ana : anagraficaDao.findByCognomeContainingIgnoreCase("rUsSo")) {
+        anagrafiche = anagraficaDao.findByCognomeContainingIgnoreCase("rUsSo");
+        assertEquals(1, anagrafiche.size());
+        for (Anagrafica ana : anagrafiche) {
             assertEquals("Russo", ana.getCognome());
             log.info(ana.toString());
         }
@@ -249,7 +262,9 @@ public class SmdApplicationTests {
 
         log.info("Anagrafica found with findByDiocesi('ROMA'):");
         log.info("--------------------------------------------");
-        for (Anagrafica roma : anagraficaDao.findByDiocesi(Diocesi.DIOCESI168)) {
+        anagrafiche = anagraficaDao.findByDiocesi(Diocesi.DIOCESI168);
+        assertEquals(2, anagrafiche.size());
+        for (Anagrafica roma : anagrafiche) {
             assertEquals(Diocesi.DIOCESI168, roma.getDiocesi());
             log.info(roma.toString());
         }
@@ -258,7 +273,13 @@ public class SmdApplicationTests {
         log.info("Storico found with findByIntestatario('michele santoro id=17'):");
         log.info("--------------------------------------------");
         Anagrafica ms = anagraficaDao.findByCognomeContainingIgnoreCase("Santoro").iterator().next();
-        for (Storico anp : storicoDao.findByIntestatario(ms)) {
+        assertEquals("Michele", ms.getNome());
+        List<Storico> storici = storicoDao.findByIntestatario(ms);
+        assertEquals(2, storici.size());
+        for (Storico anp : storici) {
+            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
+            assertEquals(Omaggio.No, anp.getOmaggio());
             log.info(anp.toString());
         }
         log.info("");
@@ -266,15 +287,24 @@ public class SmdApplicationTests {
         log.info("Storico found with findByDestinatario('davide palma id=15'):");
         Anagrafica dp = anagraficaDao.findByCognomeContainingIgnoreCase("Palma").iterator().next();
         log.info("--------------------------------------------");
-        for (Storico anp : storicoDao.findByDestinatario(dp)) {
+        storici = storicoDao.findByDestinatario(dp);
+        assertEquals(1, storici.size());
+        for (Storico anp : storici) {
+            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
+            assertEquals(Omaggio.CuriaGeneralizia, anp.getOmaggio());
+            assertEquals(10, anp.getNumero().intValue());
             log.info(anp.toString());
         }
         log.info("");
 
         log.info("Storico found with findByPubblicazione('blocchetti'):");
         log.info("--------------------------------------------");
-        Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
-        for (Storico anp : storicoDao.findByPubblicazione(blocchetti)) {
+        storici = storicoDao.findByPubblicazione(blocchetti);
+        assertEquals(4, storici.size());
+        for (Storico anp : storici) {
+            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             log.info(anp.toString());
         }
         log.info("");

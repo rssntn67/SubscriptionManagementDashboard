@@ -5,16 +5,14 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -31,11 +29,9 @@ public class StoricoEditor
                                                               EnumSet.allOf(Invio.class));
     private final TextField numero = new TextField("Numero");
     
-    private final CheckBox sospeso = new CheckBox("Sospeso");
-
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
 
-    private final Label pagamentoRegolare = new Label();
+    private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
     private final TextField nota = new TextField("Aggiungi Nota");
 
@@ -54,20 +50,19 @@ public class StoricoEditor
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
+        statoStorico.setReadOnly(true);
+        statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
+
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponentsAndExpand(destinatario);
         pri.addComponent(pubblicazione);
         pri.addComponent(numero);
         pri.addComponents(cassa,omaggio,invio);
+        pri.addComponentsAndExpand(statoStorico);
 
         HorizontalLayout sec = new HorizontalLayout();
-        sec.addComponents(sospeso);
         sec.addComponentsAndExpand(nota);
-        setComponents(getActions(),
-                      pri,
-                      sec,
-                      pagamentoRegolare
-                      );
+        setComponents(getActions(),pri,sec);
  
         getBinder()
             .forField(numero)
@@ -97,12 +92,4 @@ public class StoricoEditor
     public ComboBox<Pubblicazione> getPubblicazione() {
         return pubblicazione;
     }
-    public void setPagamentoRegolare(boolean isRegolare) {
-        pagamentoRegolare.setContentMode(ContentMode.HTML);
-        if (isRegolare)
-            pagamentoRegolare.setValue("<b><font color=\"green\">In regola col pagamento</font></b>");
-        else
-            pagamentoRegolare.setValue("<b><font color=\"red\">Non in regola col pagamento</font></b>");
-    }
-
 }
