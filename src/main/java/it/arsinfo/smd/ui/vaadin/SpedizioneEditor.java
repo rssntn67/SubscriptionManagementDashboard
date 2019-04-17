@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -27,6 +28,8 @@ public class SpedizioneEditor
                                                               EnumSet.allOf(Invio.class));
     private final TextField numero = new TextField("Numero");
 
+    private final CheckBox sospesa = new CheckBox("Spedizione Sospesa");
+
     public SpedizioneEditor(
             SpedizioneDao anagraficaPubblicazioneDao,
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
@@ -44,7 +47,8 @@ public class SpedizioneEditor
 
         setComponents(getActions(), new HorizontalLayout(numero, destinatario,
                                            pubblicazione),
-                      new HorizontalLayout(omaggio, invio));
+                      new HorizontalLayout(omaggio, invio),
+                      sospesa);
  
         getBinder()
             .forField(numero)
