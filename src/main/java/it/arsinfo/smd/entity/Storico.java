@@ -173,4 +173,28 @@ public class Storico implements SmdEntity {
         this.statoStorico = statoStorico;
     }
     
+    @Transient
+    public boolean regolare() {
+        boolean regolare = false;
+        switch (statoStorico) {
+        case N:
+            regolare=true;
+            break;
+        case NPR:
+            break;
+        case O:
+            regolare=true;
+            break;
+        case PR:    
+            regolare = true;
+            break;
+        case S:
+            break;
+        default:
+            break;
+        }
+        
+        return regolare;
+    }
+    
 }

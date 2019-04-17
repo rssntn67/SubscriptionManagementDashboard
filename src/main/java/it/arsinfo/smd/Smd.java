@@ -44,7 +44,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.repository.StoricoDao;
 
 @Configuration
 public class Smd {
@@ -80,7 +79,7 @@ public class Smd {
     public static String getProgressivoVersamento(int i) {
         return String.format("%09d",i);
     }
-    public static Campagna generaCampagna(StoricoDao storicoDao,final Campagna campagna, List<Anagrafica> anagrafiche, List<Pubblicazione> pubblicazioni) {
+    public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         final Set<Long> campagnapubblicazioniIds = new HashSet<>();
         pubblicazioni.stream().forEach(p -> {
             CampagnaItem ci = new CampagnaItem();
@@ -93,10 +92,15 @@ public class Smd {
         final List<Abbonamento> abbonamenti = new ArrayList<>();
         anagrafiche.stream().forEach(a -> {
             final Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
-            storicoDao.findByIntestatario(a).stream()
-            .filter(storico -> 
-                (campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()) &&
-                (!campagna.isRinnovaSoloAbbonatiInRegola() || storico.getStatoStorico() != StatoStorico.NPR)))
+            storici.stream()
+            .filter(
+                storico -> 
+                (storico.getIntestatario().getId() == a.getId() 
+                   && campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()) 
+                   && (!campagna.isRinnovaSoloAbbonatiInRegola() 
+                       || storico.regolare())
+                )
+            )
             .forEach(storico -> { 
                 if (!cassaStorico.containsKey(storico.getCassa())) {
                     cassaStorico.put(storico.getCassa(), new ArrayList<>());
@@ -143,13 +147,13 @@ public class Smd {
             break;
 
         case CuriaDiocesiana:
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = StatoStorico.O;
             break;
         case CuriaGeneralizia:
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = StatoStorico.O;
             break;
         case Gesuiti:
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = StatoStorico.O;
             break;
         default:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);

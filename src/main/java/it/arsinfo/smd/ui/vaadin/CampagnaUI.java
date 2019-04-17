@@ -106,7 +106,7 @@ public class CampagnaUI extends SmdUI {
                     Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                Smd.generaCampagna(storicoDao,get(),anagraficaDao.findAll(),campagnaItemEditor.getSelected());
+                Smd.generaCampagna(get(),anagraficaDao.findAll(),storicoDao.findAll(),campagnaItemEditor.getSelected());
                 super.save();
             }
             

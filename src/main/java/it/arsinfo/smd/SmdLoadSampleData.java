@@ -33,8 +33,8 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -46,6 +46,7 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+
 
 public class SmdLoadSampleData implements Runnable {
 
@@ -63,6 +64,84 @@ public class SmdLoadSampleData implements Runnable {
     private final ProspettoDao prospettoDao;
     private final UserInfoDao userInfoDao;
     private final PasswordEncoder passwordEncoder;
+    
+    
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Invio invio,
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        storico.setInvio(invio);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Cassa cassa,
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        storico.setCassa(cassa);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Cassa cassa
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setCassa(cassa);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(intestatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
     public static Storico getStoricoBy(
             Anagrafica intestatario, 
             Pubblicazione pubblicazione, 
@@ -92,6 +171,19 @@ public class SmdLoadSampleData implements Runnable {
         nota.setDescription("Creato storico");
         storico.getNote().add(nota);
         return storico;
+    }
+
+    public static Anagrafica getAnagraficaBy(String nome, String cognome) {
+        Anagrafica anagrafica = new Anagrafica();
+        anagrafica.setNome(nome);
+        anagrafica.setCognome(cognome);
+        return anagrafica;
+    }
+
+    public static Abbonamento getAbbonamentoBy(Anagrafica intestatario) {
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setIntestatario(intestatario);
+        return abbonamento;
     }
 
     public static Abbonamento getAbbonamentoBy(
@@ -589,18 +681,18 @@ public class SmdLoadSampleData implements Runnable {
 
         campagnaDao.save(
                  Smd.generaCampagna(
-                                    storicoDao,
                     getCampagnaBy(Anno.ANNO2018),
                     anagraficaDao.findAll(),
+                    storicoDao.findAll(),
                     pubblicazioneDao.findAll()
                 )
              );
 
         campagnaDao.save(
                          Smd.generaCampagna(
-                            storicoDao,
                             getCampagnaBy(Anno.ANNO2019),
                             anagraficaDao.findAll(),
+                            storicoDao.findAll(),
                             pubblicazioneDao.findAll()
                         )
                      );
@@ -652,95 +744,5 @@ public class SmdLoadSampleData implements Runnable {
         log.info("creato user adp/adp");
         log.info("End Loading Sample Data");
    
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Invio invio,
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        storico.setInvio(invio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa,
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Omaggio omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setOmaggio(omaggio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Anagrafica getAnagraficaBy(String nome, String cognome) {
-        Anagrafica anagrafica = new Anagrafica();
-        anagrafica.setNome(nome);
-        anagrafica.setCognome(cognome);
-        return anagrafica;
-    }
-
-    public static Abbonamento getAbbonamentoBy(Anagrafica intestatario) {
-        Abbonamento abbonamento = new Abbonamento();
-        abbonamento.setIntestatario(intestatario);
-        return abbonamento;
-    }
-
+    }    
 }
