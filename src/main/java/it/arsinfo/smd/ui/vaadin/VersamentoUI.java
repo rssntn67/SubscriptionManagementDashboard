@@ -57,6 +57,7 @@ public class VersamentoUI extends SmdUI {
             grid.populate(search.find());
         });
 
+        grid.populate(search.findAll());
     }
 
 }
