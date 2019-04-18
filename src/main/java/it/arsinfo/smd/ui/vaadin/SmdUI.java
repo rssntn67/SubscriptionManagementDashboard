@@ -94,11 +94,11 @@ public abstract class SmdUI extends UI {
         links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
+        links.add(new Link("Note", new ExternalResource(URL_NOTE)));
         links.add(new Link("Operazioni", new ExternalResource(URL_OPERAZIONI)));
         links.add(new Link("Prospetti", new ExternalResource(URL_PROSPETTI)));
-        links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
         links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
-        links.add(new Link("Note", new ExternalResource(URL_NOTE)));
+        links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
         if (loggedInUser.getRole() == Role.ADMIN ) {
             links.add(new Link("Amministrazione Utenti", new ExternalResource(URL_USER)));
         } 

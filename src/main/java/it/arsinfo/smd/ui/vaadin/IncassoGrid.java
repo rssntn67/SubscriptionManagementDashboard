@@ -17,19 +17,19 @@ public class IncassoGrid extends SmdGrid<Incasso> {
     public IncassoGrid(String gridname) {
         super(new Grid<>(Incasso.class),gridname);
 
-        setColumns("dataContabile","incassato","importo","residuo","cassa", 
-                  "dettagli");
+        setColumns("dettagli","importo","incassato","residuo","cassa", 
+                   "dataContabile");
         gridfooter = getGrid().prependFooterRow();
     }
     @Override
     public void populate(List<Incasso> items) {
         super.populate(items);
-        gridfooter.getCell("dataContabile").setHtml("<strong>"+getLastDate(items)+" Totali:</strong>");
+        gridfooter.getCell("dettagli").setHtml("<strong>"+getLastDate(items)+" Totali:</strong>");
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>");
         gridfooter.getCell("incassato").setHtml("<b>"+getIncassatoTotale(items).toString()+"</b>");
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduoTotale(items).toString()+"</b>");
         gridfooter.getCell("cassa").setHtml("-------");
-        gridfooter.getCell("dettagli").setHtml("-------");
+        gridfooter.getCell("dataContabile").setHtml("-------");
 
     }
     

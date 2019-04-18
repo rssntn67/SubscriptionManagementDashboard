@@ -1,10 +1,8 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,21 +10,17 @@ import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringUI(path = SmdUI.URL_INCASSI)
 @Title("Incassi ADP")
-public class IncassoUI extends SmdUI {
+public class IncassoUI extends IncassoAbstractUI {
     /**
      * 
      */
@@ -36,8 +30,6 @@ public class IncassoUI extends SmdUI {
     private IncassoDao incassoDao;
     @Autowired    
     private VersamentoDao versamentoDao;
-    @Autowired    
-    private AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -89,8 +81,6 @@ public class IncassoUI extends SmdUI {
                 onChange();
             }
         };
-        AbbonamentoGrid abbonamentiAssociatiGrid = new AbbonamentoGrid("Abbonamenti Associati");
-        AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         addSmdComponents(
                          add,
@@ -100,24 +90,17 @@ public class IncassoUI extends SmdUI {
                          editor,
                          versAdd,
                          versEditor,
-                         abbonamentiAssociatiGrid,
-                         abbonamentiAssociabiliGrid,
                          incassaSingolo,
                          versGrid,
                          grid
                          );
 
         editor.setVisible(false);
-        abbonamentiAssociatiGrid.setVisible(false);
-        abbonamentiAssociabiliGrid.setVisible(false);
         versEditor.setVisible(false);
         incassaSingolo.setVisible(false);
         versGrid.setVisible(false);
         versAdd.setVisible(false);
         
-        abbonamentiAssociabiliGrid.getGrid().setHeight("150px");
-        abbonamentiAssociatiGrid.getGrid().setHeight("150px");
-        versGrid.getGrid().setHeight("300px");
         add.setChangeHandler(() -> {
             setHeader("Incasso:Nuovo");
             hideMenu();
@@ -149,7 +132,7 @@ public class IncassoUI extends SmdUI {
                         if (associabili.size() == 1 ) {
                             Abbonamento associabile = associabili.iterator().next();
                             if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).signum() == 0) {
-                                incassa(iiii,associabile, v);
+                                incassa(associabile, v);
                             }
                         }
                     });
@@ -193,6 +176,7 @@ public class IncassoUI extends SmdUI {
                 versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
                 incassaSingolo.setVisible(true);
                 add.setVisible(false);
+                grid.setVisible(false);
                 upload.setVisible(false);
                 search.setVisible(false);
                 incassa.setVisible(false);
@@ -212,7 +196,7 @@ public class IncassoUI extends SmdUI {
                     if (associabili.size() == 1 ) {
                         Abbonamento associabile = associabili.iterator().next();
                         if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).signum() == 0) {
-                            incassa(grid.getSelected(),associabile, v);
+                            incassa(associabile, v);
                         }
                     }
                 });
@@ -223,23 +207,21 @@ public class IncassoUI extends SmdUI {
         versEditor.setChangeHandler(() -> {
             setHeader("Incasso:Nuovo");
             versAdd.setVisible(true);
-            versGrid.populate(editor.get().getVersamenti());
+            if (editor.get().getId() != null) {
+               versGrid.populate(versamentoDao.findByIncasso(editor.get()));
+            } else {
+                versGrid.populate(editor.get().getVersamenti());
+            }
             versEditor.setVisible(false);
-            abbonamentiAssociatiGrid.setVisible(false);
-            abbonamentiAssociabiliGrid.setVisible(false);
             editor.edit(versEditor.get().getIncasso());
         });
 
         versGrid.setChangeHandler(() -> {
             if (versGrid.getSelected() == null) {
                 editor.edit(grid.getSelected());
-                abbonamentiAssociabiliGrid.setVisible(false);
-                abbonamentiAssociatiGrid.setVisible(false);
                 versEditor.setVisible(false);
             } else if (versGrid.getSelected().getId() != null ){
                 versEditor.edit(versGrid.getSelected());
-                abbonamentiAssociatiGrid.populate(getAssociati(versGrid.getSelected()));
-                abbonamentiAssociabiliGrid.populate(getAssociabili(versGrid.getSelected()));
                 editor.setVisible(false);
             } else {
                 editor.setVisible(false);
@@ -248,85 +230,6 @@ public class IncassoUI extends SmdUI {
             }
         });
         
-        
-        
-        abbonamentiAssociabiliGrid.setChangeHandler(() -> {
-            versEditor.edit(versGrid.getSelected());
-            versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
-            abbonamentiAssociabiliGrid.setVisible(false);
-            abbonamentiAssociatiGrid.setVisible(false); 
-        });
-        
-        abbonamentiAssociatiGrid.setChangeHandler(() -> {
-            versEditor.edit(versGrid.getSelected());
-            versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
-            abbonamentiAssociabiliGrid.setVisible(false);
-            abbonamentiAssociatiGrid.setVisible(false); 
-        });
-        
-        abbonamentiAssociatiGrid.addComponentColumn(abbonamento -> {
-            Button button = new Button("Dissocia");
-            button.addClickListener(click -> {
-                dissocia(incassoDao.findById(versEditor.get().getIncasso().getId()).get(),abbonamento, versEditor.get());
-                abbonamentiAssociatiGrid.onChange();
-                });
-            return button;
-        });
-        
-        abbonamentiAssociabiliGrid.addComponentColumn(abbonamento -> {
-            Button button = new Button("Incassa");
-            button.addClickListener(click -> {
-                incassa(incassoDao.findById(versEditor.get().getIncasso().getId()).get(),abbonamento, versEditor.get());   
-                abbonamentiAssociabiliGrid.onChange();
-            });
-            return button;
-        });
-
         grid.populate(search.findAll());
-    }
-
-    
-    private void dissocia(Incasso incasso,Abbonamento abbonamento, Versamento versamento) {
-        try {
-            versamentoDao.save(Smd.dissocia(incasso, versamento, abbonamento));
-            incassoDao.save(incasso);
-            abbonamentoDao.save(abbonamento);
-        } catch (UnsupportedOperationException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            
-        }
-    }
-
-    private void incassa(Incasso incasso,Abbonamento abbonamento, Versamento versamento) {
-        try {
-            versamentoDao.save(Smd.incassa(incasso,versamento, abbonamento));
-            incassoDao.save(incasso);
-            abbonamentoDao.save(abbonamento);
-        } catch (UnsupportedOperationException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-        } 
-    }
-
-    private List<Abbonamento> getAssociati(Versamento versamento) {
-        if (versamento == null) {
-            return new ArrayList<>();
-        }
-        return abbonamentoDao.findByVersamento(versamento);
-    }
-    
-    private List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null || versamento.getResiduo().compareTo(BigDecimal.ZERO) <= 0) {
-            return new ArrayList<>();
-        }
-        return abbonamentoDao
-                .findByVersamento(null)
-                .stream()
-                .filter(abb -> abb.getIncassato().equals("No") 
-                        && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
-                        && (versamento.getBollettino() != Bollettino.TIPO674) 
-                            || abb.getCampo().equals(versamento.getCampo())
-                            )
-                .collect(Collectors.toList());
-    }
-    
+    }    
 }

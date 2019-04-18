@@ -12,6 +12,9 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
+import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -30,7 +33,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     private final TextField  sportello = new TextField("Identificativo Sportello");
     private final TextField bobina = new TextField("Bobina");
     private final TextField progressivoBobina = new TextField("Progressivo Bobina");
-    
+
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Conto Corrente", EnumSet.allOf(Ccp.class));
+    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
+    private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
     
     private final ComboBox<Bollettino> bollettino = 
             new ComboBox<Bollettino>("Bollettino",EnumSet.allOf(Bollettino.class));
@@ -45,6 +51,12 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     public VersamentoEditor(VersamentoDao versamentoDao) {
         super(versamentoDao, new Binder<>(Versamento.class));
 
+        ccp.setReadOnly(true);
+        ccp.setItemCaptionGenerator(Ccp::getCcp);
+        cuas.setReadOnly(true);
+        cuas.setItemCaptionGenerator(Cuas::getDenominazione);
+        cassa.setReadOnly(true);
+
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
         dataContabile.setReadOnly(true);
@@ -55,6 +67,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         setComponents(
                       getActions(),
                       new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento),
+                      new HorizontalLayout(ccp,cassa,cuas),
                       new HorizontalLayout(operazione,campo,progressivo),
                       new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina),
                       new HorizontalLayout(bollettino,accettazione,sostitutivo)
@@ -93,7 +106,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         getDelete().setEnabled(!persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
-
+        
+        ccp.setValue(versamento.getIncasso().getCcp());
+        cuas.setValue(versamento.getIncasso().getCuas());
+        cassa.setValue(versamento.getIncasso().getCassa());
         importo.setReadOnly(persisted);
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
