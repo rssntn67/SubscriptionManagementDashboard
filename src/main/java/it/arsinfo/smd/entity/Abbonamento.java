@@ -94,8 +94,8 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Incassato=%s , Intestatario='%d', Totale= '%.2f', Costo='%.2f', Spese='%.2f', Campo='%s', Data='%td %tb %tY %tR %tZ', %s]",
-                                   id, getIncassato(), intestatario.getId(), getTotale(),costo,spese,campo,
+        return String.format("Abbonamento[id=%d, Incassato=%s , Intestatario='%d', Totale= '%.2f', Costo='%.2f', Spese='%.2f', Campo='%s', Anno=%s, Data='%td %tb %tY %tR %tZ', %s]",
+                                   id, getIncassato(), intestatario.getId(), getTotale(),costo,spese,campo,anno,
                                    data, data, data, data, data, cassa);
     }
     

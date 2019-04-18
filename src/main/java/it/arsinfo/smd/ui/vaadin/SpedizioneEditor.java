@@ -10,6 +10,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -20,12 +21,15 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 public class SpedizioneEditor
         extends SmdEditor<Spedizione> {
 
+    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
-    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
+    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio",
                                                                     EnumSet.allOf(Omaggio.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
+    private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
+            EnumSet.allOf(Anno.class));
     private final TextField numero = new TextField("Numero");
 
     private final CheckBox sospesa = new CheckBox("Spedizione Sospesa");
@@ -38,16 +42,26 @@ public class SpedizioneEditor
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
-        pubblicazione.setItemCaptionGenerator(Pubblicazione::getCaption);
+        pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+
+        intestatario.setEmptySelectionAllowed(false);
+        intestatario.setPlaceholder("Intestatario");
+        intestatario.setItems(anagrafica);
+        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafica);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        setComponents(getActions(), new HorizontalLayout(numero, destinatario,
-                                           pubblicazione),
-                      new HorizontalLayout(omaggio, invio),
+        anno.setEmptySelectionAllowed(false);
+        anno.setItemCaptionGenerator(Anno::getAnnoAsString);
+        invio.setEmptySelectionAllowed(false);
+        omaggio.setEmptySelectionAllowed(false);
+        
+        setComponents(getActions(), new HorizontalLayout(intestatario, destinatario,
+                                           pubblicazione,numero),
+                      new HorizontalLayout(anno, omaggio, invio),
                       sospesa);
  
         getBinder()
@@ -67,8 +81,14 @@ public class SpedizioneEditor
 
     @Override
     public void focus(boolean persisted, Spedizione obj) {
-        getSave().setEnabled(!persisted);
-        getCancel().setEnabled(!persisted);
+        intestatario.setValue(obj.getAbbonamento().getIntestatario());
+        intestatario.setReadOnly(true);
+        anno.setValue(obj.getAbbonamento().getAnno());
+        anno.setReadOnly(true);
+        destinatario.setReadOnly(persisted);
+        pubblicazione.setReadOnly(persisted);
+        numero.setReadOnly(persisted);
+        omaggio.setReadOnly(persisted);
         getDelete().setEnabled(!persisted);
         destinatario.focus();        
     }

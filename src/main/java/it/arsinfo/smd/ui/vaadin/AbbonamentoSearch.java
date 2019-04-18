@@ -19,7 +19,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
+    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
 
     public AbbonamentoSearch(AbbonamentoDao abbonamentoDao,
             List<Anagrafica> anagrafica, List<Campagna> campagne) {
@@ -71,6 +71,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         });
         
         filterCassa.setPlaceholder("Seleziona Cassa");
+        filterCassa.setItems(EnumSet.allOf(Cassa.class));
         filterCassa.addSelectionListener(e ->onChange());
 
 

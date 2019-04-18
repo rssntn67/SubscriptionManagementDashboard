@@ -11,20 +11,18 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 
-@SpringUI(path = SmdUI.URL_STORICO)
-@Title("Storico Anagrafica Pubblicazioni ADP")
+@SpringUI(path = SmdUI.URL_SPEDIZIONI)
+@Title("Spedizioni ADP")
 @Push
-public class StoricoUI extends SmdUI {
+public class SpedizioneUI extends SmdUI {
 
     /**
      * 
@@ -38,21 +36,21 @@ public class StoricoUI extends SmdUI {
     AnagraficaDao anagraficaDao;
 
     @Autowired
-    StoricoDao storicoDao;
+    SpedizioneDao spedizioneDao;
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Storico");
+        super.init(request, "Spedizioni");
         SmdProgressBar pb = new SmdProgressBar();
-        SmdButton bss = new SmdButton("Aggiorna Stato", VaadinIcons.CLOUD);
+        SmdButton bss = new SmdButton("Sospendi Insolventi", VaadinIcons.CLOUD);
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
-        StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
-        StoricoGrid grid = new StoricoGrid("");
-        StoricoEditor editor = new StoricoEditor(storicoDao, pubblicazioni, anagrafica);
+        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,anagrafica,pubblicazioni);
+        SpedizioneGrid grid = new SpedizioneGrid("");
+        SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, pubblicazioni, anagrafica);
         addSmdComponents(pb,bss,editor,search, grid);
         pb.setVisible(false);
         editor.setVisible(false);
@@ -62,24 +60,17 @@ public class StoricoUI extends SmdUI {
             bss.getButton().setEnabled(false);
             pb.setVisible(true);
             new Thread(() -> {
-                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
-                List<Storico> storici = search.find();
-                float delta = 1.0f/storici.size();
-                float val = 0.0f;
-                for (Storico s : storici) {
-                    val+=delta;
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
-                    if (s.getStatoStorico() != calcolato) {
-                        s.setStatoStorico(calcolato);
-                        storicoDao.save(s);
-                        final float value=val;
+                List<Spedizione> aggiornamenti = Smd.spedizioneDaAggiornare(search.find());
+                float delta = 1.0f/aggiornamenti.size();
+                aggiornamenti.stream().forEach(s -> {
+                    s.setSospesa(!s.isSospesa());
+                    spedizioneDao.save(s);
                         access(() -> {
-                            pb.setValue(value);
+                            pb.setValue(pb.getValue()+delta);
                             grid.populate(search.find());
                             this.push();
                         });
-                    }
-                }
+                });
 
                 access(() -> {
                     pb.setValue(0.0f);

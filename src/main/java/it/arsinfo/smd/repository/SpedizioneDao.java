@@ -16,11 +16,7 @@ public interface SpedizioneDao extends JpaRepository<Spedizione, Long> {
 	List<Spedizione> findByAbbonamento(Abbonamento abbonamento);
         List<Spedizione> findByPubblicazione(Pubblicazione pubblicazione);
         List<Spedizione> findByDestinatario(Anagrafica destinatario);
-        List<Spedizione> findByIntestatario(Anagrafica intestatario);
-        List<Spedizione> findByIntestatarioAndDestinatario(Anagrafica intestatario, Anagrafica destinatario);
-        List<Spedizione> findByIntestatarioAndPubblicazione(Anagrafica intestatario, Pubblicazione pubblicazione);
         List<Spedizione> findByDestinatarioAndPubblicazione(Anagrafica destinatario, Pubblicazione pubblicazione);
-        List<Spedizione> findByIntestatarioAndDestinatarioAndPubblicazione(Anagrafica intestatario, Anagrafica destinatario, Pubblicazione pubblicazione);
         List<Spedizione> findByOmaggio(Omaggio omaggio);
         List<Spedizione> findByInvio(Invio invio);
 }

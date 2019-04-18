@@ -463,7 +463,26 @@ public class SmdApplicationTests {
             }
         }
         log.info("");
-        
+
+        log.info("Spedizione find by Destinatario");
+        log.info("-------------------------------");
+        List<Spedizione> spedizioni = spedizioneDao.findByDestinatario(russo);
+        assertEquals(10, spedizioni.size());
+        for (Spedizione sped : spedizioni) {
+            log.info(sped.toString());
+            assertEquals(russo.getId(), sped.getDestinatario().getId());
+            assertEquals(russo.getCognome(),sped.getDestinatario().getCognome());
+            Abbonamento abb = sped.getAbbonamento();
+            assertNotNull(abb);
+            assertTrue(abb.getSpedizioni().size() > 0);
+        }
+        log.info("");
+        spedizioni = Smd.spedizioneDaAggiornare(spedizioneDao.findAll());
+        for (Spedizione sped : spedizioni) {
+            sped.setSospesa(!sped.isSospesa());
+            log.info(sped.toString());
+        }        
+
 
     }
     

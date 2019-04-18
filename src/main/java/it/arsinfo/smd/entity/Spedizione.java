@@ -105,11 +105,11 @@ public class Spedizione implements SmdEntity {
     @Override
     public String toString() {
         if (storico == null) {
-            return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s]", 
-                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio);
+            return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Sospeso=%b]", 
+                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio,sospesa);
         }
-        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Storico=%d]", 
-                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio, storico.getId());
+        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Sospeso=%b, Storico=%d]", 
+                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio, sospesa,storico.getId());
     }
 
     public boolean isSospesa() {

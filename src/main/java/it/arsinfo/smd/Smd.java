@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +135,38 @@ public class Smd {
         campagna.setAbbonamenti(abbonamenti);
         return campagna;
     }
-        
+
+    public static List<Spedizione> spedizioneDaAggiornare(List<Spedizione> spedizioni) {
+        return spedizioni
+                .stream()
+                .filter(
+                    s -> s.getAbbonamento().getAnno().getAnno() == getAnnoCorrente().getAnno() && s.isSospesa() != getSpezioneSospesa(s)
+                    ).collect(Collectors.toList());
+    }
+    
+    public static boolean getSpezioneSospesa(Spedizione spedizione) {
+
+        boolean sospendiSpedizione=spedizione.isSospesa();
+        switch (spedizione.getOmaggio()) {
+        case No:
+            sospendiSpedizione = sospendiSpedizione(spedizione);
+            break;
+
+        case ConSconto:    
+            sospendiSpedizione = sospendiSpedizione(spedizione);
+            break;
+        case CuriaDiocesiana:
+            break;
+        case CuriaGeneralizia:
+            break;
+        case Gesuiti:
+            break;
+        default:
+            break;
+        }
+        return sospendiSpedizione;
+    }
+
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
         StatoStorico pagamentoRegolare = StatoStorico.S;
         switch (storico.getOmaggio()) {
@@ -162,6 +194,14 @@ public class Smd {
         return pagamentoRegolare;
     }
     
+    private static boolean sospendiSpedizione(Spedizione spedizione) {
+        Abbonamento abbonamento = spedizione.getAbbonamento();
+            if (abbonamento.getTotale().signum() > 0 &&  abbonamento.getVersamento() == null) {
+                return true;
+            }
+            return false;
+    }
+
     private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti) {
         for (Abbonamento abb: abbonamenti) {
             if (abb.getIntestatario().getId() != storico.getIntestatario().getId() 
