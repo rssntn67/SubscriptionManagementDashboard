@@ -12,10 +12,13 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Regione;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Storico;
@@ -49,6 +52,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
     private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
+    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
+    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
+    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
 
     private final StoricoDao storicoDao;
     public AnagraficaSearch(AnagraficaDao anagraficaDao, StoricoDao storicoDao) {
@@ -58,18 +64,15 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Ricerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
-        setComponents(new HorizontalLayout(
-                                           filterDiocesi, 
+        setComponents(new HorizontalLayout(filterDiocesi, 
                                            filterCognome,
                                            filterTitolo,
                                            filterRegioneVescovi,
-                                           filterOmaggio,
                                            filterCentroDiocesano,
                                            filterRegioneDirettoreDiocesano,
                                            filterRegionePresidenteDiocesano
                                            ),
-                      new HorizontalLayout(
-                                           filterDirettoreDiocesiano,
+                      new HorizontalLayout(filterDirettoreDiocesiano,
                                            filterPresidenteDiocesano,
                                            filterDirettoreZonaMilano,
                                            filterConsiglioNazionaleADP,
@@ -78,7 +81,11 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            filterCaricheSocialiADP,
                                            filterDelegatiRegionaliADP,
                                            filterElencoMarisaBisi,
-                                           filterPromotoreRegionale));
+                                           filterPromotoreRegionale),
+                      new HorizontalLayout(filterOmaggio,
+                                           filterCassa,
+                                           filterStatoStorico,
+                                           filterInvio));
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
@@ -110,8 +117,6 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
         filterRegioneDirettoreDiocesano.setPlaceholder("Seleziona Regione");
         filterRegioneDirettoreDiocesano.addSelectionListener(e -> onChange());
-        filterOmaggio.setPlaceholder("Seleziona Omaggio");
-        filterOmaggio.addSelectionListener(e ->onChange());
 
         filterDirettoreDiocesiano.addValueChangeListener(e -> onChange());
         filterPresidenteDiocesano.addValueChangeListener(e -> onChange());
@@ -123,6 +128,16 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterDelegatiRegionaliADP.addValueChangeListener(e -> onChange());
         filterElencoMarisaBisi.addValueChangeListener(e -> onChange());
         filterPromotoreRegionale.addValueChangeListener(e -> onChange());
+
+        filterOmaggio.setPlaceholder("Seleziona Omaggio");
+        filterOmaggio.addSelectionListener(e ->onChange());
+        filterCassa.setPlaceholder("Seleziona Cassa");
+        filterCassa.addSelectionListener(e ->onChange());
+        filterInvio.setPlaceholder("Seleziona Invio");
+        filterInvio.addSelectionListener(e ->onChange());
+        filterStatoStorico.setPlaceholder("Seleziona Stato");
+        filterStatoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
+        filterStatoStorico.addSelectionListener(e ->onChange());
 
     }
 
@@ -144,9 +159,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {
 
         if (filterOmaggio.getValue() != null) {
-            final List<Storico> storiciByOmaggio = storicoDao.findByOmaggio(filterOmaggio.getValue());
             anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storiciByOmaggio) {
+                for (Storico storicoA: storicoDao.findByOmaggio(filterOmaggio.getValue())) {
                     if (storicoA.getIntestatario().getId() == a.getId()) {
                         return true;
                     }
@@ -154,7 +168,38 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                 return false;
             }).collect(Collectors.toList());
         }
-        
+
+        if (filterCassa.getValue() != null) {
+            anagrafiche=anagrafiche.stream().filter(a -> {
+                for (Storico storicoA: storicoDao.findByCassa(filterCassa.getValue())) {
+                    if (storicoA.getIntestatario().getId() == a.getId()) {
+                        return true;
+                    }
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+        if (filterInvio.getValue() != null) {
+            anagrafiche=anagrafiche.stream().filter(a -> {
+                for (Storico storicoA: storicoDao.findByInvio(filterInvio.getValue())) {
+                    if (storicoA.getIntestatario().getId() == a.getId()) {
+                        return true;
+                    }
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+        if (filterStatoStorico.getValue() != null) {
+            anagrafiche=anagrafiche.stream().filter(a -> {
+                for (Storico storicoA: storicoDao.findByStatoStorico(filterStatoStorico.getValue())) {
+                    if (storicoA.getIntestatario().getId() == a.getId()) {
+                        return true;
+                    }
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+
         if (filterTitolo.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterTitolo.getValue() == a.getTitolo()).collect(Collectors.toList());
         }
