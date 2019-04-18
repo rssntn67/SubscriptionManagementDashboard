@@ -107,12 +107,14 @@ public class StoricoUI extends SmdUI {
             setHeader(grid.getSelected().getHeader());
             hideMenu();
             search.setVisible(false);
+            bss.setVisible(false);
         });
 
         editor.setChangeHandler(() -> {
             grid.populate(search.find());
             showMenu();
             search.setVisible(true);
+            bss.setVisible(true);
             setHeader("Storico");
             editor.setVisible(false);
         });
