@@ -9,7 +9,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path = SmdUI.URL_PUBBLICAZIONI)
-@Title("Anagrafica Pubblicazioni ADP")
+@Title("Pubblicazioni ADP")
 public class PubblicazioneUI extends SmdUI {
 
     /**
@@ -18,15 +18,15 @@ public class PubblicazioneUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    PubblicazioneDao repo;
+    PubblicazioneDao pubblicazionedao;
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Pubblicazioni");
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
-        PubblicazioneSearch search = new PubblicazioneSearch(repo);
+        PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
         PubblicazioneGrid grid = new PubblicazioneGrid("");
-        PubblicazioneEditor editor = new PubblicazioneEditor(repo);
+        PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
         addSmdComponents(editor,add, search, grid);
         editor.setVisible(false);
 

@@ -13,7 +13,11 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 
 	List<Storico> findByIntestatario(Anagrafica intestatario);
         List<Storico> findByDestinatario(Anagrafica destinatario);
-	List<Storico> findByPubblicazione(Pubblicazione diocesi);
+	List<Storico> findByPubblicazione(Pubblicazione pubblicazione);
+	List<Storico> findByIntestatarioAndDestinatario(Anagrafica intestatario, Anagrafica destinatario);
+        List<Storico> findByIntestatarioAndPubblicazione(Anagrafica intestatario, Pubblicazione pubblicazione);
+        List<Storico> findByDestinatarioAndPubblicazione(Anagrafica destinatario, Pubblicazione pubblicazione);
+        List<Storico> findByIntestatarioAndDestinatarioAndPubblicazione(Anagrafica intestatario, Anagrafica destinatario, Pubblicazione pubblicazione);
         List<Storico> findByOmaggio(Omaggio omaggio);
 
 }

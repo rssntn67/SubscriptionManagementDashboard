@@ -37,6 +37,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_LOGIN_FAILURE = "/login.html?error";
     public final static String URL_LOGOUT = "/login.html?logout";
     public final static String URL_ANAGRAFICA = "/anagrafica";
+    public final static String URL_STORICO = "/storico";
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_CAMPAGNA = "/campagna";
@@ -86,21 +87,22 @@ public abstract class SmdUI extends UI {
     public Link[] getPageLinks(String username) {
         List<Link> links = new ArrayList<>();
         UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
+        links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
+        links.add(new Link("Campagna", new ExternalResource(URL_CAMPAGNA)));
+        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
+        links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
+        links.add(new Link("Operazioni", new ExternalResource(URL_OPERAZIONI)));
+        links.add(new Link("Prospetti", new ExternalResource(URL_PROSPETTI)));
+        links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
+        links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
+        links.add(new Link("Note", new ExternalResource(URL_NOTE)));
         if (loggedInUser.getRole() == Role.ADMIN ) {
             links.add(new Link("Amministrazione Utenti", new ExternalResource(URL_USER)));
         } 
         if (!loggedInUser.isLocked()) {
             links.add(new Link("Reset Password", new ExternalResource(URL_RESET)));
         }
-        links.add(new Link("Campagna", new ExternalResource(URL_CAMPAGNA)));
-        links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
-        links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
-        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Operazioni", new ExternalResource(URL_OPERAZIONI)));
-        links.add(new Link("Prospetti", new ExternalResource(URL_PROSPETTI)));
-        links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
-        links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
-        links.add(new Link("Note", new ExternalResource(URL_NOTE)));
         links.add(new Link(String.format("Logout: %s",loggedInUser.getUsername()),
                          new ExternalResource(URL_LOGOUT)));
         return links.toArray((new Link[links.size()]));

@@ -104,8 +104,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterTitolo.addSelectionListener(e -> onChange());
         filterCentroDiocesano.setPlaceholder("Seleziona Centro");
         filterCentroDiocesano.addSelectionListener(e -> onChange());
-        filterCentroDiocesano.addSelectionListener(e -> onChange());
         filterRegioneVescovi.setPlaceholder("Seleziona Regione");
+        filterRegioneVescovi.addSelectionListener(e -> onChange());
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
         filterRegioneDirettoreDiocesano.setPlaceholder("Seleziona Regione");
