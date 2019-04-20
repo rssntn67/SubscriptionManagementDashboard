@@ -29,6 +29,7 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Sostitutivo;
@@ -414,28 +415,62 @@ public class Smd {
         return operazioni;
     }
 
+    public static List<Spedizione> generaSpedizioniSped(List<Abbonamento> abbonamenti, Operazione operazione) {
+        final List<Spedizione> spedizioni = new ArrayList<>();
+        abbonamenti.stream().filter(a ->a.getAnno() == operazione.getAnno()
+                        && a.getInizio().getPosizione() <= operazione.getMese().getPosizione() 
+                        && a.getFine().getPosizione() >= operazione.getMese().getPosizione())
+        .forEach(a -> {
+           spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
+                   !s.isSospesa()
+               && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
+                && s.getInvio() != Invio.AdpSede
+                ).collect(Collectors.toList())
+           );
+        });
+        return spedizioni;
+    }
+    
+    public static List<Spedizione> generaSpedizioniCassa(List<Abbonamento> abbonamenti, Operazione operazione) {
+        final List<Spedizione> spedizioni = new ArrayList<>();
+        abbonamenti.stream().filter(a ->a.getAnno() == operazione.getAnno()
+                        && a.getInizio().getPosizione() <= operazione.getMese().getPosizione() 
+                        && a.getFine().getPosizione() >= operazione.getMese().getPosizione())
+        .forEach(a -> {
+           spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
+                   !s.isSospesa()
+                && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
+                && s.getInvio() == Invio.AdpSede
+                ).collect(Collectors.toList())
+           );
+        });
+        return spedizioni;
+    }
+
     
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<Abbonamento> abbonamenti, 
             Anno anno, Mese mese) {
-        Operazione operazione = new Operazione(pubblicazione, anno, mese);
-        Integer conta = 0;
-            for (Abbonamento a: abbonamenti) {
-                if ( a.getAnno() == anno 
+        final Operazione op = new Operazione(pubblicazione, anno, mese);
+        op.setStimato(0);
+        abbonamenti
+            .stream()
+            .filter(a ->
+                        a.getAnno() == anno 
                         && a.getInizio().getPosizione() <= mese.getPosizione() 
                         && a.getFine().getPosizione() >= mese.getPosizione() 
-                  ) {
-                    for (Spedizione s: a.getSpedizioni()) {
-                        if (s.getPubblicazione().getId() != pubblicazione.getId()) {
-                            continue;
-                        }
-                        conta+=s.getNumero();
-                }
-            }
-        }
-        operazione.setStimato(conta);
-        return operazione;        
+                    )
+            .forEach( a -> 
+                      a.getSpedizioni()
+                          .stream()
+                          .filter( s ->
+                                !s.isSospesa() 
+                                && s.getPubblicazione().getId() == pubblicazione.getId()
+                                  ).forEach( s -> op.setStimato(op.getStimato()+s.getNumero()))
+             );
+                        
+        return op;        
     }
     
     public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
@@ -513,7 +548,7 @@ public class Smd {
                 );
     }
     
-    public static Incasso generateIncasso(Set<String> versamenti,
+    public static Incasso generaIncasso(Set<String> versamenti,
             String riepilogo) {
         final Incasso incasso = new Incasso();
         incasso.setCassa(Cassa.Ccp);

@@ -14,6 +14,7 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
@@ -43,17 +44,15 @@ public class CampagnaUI extends SmdUI {
 
     @Autowired
     PubblicazioneDao pubblicazioneDao;
-    
+
+    @Autowired
+    AbbonamentoDao abbonamentoDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
-        CampagnaItemsEditor campagnaItemEditor = 
-                new CampagnaItemsEditor(
-                   pubblicazioneDao.findAll()
-                   .stream()
-                   .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
-                   .collect(Collectors.toList())
-               );
+        CampagnaItemsEditor campagnaItemEditor = new CampagnaItemsEditor(pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
+                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList()));
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("");
@@ -61,60 +60,82 @@ public class CampagnaUI extends SmdUI {
             @Override
             public void delete() {
                 if (get().getAnno() == Smd.getAnnoCorrente()) {
-                    Notification.show("Non è possibile cancellare campagna dell'anno corrente", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Non è possibile cancellare campagna dell'anno corrente",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
-                    
+
                 }
                 if (get().getAnno() == Smd.getAnnoPassato()) {
-                    Notification.show("Non è possibile cancellare campagna dell'anno passato", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Non è possibile cancellare campagna dell'anno passato",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 super.delete();
             }
-            
+
             @Override
             public void save() {
-                if (get().getId() == null && get().getInizio() == null ) {
-                    Notification.show("Selezionare Mese Inizio Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null && get().getInizio() == null) {
+                    Notification.show("Selezionare Mese Inizio Prima di Salvare",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getFine() == null ) {
-                    Notification.show("Selezionare Mese Fine Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null && get().getFine() == null) {
+                    Notification.show("Selezionare Mese Fine Prima di Salvare",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null && get().getAnno() == null) {
-                    Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Selezionare Anno Prima di Salvare",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && !campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
-                    Notification.show("E' stata già generata la Campagna per Anno "+ get().getAnno() + ". Solo una Campagna per Anno", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null
+                        && !campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
+                    Notification.show("E' stata già generata la Campagna per Anno "
+                            + get().getAnno()
+                            + ". Solo una Campagna per Anno",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
-                    Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null
+                        && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
+                    Notification.show("Anno deve essere anno corrente o successivi",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null  && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere successivo al Mese Fine", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null
+                        && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
+                    Notification.show("Anno corrente: il Mese Inizio deve essere successivo al Mese Fine",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il Mese corrente o successivo", Notification.Type.ERROR_MESSAGE);
+                if (get().getId() == null
+                        && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno()
+                        && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
+                    Notification.show("Anno corrente: il Mese Inizio deve essere il Mese corrente o successivo",
+                                      Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null &&  campagnaItemEditor.getSelected().isEmpty() ) {
-                    Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti", Notification.Type.WARNING_MESSAGE);
+                if (get().getId() == null
+                        && campagnaItemEditor.getSelected().isEmpty()) {
+                    Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti",
+                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                Smd.generaCampagna(get(),anagraficaDao.findAll(),storicoDao.findAll(),campagnaItemEditor.getSelected());
+                Smd.generaCampagna(get(), anagraficaDao.findAll(),
+                                   storicoDao.findAll(),
+                                   campagnaItemEditor.getSelected());
                 super.save();
             }
-            
-        };
-        
-        addSmdComponents(campagnaItemEditor,editor, add,search, grid);
-        editor.setVisible(false);
 
+        };
+        AbbonamentoGrid abbonamentoGrid = new AbbonamentoGrid("Abbonamenti Associati");
+
+        addSmdComponents(campagnaItemEditor, editor, abbonamentoGrid, add,
+                         search, grid);
+        editor.setVisible(false);
+        abbonamentoGrid.setVisible(false);
         add.setChangeHandler(() -> {
             setHeader(String.format("Campagna:Add"));
             hideMenu();
@@ -130,31 +151,49 @@ public class CampagnaUI extends SmdUI {
             if (grid.getSelected() == null) {
                 return;
             }
-            setHeader("Campagna:Edit");
+            setHeader("Campagna::Edit");
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
+            grid.setVisible(false);
             editor.edit(grid.getSelected());
-            campagnaItemEditor.edit(campagnaItemDao.findByCampagna(grid.getSelected()), true);
+            campagnaItemEditor.edit(campagnaItemDao.findByCampagna(grid.getSelected()),
+                                    true);
+            abbonamentoGrid.populate(abbonamentoDao.findByCampagna(grid.getSelected()));
+        });
+
+        abbonamentoGrid.setChangeHandler(() -> {
         });
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             campagnaItemEditor.setVisible(false);
+            abbonamentoGrid.setVisible(false);
             setHeader("Campagna");
             showMenu();
             add.setVisible(true);
             search.setVisible(true);
             grid.populate(search.find());
         });
-        
-        campagnaItemEditor.setChangeHandler(() -> {});
+
+        campagnaItemEditor.setChangeHandler(() -> {
+        });
 
         grid.addComponentColumn(campagna -> {
             Button button = new Button("Genera Ccp", VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
-                Notification.show("Da realizzare", Notification.Type.WARNING_MESSAGE);
-                });
+                setHeader("Campagna::Ccp");
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.edit(campagna);
+                abbonamentoGrid
+                .populate(
+                  abbonamentoDao.findByCampagna(campagna)
+                      .stream()
+                      .filter(a -> a.getTotale().signum() > 0)
+                      .collect(Collectors.toList()));
+                grid.setVisible(false);
+            });
             return button;
         });
 

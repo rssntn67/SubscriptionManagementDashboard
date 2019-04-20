@@ -11,6 +11,7 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Bollettino;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;
@@ -69,7 +70,7 @@ public abstract class IncassoAbstractUI extends SmdUI {
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
-                .filter(abb -> abb.getIncassato().equals("No") 
+                .filter(abb -> abb.getIncassato() == Incassato.No 
                         && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
                         && (versamento.getBollettino() != Bollettino.TIPO674) 
                             || abb.getCampo().equals(versamento.getCampo())

@@ -30,7 +30,7 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Smd.getMeseCorrente();
 
-    private Integer definitivo = 0;
+    private Integer definitivo = -1;
 
     private Integer stimato = 0;
 

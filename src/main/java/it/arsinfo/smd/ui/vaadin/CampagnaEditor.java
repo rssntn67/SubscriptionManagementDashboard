@@ -7,6 +7,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Campagna;
@@ -49,6 +50,8 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         fine.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
+        getDelete().setEnabled(!persisted || campagna.getAnno().getAnno() > Smd.getAnnoCorrente().getAnno()
+                );
         rinnovaSoloAbbonatiInRegola.setEnabled(!persisted);
         anno.focus();
 

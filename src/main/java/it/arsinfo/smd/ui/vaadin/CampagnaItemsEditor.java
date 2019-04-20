@@ -16,7 +16,7 @@ public class CampagnaItemsEditor
             
             @Override
             public Set<Long> match(List<CampagnaItem> items) {
-                return items.stream().map(item -> item.getId()).collect(Collectors.toSet());
+                return items.stream().map(item -> item.getPubblicazione().getId()).collect(Collectors.toSet());
             }
 
             @Override

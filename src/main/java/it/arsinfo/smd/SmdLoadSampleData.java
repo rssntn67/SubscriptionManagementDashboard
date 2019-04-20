@@ -555,7 +555,7 @@ public class SmdLoadSampleData implements Runnable {
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();
         versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
-        Incasso incasso1 = Smd.generateIncasso(versamenti1, riepilogo1); 
+        Incasso incasso1 = Smd.generaIncasso(versamenti1, riepilogo1); 
         incassi.add(incasso1);
         
         String riepilogo2="3000063470009171006              999000000090000000367000000000700000003020000000002000000006500                                                                                                        \n";
@@ -570,7 +570,7 @@ public class SmdLoadSampleData implements Runnable {
         versamenti2.add("0856588699999990000634700091710041230000001500038124062171006727703812406007375DIN                                                                                                                      \n");
         versamenti2.add("0858313299999990000634700091710041230000005000098101062171006727709810106010156DIN                                                                                                                      \n");
 
-        Incasso incasso2 = Smd.generateIncasso(versamenti2, riepilogo2);
+        Incasso incasso2 = Smd.generaIncasso(versamenti2, riepilogo2);
         incassi.add(incasso2);
         
         String riepilogo3="5000063470009171006              999000000060000000201000000000500000001810000000001000000002000                                                                                                        \n";
@@ -582,7 +582,7 @@ public class SmdLoadSampleData implements Runnable {
         versamenti3.add("0860565700000130000634700091710056740000010800055917062171006000000018000196500DIN                                                                                                                      \n");
         versamenti3.add("0855941199999990000634700091710041230000002000055681052171006727705568105003308DIN                                                                                                                      \n");
 
-        Incasso incasso3 = Smd.generateIncasso(versamenti3, riepilogo3);
+        Incasso incasso3 = Smd.generaIncasso(versamenti3, riepilogo3);
         incassi.add(incasso3);
         
         String riepilogo4="7000063470009171006              999000000070000000447500000000400000001750000000003000000027250                                                                                                        \n";
@@ -595,7 +595,7 @@ public class SmdLoadSampleData implements Runnable {
         versamenti4.add("0857504199999990000634700091710034510000004000040016062171006727604001606035576DIN                                                                                                                      \n");
         versamenti4.add("0866089199999990000634700091710044510000022500018160052171006727701816005010892DIN                                                                                                                      \n");
         
-        Incasso incasso4=Smd.generateIncasso(versamenti4, riepilogo4);
+        Incasso incasso4=Smd.generaIncasso(versamenti4, riepilogo4);
         incassi.add(incasso4);
 
         return incassi;
@@ -737,6 +737,25 @@ public class SmdLoadSampleData implements Runnable {
                             EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
                                 prospettoDao.save(p);
                             });
+        
+        operazioneDao.findAll()
+            .stream()
+            .filter(o -> o.getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()
+                          && o.getDefinitivo() == -1 )
+            .forEach(o -> {
+                o.setDefinitivo(o.getStimato()+3);
+                operazioneDao.save(o);
+                log.info(o.toString());
+            });
+        operazioneDao.findByAnno(Smd.getAnnoCorrente())
+            .stream()
+            .filter(o -> o.getMese().getPosizione() <= Smd.getMeseCorrente().getPosizione()
+                    && o.getDefinitivo() == -1)
+            .forEach(o -> {
+                o.setDefinitivo(o.getStimato()+3);
+                operazioneDao.save(o);
+                log.info(o.toString());
+            });
         
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER);
         adp.setLocked(true);

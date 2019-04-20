@@ -23,6 +23,7 @@ import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
@@ -206,14 +207,14 @@ public class Abbonamento implements SmdEntity {
     }
     
     @Transient
-    public String getIncassato() {
+    public Incassato getIncassato() {
         if (costo.doubleValue() == BigDecimal.ZERO.doubleValue() && spese.doubleValue() == BigDecimal.ZERO.doubleValue()) {
-            return "Omaggio";
+            return Incassato.valueOf("Omaggio");
         }
         if (versamento != null) {
-            return "Si";
+            return Incassato.valueOf("Si");
         }
-        return "No";
+        return Incassato.valueOf("No");
     }
     
     @Transient

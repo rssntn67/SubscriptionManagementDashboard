@@ -81,7 +81,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
                 if (Smd.isVersamento(strLine)) {
                     versamenti.add(strLine);
                 } else if (Smd.isRiepilogo(strLine)) {
-                    incassi.add(Smd.generateIncasso(versamenti, strLine));
+                    incassi.add(Smd.generaIncasso(versamenti, strLine));
                     versamenti.clear();
                 } else {
                     avviso.setValue("Incasso Cancellato: Valore non riconosciuto->" + strLine);
