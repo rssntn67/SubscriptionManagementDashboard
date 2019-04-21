@@ -11,6 +11,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -27,6 +28,8 @@ public class StoricoEditor
                                                                     EnumSet.allOf(Omaggio.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
+            EnumSet.allOf(InvioSpedizione.class));
     private final TextField numero = new TextField("Numero");
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
@@ -50,13 +53,17 @@ public class StoricoEditor
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
+        cassa.setEmptySelectionAllowed(false);
+        omaggio.setEmptySelectionAllowed(false);
+        invio.setEmptySelectionAllowed(false);
+        invioSpedizione.setEmptySelectionAllowed(false);
         statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
 
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponentsAndExpand(destinatario);
         pri.addComponent(pubblicazione);
         pri.addComponent(numero);
-        pri.addComponents(cassa,omaggio,invio);
+        pri.addComponents(cassa,omaggio,invio,invioSpedizione);
         pri.addComponentsAndExpand(statoStorico);
 
         HorizontalLayout sec = new HorizontalLayout();

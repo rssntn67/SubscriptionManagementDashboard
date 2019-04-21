@@ -10,6 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -25,6 +26,8 @@ public class OperazioneEditor
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> mese = new ComboBox<Mese>("Mese",
             EnumSet.allOf(Mese.class));
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("S",
+            EnumSet.allOf(InvioSpedizione.class));
     public OperazioneEditor(
             OperazioneDao operazioneDao,
             List<Pubblicazione> pubblicazioni) {
@@ -32,7 +35,7 @@ public class OperazioneEditor
         super(operazioneDao, new Binder<>(Operazione.class) );
         
         setComponents(getActions(), 
-                      new HorizontalLayout(pubblicazione, anno, mese,
+                      new HorizontalLayout(pubblicazione, anno, mese,invioSpedizione,
                                                          stimato),
                                     definitivo);
 

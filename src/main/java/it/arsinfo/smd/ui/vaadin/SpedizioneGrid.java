@@ -8,10 +8,11 @@ public class SpedizioneGrid extends SmdGrid<Spedizione> {
 
     public SpedizioneGrid(String gridname) {
         super(new Grid<>(Spedizione.class),gridname);
-        setColumns("destinatario.caption","pubblicazione.nome","decodeSospesa","numero","omaggio","invio");
+        setColumns("destinatario.caption","pubblicazione.nome","decodeSospesa","numero","omaggio","invioSpedizione","invio");
         setColumnCaption("destinatario.caption","Destinatario");
         setColumnCaption("pubblicazione.caption","Pubblicazione");
         setColumnCaption("decodeSospesa","Sospesa");
+        setColumnCaption("invioSpedizione","Sped.");
 
     }
 

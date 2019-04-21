@@ -38,7 +38,7 @@ public class Abbonamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Anno anno = Smd.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
-    private Mese inizio = Smd.getMeseCorrente();
+    private Mese inizio = Mese.GENNAIO;
     @Enumerated(EnumType.STRING)
     private Mese fine = Mese.DICEMBRE;
 

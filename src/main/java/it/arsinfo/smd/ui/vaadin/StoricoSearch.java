@@ -9,6 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -24,6 +25,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
+    private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Invio Sped.", EnumSet.allOf(InvioSpedizione.class));
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
 
     public StoricoSearch(StoricoDao storicoDao,
@@ -35,7 +37,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
         setComponents(new HorizontalLayout(filterIntestatario,filterDestinatario,filterPubblicazione),
-                      new HorizontalLayout(filterOmaggio,filterCassa,filterStatoStorico,filterInvio));
+                      new HorizontalLayout(filterOmaggio,filterCassa,filterStatoStorico,filterInvioSped,filterInvio));
 
         filterIntestatario.setEmptySelectionAllowed(true);
         filterIntestatario.setPlaceholder("Cerca per Intestatario");
@@ -82,6 +84,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterCassa.addSelectionListener(e ->onChange());
         filterInvio.setPlaceholder("Seleziona Invio");
         filterInvio.addSelectionListener(e ->onChange());
+        filterInvioSped.setPlaceholder("Seleziona Sped");
+        filterInvioSped.addSelectionListener(e ->onChange());
         filterStatoStorico.setPlaceholder("Seleziona Stato");
         filterStatoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
         filterStatoStorico.addSelectionListener(e ->onChange());
@@ -125,6 +129,9 @@ public class StoricoSearch extends SmdSearch<Storico> {
         }
         if (filterInvio.getValue() != null) {
             storici=storici.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      
+        }
+        if (filterInvioSped.getValue() != null) {
+            storici=storici.stream().filter(s -> s.getInvioSpedizione() == filterInvioSped.getValue()).collect(Collectors.toList());      
         }
         if (filterStatoStorico.getValue() != null) {
             storici=storici.stream().filter(s -> s.getStatoStorico() == filterStatoStorico.getValue()).collect(Collectors.toList());      

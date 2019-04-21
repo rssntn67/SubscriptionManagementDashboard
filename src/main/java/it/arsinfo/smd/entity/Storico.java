@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.StatoStorico;
 
@@ -46,6 +47,9 @@ public class Storico implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
+
+    @Enumerated(EnumType.STRING)
+    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
     private Integer numero = 1;
     
@@ -197,6 +201,14 @@ public class Storico implements SmdEntity {
         }
         
         return regolare;
+    }
+
+    public InvioSpedizione getInvioSpedizione() {
+        return invioSpedizione;
+    }
+
+    public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
+        this.invioSpedizione = invioSpedizione;
     }
     
 }

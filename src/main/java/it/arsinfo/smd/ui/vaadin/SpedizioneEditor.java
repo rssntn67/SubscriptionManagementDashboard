@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -28,6 +29,9 @@ public class SpedizioneEditor
                                                                     EnumSet.allOf(Omaggio.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
+            EnumSet.allOf(InvioSpedizione.class));
+    
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
             EnumSet.allOf(Anno.class));
     private final TextField numero = new TextField("Numero");
@@ -57,11 +61,12 @@ public class SpedizioneEditor
         anno.setEmptySelectionAllowed(false);
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         invio.setEmptySelectionAllowed(false);
+        invioSpedizione.setEmptySelectionAllowed(false);
         omaggio.setEmptySelectionAllowed(false);
         
         setComponents(getActions(), new HorizontalLayout(intestatario, destinatario,
                                            pubblicazione,numero),
-                      new HorizontalLayout(anno, omaggio, invio),
+                      new HorizontalLayout(anno, omaggio, invio,invioSpedizione),
                       sospesa);
  
         getBinder()

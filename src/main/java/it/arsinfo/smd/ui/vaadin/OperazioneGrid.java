@@ -13,8 +13,9 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     public OperazioneGrid(String gridName) {
         super(new Grid<>(Operazione.class), gridName);
-        setColumns("pubblicazione.nome", "stimato","definitivo","mese","anno");
+        setColumns("pubblicazione.nome", "stimato","definitivo","mese","anno","invioSpedizione");
         setColumnCaption("pubblicazione.nome", "Pubblicazione");
+        setColumnCaption("invioSpedizione", "Sped.");
         gridfooter = getGrid().prependFooterRow();
     }
 

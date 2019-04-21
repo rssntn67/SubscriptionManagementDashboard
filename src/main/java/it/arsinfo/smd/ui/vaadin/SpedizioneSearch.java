@@ -10,6 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -24,6 +25,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Anno", EnumSet.allOf(Anno.class));
     private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
+    private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Sped.", EnumSet.allOf(InvioSpedizione.class));
     private final CheckBox filterSospesa = new CheckBox("Sospesa");
     private final CheckBox filterNonSospesa = new CheckBox("Attiva");
         
@@ -35,7 +37,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
         setComponents(new HorizontalLayout(filterIntestatario,filterDestinatario,filterPubblicazione),
-                      new HorizontalLayout(filterAnno,filterOmaggio,filterInvio),
+                      new HorizontalLayout(filterAnno,filterOmaggio,filterInvioSped,filterInvio),
                       new HorizontalLayout(filterSospesa,filterNonSospesa));
 
         filterIntestatario.setEmptySelectionAllowed(true);
@@ -117,6 +119,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         }
         if (filterInvio.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      
+        }
+        if (filterInvioSped.getValue() != null) {
+            spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == filterInvioSped.getValue()).collect(Collectors.toList());      
         }
         if (filterSospesa.getValue()) {
             spedizioni=spedizioni.stream().filter(s -> s.isSospesa()).collect(Collectors.toList());      

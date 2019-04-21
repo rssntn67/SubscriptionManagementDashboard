@@ -29,7 +29,7 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Sostitutivo;
@@ -125,6 +125,7 @@ public class Smd {
                     spedizione.setDestinatario(storico.getDestinatario());
                     spedizione.setNumero(storico.getNumero());
                     spedizione.setInvio(storico.getInvio());
+                    spedizione.setInvioSpedizione(storico.getInvioSpedizione());
                     spedizione.setOmaggio(storico.getOmaggio());
                     abbonamento.addSpedizione(spedizione);
                 }
@@ -409,7 +410,10 @@ public class Smd {
             pubblicazione.getMesiPubblicazione()
                 .stream()
                 .filter(mese -> mesi.contains(mese))
-                .forEach(mese -> operazioni.add(generaOperazione(pubblicazione, abbonamenti, anno, mese))
+                .forEach(mese -> {
+                    for (InvioSpedizione is :InvioSpedizione.values()) 
+                        operazioni.add(generaOperazione(pubblicazione, abbonamenti, anno, mese,is));
+                }
             );
         });
         return operazioni;
@@ -424,7 +428,7 @@ public class Smd {
            spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
                    !s.isSospesa()
                && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
-                && s.getInvio() != Invio.AdpSede
+                && s.getInvioSpedizione() != InvioSpedizione.AdpSede
                 ).collect(Collectors.toList())
            );
         });
@@ -440,7 +444,7 @@ public class Smd {
            spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
                    !s.isSospesa()
                 && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
-                && s.getInvio() == Invio.AdpSede
+                && s.getInvioSpedizione() == InvioSpedizione.AdpSede
                 ).collect(Collectors.toList())
            );
         });
@@ -451,7 +455,7 @@ public class Smd {
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<Abbonamento> abbonamenti, 
-            Anno anno, Mese mese) {
+            Anno anno, Mese mese, InvioSpedizione invioSpedizione) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         op.setStimato(0);
         abbonamenti
@@ -467,6 +471,7 @@ public class Smd {
                           .filter( s ->
                                 !s.isSospesa() 
                                 && s.getPubblicazione().getId() == pubblicazione.getId()
+                                && s.getInvioSpedizione() == invioSpedizione
                                   ).forEach( s -> op.setStimato(op.getStimato()+s.getNumero()))
              );
                         

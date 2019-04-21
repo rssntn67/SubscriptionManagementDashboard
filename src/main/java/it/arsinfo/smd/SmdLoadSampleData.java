@@ -18,7 +18,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Diocesi;
-import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.data.Regione;
@@ -70,7 +70,7 @@ public class SmdLoadSampleData implements Runnable {
             Anagrafica intestatario, 
             Pubblicazione pubblicazione, 
             int numero, 
-            Invio invio,
+            InvioSpedizione invio,
             Omaggio omaggio
         ) {
         Storico storico = new Storico(); 
@@ -79,7 +79,7 @@ public class SmdLoadSampleData implements Runnable {
         storico.setPubblicazione(pubblicazione);
         storico.setNumero(numero);
         storico.setOmaggio(omaggio);
-        storico.setInvio(invio);
+        storico.setInvioSpedizione(invio);
         Nota nota= new Nota(storico);
         nota.setDescription("Creato storico");
         storico.getNote().add(nota);
@@ -643,12 +643,12 @@ public class SmdLoadSampleData implements Runnable {
         
         Anagrafica mp = getMP();
         anagraficaDao.save(mp);
-        storicoDao.save(getStoricoBy(mp, messaggio, 10,Invio.AdpSede,Omaggio.Gesuiti));
-        storicoDao.save(getStoricoBy(mp, lodare, 10,Invio.AdpSede,Omaggio.Gesuiti));
+        storicoDao.save(getStoricoBy(mp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.Gesuiti));
+        storicoDao.save(getStoricoBy(mp, lodare, 10,InvioSpedizione.AdpSede,Omaggio.Gesuiti));
 
         Anagrafica dp = getDP();
         anagraficaDao.save(dp);
-        storicoDao.save(getStoricoBy(dp, messaggio, 10,Invio.AdpSede,Omaggio.CuriaGeneralizia));
+        storicoDao.save(getStoricoBy(dp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.CuriaGeneralizia));
 
         Anagrafica ms = getMS();
         anagraficaDao.save(ms);
