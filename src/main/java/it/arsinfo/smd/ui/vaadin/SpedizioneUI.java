@@ -76,7 +76,7 @@ public class SpedizioneUI extends SmdUI {
                     pb.setValue(0.0f);
                     pb.setVisible(false);
                     bss.getButton().setEnabled(true);
-                    setHeader("Storico");
+                    setHeader("Spedizione");
                     grid.populate(search.find());
                     this.push();
                 });
@@ -104,7 +104,7 @@ public class SpedizioneUI extends SmdUI {
             showMenu();
             search.setVisible(true);
             bss.setVisible(true);
-            setHeader("Storico");
+            setHeader("Spedizione");
             editor.setVisible(false);
         });
 

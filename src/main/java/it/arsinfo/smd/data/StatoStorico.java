@@ -2,8 +2,9 @@ package it.arsinfo.smd.data;
 
 public enum StatoStorico {
     N("Nuovo"),
-    PR("In Regola"),
-    NPR("Non in Regola"),
+    A("Annullato"),
+    P("In Regola"),
+    R("Non in Regola"),
     O("Omaggio"),
     S("Sospeso");
     

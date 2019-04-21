@@ -50,7 +50,6 @@ public class StoricoEditor
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
-        statoStorico.setReadOnly(true);
         statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
 
         HorizontalLayout pri = new HorizontalLayout();
@@ -76,6 +75,7 @@ public class StoricoEditor
 
     @Override
     public void focus(boolean persisted, Storico obj) {
+        statoStorico.setReadOnly(!persisted);
         pubblicazione.setReadOnly(persisted);
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);
