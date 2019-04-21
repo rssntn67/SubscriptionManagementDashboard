@@ -47,7 +47,7 @@ public class StoricoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Storico");
         SmdProgressBar pb = new SmdProgressBar();
-        SmdButton bss = new SmdButton("Aggiorna Stato", VaadinIcons.CLOUD);
+        SmdButton bss = new SmdButton("Aggiorna Stato Storici", VaadinIcons.CLOUD);
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
@@ -65,21 +65,19 @@ public class StoricoUI extends SmdUI {
                 List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
                 List<Storico> storici = search.find();
                 float delta = 1.0f/storici.size();
-                float val = 0.0f;
-                for (Storico s : storici) {
-                    val+=delta;
+                pb.setValue(0.0f);
+                storici.stream().forEach( s -> {
                     StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
                     if (s.getStatoStorico() != calcolato) {
                         s.setStatoStorico(calcolato);
                         storicoDao.save(s);
-                        final float value=val;
-                        access(() -> {
-                            pb.setValue(value);
-                            grid.populate(search.find());
-                            this.push();
-                        });
                     }
-                }
+                    access(() -> {
+                        pb.setValue(pb.getValue()+delta);
+                        grid.populate(search.find());
+                        this.push();
+                    });
+                });
 
                 access(() -> {
                     pb.setValue(0.0f);

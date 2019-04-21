@@ -26,7 +26,7 @@ public class OperazioneEditor
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> mese = new ComboBox<Mese>("Mese",
             EnumSet.allOf(Mese.class));
-    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("S",
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
     public OperazioneEditor(
             OperazioneDao operazioneDao,
@@ -54,6 +54,7 @@ public class OperazioneEditor
         mese.setReadOnly(true);
         
         stimato.setReadOnly(true);
+        invioSpedizione.setReadOnly(true);
         
         getBinder()
             .forField(definitivo)
@@ -72,6 +73,7 @@ public class OperazioneEditor
 
     @Override
     public void focus(boolean persisted, Operazione op) {
+        definitivo.setReadOnly(op.chiuso());
         getSave().setEnabled(!op.chiuso());
         getCancel().setEnabled(!op.chiuso());
         definitivo.focus();        

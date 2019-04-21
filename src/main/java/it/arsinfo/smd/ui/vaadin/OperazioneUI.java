@@ -11,10 +11,16 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_OPERAZIONI)
 @Title("Operazioni ADP")
@@ -34,26 +40,85 @@ public class OperazioneUI extends SmdUI {
     @Autowired
     private AbbonamentoDao abbonamentoDao;
 
+    @Autowired
+    private StoricoDao storicoDao;
+
+    @Autowired
+    private SpedizioneDao spedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Operazioni");
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
+        SmdProgressBar pb = new SmdProgressBar();
+        SmdButton bss = new SmdButton("Aggiorna Stato Storici e Spedizioni", VaadinIcons.CLOUD);
+
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
         SpedizioneGrid spedGrid = new SpedizioneGrid("Spedizioni");
-        addSmdComponents(spedGrid,generaShow,genera,editor,search,grid);
+        addSmdComponents(pb,spedGrid,generaShow,bss,genera,editor,search,grid);
         
+        
+        pb.setVisible(false);
         spedGrid.setVisible(false);
         genera.setVisible(false);
         editor.setVisible(false);
 
+        pb.setChangeHandler(() ->{});
+        bss.setChangeHandler(()-> {
+            setHeader("Calcola Stato....");
+            bss.getButton().setEnabled(false);
+            pb.setVisible(true);
+            new Thread(() -> {
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
+                List<Storico> storici = storicoDao.findAll();
+                List<Spedizione> aggiornamenti = Smd.spedizioneDaAggiornare(spedizioneDao.findAll());
+                if (aggiornamenti.isEmpty() && storici.isEmpty()) {
+                    return;
+                }
+                float delta = 1.0f/(storici.size() + aggiornamenti.size());
+                pb.setValue(0.0f);
+                storici.stream().forEach( s -> {
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    if (s.getStatoStorico() != calcolato) {
+                        s.setStatoStorico(calcolato);
+                        storicoDao.save(s);
+                    }
+                    access(() -> {
+                        pb.setValue(pb.getValue()+delta);
+                        grid.populate(search.find());
+                        this.push();
+                    });
+
+                });
+                aggiornamenti.stream().forEach(s -> {
+                    s.setSospesa(!s.isSospesa());
+                    spedizioneDao.save(s);
+                        access(() -> {
+                            pb.setValue(pb.getValue()+delta);
+                            grid.populate(search.find());
+                            this.push();
+                        });
+                });
+                access(() -> {
+                    pb.setValue(0.0f);
+                    pb.setVisible(false);
+                    bss.getButton().setEnabled(true);
+                    setHeader("Operazioni");
+                    grid.populate(search.find());
+                    this.push();
+                });
+
+            }).start();            
+        });
+
         generaShow.setChangeHandler(() -> {
             generaShow.setVisible(false);
+            bss.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
             genera.edit();        
@@ -62,6 +127,7 @@ public class OperazioneUI extends SmdUI {
             generaShow.setVisible(true);
             spedGrid.setVisible(false);
             genera.setVisible(false);
+            bss.setVisible(true);
             search.setVisible(true);
             grid.setVisible(true);
         }); 
@@ -72,6 +138,7 @@ public class OperazioneUI extends SmdUI {
             }
             generaShow.setVisible(false);
             search.setVisible(false);
+            bss.setVisible(false);
             grid.setVisible(false);
             editor.edit(grid.getSelected());   
         });
@@ -79,6 +146,7 @@ public class OperazioneUI extends SmdUI {
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             generaShow.setVisible(true);
+            bss.setVisible(true);
             spedGrid.setVisible(false);
             search.setVisible(true);
             grid.populate(search.find());;            

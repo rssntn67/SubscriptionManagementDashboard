@@ -62,6 +62,7 @@ public class SpedizioneUI extends SmdUI {
             new Thread(() -> {
                 List<Spedizione> aggiornamenti = Smd.spedizioneDaAggiornare(search.find());
                 float delta = 1.0f/aggiornamenti.size();
+                pb.setValue(0.0f);
                 aggiornamenti.stream().forEach(s -> {
                     s.setSospesa(!s.isSospesa());
                     spedizioneDao.save(s);
