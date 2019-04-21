@@ -1,12 +1,12 @@
 package it.arsinfo.smd.data;
 
 public enum StatoStorico {
-    N("Nuovo"),
-    A("Annullato"),
-    P("In Regola"),
-    R("Non in Regola"),
-    O("Omaggio"),
-    S("Sospeso");
+    NUO("Nuovo"),
+    ANN("Annullato"),
+    REG("In Regola"),
+    NON("Non in Regola"),
+    OMA("Omaggio"),
+    SOS("Sospeso");
     
     String descr;
     

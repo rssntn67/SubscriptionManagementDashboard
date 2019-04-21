@@ -50,7 +50,7 @@ public class Storico implements SmdEntity {
     private Integer numero = 1;
     
     @Enumerated(EnumType.STRING)
-    private StatoStorico statoStorico = StatoStorico.N;
+    private StatoStorico statoStorico = StatoStorico.NUO;
 
     public Storico() {
         super();
@@ -174,21 +174,23 @@ public class Storico implements SmdEntity {
     }
     
     @Transient
-    public boolean regolare() {
+    public boolean attivo() {
         boolean regolare = false;
         switch (statoStorico) {
-        case N:
+        case NUO:
             regolare=true;
             break;
-        case NPR:
-            break;
-        case O:
+        case REG:
             regolare=true;
             break;
-        case PR:    
-            regolare = true;
+        case OMA:
+            regolare=true;
             break;
-        case S:
+        case NON:    
+            break;
+        case ANN:
+            break;
+        case SOS:
             break;
         default:
             break;

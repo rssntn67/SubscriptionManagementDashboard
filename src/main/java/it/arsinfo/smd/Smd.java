@@ -100,7 +100,7 @@ public class Smd {
                 (storico.getIntestatario().getId() == a.getId() 
                    && campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()) 
                    && (!campagna.isRinnovaSoloAbbonatiInRegola() 
-                       || storico.regolare())
+                       || storico.attivo())
                 )
             )
             .forEach(storico -> { 
@@ -169,7 +169,7 @@ public class Smd {
     }
 
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
-        StatoStorico pagamentoRegolare = StatoStorico.S;
+        StatoStorico pagamentoRegolare = StatoStorico.SOS;
         switch (storico.getOmaggio()) {
         case No:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
@@ -180,13 +180,13 @@ public class Smd {
             break;
 
         case CuriaDiocesiana:
-            pagamentoRegolare = StatoStorico.O;
+            pagamentoRegolare = StatoStorico.OMA;
             break;
         case CuriaGeneralizia:
-            pagamentoRegolare = StatoStorico.O;
+            pagamentoRegolare = StatoStorico.OMA;
             break;
         case Gesuiti:
-            pagamentoRegolare = StatoStorico.O;
+            pagamentoRegolare = StatoStorico.OMA;
             break;
         default:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
@@ -215,17 +215,17 @@ public class Smd {
                     continue;
                 }
                 if (abb.getTotale().signum() == 0 ) {
-                    return StatoStorico.PR;
+                    return StatoStorico.REG;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
-                    return StatoStorico.NPR;
+                    return StatoStorico.NON;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() != null) {
-                    return StatoStorico.PR;
+                    return StatoStorico.REG;
                 }
             }
         }
-        return StatoStorico.S;
+        return StatoStorico.SOS;
     }
     public static void calcoloAbbonamento(Abbonamento abbonamento) {
         double costo = 0.0;

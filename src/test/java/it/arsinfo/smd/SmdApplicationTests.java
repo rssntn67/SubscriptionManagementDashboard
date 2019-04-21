@@ -278,7 +278,7 @@ public class SmdApplicationTests {
         List<Storico> storici = storicoDao.findByIntestatario(ms);
         assertEquals(2, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             assertEquals(Omaggio.No, anp.getOmaggio());
             log.info(anp.toString());
@@ -291,7 +291,7 @@ public class SmdApplicationTests {
         storici = storicoDao.findByDestinatario(dp);
         assertEquals(1, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
             assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
             assertEquals(Omaggio.CuriaGeneralizia, anp.getOmaggio());
             assertEquals(10, anp.getNumero().intValue());
@@ -304,7 +304,7 @@ public class SmdApplicationTests {
         storici = storicoDao.findByPubblicazione(blocchetti);
         assertEquals(4, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.N, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             log.info(anp.toString());
         }
@@ -457,9 +457,9 @@ public class SmdApplicationTests {
             StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
             if (storico.getOmaggio() == Omaggio.No || storico.getOmaggio() == Omaggio.ConSconto) {
-                assertEquals(StatoStorico.NPR, ss);
+                assertEquals(StatoStorico.NON, ss);
             } else {
-                assertEquals(StatoStorico.O, ss);                
+                assertEquals(StatoStorico.OMA, ss);                
             }
         }
         log.info("");
