@@ -25,7 +25,7 @@ public class PubblicazioneUI extends SmdUI {
         super.init(request, "Pubblicazioni");
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
         PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
-        PubblicazioneGrid grid = new PubblicazioneGrid("");
+        PubblicazioneGrid grid = new PubblicazioneGrid("Pubblicazioni");
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
         addSmdComponents(editor,add, search, grid);
         editor.setVisible(false);

@@ -55,7 +55,7 @@ public class CampagnaUI extends SmdUI {
                 && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList()));
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
-        CampagnaGrid grid = new CampagnaGrid("");
+        CampagnaGrid grid = new CampagnaGrid("Campagne");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {

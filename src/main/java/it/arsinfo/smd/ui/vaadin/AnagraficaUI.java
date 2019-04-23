@@ -47,7 +47,7 @@ public class AnagraficaUI extends SmdUI {
         super.init(request, "Anagrafica");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao,storicoDao);
-        AnagraficaGrid grid = new AnagraficaGrid("");
+        AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         
         StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");

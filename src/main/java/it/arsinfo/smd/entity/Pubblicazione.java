@@ -142,24 +142,18 @@ public class Pubblicazione implements SmdEntity {
         switch (tipo) {
         case UNICO:
             sb.append(mese.getNomeBreve());
-            sb.append(" ");
             sb.append(anno.getAnnoAsString());
             break;
         case ANNUALE:
             sb.append(mese.getNomeBreve());
             break;
         case SEMESTRALE:
-            boolean first = true;
             for (Mese m : getMesiPubblicazione()) {
-                if (!first) {
-                    sb.append(",");
-                }
                 sb.append(m.getNomeBreve());
-                first=false;
             }
             break;
         case MENSILE:
-            sb.append("tutti i mesi");
+            sb.append("Gen.-Dic.");
             break;
         default:
             break;

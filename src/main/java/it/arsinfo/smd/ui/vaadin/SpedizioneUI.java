@@ -49,7 +49,7 @@ public class SpedizioneUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,anagrafica,pubblicazioni);
-        SpedizioneGrid grid = new SpedizioneGrid("");
+        SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, pubblicazioni, anagrafica);
         addSmdComponents(pb,bss,editor,search, grid);
         pb.setVisible(false);

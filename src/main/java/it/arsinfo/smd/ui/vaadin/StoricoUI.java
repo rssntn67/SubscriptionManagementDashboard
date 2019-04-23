@@ -51,7 +51,7 @@ public class StoricoUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
-        StoricoGrid grid = new StoricoGrid("");
+        StoricoGrid grid = new StoricoGrid("Storico");
         StoricoEditor editor = new StoricoEditor(storicoDao, pubblicazioni, anagrafica);
         addSmdComponents(pb,bss,editor,search, grid);
         pb.setVisible(false);

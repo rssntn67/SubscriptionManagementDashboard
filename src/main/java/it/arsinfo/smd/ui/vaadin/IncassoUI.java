@@ -39,7 +39,7 @@ public class IncassoUI extends IncassoAbstractUI {
         IncassoSearch search = new IncassoSearch(incassoDao);
         SmdButton incassa = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
         SmdButton incassaSingolo = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
-        IncassoGrid grid = new IncassoGrid("");
+        IncassoGrid grid = new IncassoGrid("Incassi");
 
         IncassoEditor editor = new IncassoEditor(incassoDao) {
             @Override

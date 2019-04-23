@@ -25,6 +25,37 @@
 		<vaadin.version>8.7.2</vaadin.version>
 	</properties>
 
+	<organization>
+		<name>Antonio Russo</name>
+		<url>https://github.com/rssntn67</url>
+	</organization>
+
+  <scm>
+    <connection>scm:git:https://github.com/rssntn67/SubscriptionManagementDashboard.git</connection>
+    <developerConnection>scm:git:https://${user.name}@github.com/rssntn67/SubscriptionManagementDashboard.git</developerConnection>
+    <url>https://github.com/rssntn67/SubscriptionManagementDashboard</url>
+  </scm>
+  
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/rssntn67/SubscriptionManagementDashboard/issues</url>
+	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+	</repositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,6 +81,11 @@
 		<dependency>
     		<groupId>com.vaadin</groupId>
     		<artifactId>vaadin-push</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.vaadin.haijian</groupId>
+			<artifactId>exporter</artifactId>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
   			<groupId>org.postgresql</groupId>

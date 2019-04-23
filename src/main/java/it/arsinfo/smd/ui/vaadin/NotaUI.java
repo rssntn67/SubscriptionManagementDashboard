@@ -33,7 +33,7 @@ public class NotaUI extends SmdUI {
         List<Storico> storici = storicoDao.findAll();
         NotaSearch search = new NotaSearch(notaDao, storici);
         NotaAdd add = new NotaAdd("Aggiungi Nota");
-        NotaGrid grid = new NotaGrid("");
+        NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(notaDao, storici);
         addSmdComponents(add, search,editor, grid);
 

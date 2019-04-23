@@ -3,10 +3,15 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
+import org.vaadin.haijian.Exporter;
 
 import com.vaadin.data.ValueProvider;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.entity.SmdEntity;
 
@@ -18,6 +23,23 @@ public abstract class SmdGrid<T extends SmdEntity>
     private final String gridName;
     
     public SmdGrid(Grid<T> grid, String gridName) {
+        Button downloadAsExcel = new Button("Download As Excel");
+        Button downloadAsCSV = new Button("Download As CSV");
+
+        StreamResource excelStreamResource = 
+                new StreamResource((StreamResource.StreamSource) () -> 
+                    Exporter.exportAsExcel(grid), "smd"+gridName+".xls");
+        FileDownloader excelFileDownloader = 
+                new FileDownloader(excelStreamResource);
+                    excelFileDownloader.extend(downloadAsExcel);
+
+        StreamResource csvStreamResource = 
+                new StreamResource((StreamResource.StreamSource) () -> 
+                    Exporter.exportAsCSV(grid), "smd"+gridName+".csv");
+        
+        FileDownloader csvFileDownloader = new FileDownloader(csvStreamResource);
+        csvFileDownloader.extend(downloadAsCSV);
+
         this.grid = grid;
         this.gridName = gridName;
         this.grid.setWidth("100%");
@@ -26,7 +48,7 @@ public abstract class SmdGrid<T extends SmdEntity>
             selected = e.getValue();
             onChange();
         });
-        setComponents(this.grid);
+        setComponents(new HorizontalLayout(downloadAsExcel,downloadAsCSV),this.grid);
     }
         
 

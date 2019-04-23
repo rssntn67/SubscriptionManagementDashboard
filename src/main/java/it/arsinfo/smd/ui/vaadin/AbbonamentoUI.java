@@ -60,7 +60,7 @@ public class AbbonamentoUI extends SmdUI {
             add.setPrimoIntestatario(anagrafica.iterator().next());
         }
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagne);
-        AbbonamentoGrid grid = new AbbonamentoGrid("");
+        AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
             @Override
             public void save() {                
