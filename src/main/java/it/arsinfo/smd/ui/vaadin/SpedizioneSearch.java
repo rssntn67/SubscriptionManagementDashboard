@@ -86,6 +86,8 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         filterOmaggio.addSelectionListener(e ->onChange());
         filterInvio.setPlaceholder("Seleziona Invio");
         filterInvio.addSelectionListener(e ->onChange());
+        filterInvioSped.setPlaceholder("Seleziona Sped.");
+        filterInvioSped.addSelectionListener(e ->onChange());
         filterSospesa.addValueChangeListener(e ->onChange());
         filterNonSospesa.addValueChangeListener(e ->onChange());
 

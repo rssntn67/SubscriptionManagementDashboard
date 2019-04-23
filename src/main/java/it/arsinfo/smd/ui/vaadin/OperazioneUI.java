@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
@@ -24,6 +25,7 @@ import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_OPERAZIONI)
 @Title("Operazioni ADP")
+@Push
 public class OperazioneUI extends SmdUI {
 
     /**

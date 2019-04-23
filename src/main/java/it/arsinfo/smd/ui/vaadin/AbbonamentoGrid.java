@@ -26,7 +26,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         gridfooter.getCell("totale").setHtml("<b>"+getTotale(items).toString()+"</b>");
         gridfooter.getCell("costo").setHtml("<b>"+getCosto(items).toString()+"</b>");
         gridfooter.getCell("spese").setHtml("<b>"+getSpese(items).toString()+"</b>");
-        gridfooter.getCell("incassato").setHtml("-------");
+        gridfooter.getCell("incassato").setHtml("<b>"+getIncassato(items).toString()+"</b>");
         gridfooter.getCell("cassa").setHtml("-------");
 
     }
@@ -35,6 +35,15 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         BigDecimal importo = BigDecimal.ZERO;
         for (Abbonamento abbonamneto:abbonamenti) {
             importo=importo.add(abbonamneto.getTotale());
+        }
+        return importo;
+    }
+
+    private BigDecimal getIncassato(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abb:abbonamenti) {
+            if (abb.getVersamento() != null)
+                importo=importo.add(abb.getTotale());
         }
         return importo;
     }
