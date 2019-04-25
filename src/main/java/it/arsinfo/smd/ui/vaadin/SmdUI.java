@@ -55,7 +55,7 @@ public abstract class SmdUI extends UI {
 
         loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         menu.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        menu.addComponents(getPageLinks(SecurityUtils.getUsername()));
+        menu.addComponents(getPageLinks());
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
@@ -85,7 +85,7 @@ public abstract class SmdUI extends UI {
         }
     }
 
-    public Link[] getPageLinks(String username) {
+    public Link[] getPageLinks() {
         List<Link> links = new ArrayList<>();
         UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
