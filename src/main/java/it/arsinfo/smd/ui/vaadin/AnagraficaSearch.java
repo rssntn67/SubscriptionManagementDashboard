@@ -127,6 +127,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterProvincia.setPlaceholder("Seleziona Provincia");
         filterProvincia.addSelectionListener(e -> onChange());
         filterPaese.setPlaceholder("Seleziona Paese");
+        filterPaese.setItemCaptionGenerator(Paese::getNome);
         filterPaese.addSelectionListener(e -> onChange());
 
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
