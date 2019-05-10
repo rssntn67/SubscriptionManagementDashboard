@@ -17,6 +17,7 @@ import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.StatoStorico;
@@ -30,6 +31,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private Diocesi searchDiocesi;
     private String searchCognome;
+
+    private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Cerca per Paese",
+            EnumSet.allOf(Paese.class));
 
     private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Cerca per Provincia",
             EnumSet.allOf(Provincia.class));
@@ -77,6 +81,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            filterRegionePresidenteDiocesano
                                            ),
                       new HorizontalLayout(filterTitolo,
+                                           filterPaese,
                                            filterOmaggio,
                                            filterCassa,
                                            filterStatoStorico,
@@ -121,6 +126,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterRegioneVescovi.addSelectionListener(e -> onChange());
         filterProvincia.setPlaceholder("Seleziona Provincia");
         filterProvincia.addSelectionListener(e -> onChange());
+        filterPaese.setPlaceholder("Seleziona Paese");
+        filterPaese.addSelectionListener(e -> onChange());
 
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
@@ -209,6 +216,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             }).collect(Collectors.toList());
         }
 
+        if (filterPaese.getValue() != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> filterPaese.getValue() == a.getPaese()).collect(Collectors.toList());
+        }
         if (filterProvincia.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterProvincia.getValue() == a.getProvincia()).collect(Collectors.toList());
         }

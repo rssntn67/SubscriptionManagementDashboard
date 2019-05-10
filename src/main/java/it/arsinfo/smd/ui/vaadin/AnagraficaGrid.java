@@ -10,8 +10,9 @@ public class AnagraficaGrid extends SmdGrid<Anagrafica> {
         super(new Grid<>(Anagrafica.class),gridName);
 
         setColumns("nome", "cognome", "diocesi.details", 
-                   "citta", "provincia","cap", "paese");
+                   "citta", "provincia","cap", "paese.nome");
         setColumnCaption("diocesi.details", "Diocesi");
+        setColumnCaption("paese.nome", "Paese");
     }
 
 }

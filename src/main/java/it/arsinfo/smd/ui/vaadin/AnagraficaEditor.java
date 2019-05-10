@@ -104,6 +104,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         // Configure and style components
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
         provincia.setItemCaptionGenerator(Provincia::getNome);
+        paese.setItemCaptionGenerator(Paese::getNome);
 
     }
 
