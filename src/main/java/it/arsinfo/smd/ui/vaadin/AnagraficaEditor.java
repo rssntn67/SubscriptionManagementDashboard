@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -22,6 +23,8 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final TextField cognome = new TextField("Cognome/Ragione Sociale");
     private final ComboBox<Diocesi> diocesi = new ComboBox<Diocesi>("Diocesi",
                                                                     EnumSet.allOf(Diocesi.class));
+    private final ComboBox<Provincia> provincia = new ComboBox<Provincia>("Provincia",
+            EnumSet.allOf(Provincia.class));
     private final ComboBox<Regione> regioneVescovi = new ComboBox<Regione>("Regione Vescovi",
                                                                            EnumSet.allOf(Regione.class));
     private final ComboBox<CentroDiocesano> centroDiocesano = new ComboBox<CentroDiocesano>("Centro Diocesano",
@@ -68,7 +71,8 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       nome,
                                                       indirizzo, 
                                                       cap, 
-                                                      citta
+                                                      citta,
+                                                      provincia
                                                       );
         HorizontalLayout riga3 = new HorizontalLayout(paese,
                                                       email, 
@@ -99,6 +103,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
         // Configure and style components
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
+        provincia.setItemCaptionGenerator(Provincia::getNome);
 
     }
 

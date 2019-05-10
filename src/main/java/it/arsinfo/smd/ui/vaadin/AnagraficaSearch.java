@@ -17,6 +17,7 @@ import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TitoloAnagrafica;
@@ -30,48 +31,56 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private Diocesi searchDiocesi;
     private String searchCognome;
 
-    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<Regione>("Regione Vescovi",
+    private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Cerca per Provincia",
+            EnumSet.allOf(Provincia.class));
+
+    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<Regione>("Cerca per Regione Vescovi",
             EnumSet.allOf(Regione.class));
 
-    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<CentroDiocesano>("Centro Diocesano",
+    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<CentroDiocesano>("Cerca per Centro Diocesano",
                              EnumSet.allOf(CentroDiocesano.class));
 
-    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Titolo",
+    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Cerca per Titolo",
                       EnumSet.allOf(TitoloAnagrafica.class));
 
-    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
-    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
-    private final CheckBox filterDirettoreDiocesiano = new CheckBox("Dir. Diocesano");
-    private final CheckBox filterPresidenteDiocesano = new CheckBox("Pres. Diocesano");
-    private final CheckBox filterDirettoreZonaMilano = new CheckBox("Dir. Zona Milano");
-    private final CheckBox filterConsiglioNazionaleADP = new CheckBox("Cons. Naz. ADP");
-    private final CheckBox filterPresidenzaADP = new CheckBox("Pres. ADP");
-    private final CheckBox filterDirezioneADP = new CheckBox("Dir. ADP");
-    private final CheckBox filterCaricheSocialiADP = new CheckBox("Car. Soc. ADP");
-    private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Del. Reg. ADP");
-    private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
-    private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
-    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
-    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
+    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Cerca per Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Cerca per Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
+    private final CheckBox filterDirettoreDiocesiano = new CheckBox("Cerca Dir. Diocesano");
+    private final CheckBox filterPresidenteDiocesano = new CheckBox("Cerca Pres. Diocesano");
+    private final CheckBox filterDirettoreZonaMilano = new CheckBox("Cerca Dir. Zona Milano");
+    private final CheckBox filterConsiglioNazionaleADP = new CheckBox("Cerca Cons. Naz. ADP");
+    private final CheckBox filterPresidenzaADP = new CheckBox("Cerca Pres. ADP");
+    private final CheckBox filterDirezioneADP = new CheckBox("Cerca Dir. ADP");
+    private final CheckBox filterCaricheSocialiADP = new CheckBox("Cerca Car. Soc. ADP");
+    private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Cerca Del. Reg. ADP");
+    private final CheckBox filterElencoMarisaBisi = new CheckBox("Cerca Elenco Marisa Bisi");
+    private final CheckBox filterPromotoreRegionale = new CheckBox("Cerca Prom. Reg.");
+    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Cerca per Omaggio", EnumSet.allOf(Omaggio.class));
+    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cerca per Cassa", EnumSet.allOf(Cassa.class));
+    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Cerca per Invio", EnumSet.allOf(Invio.class));
+    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Cerca per Stato", EnumSet.allOf(StatoStorico.class));
 
     private final StoricoDao storicoDao;
     public AnagraficaSearch(AnagraficaDao anagraficaDao, StoricoDao storicoDao) {
         super(anagraficaDao);
         this.storicoDao = storicoDao;
-        TextField filterCognome = new TextField("Ricerca per Cognome");
-        ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Ricerca per diocesi",
+        TextField filterCognome = new TextField("Cerca per Cognome");
+        ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Cerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
         setComponents(new HorizontalLayout(filterDiocesi, 
                                            filterCognome,
-                                           filterTitolo,
-                                           filterRegioneVescovi,
+                                           filterProvincia,
                                            filterCentroDiocesano,
+                                           filterRegioneVescovi,
                                            filterRegioneDirettoreDiocesano,
                                            filterRegionePresidenteDiocesano
                                            ),
+                      new HorizontalLayout(filterTitolo,
+                                           filterOmaggio,
+                                           filterCassa,
+                                           filterStatoStorico,
+                                           filterInvio),
                       new HorizontalLayout(filterDirettoreDiocesiano,
                                            filterPresidenteDiocesano,
                                            filterDirettoreZonaMilano,
@@ -81,11 +90,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            filterCaricheSocialiADP,
                                            filterDelegatiRegionaliADP,
                                            filterElencoMarisaBisi,
-                                           filterPromotoreRegionale),
-                      new HorizontalLayout(filterOmaggio,
-                                           filterCassa,
-                                           filterStatoStorico,
-                                           filterInvio));
+                                           filterPromotoreRegionale));
+
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
@@ -113,6 +119,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterCentroDiocesano.addSelectionListener(e -> onChange());
         filterRegioneVescovi.setPlaceholder("Seleziona Regione");
         filterRegioneVescovi.addSelectionListener(e -> onChange());
+        filterProvincia.setPlaceholder("Seleziona Provincia");
+        filterProvincia.addSelectionListener(e -> onChange());
+
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
         filterRegioneDirettoreDiocesano.setPlaceholder("Seleziona Regione");
@@ -200,6 +209,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             }).collect(Collectors.toList());
         }
 
+        if (filterProvincia.getValue() != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> filterProvincia.getValue() == a.getProvincia()).collect(Collectors.toList());
+        }
         if (filterTitolo.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterTitolo.getValue() == a.getTitolo()).collect(Collectors.toList());
         }

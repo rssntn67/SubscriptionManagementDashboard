@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 
@@ -27,6 +28,8 @@ public class Anagrafica implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Diocesi diocesi = Diocesi.DIOCESISTD;
+    @Enumerated(EnumType.STRING)
+    private Provincia provincia = Provincia.ND;
     @Enumerated(EnumType.STRING)
     private Regione regioneVescovi;
     @Enumerated(EnumType.STRING)
@@ -319,5 +322,13 @@ public class Anagrafica implements SmdEntity {
 
     public void setNote(List<Nota> note) {
         this.note = note;
+    }
+
+    public Provincia getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(Provincia provincia) {
+        this.provincia = provincia;
     }
 }
