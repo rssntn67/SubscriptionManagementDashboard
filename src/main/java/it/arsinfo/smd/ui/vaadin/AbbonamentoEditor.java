@@ -13,6 +13,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -38,7 +39,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(Ccp.class));
     private final TextField spese = new TextField("Spese Spedizione");
 
-    private final TextField incassato = new TextField("Incassato");
+    private final ComboBox<Incassato> incassato = new ComboBox<Incassato>("",EnumSet.allOf(Incassato.class));
     public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
