@@ -163,8 +163,7 @@ public class OperazioneUI extends SmdUI {
                    Smd.generaOperazione(op.getPubblicazione(), 
                                         abbonamentoDao.findByAnno(op.getAnno()),
                                         op.getAnno(), 
-                                        op.getMese(),
-                                        op.getInvioSpedizione()));
+                                        op.getMese()));
                 operazioneDao.delete(op);
                 grid.populate(search.find());
             });

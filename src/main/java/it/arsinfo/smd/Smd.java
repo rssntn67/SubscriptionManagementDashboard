@@ -411,8 +411,7 @@ public class Smd {
                 .stream()
                 .filter(mese -> mesi.contains(mese))
                 .forEach(mese -> {
-                    for (InvioSpedizione is :InvioSpedizione.values()) 
-                        operazioni.add(generaOperazione(pubblicazione, abbonamenti, anno, mese,is));
+                        operazioni.add(generaOperazione(pubblicazione, abbonamenti, anno, mese));
                 }
             );
         });
@@ -455,7 +454,7 @@ public class Smd {
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<Abbonamento> abbonamenti, 
-            Anno anno, Mese mese, InvioSpedizione invioSpedizione) {
+            Anno anno, Mese mese) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         op.setStimato(0);
         abbonamenti
@@ -471,8 +470,19 @@ public class Smd {
                           .filter( s ->
                                 !s.isSospesa() 
                                 && s.getPubblicazione().getId() == pubblicazione.getId()
-                                && s.getInvioSpedizione() == invioSpedizione
-                                  ).forEach( s -> op.setStimato(op.getStimato()+s.getNumero()))
+                                  ).forEach( s -> {
+                                      op.setStimato(op.getStimato()+s.getNumero());
+                                      switch (s.getInvioSpedizione()) {
+                                      case  Spedizioniere: 
+                                          op.setSped(op.getSped()+s.getNumero());
+                                          break;
+                                      case AdpSede:
+                                          op.setSede(op.getSede()+s.getNumero());
+                                          break;
+                                    default:
+                                        break;
+                                      }
+                                  })
              );
                         
         return op;        

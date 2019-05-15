@@ -13,9 +13,9 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     public OperazioneGrid(String gridName) {
         super(new Grid<>(Operazione.class), gridName);
-        setColumns("pubblicazione.nome", "stimato","definitivo","mese","anno","invioSpedizione");
+        setColumns("pubblicazione.nome", "sped","sede","stimato","definitivo","mese","anno");
         setColumnCaption("pubblicazione.nome", "Pubblicazione");
-        setColumnCaption("invioSpedizione", "Sped.");
+        setColumnCaption("stimato", "Quantità");
         gridfooter = getGrid().prependFooterRow();
     }
 
@@ -23,6 +23,8 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
     public void populate(List<Operazione> items) {
         super.populate(items);
         gridfooter.getCell("pubblicazione.nome").setHtml("<strong> Totali:</strong>");
+        gridfooter.getCell("sped").setHtml("<b>"+getTotaleSped(items).toString()+"</b>");
+        gridfooter.getCell("sede").setHtml("<b>"+getTotaleSede(items).toString()+"</b>");
         gridfooter.getCell("stimato").setHtml("<b>"+getTotaleStimato(items).toString()+"</b>");
         gridfooter.getCell("definitivo").setHtml("<b>"+getTotaleDefinitivo(items).toString()+"</b>");
         gridfooter.getCell("mese").setHtml("-------");
@@ -36,5 +38,11 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     private Integer getTotaleStimato(List<Operazione> items) {
         return items.stream().filter(o -> o.getStimato() != null).mapToInt(o -> o.getStimato()).sum();
+    }
+    private Integer getTotaleSped(List<Operazione> items) {
+        return items.stream().filter(o -> o.getSped() != null).mapToInt(o -> o.getSped()).sum();
+    }
+    private Integer getTotaleSede(List<Operazione> items) {
+        return items.stream().filter(o -> o.getSede() != null).mapToInt(o -> o.getSede()).sum();
     }
 }

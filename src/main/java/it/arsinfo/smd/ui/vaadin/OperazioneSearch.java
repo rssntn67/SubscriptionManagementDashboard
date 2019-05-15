@@ -8,7 +8,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -19,13 +18,12 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
     private Pubblicazione p;
     ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     ComboBox<Mese> filterMese = new ComboBox<Mese>();
-    ComboBox<InvioSpedizione> filterSped = new ComboBox<InvioSpedizione>();
 
     public OperazioneSearch(OperazioneDao operazioneDao, List<Pubblicazione> pubblicazioni) {
         super(operazioneDao);
         ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>();
 
-        setComponents(new HorizontalLayout(filterAnno,filterMese,filterSped,filterP));
+        setComponents(new HorizontalLayout(filterAnno,filterMese,filterP));
 
         filterP.setEmptySelectionAllowed(true);
         filterP.setPlaceholder("Cerca per Pubblicazione");
@@ -55,14 +53,6 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
         filterMese.addSelectionListener(e -> {
             onChange();
         });
-
-        filterSped.setEmptySelectionAllowed(true);
-        filterSped.setPlaceholder("Cerca per Sped");
-        filterSped.setItems(EnumSet.allOf(InvioSpedizione.class));
-        filterSped.addSelectionListener(e -> {
-            onChange();
-        });
-
         
     }
     
@@ -85,12 +75,6 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
             operazioni=operazioni
                     .stream()
                     .filter(o -> o.getMese() == filterMese.getValue())
-                    .collect(Collectors.toList());
-        }
-        if (filterSped.getValue() != null) {
-            operazioni=operazioni
-                    .stream()
-                    .filter(o -> o.getInvioSpedizione() == filterSped.getValue())
                     .collect(Collectors.toList());
         }
         return operazioni;

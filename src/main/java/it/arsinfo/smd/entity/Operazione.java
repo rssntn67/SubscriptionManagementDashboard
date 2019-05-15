@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
@@ -31,12 +30,13 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Smd.getMeseCorrente();
 
-    @Enumerated(EnumType.STRING)
-    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
-
     private Integer definitivo = -1;
 
     private Integer stimato = 0;
+
+    private Integer sped = 0;
+
+    private Integer sede = 0;
 
     public Operazione() {
     }
@@ -113,12 +113,22 @@ public class Operazione implements SmdEntity {
     }
 
 
-    public InvioSpedizione getInvioSpedizione() {
-        return invioSpedizione;
+    public Integer getSped() {
+        return sped;
     }
 
 
-    public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
-        this.invioSpedizione = invioSpedizione;
+    public void setSped(Integer sped) {
+        this.sped = sped;
+    }
+
+
+    public Integer getSede() {
+        return sede;
+    }
+
+
+    public void setSede(Integer sede) {
+        this.sede = sede;
     }
 }

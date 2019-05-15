@@ -749,41 +749,41 @@ public class SmdLoadSampleData implements Runnable {
         Smd.generaOperazioni(pubblicazioneDao.findAll(),
                              abbonamentoDao.findByAnno(Anno.ANNO2017),
                              Anno.ANNO2017,
-                             EnumSet.allOf(Mese.class)).stream().forEach(p -> {
+                             EnumSet.allOf(Mese.class)).forEach(p -> {
                                  operazioneDao.save(p);
                              });
  
         Smd.generaOperazioni(pubblicazioneDao.findAll(),
                              abbonamentoDao.findByAnno(Anno.ANNO2018),
                              Anno.ANNO2018,
-                             EnumSet.allOf(Mese.class)).stream().forEach(p -> {
+                             EnumSet.allOf(Mese.class)).forEach(p -> {
                                  operazioneDao.save(p);
                              });
 
         Smd.generaOperazioni(pubblicazioneDao.findAll(),
                              abbonamentoDao.findByAnno(Anno.ANNO2019),
                              Anno.ANNO2019,
-                             EnumSet.allOf(Mese.class)).stream().forEach(p -> {
+                             EnumSet.allOf(Mese.class)).forEach(p -> {
                                  operazioneDao.save(p);
                              });
 
         Smd.generaProspetti(pubblicazioneDao.findAll(),
                             abbonamentoDao.findByAnno(Anno.ANNO2017),
                             Anno.ANNO2017, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
+                            EnumSet.allOf(Omaggio.class)).forEach(p -> {
                                 prospettoDao.save(p);
                             });
 
         Smd.generaProspetti(pubblicazioneDao.findAll(),
                             abbonamentoDao.findByAnno(Anno.ANNO2018),
                             Anno.ANNO2018, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
+                            EnumSet.allOf(Omaggio.class)).forEach(p -> {
                                 prospettoDao.save(p);
                             });
         Smd.generaProspetti(pubblicazioneDao.findAll(),
                             abbonamentoDao.findByAnno(Anno.ANNO2019),
                             Anno.ANNO2019, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(Omaggio.class)).stream().forEach(p -> {
+                            EnumSet.allOf(Omaggio.class)).forEach(p -> {
                                 prospettoDao.save(p);
                             });
         
