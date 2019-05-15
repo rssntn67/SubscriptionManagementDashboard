@@ -18,6 +18,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Omaggio;
@@ -138,6 +139,26 @@ public class SmdLoadSampleData implements Runnable {
         storico.setPubblicazione(pubblicazione);
         storico.setNumero(numero);
         storico.setOmaggio(omaggio);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Anagrafica destinatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Omaggio omaggio
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(destinatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setOmaggio(omaggio);
+        storico.setInvio(Invio.Intestatario);
         Nota nota= new Nota(storico);
         nota.setDescription("Creato storico");
         storico.getNote().add(nota);
@@ -305,10 +326,8 @@ public class SmdLoadSampleData implements Runnable {
     public static Anagrafica getAR() {
         Anagrafica ar = SmdLoadSampleData.getAnagraficaBy("Antonio", "Russo");
         ar.setDiocesi(Diocesi.DIOCESI116);
-        ar.setIndirizzo("Piazza Duomo 1");
-        ar.setCitta("Milano");
-        ar.setProvincia(Provincia.MI);
-        ar.setCap("20100");
+        ar.setIndirizzo("");
+        ar.setCitta("");
         ar.setEmail("ar@arsinfo.it");
         ar.setPaese(Paese.ITALIA);
         ar.setTelefono("+3902000009");
@@ -316,7 +335,21 @@ public class SmdLoadSampleData implements Runnable {
         ar.setRegioneVescovi(Regione.LOMBARDIA);
         return ar;
     }
-    
+
+    public static Anagrafica getDiocesiMi() {
+        Anagrafica ar = SmdLoadSampleData.getAnagraficaBy("", "Arci Diocesi Milano");
+        ar.setDiocesi(Diocesi.DIOCESI116);
+        ar.setIndirizzo("Piazza Duomo 1");
+        ar.setCitta("Milano");
+        ar.setProvincia(Provincia.MI);
+        ar.setCap("20100");
+        ar.setEmail("milano@arsinfo.it");
+        ar.setPaese(Paese.ITALIA);
+        ar.setTelefono("+3902000001");
+        ar.setTitolo(TitoloAnagrafica.Diocesi);
+        return ar;
+    }
+
     public static Anagrafica getGP() {
         Anagrafica gp = SmdLoadSampleData.getAnagraficaBy("Gabriele", "Pizzo");
         gp.setDiocesi(Diocesi.DIOCESI116);
@@ -644,10 +677,12 @@ public class SmdLoadSampleData implements Runnable {
 
         Anagrafica ar=getAR();
         anagraficaDao.save(ar);
-        storicoDao.save(getStoricoBy(ar, messaggio, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(ar, lodare, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(ar, blocchetti, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(ar, estratti, 10,Omaggio.CuriaDiocesiana));
+        Anagrafica dm=getDiocesiMi();
+        anagraficaDao.save(dm);
+        storicoDao.save(getStoricoBy(dm,ar, messaggio, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, lodare, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, blocchetti, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, estratti, 10,Omaggio.CuriaDiocesiana));
 
         Anagrafica gp=getGP();
         anagraficaDao.save(gp);
