@@ -71,6 +71,7 @@ public class OperazioneUI extends SmdUI {
         editor.setVisible(false);
 
         pb.setChangeHandler(() ->{});
+        spedGrid.setChangeHandler(() ->{});
         bss.setChangeHandler(()-> {
             setHeader("Calcola Stato....");
             bss.getButton().setEnabled(false);

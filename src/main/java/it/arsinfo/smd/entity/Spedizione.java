@@ -13,6 +13,8 @@ import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
 
 @Entity
 public class Spedizione implements SmdEntity {
@@ -127,6 +129,59 @@ public class Spedizione implements SmdEntity {
     @Transient
     public String getDecodeSospesa() {
         return Smd.decodeForGrid(sospesa);
+    }
+
+    @Transient
+    public String getIntestazione() {
+        return destinatario.getCaption();
+    }
+
+    @Transient
+    public String getSottoIntestazione() {
+        if (invio == Invio.Destinatario) {
+            return "";
+        }
+        return "c/o " + abbonamento.getIntestatario().getNome() + " " + abbonamento.getIntestatario().getCognome();
+    }
+    
+    @Transient
+    public String getIndirizzo() {
+        if (invio == Invio.Destinatario) {
+            return destinatario.getIndirizzo();
+        }
+        return abbonamento.getIntestatario().getIndirizzo();
+    }
+
+    @Transient
+    public String getCap() {
+        if (invio == Invio.Destinatario) {
+            return destinatario.getCap();
+        }
+        return abbonamento.getIntestatario().getCap();
+    }
+
+    @Transient
+    public String getCitta() {
+        if (invio == Invio.Destinatario) {
+            return destinatario.getCitta();
+        }
+        return abbonamento.getIntestatario().getCitta();
+    }
+
+    @Transient
+    public Provincia getProvincia() {
+        if (invio == Invio.Destinatario) {
+            return destinatario.getProvincia();
+        }
+        return abbonamento.getIntestatario().getProvincia();
+
+    }
+    @Transient
+    public Paese getPaese() {
+        if (invio == Invio.Destinatario) {
+            return destinatario.getPaese();
+        }
+        return abbonamento.getIntestatario().getPaese();        
     }
 
     public Storico getStorico() {
