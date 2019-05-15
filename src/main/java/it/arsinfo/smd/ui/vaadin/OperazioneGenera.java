@@ -84,10 +84,10 @@ public class OperazioneGenera extends SmdChangeHandler {
                 }
                 mesi.stream().forEach(mese -> {
                     pubblicazioni.stream().forEach(p -> {
-                        operazioneDao.deleteByAnnoAndMeseAndPubblicazione(anno, mese, p);
+                        operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese, p).forEach(op -> operazioneDao.delete(op));
                     });
                 });
-                operazioneDao.saveAll(Smd.generaOperazioni(pBox.getSelected(), abbonamentoDao.findByAnno(anno), anno, mesi));
+                Smd.generaOperazioni(pBox.getSelected(), abbonamentoDao.findByAnno(anno), anno, mesi).forEach(op -> operazioneDao.save(op));
                 onChange();
             });
         });

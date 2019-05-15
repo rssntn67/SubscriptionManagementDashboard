@@ -27,7 +27,7 @@ public class ProspettoGenera extends SmdChangeHandler {
     private final SmdBox<Anno> aBox;
     private final SmdBox<Mese> mBox;
     private final SmdBox<Omaggio> oBox;
-    public ProspettoGenera(String caption, VaadinIcons icon,ProspettoDao prospettoDao, AbbonamentoDao abbonamentoDao, List<Pubblicazione> pubblicazioni) {
+    public ProspettoGenera(String caption, VaadinIcons icon,final ProspettoDao prospettoDao, AbbonamentoDao abbonamentoDao, List<Pubblicazione> pubblicazioni) {
         pBox = new PubblicazioneBox(pubblicazioni);
         aBox = new SmdBox<Anno>(EnumSet.allOf(Anno.class)) {
             
@@ -90,14 +90,16 @@ public class ProspettoGenera extends SmdChangeHandler {
                     .collect(Collectors.toSet());
             Set<Omaggio> omaggi = oBox.getSelected().stream()
                     .collect(Collectors.toSet());
+            
             aBox.getSelected().stream().forEach(a -> {
                 omaggi.stream().forEach(o -> {
-                mesi.stream().forEach(m -> {
-                    pubblicazioni.stream().forEach(p -> {
-                        prospettoDao.deleteByAnnoAndMeseAndPubblicazioneAndOmaggio(a, m, p,o);
+                    mesi.stream().forEach(m -> {
+                        pubblicazioni.stream().forEach(p -> {
+                            prospettoDao.findByAnnoAndMeseAndPubblicazioneAndOmaggio(a, m, p,o).forEach(prosp -> prospettoDao.delete(prosp));
+                        });
                     });
-                });});
-                prospettoDao.saveAll(Smd.generaProspetti(pBox.getSelected(), abbonamentoDao.findByAnno(a), a, mesi,omaggi));
+                });
+                Smd.generaProspetti(pBox.getSelected(), abbonamentoDao.findByAnno(a), a, mesi,omaggi).forEach(prosp -> prospettoDao.save(prosp));
                 onChange();
             });
         });
