@@ -238,7 +238,7 @@ public class SmdApplicationTests {
         log.info("Anagrafica found with findAll():");
         log.info("-------------------------------");
         List<Anagrafica> anagrafiche = anagraficaDao.findAll();
-        assertEquals(6, anagrafiche.size());
+        assertEquals(7, anagrafiche.size());
         for (Anagrafica customer : anagrafiche) {
             log.info(customer.toString());
         }
