@@ -169,16 +169,16 @@ public class SmdUnitTests {
         
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
-        assertEquals(0 , lodare.getCostoUnitario().subtract(new BigDecimal(1.5)).signum());
+        assertEquals(0 , lodare.getCostoUnitario().subtract(new BigDecimal(2.0)).signum());
         
         assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioCuriaDiocesiana, 1),0);
         assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioCuriaGeneralizia, 1),0);
         assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioGesuiti, 1),0);
-        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItaliaConSconto, 1),0);
-        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
-        assertEquals(3.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, lodare, Omaggio.AbbonamentoItalia, 1),0);
-        assertEquals(4.5,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, lodare, Omaggio.AbbonamentoItalia, 1),0);
-        assertEquals(7.5,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(18.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItaliaConSconto, 1),0);
+        assertEquals(20.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(4.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(6.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(10.0,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
         
         Pubblicazione estratti = SmdLoadSampleData.getEstratti();
         assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());

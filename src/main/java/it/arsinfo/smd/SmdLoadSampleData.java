@@ -314,12 +314,12 @@ public class SmdLoadSampleData implements Runnable {
         p.setAutore("AAVV");
         p.setEditore("ADP");
         
-        p.setCostoUnitario(new BigDecimal(1.50));
-        p.setAbbonamentoItalia(new BigDecimal(15.00));
-        p.setAbbonamentoWeb(new BigDecimal(12.00));
-        p.setAbbonamentoConSconto(new BigDecimal(15.00));
-        p.setAbbonamentoEuropa(new BigDecimal(58.00));
-        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(68.00));
+        p.setCostoUnitario(new BigDecimal(2.00));
+        p.setAbbonamentoItalia(new BigDecimal(20.00));
+        p.setAbbonamentoWeb(new BigDecimal(18.00));
+        p.setAbbonamentoConSconto(new BigDecimal(18.00));
+        p.setAbbonamentoEuropa(new BigDecimal(65.00));
+        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(75.00));
         p.setAbbonamentoSostenitore(new BigDecimal(50.00));
 
         p.setGen(true);
