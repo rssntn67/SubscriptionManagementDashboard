@@ -134,6 +134,32 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         getBinder().forField(active).bind(Pubblicazione::isActive,
                                           Pubblicazione::setActive);
 
+        getBinder().forField(gen).bind(Pubblicazione::isGen,
+                                          Pubblicazione::setGen);
+        getBinder().forField(feb).bind(Pubblicazione::isFeb,
+                                       Pubblicazione::setFeb);
+        getBinder().forField(mar).bind(Pubblicazione::isMar,
+                                       Pubblicazione::setMar);
+        getBinder().forField(apr).bind(Pubblicazione::isApr,
+                                       Pubblicazione::setApr);
+        getBinder().forField(mag).bind(Pubblicazione::isMag,
+                                       Pubblicazione::setMag);
+        getBinder().forField(giu).bind(Pubblicazione::isGiu,
+                                       Pubblicazione::setGiu);
+        getBinder().forField(lug).bind(Pubblicazione::isLug,
+                                       Pubblicazione::setLug);
+        getBinder().forField(ago).bind(Pubblicazione::isAgo,
+                                       Pubblicazione::setAgo);
+        getBinder().forField(set).bind(Pubblicazione::isSet,
+                                       Pubblicazione::setSet);
+        getBinder().forField(ott).bind(Pubblicazione::isOtt,
+                                       Pubblicazione::setOtt);
+        getBinder().forField(nov).bind(Pubblicazione::isNov,
+                                       Pubblicazione::setNov);
+        getBinder().forField(dic).bind(Pubblicazione::isDic,
+                                       Pubblicazione::setDic);
+
+
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         tipo.setItemCaptionGenerator(TipoPubblicazione::getDescrizione);
