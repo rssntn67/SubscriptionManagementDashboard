@@ -36,7 +36,7 @@ public class Spedizione implements SmdEntity {
     private Storico storico;
     
     @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.No;
+    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
 
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;

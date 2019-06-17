@@ -21,7 +21,7 @@ public class Prospetto implements SmdEntity {
     private Long id;
     
     @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.No;
+    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
 
     @ManyToOne
     private Pubblicazione pubblicazione;

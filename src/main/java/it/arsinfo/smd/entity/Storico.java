@@ -40,7 +40,7 @@ public class Storico implements SmdEntity {
     private List<Nota> note = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.No;
+    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
 
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;

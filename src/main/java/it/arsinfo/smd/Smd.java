@@ -8,8 +8,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -150,18 +152,18 @@ public class Smd {
 
         boolean sospendiSpedizione=spedizione.isSospesa();
         switch (spedizione.getOmaggio()) {
-        case No:
+        case AbbonamentoItalia:
             sospendiSpedizione = sospendiSpedizione(spedizione);
             break;
 
-        case ConSconto:    
+        case AbbonamentoItaliaConSconto:    
             sospendiSpedizione = sospendiSpedizione(spedizione);
             break;
-        case CuriaDiocesiana:
+        case OmaggioCuriaDiocesiana:
             break;
-        case CuriaGeneralizia:
+        case OmaggioCuriaGeneralizia:
             break;
-        case Gesuiti:
+        case OmaggioGesuiti:
             break;
         default:
             break;
@@ -172,21 +174,24 @@ public class Smd {
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
         StatoStorico pagamentoRegolare = StatoStorico.SOS;
         switch (storico.getOmaggio()) {
-        case No:
+        case AbbonamentoItalia:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
 
-        case ConSconto:    
+        case AbbonamentoItaliaConSconto:    
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
 
-        case CuriaDiocesiana:
+        case OmaggioCuriaDiocesiana:
             pagamentoRegolare = StatoStorico.OMA;
             break;
-        case CuriaGeneralizia:
+        case OmaggioCuriaGeneralizia:
             pagamentoRegolare = StatoStorico.OMA;
             break;
-        case Gesuiti:
+        case OmaggioGesuiti:
+            pagamentoRegolare = StatoStorico.OMA;
+            break;
+        case OmaggioDirettoreAdp:
             pagamentoRegolare = StatoStorico.OMA;
             break;
         default:
@@ -267,27 +272,39 @@ public class Smd {
         return codicecontrollo.intValue() == valorecodice.intValue();
     }
 
-    public static int calcolaNumeroPubblicazioni(Mese inizio, Mese fine, Mese pub, TipoPubblicazione tipo) {
+    public static int calcolaNumeroPubblicazioni(Mese inizio, Mese fine, EnumSet<Mese> pub, TipoPubblicazione tipo) {
         int numero = 0;
         switch (tipo) {
         case ANNUALE:
-            if (inizio.getPosizione() <= pub.getPosizione()
-                    && fine.getPosizione() >= pub.getPosizione()) {
+            if (pub.isEmpty() || pub.size() != 1) {
+                break;
+            }
+            if (inizio.getPosizione() <= pub.iterator().next().getPosizione()
+                    && fine.getPosizione() >= pub.iterator().next().getPosizione()) {
                 numero = 1;
             }
             break;
         case SEMESTRALE:
-            if (inizio.getPosizione() <= pub.getPosizione()
-                    && fine.getPosizione() >= pub.getPosizione()) {
+            if (pub.isEmpty() || pub.size() != 2) {
+                break;
+            }
+            Iterator<Mese> iter = pub.iterator();
+            Mese pp = iter.next();
+            Mese sp = iter.next();
+            if (inizio.getPosizione() <= pp.getPosizione()
+                    && fine.getPosizione() >= pp.getPosizione()) {
                 numero += 1;
             }
-            if (fine.getPosizione() >= pub.getPosizione() + 6 && inizio.getPosizione() <= pub.getPosizione() + 6) {
+            if (fine.getPosizione() >= sp.getPosizione() && inizio.getPosizione() <= sp.getPosizione()) {
                 numero += 1;
             }
             break;
         case MENSILE:
-            numero = fine.getPosizione()
-                    - inizio.getPosizione() + 1;
+            for (int i=inizio.getPosizione(); i <= fine.getPosizione();i++) {
+                if (pub.contains(Mese.getByPosizione(i))) {
+                    numero++;
+                }
+            }
             break;
         case UNICO:
             numero = 1;
@@ -305,34 +322,65 @@ public class Smd {
             Omaggio omaggio, 
             Integer numero) throws UnsupportedOperationException {
         if (inizio == null || fine == null || inizio.getPosizione() > fine.getPosizione() || pubblicazione == null || omaggio == null
-                || numero == null || pubblicazione.getMese() ==  null || pubblicazione.getTipo() == null )
+                || numero == null || pubblicazione.getTipo() == null )
             throw new UnsupportedOperationException("Valori non ammissibili");
         double costo = 0.0;
         switch (omaggio) {
-        case No:
+        case AbbonamentoItalia:
+            if (inizio == Mese.GENNAIO && fine == Mese.DICEMBRE) {
+                costo = pubblicazione.getAbbonamentoItalia().doubleValue() * numero.doubleValue();
+                break;
+            }
             costo = pubblicazione.getCostoUnitario().doubleValue()
                      * numero.doubleValue()
-                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());
-        break;
-        
-        case ConSconto:
-            costo = pubblicazione.getCostoScontato().doubleValue()
-                     * numero.doubleValue()
-                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMese(),pubblicazione.getTipo());  
+                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMesiPubblicazione(),pubblicazione.getTipo());
             break;
-            
-        case CuriaDiocesiana:
+
+        case AbbonamentoWeb:
+            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
+                if (inizio != Mese.GENNAIO && fine != Mese.DICEMBRE) {
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoWeb);
+                }
+            }
+            costo = pubblicazione.getAbbonamentoWeb().doubleValue()
+                    * numero.doubleValue();  
             break;
-        
-        case Gesuiti:
+
+        case AbbonamentoItaliaConSconto:
+            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoItaliaConSconto);
+            }
+            costo = pubblicazione.getAbbonamentoConSconto().doubleValue()
+                     * numero.doubleValue();  
             break;
-            
-        case CuriaGeneralizia:
+
+        case AbbonamentoItaliaSostenitore:
+            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoItaliaSostenitore);
+            }
+            costo = pubblicazione.getAbbonamentoSostenitore().doubleValue()
+                     * numero.doubleValue();  
             break;
-            
+                
+        case AbbonamentoEuropa:
+            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoEuropa);
+            }
+            costo = pubblicazione.getAbbonamentoEuropa().doubleValue()
+                     * numero.doubleValue();  
+            break;
+                
+        case AbbonamentoAmericaAfricaAsia:
+            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoAmericaAfricaAsia);
+            }
+            costo = pubblicazione.getAbbonamentoAmericaAsiaAfrica().doubleValue()
+                     * numero.doubleValue();  
+            break;
+    
         default:
             break;
-           
+
         }              
         return costo;
     }

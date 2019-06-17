@@ -1,6 +1,7 @@
 package it.arsinfo.smd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -27,28 +28,52 @@ public class SmdUnitTests {
     public void testMesiPubblicazione() {
  
         Pubblicazione pe = new Pubblicazione("pe", TipoPubblicazione.MENSILE);
-        pe.setMese(Mese.FEBBRAIO);
+        pe.setGen(true);
+        pe.setFeb(true);
+        pe.setMar(true);
+        pe.setApr(true);
+        pe.setMag(true);
+        pe.setGiu(true);
+        pe.setLug(true);
+        pe.setAgo(true);
+        pe.setSet(true);
+        pe.setOtt(true);
+        pe.setNov(true);
+        pe.setDic(true);
         assertEquals(EnumSet.allOf(Mese.class), pe.getMesiPubblicazione());
 
         
         Pubblicazione pd = new Pubblicazione("pd", TipoPubblicazione.MENSILE);
-        pd.setMese(Mese.NOVEMBRE);
-        assertEquals(EnumSet.allOf(Mese.class), pe.getMesiPubblicazione());
+        pd.setGen(true);
+        pd.setFeb(true);
+        pd.setMar(true);
+        pd.setApr(true);
+        pd.setMag(true);
+        pd.setGiu(true);
+        pd.setLug(true);
+        pd.setSet(true);
+        pd.setOtt(true);
+        pd.setNov(true);
+        pd.setDic(true);
+        assertEquals(11, pd.getMesiPubblicazione().size());
+        assertFalse(pd.getMesiPubblicazione().contains(Mese.AGOSTO));
 
         Pubblicazione pa = new Pubblicazione("pa", TipoPubblicazione.SEMESTRALE);
-        pa.setMese(Mese.AGOSTO);
+        pa.setFeb(true);
+        pa.setAgo(true);
         assertEquals(2, pa.getMesiPubblicazione().size());
         assertTrue(pa.getMesiPubblicazione().contains(Mese.AGOSTO));
         assertTrue(pa.getMesiPubblicazione().contains(Mese.FEBBRAIO));
         
         Pubblicazione pb = new Pubblicazione("pb", TipoPubblicazione.SEMESTRALE);
-        pb.setMese(Mese.MARZO);
+        pb.setMar(true);
+        pb.setSet(true);
         assertEquals(2, pb.getMesiPubblicazione().size());
         assertTrue(pb.getMesiPubblicazione().contains(Mese.MARZO));
         assertTrue(pb.getMesiPubblicazione().contains(Mese.SETTEMBRE));
 
         Pubblicazione pc = new Pubblicazione("pc", TipoPubblicazione.ANNUALE);
-        pc.setMese(Mese.APRILE);
+        pc.setApr(true);
         assertEquals(1, pc.getMesiPubblicazione().size());
         assertTrue(pc.getMesiPubblicazione().contains(Mese.APRILE));
         
@@ -85,32 +110,32 @@ public class SmdUnitTests {
         
         assertEquals(1, Smd.calcolaNumeroPubblicazioni(Mese.MARZO,
                                                    Mese.DICEMBRE,
-                                                   Mese.MARZO,
+                                                   EnumSet.of(Mese.MARZO),
                                                    TipoPubblicazione.ANNUALE));
         assertEquals(0, Smd.calcolaNumeroPubblicazioni(Mese.APRILE,
-                                                             Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.ANNUALE));
+                                                         Mese.DICEMBRE,
+                                                         EnumSet.of(Mese.MARZO),
+                                                         TipoPubblicazione.ANNUALE));
         assertEquals(2, Smd.calcolaNumeroPubblicazioni(Mese.MARZO,
                                                              Mese.DICEMBRE,
-                                                             Mese.MARZO,
+                                                             EnumSet.of(Mese.MARZO,Mese.SETTEMBRE),
                                                              TipoPubblicazione.SEMESTRALE));
         assertEquals(1, Smd.calcolaNumeroPubblicazioni(Mese.SETTEMBRE,
                                                              Mese.DICEMBRE,
-                                                             Mese.MARZO,
+                                                             EnumSet.of(Mese.MARZO,Mese.SETTEMBRE),
                                                              TipoPubblicazione.SEMESTRALE));
         assertEquals(0, Smd.calcolaNumeroPubblicazioni(Mese.OTTOBRE,
                                                              Mese.DICEMBRE,
-                                                             Mese.MARZO,
-                                                             TipoPubblicazione.SEMESTRALE));
+                                                             EnumSet.of(Mese.MARZO,Mese.SETTEMBRE),
+                                                           TipoPubblicazione.SEMESTRALE));
         
         assertEquals(3, Smd.calcolaNumeroPubblicazioni(Mese.OTTOBRE,
                                                    Mese.DICEMBRE,
-                                                   Mese.GENNAIO,
+                                                   EnumSet.allOf(Mese.class),
                                                    TipoPubblicazione.MENSILE));
         assertEquals(12, Smd.calcolaNumeroPubblicazioni(Mese.GENNAIO,
                                                    Mese.DICEMBRE,
-                                                   Mese.GENNAIO,
+                                                   EnumSet.allOf(Mese.class),
                                                    TipoPubblicazione.MENSILE));
 
  
@@ -120,20 +145,24 @@ public class SmdUnitTests {
     public void testCalcolaCosto() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
-        assertEquals(0 , messaggio.getCostoUnitario().subtract(new BigDecimal(1.25)).signum());
-        assertEquals(0 , messaggio.getCostoScontato().subtract(new BigDecimal(1.25)).signum());
+        assertEquals(0 , messaggio.getCostoUnitario().subtract(new BigDecimal(1.50)).signum());
+        assertEquals(0 , messaggio.getAbbonamentoItalia().subtract(new BigDecimal(15.00)).signum());
         
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.CuriaDiocesiana, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.CuriaGeneralizia, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.Gesuiti, 1),0);
-        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.ConSconto, 1),0);
-        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.No, 1),0);
-        assertEquals(2.5,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, messaggio, Omaggio.No, 1),0);
-        assertEquals(3.75,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, messaggio, Omaggio.No, 1),0);
-        assertEquals(3.75,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, messaggio, Omaggio.ConSconto, 1),0);
-        assertEquals(6.25,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, messaggio, Omaggio.ConSconto, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.OmaggioCuriaDiocesiana, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.OmaggioCuriaGeneralizia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.OmaggioGesuiti, 1),0);
+        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.AbbonamentoItaliaConSconto, 1),0);
+        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, messaggio, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(3.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, messaggio, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(4.50,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, messaggio, Omaggio.AbbonamentoItalia, 1),0);
+        
         try {
-            Smd.calcolaCosto(Mese.MARZO, Mese.GENNAIO, messaggio, Omaggio.ConSconto, 1);
+            Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, messaggio, Omaggio.AbbonamentoItaliaConSconto, 1);
+            } catch (UnsupportedOperationException e) {
+            assertEquals("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoItaliaConSconto, e.getMessage());
+        }
+        try {
+            Smd.calcolaCosto(Mese.MARZO, Mese.GENNAIO, messaggio, Omaggio.AbbonamentoItaliaConSconto, 1);
         } catch (UnsupportedOperationException e) {
             assertEquals("Valori non ammissibili", e.getMessage());
         }
@@ -141,47 +170,42 @@ public class SmdUnitTests {
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
         assertEquals(0 , lodare.getCostoUnitario().subtract(new BigDecimal(1.5)).signum());
-        assertEquals(0 , lodare.getCostoScontato().subtract(new BigDecimal(1.5)).signum());
         
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.CuriaDiocesiana, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.CuriaGeneralizia, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.Gesuiti, 1),0);
-        assertEquals(18.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.ConSconto, 1),0);
-        assertEquals(18.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.No, 1),0);
-        assertEquals(3.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, lodare, Omaggio.No, 1),0);
-        assertEquals(4.5,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, lodare, Omaggio.No, 1),0);
-        assertEquals(4.5,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, lodare, Omaggio.ConSconto, 1),0);
-        assertEquals(7.5,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, lodare, Omaggio.ConSconto, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioCuriaDiocesiana, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioCuriaGeneralizia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.OmaggioGesuiti, 1),0);
+        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItaliaConSconto, 1),0);
+        assertEquals(15.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(3.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(4.5,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, lodare, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(7.5,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, lodare, Omaggio.AbbonamentoItalia, 1),0);
         
         Pubblicazione estratti = SmdLoadSampleData.getEstratti();
         assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         assertEquals(0 , estratti.getCostoUnitario().subtract(new BigDecimal(10.00)).signum());
-        assertEquals(0 , estratti.getCostoScontato().subtract(new BigDecimal(10.00)).signum());
-        assertEquals(Mese.LUGLIO, estratti.getMese());
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.CuriaDiocesiana, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.CuriaGeneralizia, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.Gesuiti, 1),0);
-        assertEquals(10.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.ConSconto, 1),0);
-        assertEquals(10.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.No, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, estratti, Omaggio.No, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, estratti, Omaggio.No, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, estratti, Omaggio.ConSconto, 1),0);
-        assertEquals(10.0,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, estratti, Omaggio.ConSconto, 1),0);
+        assertEquals(Mese.LUGLIO, estratti.getMesiPubblicazione().iterator().next());
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.OmaggioCuriaDiocesiana, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.OmaggioCuriaGeneralizia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.OmaggioGesuiti, 1),0);
+        assertEquals(10.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.AbbonamentoItaliaConSconto, 1),0);
+        assertEquals(10.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, estratti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, estratti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, estratti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, estratti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(10.0,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, estratti, Omaggio.AbbonamentoItalia, 1),0);
         
         Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
         assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
         assertEquals(0 , blocchetti.getCostoUnitario().subtract(new BigDecimal(3.00)).signum());
-        assertEquals(0 , blocchetti.getCostoScontato().subtract(new BigDecimal(2.40)).signum());
-        assertEquals(Mese.MARZO, blocchetti.getMese());
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.CuriaDiocesiana, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.CuriaGeneralizia, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.Gesuiti, 1),0);
-        assertEquals(4.80,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.ConSconto, 1),0);
-        assertEquals(6.00,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.No, 1),0);
-        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, blocchetti, Omaggio.No, 1),0);
-        assertEquals(3.00,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, blocchetti, Omaggio.No, 1),0);
-        assertEquals(2.40,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, blocchetti, Omaggio.ConSconto, 1),0);
-        assertEquals(2.40,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, blocchetti, Omaggio.ConSconto, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.OmaggioCuriaDiocesiana, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.OmaggioCuriaGeneralizia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.OmaggioGesuiti, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.OmaggioDirettoreAdp, 1),0);
+        assertEquals(6.00,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.AbbonamentoItaliaConSconto, 1),0);
+        assertEquals(6.00,Smd.calcolaCosto(Mese.GENNAIO, Mese.DICEMBRE, blocchetti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(0.0,Smd.calcolaCosto(Mese.GENNAIO, Mese.FEBBRAIO, blocchetti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(3.00,Smd.calcolaCosto(Mese.GENNAIO, Mese.MARZO, blocchetti, Omaggio.AbbonamentoItalia, 1),0);
+        assertEquals(3.00,Smd.calcolaCosto(Mese.GIUGNO, Mese.OTTOBRE, blocchetti, Omaggio.AbbonamentoItalia, 1),0);
 
 
     }

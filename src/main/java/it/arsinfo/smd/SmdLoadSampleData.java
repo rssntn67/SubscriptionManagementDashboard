@@ -276,51 +276,110 @@ public class SmdLoadSampleData implements Runnable {
     }
     
     public static Pubblicazione getMessaggio() {
-        Pubblicazione messaggio = new Pubblicazione("Messaggio",
+        Pubblicazione p = new Pubblicazione("Messaggio",
                                                     TipoPubblicazione.MENSILE);
-        messaggio.setActive(true);
-        messaggio.setAutore("AAVV");
-        messaggio.setCostoUnitario(new BigDecimal(1.25));
-        messaggio.setCostoScontato(new BigDecimal(1.25));
-        messaggio.setEditore("ADP");
-        messaggio.setMese(Mese.GENNAIO);
-        return messaggio;
+        p.setDescrizione("Il Messaggio del Cuore di Gesù");
+        p.setActive(true);
+        p.setAutore("AAVV");
+        p.setEditore("ADP");
+
+        p.setCostoUnitario(new BigDecimal(1.50));
+        p.setAbbonamentoItalia(new BigDecimal(15.00));
+        p.setAbbonamentoWeb(new BigDecimal(12.00));
+        p.setAbbonamentoConSconto(new BigDecimal(15.00));
+        p.setAbbonamentoEuropa(new BigDecimal(58.00));
+        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(68.00));
+        p.setAbbonamentoSostenitore(new BigDecimal(50.00));
+        
+        p.setGen(true);
+        p.setFeb(true);
+        p.setMar(true);
+        p.setApr(true);
+        p.setMag(true);
+        p.setGiu(true);
+        p.setLug(true);
+        p.setAgo(false);
+        p.setSet(true);
+        p.setOtt(true);
+        p.setNov(true);
+        p.setDic(true);
+        return p;
     }
     
     public static Pubblicazione getLodare() {
-        Pubblicazione lodare = new Pubblicazione("Lodare e Servire",
+        Pubblicazione p = new Pubblicazione("Lodare",
                                                  TipoPubblicazione.MENSILE);
-        lodare.setActive(true);
-        lodare.setAutore("AAVV");
-        lodare.setCostoUnitario(new BigDecimal(1.50));
-        lodare.setCostoScontato(new BigDecimal(1.50));
-        lodare.setEditore("ADP");
-        lodare.setMese(Mese.GENNAIO);
-        return lodare;
+        p.setDescrizione("Lodare e Servire");
+        p.setActive(true);
+        p.setAutore("AAVV");
+        p.setEditore("ADP");
+        
+        p.setCostoUnitario(new BigDecimal(1.50));
+        p.setAbbonamentoItalia(new BigDecimal(15.00));
+        p.setAbbonamentoWeb(new BigDecimal(12.00));
+        p.setAbbonamentoConSconto(new BigDecimal(15.00));
+        p.setAbbonamentoEuropa(new BigDecimal(58.00));
+        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(68.00));
+        p.setAbbonamentoSostenitore(new BigDecimal(50.00));
+
+        p.setGen(true);
+        p.setFeb(true);
+        p.setMar(true);
+        p.setApr(true);
+        p.setMag(true);
+        p.setGiu(true);
+        p.setLug(true);
+        p.setAgo(true);
+        p.setSet(true);
+        p.setOtt(true);
+        p.setNov(true);
+        p.setDic(true);
+
+        return p;
     }
 
     public static Pubblicazione getBlocchetti() {
-        Pubblicazione blocchetti = new Pubblicazione("Blocchetti",
+        Pubblicazione p = new Pubblicazione("Blocchetti",
                                                      TipoPubblicazione.SEMESTRALE);
-        blocchetti.setActive(true);
-        blocchetti.setAutore("AAVV");
-        blocchetti.setCostoUnitario(new BigDecimal(3.00));
-        blocchetti.setCostoScontato(new BigDecimal(2.40));
-        blocchetti.setEditore("ADP");
-        blocchetti.setMese(Mese.MARZO);
-        return blocchetti;
+        p.setDescrizione("Biglietti Mensili");
+        p.setActive(true);
+        p.setAutore("AAVV");
+        p.setEditore("ADP");
+
+        p.setCostoUnitario(new BigDecimal(3.00));
+        p.setAbbonamentoItalia(new BigDecimal(6.00));
+        p.setAbbonamentoWeb(new BigDecimal(4.00));
+        p.setAbbonamentoConSconto(new BigDecimal(6.00));
+        p.setAbbonamentoEuropa(new BigDecimal(14.00));
+        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(16.00));
+        p.setAbbonamentoSostenitore(new BigDecimal(12.00));
+
+        p.setMar(true);
+        p.setSet(true);
+        p.setAnticipoSpedizione(4);
+        return p;
     }
     
     public static Pubblicazione getEstratti() {
-        Pubblicazione estratti = new Pubblicazione("Estratti",
+        Pubblicazione p = new Pubblicazione("Estratti",
                                                    TipoPubblicazione.ANNUALE);
-        estratti.setActive(true);
-        estratti.setAutore("AAVV");
-        estratti.setCostoUnitario(new BigDecimal(10.00));
-        estratti.setCostoScontato(new BigDecimal(10.00));
-        estratti.setEditore("ADP");
-        estratti.setMese(Mese.LUGLIO);
-        return estratti;
+        p.setDescrizione("Estratti");
+        p.setActive(true);
+        p.setAutore("AAVV");
+        p.setEditore("ADP");
+        
+        p.setCostoUnitario(new BigDecimal(10.00));
+        p.setAbbonamentoItalia(new BigDecimal(10.00));
+        p.setAbbonamentoWeb(new BigDecimal(8.00));
+        p.setAbbonamentoConSconto(new BigDecimal(10.00));
+        p.setAbbonamentoEuropa(new BigDecimal(24.00));
+        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(36.00));
+        p.setAbbonamentoSostenitore(new BigDecimal(10.00));
+
+        p.setLug(true);
+        
+        p.setAnticipoSpedizione(4);
+        return p;
     }
     
     public static Anagrafica getAR() {
@@ -679,25 +738,25 @@ public class SmdLoadSampleData implements Runnable {
         anagraficaDao.save(ar);
         Anagrafica dm=getDiocesiMi();
         anagraficaDao.save(dm);
-        storicoDao.save(getStoricoBy(dm,ar, messaggio, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, lodare, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, blocchetti, 10,Omaggio.CuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, estratti, 10,Omaggio.CuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, messaggio, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, lodare, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, blocchetti, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(dm,ar, estratti, 10,Omaggio.OmaggioCuriaDiocesiana));
 
         Anagrafica gp=getGP();
         anagraficaDao.save(gp);
         storicoDao.save(getStoricoBy(gp, messaggio, 10,Cassa.Contrassegno));
         storicoDao.save(getStoricoBy(gp, lodare, 10,Cassa.Contrassegno));
-        storicoDao.save(getStoricoBy(gp, blocchetti, 10,Cassa.Contrassegno,Omaggio.ConSconto));
+        storicoDao.save(getStoricoBy(gp, blocchetti, 10,Cassa.Contrassegno,Omaggio.AbbonamentoItaliaConSconto));
         
         Anagrafica mp = getMP();
         anagraficaDao.save(mp);
-        storicoDao.save(getStoricoBy(mp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.Gesuiti));
-        storicoDao.save(getStoricoBy(mp, lodare, 10,InvioSpedizione.AdpSede,Omaggio.Gesuiti));
+        storicoDao.save(getStoricoBy(mp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
+        storicoDao.save(getStoricoBy(mp, lodare, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
 
         Anagrafica dp = getDP();
         anagraficaDao.save(dp);
-        storicoDao.save(getStoricoBy(dp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.CuriaGeneralizia));
+        storicoDao.save(getStoricoBy(dp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioCuriaGeneralizia));
 
         Anagrafica ms = getMS();
         anagraficaDao.save(ms);

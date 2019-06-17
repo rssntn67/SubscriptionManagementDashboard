@@ -1,11 +1,13 @@
 package it.arsinfo.smd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -194,8 +196,22 @@ public class SmdApplicationTests {
         Pubblicazione estratti = pubblicazioni.iterator().next();
         log.info("--------------------------------------------");
         log.info(estratti.toString());
-        assertEquals(Mese.LUGLIO, estratti.getMese());
-        assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
+        EnumSet<Mese> pubs = estratti.getMesiPubblicazione();
+        assertEquals(1, pubs.size());
+        assertEquals(Mese.LUGLIO, pubs.iterator().next());
+        assertTrue(estratti.isLug());
+        assertFalse(estratti.isGen());
+        assertFalse(estratti.isFeb());
+        assertFalse(estratti.isMar());
+        assertFalse(estratti.isApr());
+        assertFalse(estratti.isMag());
+        assertFalse(estratti.isGiu());
+        assertFalse(estratti.isAgo());
+        assertFalse(estratti.isSet());
+        assertFalse(estratti.isOtt());
+        assertFalse(estratti.isNov());
+        assertFalse(estratti.isDic());
+               assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         log.info("");
 
         log.info("Pubblicazione found with findByTipo('MENSILE'):");
@@ -222,7 +238,7 @@ public class SmdApplicationTests {
         log.info("--------------------------------");
         assertEquals(Long.parseLong("3"), lodare.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
-        assertEquals("Lodare e Servire", lodare.getNome());
+        assertEquals("Lodare", lodare.getNome());
         log.info(lodare.toString());
         log.info("");
 
@@ -280,7 +296,7 @@ public class SmdApplicationTests {
         for (Storico anp : storici) {
             assertEquals(StatoStorico.NUO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
-            assertEquals(Omaggio.No, anp.getOmaggio());
+            assertEquals(Omaggio.AbbonamentoItalia, anp.getOmaggio());
             log.info(anp.toString());
         }
         log.info("");
@@ -293,7 +309,7 @@ public class SmdApplicationTests {
         for (Storico anp : storici) {
             assertEquals(StatoStorico.NUO, anp.getStatoStorico());
             assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
-            assertEquals(Omaggio.CuriaGeneralizia, anp.getOmaggio());
+            assertEquals(Omaggio.OmaggioCuriaGeneralizia, anp.getOmaggio());
             assertEquals(10, anp.getNumero().intValue());
             log.info(anp.toString());
         }
@@ -456,7 +472,7 @@ public class SmdApplicationTests {
             log.info(storico.toString());
             StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
-            if (storico.getOmaggio() == Omaggio.No || storico.getOmaggio() == Omaggio.ConSconto) {
+            if (storico.getOmaggio() == Omaggio.AbbonamentoItalia || storico.getOmaggio() == Omaggio.AbbonamentoItaliaConSconto) {
                 assertEquals(StatoStorico.NON, ss);
             } else {
                 assertEquals(StatoStorico.OMA, ss);                

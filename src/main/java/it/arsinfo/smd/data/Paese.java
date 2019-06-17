@@ -272,7 +272,8 @@ public enum Paese {
     PAESE218("WALLIS E FUTUNA"),
     PAESE42("YEMEN"),
     PAESE58("ZAMBIA"),
-    PAESE73("ZIMBABWE");
+    PAESE73("ZIMBABWE"),
+    ITALIA("ITALIA");
     
     private String nome;
     
