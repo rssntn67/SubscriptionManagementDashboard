@@ -363,7 +363,7 @@ public class SmdLoadSampleData implements Runnable {
     public static Pubblicazione getEstratti() {
         Pubblicazione p = new Pubblicazione("Estratti",
                                                    TipoPubblicazione.ANNUALE);
-        p.setDescrizione("Estratti");
+        p.setDescrizione("Serie di dodici estratti del Messaggio");
         p.setActive(true);
         p.setAutore("AAVV");
         p.setEditore("ADP");
