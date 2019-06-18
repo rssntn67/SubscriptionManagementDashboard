@@ -84,10 +84,6 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno() && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
                 if (get().getId() == null && get().getSpedizioni().isEmpty()) {
                     Notification.show("Aggiungere Spedizione Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
