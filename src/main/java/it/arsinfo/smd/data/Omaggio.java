@@ -10,5 +10,6 @@ public enum Omaggio {
 	OmaggioCuriaGeneralizia,
 	OmaggioGesuiti,
 	OmaggioCuriaDiocesiana,
-	OmaggioDirettoreAdp
+	OmaggioDirettoreAdp, 
+	OmaggioEditore
 }
