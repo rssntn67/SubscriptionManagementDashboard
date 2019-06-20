@@ -15,12 +15,12 @@ import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_OPERAZIONI)
@@ -46,7 +46,7 @@ public class OperazioneUI extends SmdUI {
     private StoricoDao storicoDao;
 
     @Autowired
-    private SpedizioneDao spedizioneDao;
+    private EstrattoContoDao spedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -61,7 +61,7 @@ public class OperazioneUI extends SmdUI {
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
-        SpedizioneGrid spedGrid = new SpedizioneGrid("Spedizioni");
+        EstrattoContoGrid spedGrid = new EstrattoContoGrid("Spedizioni");
         addSmdComponents(pb,spedGrid,generaShow,bss,genera,editor,search,grid);
         
         
@@ -79,7 +79,7 @@ public class OperazioneUI extends SmdUI {
             new Thread(() -> {
                 List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
                 List<Storico> storici = storicoDao.findAll();
-                List<Spedizione> aggiornamenti = Smd.spedizioneDaAggiornare(spedizioneDao.findAll());
+                List<EstrattoConto> aggiornamenti = Smd.estrattiContoDaAggiornare(spedizioneDao.findAll());
                 if (aggiornamenti.isEmpty() && storici.isEmpty()) {
                     return;
                 }

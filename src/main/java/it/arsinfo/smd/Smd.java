@@ -45,7 +45,7 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 
@@ -120,16 +120,16 @@ public class Smd {
                 abbonamento.setFine(campagna.getFine());
                 abbonamento.setCassa(cassa);
                 for (Storico storico: cassaStorico.get(cassa)) {
-                    Spedizione spedizione = new Spedizione();
-                    spedizione.setStorico(storico);
-                    spedizione.setAbbonamento(abbonamento);
-                    spedizione.setPubblicazione(storico.getPubblicazione());
-                    spedizione.setDestinatario(storico.getDestinatario());
-                    spedizione.setNumero(storico.getNumero());
-                    spedizione.setInvio(storico.getInvio());
-                    spedizione.setInvioSpedizione(storico.getInvioSpedizione());
-                    spedizione.setOmaggio(storico.getOmaggio());
-                    abbonamento.addSpedizione(spedizione);
+                    EstrattoConto estrattoConto = new EstrattoConto();
+                    estrattoConto.setStorico(storico);
+                    estrattoConto.setAbbonamento(abbonamento);
+                    estrattoConto.setPubblicazione(storico.getPubblicazione());
+                    estrattoConto.setDestinatario(storico.getDestinatario());
+                    estrattoConto.setNumero(storico.getNumero());
+                    estrattoConto.setInvio(storico.getInvio());
+                    estrattoConto.setInvioSpedizione(storico.getInvioSpedizione());
+                    estrattoConto.setOmaggio(storico.getOmaggio());
+                    abbonamento.addEstrattoConto(estrattoConto);
                 }
                 calcoloAbbonamento(abbonamento);
                 abbonamenti.add(abbonamento);
@@ -140,24 +140,24 @@ public class Smd {
         return campagna;
     }
 
-    public static List<Spedizione> spedizioneDaAggiornare(List<Spedizione> spedizioni) {
-        return spedizioni
+    public static List<EstrattoConto> estrattiContoDaAggiornare(List<EstrattoConto> estrattiConto) {
+        return estrattiConto
                 .stream()
                 .filter(
-                    s -> s.getAbbonamento().getAnno().getAnno() == getAnnoCorrente().getAnno() && s.isSospesa() != getSpezioneSospesa(s)
+                    s -> s.getAbbonamento().getAnno().getAnno() == getAnnoCorrente().getAnno() && s.isSospesa() != getSospendiSpedizione(s)
                     ).collect(Collectors.toList());
     }
     
-    public static boolean getSpezioneSospesa(Spedizione spedizione) {
+    public static boolean getSospendiSpedizione(EstrattoConto estrattoConto) {
 
-        boolean sospendiSpedizione=spedizione.isSospesa();
-        switch (spedizione.getOmaggio()) {
+        boolean sospendiSpedizione=estrattoConto.isSospesa();
+        switch (estrattoConto.getOmaggio()) {
         case AbbonamentoItalia:
-            sospendiSpedizione = sospendiSpedizione(spedizione);
+            sospendiSpedizione = sospendiSpedizione(estrattoConto);
             break;
 
         case AbbonamentoItaliaConSconto:    
-            sospendiSpedizione = sospendiSpedizione(spedizione);
+            sospendiSpedizione = sospendiSpedizione(estrattoConto);
             break;
         case OmaggioCuriaDiocesiana:
             break;
@@ -201,7 +201,7 @@ public class Smd {
         return pagamentoRegolare;
     }
     
-    private static boolean sospendiSpedizione(Spedizione spedizione) {
+    private static boolean sospendiSpedizione(EstrattoConto spedizione) {
         Abbonamento abbonamento = spedizione.getAbbonamento();
             if (abbonamento.getTotale().signum() > 0 &&  abbonamento.getVersamento() == null) {
                 return true;
@@ -216,7 +216,7 @@ public class Smd {
                     || abb.getAnno().getAnno() != getAnnoCorrente().getAnno()) {
                 continue;
             }
-            for (Spedizione sped: abb.getSpedizioni()) {
+            for (EstrattoConto sped: abb.getEstrattiConto()) {
                 if (sped.getStorico().getId() != storico.getId()) {
                     continue;
                 }
@@ -237,7 +237,7 @@ public class Smd {
         double costo = 0.0;
         Mese inizio = abbonamento.getInizio();
         Mese fine = abbonamento.getFine();
-        for (Spedizione spedizione : abbonamento.getSpedizioni()) {
+        for (EstrattoConto spedizione : abbonamento.getEstrattiConto()) {
             costo+= calcolaCosto(inizio, fine, spedizione.getPubblicazione(),spedizione.getOmaggio(),spedizione.getNumero());
         }
         abbonamento.setCosto(BigDecimal.valueOf(costo));
@@ -434,7 +434,7 @@ public class Smd {
             if (a.getAnno() == anno
                     && a.getInizio().getPosizione() <= mese.getPosizione()
                     && a.getFine().getPosizione() >= mese.getPosizione()) {
-                for (Spedizione s : a.getSpedizioni()) {
+                for (EstrattoConto s : a.getEstrattiConto()) {
                     if (s.getPubblicazione().getId() != pubblicazione.getId()
                             || s.getOmaggio() != omaggio) {
                         continue;
@@ -466,13 +466,13 @@ public class Smd {
         return operazioni;
     }
 
-    public static List<Spedizione> generaSpedizioniSped(List<Abbonamento> abbonamenti, Operazione operazione) {
-        final List<Spedizione> spedizioni = new ArrayList<>();
+    public static List<EstrattoConto> generaSpedizioniSped(List<Abbonamento> abbonamenti, Operazione operazione) {
+        final List<EstrattoConto> spedizioni = new ArrayList<>();
         abbonamenti.stream().filter(a ->a.getAnno() == operazione.getAnno()
                         && a.getInizio().getPosizione() <= operazione.getMese().getPosizione() 
                         && a.getFine().getPosizione() >= operazione.getMese().getPosizione())
         .forEach(a -> {
-           spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
+           spedizioni.addAll(a.getEstrattiConto().stream().filter(s -> 
                    !s.isSospesa()
                && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
                 && s.getInvioSpedizione() != InvioSpedizione.AdpSede
@@ -482,13 +482,13 @@ public class Smd {
         return spedizioni;
     }
     
-    public static List<Spedizione> generaSpedizioniCassa(List<Abbonamento> abbonamenti, Operazione operazione) {
-        final List<Spedizione> spedizioni = new ArrayList<>();
+    public static List<EstrattoConto> generaSpedizioniCassa(List<Abbonamento> abbonamenti, Operazione operazione) {
+        final List<EstrattoConto> spedizioni = new ArrayList<>();
         abbonamenti.stream().filter(a ->a.getAnno() == operazione.getAnno()
                         && a.getInizio().getPosizione() <= operazione.getMese().getPosizione() 
                         && a.getFine().getPosizione() >= operazione.getMese().getPosizione())
         .forEach(a -> {
-           spedizioni.addAll(a.getSpedizioni().stream().filter(s -> 
+           spedizioni.addAll(a.getEstrattiConto().stream().filter(s -> 
                    !s.isSospesa()
                 && s.getPubblicazione().getId() == operazione.getPubblicazione().getId() 
                 && s.getInvioSpedizione() == InvioSpedizione.AdpSede
@@ -513,7 +513,7 @@ public class Smd {
                         && a.getFine().getPosizione() >= mese.getPosizione() 
                     )
             .forEach( a -> 
-                      a.getSpedizioni()
+                      a.getEstrattiConto()
                           .stream()
                           .filter( s ->
                                 !s.isSospesa() 

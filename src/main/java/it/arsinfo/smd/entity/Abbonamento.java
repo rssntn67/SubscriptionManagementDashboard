@@ -47,7 +47,7 @@ public class Abbonamento implements SmdEntity {
     @ManyToOne
     private Versamento versamento;
     @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
-    private List<Spedizione> spedizioni = new ArrayList<>();
+    private List<EstrattoConto> estrattiConto = new ArrayList<>();
 
     private BigDecimal costo = BigDecimal.ZERO;
     @Enumerated(EnumType.STRING)
@@ -156,24 +156,24 @@ public class Abbonamento implements SmdEntity {
         this.campo = campo;
     }
 
-    public List<Spedizione> getSpedizioni() {
-        return new ArrayList<>(spedizioni);
+    public List<EstrattoConto> getEstrattiConto() {
+        return new ArrayList<>(estrattiConto);
     }
 
-    public void setSpedizioni(
-            List<Spedizione> listaAbbonamentoPubblicazione) {
-        this.spedizioni = listaAbbonamentoPubblicazione;
+    public void setEstrattiConto(
+            List<EstrattoConto> listaAbbonamentoPubblicazione) {
+        this.estrattiConto = listaAbbonamentoPubblicazione;
     }
     
-    public void addSpedizione(Spedizione spedizione) {
-        if (spedizioni.contains(spedizione)) {
-            spedizioni.remove(spedizione);
+    public void addEstrattoConto(EstrattoConto estrattoConto) {
+        if (estrattiConto.contains(estrattoConto)) {
+            estrattiConto.remove(estrattoConto);
         }
-        spedizioni.add(spedizione);
+        estrattiConto.add(estrattoConto);
     }
 
-    public boolean deleteSpedizione(Spedizione spedizione) {
-        return spedizioni.remove(spedizione);
+    public boolean deleteEstrattoConto(EstrattoConto estrattoConto) {
+        return estrattiConto.remove(estrattoConto);
     }
 
     public Cassa getCassa() {

@@ -16,11 +16,11 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 
-public class SpedizioneEditor
-        extends SmdEditor<Spedizione> {
+public class EstrattoContoEditor
+        extends SmdEditor<EstrattoConto> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
@@ -38,11 +38,11 @@ public class SpedizioneEditor
 
     private final CheckBox sospesa = new CheckBox("Spedizione Sospesa");
 
-    public SpedizioneEditor(
-            SpedizioneDao anagraficaPubblicazioneDao,
+    public EstrattoContoEditor(
+            EstrattoContoDao anagraficaPubblicazioneDao,
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
 
-        super(anagraficaPubblicazioneDao, new Binder<>(Spedizione.class) );
+        super(anagraficaPubblicazioneDao, new Binder<>(EstrattoConto.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -74,18 +74,18 @@ public class SpedizioneEditor
             .withValidator(str -> str != null, "Inserire un numero")
             .withConverter(new StringToIntegerConverter(""))
             .withValidator(num -> num > 0,"deve essere maggiore di 0")
-            .bind(Spedizione::getNumero, Spedizione::setNumero);
+            .bind(EstrattoConto::getNumero, EstrattoConto::setNumero);
         getBinder()
             .forField(pubblicazione)
             .asRequired()
             .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
-            .bind(Spedizione::getPubblicazione,Spedizione::setPubblicazione);
+            .bind(EstrattoConto::getPubblicazione,EstrattoConto::setPubblicazione);
         getBinder().bindInstanceFields(this);
 
     }
 
     @Override
-    public void focus(boolean persisted, Spedizione obj) {
+    public void focus(boolean persisted, EstrattoConto obj) {
         intestatario.setValue(obj.getAbbonamento().getIntestatario());
         intestatario.setReadOnly(true);
         anno.setValue(obj.getAbbonamento().getAnno());

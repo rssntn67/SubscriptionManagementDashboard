@@ -17,7 +17,7 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 
 @Entity
-public class Spedizione implements SmdEntity {
+public class EstrattoConto implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,7 +48,7 @@ public class Spedizione implements SmdEntity {
 
     private boolean sospesa=false;
 
-    public Spedizione() {
+    public EstrattoConto() {
     }
 
     public Long getId() {

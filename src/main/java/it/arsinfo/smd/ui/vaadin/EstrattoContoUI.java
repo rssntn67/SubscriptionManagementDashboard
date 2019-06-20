@@ -13,16 +13,16 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 
-@SpringUI(path = SmdUI.URL_SPEDIZIONI)
-@Title("Spedizioni ADP")
+@SpringUI(path = SmdUI.URL_ESTRATTO_CONTO)
+@Title("Estratto Conto")
 @Push
-public class SpedizioneUI extends SmdUI {
+public class EstrattoContoUI extends SmdUI {
 
     /**
      * 
@@ -36,21 +36,21 @@ public class SpedizioneUI extends SmdUI {
     AnagraficaDao anagraficaDao;
 
     @Autowired
-    SpedizioneDao spedizioneDao;
+    EstrattoContoDao estrattoContoDao;
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Spedizioni");
+        super.init(request, "Estratto Conto");
         SmdProgressBar pb = new SmdProgressBar();
         SmdButton bss = new SmdButton("Sospendi Insolventi", VaadinIcons.CLOUD);
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
-        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,anagrafica,pubblicazioni);
-        SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
-        SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, pubblicazioni, anagrafica);
+        EstrattoContoSearch search = new EstrattoContoSearch(estrattoContoDao,anagrafica,pubblicazioni);
+        EstrattoContoGrid grid = new EstrattoContoGrid("Spedizioni");
+        EstrattoContoEditor editor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica);
         addSmdComponents(pb,bss,editor,search, grid);
         pb.setVisible(false);
         editor.setVisible(false);
@@ -60,12 +60,12 @@ public class SpedizioneUI extends SmdUI {
             bss.getButton().setEnabled(false);
             pb.setVisible(true);
             new Thread(() -> {
-                List<Spedizione> aggiornamenti = Smd.spedizioneDaAggiornare(search.find());
+                List<EstrattoConto> aggiornamenti = Smd.estrattiContoDaAggiornare(search.find());
                 float delta = 1.0f/aggiornamenti.size();
                 pb.setValue(0.0f);
                 aggiornamenti.stream().forEach(s -> {
                     s.setSospesa(!s.isSospesa());
-                    spedizioneDao.save(s);
+                    estrattoContoDao.save(s);
                         access(() -> {
                             pb.setValue(pb.getValue()+delta);
                             grid.populate(search.find());

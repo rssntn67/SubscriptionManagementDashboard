@@ -33,7 +33,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -45,7 +45,7 @@ import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -59,7 +59,7 @@ public class SmdLoadSampleData implements Runnable {
     private final StoricoDao storicoDao;
     private final PubblicazioneDao pubblicazioneDao;
     private final AbbonamentoDao abbonamentoDao;
-    private final SpedizioneDao spedizioneDao;
+    private final EstrattoContoDao estrattoContoDao;
     private final CampagnaDao campagnaDao;
     private final IncassoDao incassoDao; 
     private final VersamentoDao versamentoDao;
@@ -244,14 +244,14 @@ public class SmdLoadSampleData implements Runnable {
                 return abb;   
     }
 
-    public static Spedizione addSpedizione(Abbonamento abb, Pubblicazione rowKey,
+    public static EstrattoConto addSpedizione(Abbonamento abb, Pubblicazione rowKey,
             Anagrafica columnKey, Integer value) {
-        Spedizione spedizione = new Spedizione();
+        EstrattoConto spedizione = new EstrattoConto();
         spedizione.setAbbonamento(abb);
         spedizione.setDestinatario(columnKey);
         spedizione.setPubblicazione(rowKey);
         spedizione.setNumero(value);
-        abb.addSpedizione(spedizione);
+        abb.addEstrattoConto(spedizione);
         return spedizione;
     }
 
@@ -266,7 +266,7 @@ public class SmdLoadSampleData implements Runnable {
             StoricoDao storicoDao,
             PubblicazioneDao pubblicazioneDao, 
             AbbonamentoDao abbonamentoDao,
-            SpedizioneDao spedizioneDao,
+            EstrattoContoDao spedizioneDao,
             CampagnaDao campagnaDao, 
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
@@ -280,7 +280,7 @@ public class SmdLoadSampleData implements Runnable {
         this.storicoDao=storicoDao;
         this.pubblicazioneDao=pubblicazioneDao;
         this.abbonamentoDao=abbonamentoDao;
-        this.spedizioneDao=spedizioneDao;
+        this.estrattoContoDao=spedizioneDao;
         this.campagnaDao=campagnaDao;
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
@@ -805,9 +805,9 @@ public class SmdLoadSampleData implements Runnable {
         
         abbonamentoDao.save(getAbbonamentoMs(micheleSantoro, messaggio,lodare,blocchetti,estratti));
         abbonamentoDao.save(getAbbonamentoGp(gabrielePizzo, estratti, antonioRusso, matteoParo, messaggio,lodare,blocchetti,estratti));
-        Spedizione spedizioneGptoar = spedizioneDao.findByDestinatario(antonioRusso).iterator().next();
+        EstrattoConto spedizioneGptoar = estrattoContoDao.findByDestinatario(antonioRusso).iterator().next();
         spedizioneGptoar.setNumero(3);
-        spedizioneDao.save(spedizioneGptoar);
+        estrattoContoDao.save(spedizioneGptoar);
 
         Abbonamento abbonamentoDp =getAbbonamentoDp(davidePalma, Mese.MAGGIO,blocchetti);
         abbonamentoDao.save(abbonamentoDp);

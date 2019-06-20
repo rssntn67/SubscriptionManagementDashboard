@@ -1,19 +1,19 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 
-public class SpedizioneAdd extends SmdAdd<Spedizione> {
+public class EstrattoContoAdd extends SmdAdd<EstrattoConto> {
 
     private Abbonamento abbonamento;
 
-    public SpedizioneAdd(String caption) {
+    public EstrattoContoAdd(String caption) {
         super(caption);
     }
     
     @Override
-    public Spedizione generate() {
-        Spedizione spedizione = new Spedizione();
+    public EstrattoConto generate() {
+        EstrattoConto spedizione = new EstrattoConto();
         spedizione.setAbbonamento(abbonamento);
         return spedizione;
     }

@@ -14,10 +14,10 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 
-public class SpedizioneSearch extends SmdSearch<Spedizione> {
+public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
 
     private Anagrafica intestatario;
     private Anagrafica destinatario;
@@ -29,7 +29,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final CheckBox filterSospesa = new CheckBox("Sospesa");
     private final CheckBox filterNonSospesa = new CheckBox("Attiva");
         
-    public SpedizioneSearch(SpedizioneDao spedizioneDao,
+    public EstrattoContoSearch(EstrattoContoDao spedizioneDao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
         super(spedizioneDao);
         ComboBox<Anagrafica> filterIntestatario = new ComboBox<Anagrafica>();
@@ -96,20 +96,20 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     }
 
     @Override
-    public List<Spedizione> find() {
+    public List<EstrattoConto> find() {
         if (destinatario == null && pubblicazione == null) {
             return filterAll(findAll());            
         }
         if (destinatario == null ) {
-            return filterAll(((SpedizioneDao) getRepo()).findByPubblicazione(pubblicazione));
+            return filterAll(((EstrattoContoDao) getRepo()).findByPubblicazione(pubblicazione));
         }
         if (pubblicazione == null) {
-            return filterAll(((SpedizioneDao) getRepo()).findByDestinatario(destinatario));
+            return filterAll(((EstrattoContoDao) getRepo()).findByDestinatario(destinatario));
         }
-        return filterAll(((SpedizioneDao) getRepo()).findByDestinatarioAndPubblicazione(destinatario, pubblicazione));
+        return filterAll(((EstrattoContoDao) getRepo()).findByDestinatarioAndPubblicazione(destinatario, pubblicazione));
     }
 
-    private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
+    private List<EstrattoConto> filterAll(List<EstrattoConto> spedizioni) {
         if (intestatario != null) {
             spedizioni = spedizioni.stream().filter( s -> s.getAbbonamento().getIntestatario().getId() == intestatario.getId()).collect(Collectors.toList());
         }

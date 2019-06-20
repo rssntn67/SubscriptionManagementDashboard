@@ -14,12 +14,12 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 
 @SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
@@ -34,7 +34,7 @@ public class AbbonamentoUI extends SmdUI {
     AbbonamentoDao abbonamentoDao;
 
     @Autowired
-    SpedizioneDao spedizioneDao;
+    EstrattoContoDao spedizioneDao;
 
     @Autowired
     AnagraficaDao anagraficaDao;
@@ -84,7 +84,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getSpedizioni().isEmpty()) {
+                if (get().getId() == null && get().getEstrattiConto().isEmpty()) {
                     Notification.show("Aggiungere Spedizione Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
@@ -95,9 +95,9 @@ public class AbbonamentoUI extends SmdUI {
             }
         };
 
-        SpedizioneAdd spedizioneAdd = new SpedizioneAdd("Aggiungi spedizione");
-        SpedizioneGrid spedizioneGrid = new SpedizioneGrid("Spedizioni");
-        SpedizioneEditor spedizioneEditor = new SpedizioneEditor(spedizioneDao, pubblicazioni, anagrafica) {
+        EstrattoContoAdd spedizioneAdd = new EstrattoContoAdd("Aggiungi spedizione");
+        EstrattoContoGrid spedizioneGrid = new EstrattoContoGrid("Spedizioni");
+        EstrattoContoEditor spedizioneEditor = new EstrattoContoEditor(spedizioneDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
                 if (get().getDestinatario() == null) {
@@ -108,14 +108,14 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                editor.get().addSpedizione(get());
+                editor.get().addEstrattoConto(get());
                 Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
             
             @Override 
             public void delete() {
-                editor.get().deleteSpedizione(get());
+                editor.get().deleteEstrattoConto(get());
                 Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
@@ -181,7 +181,7 @@ public class AbbonamentoUI extends SmdUI {
             spedizioneEditor.setVisible(false);
             Smd.calcoloAbbonamento(editor.get());
             editor.edit(spedizioneEditor.get().getAbbonamento());
-            spedizioneGrid.populate(editor.get().getSpedizioni());
+            spedizioneGrid.populate(editor.get().getEstrattiConto());
         });
         
         spedizioneGrid.setChangeHandler(() -> {
@@ -202,7 +202,7 @@ public class AbbonamentoUI extends SmdUI {
 
     }
 
-    public List<Spedizione> findByAbbonamaneto(Abbonamento abbonamento) {
+    public List<EstrattoConto> findByAbbonamaneto(Abbonamento abbonamento) {
         return spedizioneDao.findByAbbonamento(abbonamento);
     }
 }

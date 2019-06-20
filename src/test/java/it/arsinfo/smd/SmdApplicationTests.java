@@ -37,7 +37,7 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -49,7 +49,7 @@ import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -70,7 +70,7 @@ public class SmdApplicationTests {
     @Autowired
     private AbbonamentoDao abbonamentoDao;
     @Autowired
-    private SpedizioneDao spedizioneDao;
+    private EstrattoContoDao estrattoContoDao;
     @Autowired
     private CampagnaDao campagnaDao;
     @Autowired
@@ -107,7 +107,7 @@ public class SmdApplicationTests {
         assertNotNull(abbonamentoDao);
         assertNotNull(anagraficaDao);
         assertNotNull(pubblicazioneDao);
-        assertNotNull(spedizioneDao);
+        assertNotNull(estrattoContoDao);
         assertNotNull(storicoDao);
         assertNotNull(notaDao);
         assertNotNull(campagnaDao);
@@ -159,7 +159,7 @@ public class SmdApplicationTests {
                               storicoDao, 
                               pubblicazioneDao, 
                               abbonamentoDao, 
-                              spedizioneDao, 
+                              estrattoContoDao, 
                               campagnaDao, 
                               incassoDao, 
                               versamentoDao, 
@@ -332,12 +332,12 @@ public class SmdApplicationTests {
         assertEquals(30, abbonamenti.size());
         for (Abbonamento abbonamento : abbonamenti) {
             log.info(abbonamento.toString());
-            for (Spedizione spedizione: abbonamento.getSpedizioni()) {
-                log.info(spedizione.toString());
+            for (EstrattoConto estrattoConto: abbonamento.getEstrattiConto()) {
+                log.info(estrattoConto.toString());
                 if (abbonamento.getCampagna() == null) {
-                    assertNull(spedizione.getStorico());
+                    assertNull(estrattoConto.getStorico());
                 } else {
-                    assertNotNull(spedizione.getStorico());
+                    assertNotNull(estrattoConto.getStorico());
                 }
                 
             }
@@ -480,23 +480,23 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Spedizione find by Destinatario");
+        log.info("EstrattoConto find by Destinatario");
         log.info("-------------------------------");
-        List<Spedizione> spedizioni = spedizioneDao.findByDestinatario(russo);
-        assertEquals(10, spedizioni.size());
-        for (Spedizione sped : spedizioni) {
-            log.info(sped.toString());
-            assertEquals(russo.getId(), sped.getDestinatario().getId());
-            assertEquals(russo.getCognome(),sped.getDestinatario().getCognome());
-            Abbonamento abb = sped.getAbbonamento();
+        List<EstrattoConto> estrattiConto = estrattoContoDao.findByDestinatario(russo);
+        assertEquals(10, estrattiConto.size());
+        for (EstrattoConto ec : estrattiConto) {
+            log.info(ec.toString());
+            assertEquals(russo.getId(), ec.getDestinatario().getId());
+            assertEquals(russo.getCognome(),ec.getDestinatario().getCognome());
+            Abbonamento abb = ec.getAbbonamento();
             assertNotNull(abb);
-            assertTrue(abb.getSpedizioni().size() > 0);
+            assertTrue(abb.getEstrattiConto().size() > 0);
         }
         log.info("");
-        spedizioni = Smd.spedizioneDaAggiornare(spedizioneDao.findAll());
-        for (Spedizione sped : spedizioni) {
-            sped.setSospesa(!sped.isSospesa());
-            log.info(sped.toString());
+        estrattiConto = Smd.estrattiContoDaAggiornare(estrattoContoDao.findAll());
+        for (EstrattoConto ec : estrattiConto) {
+            ec.setSospesa(!ec.isSospesa());
+            log.info(ec.toString());
         }        
 
 

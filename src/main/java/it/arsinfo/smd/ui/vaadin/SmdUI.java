@@ -40,7 +40,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_STORICO = "/storico";
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
-    public final static String URL_SPEDIZIONI = "/spedizioni";
+    public final static String URL_ESTRATTO_CONTO = "/estrattoconto";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_INCASSI = "/incassi";
     public final static String URL_VERSAMENTI = "/versamenti";
@@ -91,7 +91,7 @@ public abstract class SmdUI extends UI {
         links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
         links.add(new Link("Campagna", new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
+        links.add(new Link("Estratti Conto",  new ExternalResource(URL_ESTRATTO_CONTO)));
         links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));

@@ -2,12 +2,12 @@ package it.arsinfo.smd.ui.vaadin;
 
 import com.vaadin.ui.Grid;
 
-import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.EstrattoConto;
 
-public class SpedizioneGrid extends SmdGrid<Spedizione> {
+public class EstrattoContoGrid extends SmdGrid<EstrattoConto> {
 
-    public SpedizioneGrid(String gridname) {
-        super(new Grid<>(Spedizione.class),gridname);
+    public EstrattoContoGrid(String gridname) {
+        super(new Grid<>(EstrattoConto.class),gridname);
         setColumns("numero","pubblicazione.nome",
                    "intestazione","sottoIntestazione","indirizzo","citta"
                    ,"cap","provincia","paese","abbonamento.intestatario.caption","destinatario.caption","decodeSospesa","omaggio","invioSpedizione","invio","abbonamento.anno");
