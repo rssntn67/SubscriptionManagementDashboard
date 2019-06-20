@@ -6,6 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.CentroDiocesano;
@@ -35,6 +36,9 @@ public class Anagrafica implements SmdEntity {
     
     private String nome;
     private String cognome;
+    
+    @ManyToOne
+    private Anagrafica co;
     
     private String indirizzo;
     private String cap;
@@ -315,5 +319,13 @@ public class Anagrafica implements SmdEntity {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
+    }
+
+    public Anagrafica getCo() {
+        return co;
+    }
+
+    public void setCo(Anagrafica co) {
+        this.co = co;
     }
 }

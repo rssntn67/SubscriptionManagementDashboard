@@ -502,4 +502,27 @@ public class SmdApplicationTests {
 
     }
     
+    @Test
+    public void TestCo() {
+        Anagrafica dm = SmdLoadSampleData.getDiocesiMi();
+        anagraficaDao.save(dm);
+        assertEquals(Long.parseLong("2"), dm.getId().longValue());
+        assertEquals(1, anagraficaDao.findAll().size());
+               
+        Anagrafica ar = SmdLoadSampleData.getAR();
+        ar.setCo(dm);
+        anagraficaDao.save(ar);
+        assertEquals(2, anagraficaDao.findAll().size());
+
+        Anagrafica ps = SmdLoadSampleData.getPS();
+        ps.setCo(dm);
+        anagraficaDao.save(ps);
+        assertEquals(3, anagraficaDao.findAll().size());
+
+        anagraficaDao.findAll().stream().filter(a -> a.getCo() != null).forEach(a -> {
+            System.out.println(a);
+            System.out.println(a.getCo());
+                    });
+    }
+    
 }
