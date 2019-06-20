@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -15,8 +16,8 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Omaggio;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 
 public class EstrattoContoEditor
@@ -34,7 +35,9 @@ public class EstrattoContoEditor
     
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
             EnumSet.allOf(Anno.class));
-    private final TextField numero = new TextField("Numero");
+    private final TextField numero = new TextField("Quant.");
+
+    private final TextField importo = new TextField("Importo");
 
     private final CheckBox sospesa = new CheckBox("Spedizione Sospesa");
 
@@ -65,15 +68,20 @@ public class EstrattoContoEditor
         omaggio.setEmptySelectionAllowed(false);
         
         setComponents(getActions(), new HorizontalLayout(intestatario, destinatario,
-                                           pubblicazione,numero),
+                                           pubblicazione,numero, importo),
                       new HorizontalLayout(anno, omaggio, invio,invioSpedizione),
                       sospesa);
  
         getBinder()
+        .forField(importo).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
+        .bind(EstrattoConto::getImporto,EstrattoConto::setImporto);
+                                                                                                     
+        getBinder()
             .forField(numero)
             .withValidator(str -> str != null, "Inserire un numero")
             .withConverter(new StringToIntegerConverter(""))
-            .withValidator(num -> num > 0,"deve essere maggiore di 0")
+            .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
             .bind(EstrattoConto::getNumero, EstrattoConto::setNumero);
         getBinder()
             .forField(pubblicazione)

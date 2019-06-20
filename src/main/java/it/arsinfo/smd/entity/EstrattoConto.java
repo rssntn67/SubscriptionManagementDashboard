@@ -1,5 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -45,6 +47,8 @@ public class EstrattoConto implements SmdEntity {
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
     private Integer numero = 1;
+    
+    private BigDecimal importo = BigDecimal.ZERO;
 
     private boolean sospesa=false;
 
@@ -198,5 +202,13 @@ public class EstrattoConto implements SmdEntity {
 
     public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
         this.invioSpedizione = invioSpedizione;
+    }
+
+    public BigDecimal getImporto() {
+        return importo;
+    }
+
+    public void setImporto(BigDecimal importo) {
+        this.importo = importo;
     }
 }
