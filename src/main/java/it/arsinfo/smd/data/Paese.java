@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum Paese {
+    ITALIA("ITALIA"),
     PAESE238("ABU DHABI"),
     PAESE2("AFGHANISTAN"),
     PAESE239("AJMAN"),
@@ -273,7 +274,7 @@ public enum Paese {
     PAESE42("YEMEN"),
     PAESE58("ZAMBIA"),
     PAESE73("ZIMBABWE"),
-    ITALIA("ITALIA");
+    ND("Non Definito");
     
     private String nome;
     

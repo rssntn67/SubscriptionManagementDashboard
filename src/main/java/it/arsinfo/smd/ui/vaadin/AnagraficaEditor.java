@@ -31,6 +31,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                                                             EnumSet.allOf(CentroDiocesano.class));
     private final ComboBox<TitoloAnagrafica> titolo = new ComboBox<TitoloAnagrafica>("Titolo",
                                                                                      EnumSet.allOf(TitoloAnagrafica.class));
+    private final ComboBox<Anagrafica> co = new ComboBox<Anagrafica>("c/o");
     private final TextField nome = new TextField("Nome");
     private final TextField indirizzo = new TextField("Indirizzo");
     private final TextField cap = new TextField("CAP");
@@ -60,19 +61,21 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     public AnagraficaEditor(AnagraficaDao anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
-        HorizontalLayout riga1 = new HorizontalLayout(diocesi, 
-                                                      regioneVescovi,
-                                                      centroDiocesano,
-                                                      regionePresidenteDiocesano,
-                                                      regioneDirettoreDiocesano
-                                                      );
-        HorizontalLayout riga2 = new HorizontalLayout(titolo, 
+        HorizontalLayout riga1 = new HorizontalLayout(titolo, 
                                                       cognome, 
                                                       nome,
                                                       indirizzo, 
                                                       cap, 
                                                       citta,
                                                       provincia
+                                                      );
+        HorizontalLayout riga1e2 = new HorizontalLayout(co);
+
+        HorizontalLayout riga2 = new HorizontalLayout(diocesi, 
+                                                      regioneVescovi,
+                                                      centroDiocesano,
+                                                      regionePresidenteDiocesano,
+                                                      regioneDirettoreDiocesano
                                                       );
         HorizontalLayout riga3 = new HorizontalLayout(paese,
                                                       email, 
@@ -94,17 +97,24 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       promotoreRegionale
                                                       );
 
-        setComponents(getActions(), riga1, riga2, riga3, riga4);
+        setComponents(getActions(), riga1, riga1e2,riga2, riga3, riga4);
+
+        co.setItems(anagraficaDao.findAll());
 
         getBinder().forField(diocesi).asRequired();
         getBinder().forField(cognome).asRequired();
+        getBinder().forField(paese).asRequired();
         getBinder().forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));
         getBinder().bindInstanceFields(this);
 
         // Configure and style components
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
+        diocesi.setEmptySelectionAllowed(false);
         provincia.setItemCaptionGenerator(Provincia::getNome);
+        provincia.setEmptySelectionAllowed(false);
         paese.setItemCaptionGenerator(Paese::getNome);
+        paese.setEmptySelectionAllowed(false);
+        co.setItemCaptionGenerator(Anagrafica::getCaption);
 
     }
 

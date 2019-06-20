@@ -44,7 +44,7 @@ public class Anagrafica implements SmdEntity {
     private String cap;
     private String citta;
     @Enumerated(EnumType.STRING)
-    private Paese paese;
+    private Paese paese = Paese.ND;
 
     private String email;
     private String telefono;
@@ -305,7 +305,7 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("'%s %s %s'", titolo.getIntestazione(), nome, cognome);
+        return String.format("'%s %s %s' - %s", titolo.getIntestazione(), nome, cognome,diocesi.getDetails());
     }
 
     @Transient
