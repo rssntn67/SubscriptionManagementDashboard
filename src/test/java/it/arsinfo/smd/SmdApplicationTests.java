@@ -39,6 +39,7 @@ import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -103,7 +104,7 @@ public class SmdApplicationTests {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     
     @Test
-    public void testContextLoads() {
+    public void testSmd() {
         assertNotNull(abbonamentoDao);
         assertNotNull(anagraficaDao);
         assertNotNull(pubblicazioneDao);
@@ -126,10 +127,7 @@ public class SmdApplicationTests {
         assertTrue(passwordEncoder instanceof BCryptPasswordEncoder);
         assertNotNull(authenticationSuccessHandler);
         assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);
-   }
 
-    @Test 
-    public void testAuthenticateAdmin() {
         Authentication auth =
                 new UsernamePasswordAuthenticationToken("admin", "admin");
         try {
@@ -138,22 +136,46 @@ public class SmdApplicationTests {
             log.info(e.getMessage());
             assertTrue(false);
         }
-    }
-    
-    @Test 
-    public void testAuthenticateAdp() {
-        Authentication auth =
+
+        auth =
                 new UsernamePasswordAuthenticationToken("adp", "adp");
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
+            assertTrue(false);
         } catch (Exception e) {
             log.info(e.getMessage());
-            assertTrue(false);
-        }
-    }
+            assertTrue(true);
 
-    @Test
-    public void testSmd() {
+        }
+        
+        UserInfo admin = userInfoDao.findById(1L).get();
+        assertEquals("admin", admin.getUsername());
+
+        Anagrafica dm = SmdLoadSampleData.getDiocesiMi();
+        anagraficaDao.save(dm);
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertEquals(Long.parseLong("2"), dm.getId().longValue());
+        
+        Anagrafica ar = SmdLoadSampleData.getAR();
+        ar.setCo(dm);
+        anagraficaDao.save(ar);
+        assertEquals(2, anagraficaDao.findAll().size());
+        assertEquals(Long.parseLong("3"), ar.getId().longValue());
+
+        Anagrafica ps = SmdLoadSampleData.getPS();
+        ps.setCo(dm);
+        anagraficaDao.save(ps);
+        assertEquals(3, anagraficaDao.findAll().size());
+        assertEquals(Long.parseLong("4"), ps.getId().longValue());
+
+        anagraficaDao.findAll().stream().filter(a -> a.getCo() != null).forEach(a -> {
+            System.out.println(a);
+            System.out.println(a.getCo());
+                    });
+
+        anagraficaDao.deleteAll();
+        assertEquals(0, anagraficaDao.findAll().size());
+        
         new SmdLoadSampleData(
                               anagraficaDao, 
                               storicoDao, 
@@ -168,7 +190,7 @@ public class SmdApplicationTests {
                               userInfoDao,
                               passwordEncoder,false).run();
 
-        Authentication auth =
+        auth =
                 new UsernamePasswordAuthenticationToken("adp", "adp");
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
@@ -224,28 +246,28 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        Pubblicazione messaggio = pubblicazioneDao.findById(2L).get();
-        log.info("Messaggio found with findOne(2L):");
+        Pubblicazione messaggio = pubblicazioneDao.findById(5L).get();
+        log.info("Messaggio found with findOne(5L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("2"), messaggio.getId().longValue());
+        assertEquals(Long.parseLong("5"), messaggio.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
         assertEquals("Messaggio", messaggio.getNome());
         log.info(messaggio.toString());
         log.info("");
 
-        Pubblicazione lodare = pubblicazioneDao.findById(3L).get();
-        log.info("lodare found with findOne(3L):");
+        Pubblicazione lodare = pubblicazioneDao.findById(6L).get();
+        log.info("lodare found with findOne(6L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("3"), lodare.getId().longValue());
+        assertEquals(Long.parseLong("6"), lodare.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
         assertEquals("Lodare", lodare.getNome());
         log.info(lodare.toString());
         log.info("");
 
-        Pubblicazione blocchetti = pubblicazioneDao.findById(4L).get();
-        log.info("lodare found with findOne(4L):");
+        Pubblicazione blocchetti = pubblicazioneDao.findById(7L).get();
+        log.info("lodare found with findOne(6L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("4"), blocchetti.getId().longValue());
+        assertEquals(Long.parseLong("7"), blocchetti.getId().longValue());
         assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
         assertEquals("Blocchetti", blocchetti.getNome());
         log.info(blocchetti.toString());
@@ -260,9 +282,9 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Anagrafica Russo found with findOne(6L):");
+        log.info("Anagrafica Russo found with findOne(9L):");
         log.info("--------------------------------------------");
-        Anagrafica russo = anagraficaDao.findById(6L).get();
+        Anagrafica russo = anagraficaDao.findById(9L).get();
         assertEquals("Russo", russo.getCognome());
         log.info(russo.toString());
         log.info("");
@@ -501,28 +523,5 @@ public class SmdApplicationTests {
 
 
     }
-    
-    @Test
-    public void TestCo() {
-        Anagrafica dm = SmdLoadSampleData.getDiocesiMi();
-        anagraficaDao.save(dm);
-        assertEquals(Long.parseLong("2"), dm.getId().longValue());
-        assertEquals(1, anagraficaDao.findAll().size());
-               
-        Anagrafica ar = SmdLoadSampleData.getAR();
-        ar.setCo(dm);
-        anagraficaDao.save(ar);
-        assertEquals(2, anagraficaDao.findAll().size());
-
-        Anagrafica ps = SmdLoadSampleData.getPS();
-        ps.setCo(dm);
-        anagraficaDao.save(ps);
-        assertEquals(3, anagraficaDao.findAll().size());
-
-        anagraficaDao.findAll().stream().filter(a -> a.getCo() != null).forEach(a -> {
-            System.out.println(a);
-            System.out.println(a.getCo());
-                    });
-    }
-    
+        
 }
