@@ -1,15 +1,11 @@
 package it.arsinfo.smd.entity;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.CentroDiocesano;
@@ -72,9 +68,6 @@ public class Anagrafica implements SmdEntity {
     private boolean elencoMarisaBisi; 
     private boolean promotoreRegionale; 
     
-    @OneToMany(cascade = { CascadeType.PERSIST })
-    private List<Nota> note;
-
     public Anagrafica() {
     }
 
@@ -314,14 +307,6 @@ public class Anagrafica implements SmdEntity {
     @Transient
     public String getHeader() {
         return String.format("Anagrafica:Edit:%s", getCaption());
-    }
-
-    public List<Nota> getNote() {
-        return note;
-    }
-
-    public void setNote(List<Nota> note) {
-        this.note = note;
     }
 
     public Provincia getProvincia() {
