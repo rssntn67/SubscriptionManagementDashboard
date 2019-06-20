@@ -68,7 +68,21 @@ public class SmdLoadSampleData implements Runnable {
     private final UserInfoDao userInfoDao;
     private final PasswordEncoder passwordEncoder;
     
+    private final boolean loadOnlyPubblicazioniAdp;
+    private Pubblicazione messaggio;
+    private Pubblicazione lodare;
+    private Pubblicazione estratti;
+    private Pubblicazione blocchetti;
     
+    private Anagrafica antonioRusso;
+    private Anagrafica diocesiMilano;
+    private Anagrafica gabrielePizzo;
+    private Anagrafica matteoParo;
+    private Anagrafica davidePalma;
+    private Anagrafica micheleSantoro;
+    private Anagrafica pasqualinaSantoro;
+
+
     public static Storico getStoricoBy(
             Anagrafica intestatario, 
             Pubblicazione pubblicazione, 
@@ -259,7 +273,8 @@ public class SmdLoadSampleData implements Runnable {
             OperazioneDao operazioneDao,
             ProspettoDao prospettoDao,
             UserInfoDao userInfoDao,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            boolean loadOnlyPubblicazioniAdp
     ) {
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
@@ -273,6 +288,7 @@ public class SmdLoadSampleData implements Runnable {
         this.prospettoDao=prospettoDao;
         this.userInfoDao=userInfoDao;
         this.passwordEncoder=passwordEncoder;
+        this.loadOnlyPubblicazioniAdp=loadOnlyPubblicazioniAdp;
     }
     
     public static Pubblicazione getMessaggio() {
@@ -720,58 +736,80 @@ public class SmdLoadSampleData implements Runnable {
         Smd.calcoloImportoIncasso(incasso5);
         return incasso5;
     }
-    
-    @Override
-    public void run() {
-        log.info("Start Loading Sample Data");
+
+    private void loadPubblicazioniAdp() {
+        messaggio = getMessaggio();
+        lodare = getLodare();
+        blocchetti = getBlocchetti();
+        estratti = getEstratti();
         
-        Pubblicazione messaggio = getMessaggio();
-        Pubblicazione lodare = getLodare();
-        Pubblicazione blocchetti = getBlocchetti();
-        Pubblicazione estratti = getEstratti();
         pubblicazioneDao.save(messaggio);
         pubblicazioneDao.save(lodare);
         pubblicazioneDao.save(blocchetti);
         pubblicazioneDao.save(estratti);
-
-        Anagrafica ar=getAR();
-        anagraficaDao.save(ar);
-        Anagrafica dm=getDiocesiMi();
-        anagraficaDao.save(dm);
-        storicoDao.save(getStoricoBy(dm,ar, messaggio, 10,Omaggio.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, lodare, 10,Omaggio.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, blocchetti, 10,Omaggio.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(dm,ar, estratti, 10,Omaggio.OmaggioCuriaDiocesiana));
-
-        Anagrafica gp=getGP();
-        anagraficaDao.save(gp);
-        storicoDao.save(getStoricoBy(gp, messaggio, 10,Cassa.Contrassegno));
-        storicoDao.save(getStoricoBy(gp, lodare, 10,Cassa.Contrassegno));
-        storicoDao.save(getStoricoBy(gp, blocchetti, 10,Cassa.Contrassegno,Omaggio.AbbonamentoItaliaConSconto));
         
-        Anagrafica mp = getMP();
-        anagraficaDao.save(mp);
-        storicoDao.save(getStoricoBy(mp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
-        storicoDao.save(getStoricoBy(mp, lodare, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
-
-        Anagrafica dp = getDP();
-        anagraficaDao.save(dp);
-        storicoDao.save(getStoricoBy(dp, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioCuriaGeneralizia));
-
-        Anagrafica ms = getMS();
-        anagraficaDao.save(ms);
-        Anagrafica ps = getPS();
-        anagraficaDao.save(ps);
-        storicoDao.save(getStoricoBy(ms, blocchetti, 1));
-        storicoDao.save(getStoricoBy(ms, ps, blocchetti, 2));
+    }
+    @Override
+    public void run() {
+        log.info("Start Loading Sample Data");
         
-        abbonamentoDao.save(getAbbonamentoMs(ms, messaggio,lodare,blocchetti,estratti));
-        abbonamentoDao.save(getAbbonamentoGp(gp, estratti, ar, mp, messaggio,lodare,blocchetti,estratti));
-        Spedizione spedizioneGptoar = spedizioneDao.findByDestinatario(ar).iterator().next();
+        loadPubblicazioniAdp();
+        if (loadOnlyPubblicazioniAdp) {
+            return;
+        }
+        
+        loadAnagrafica();
+        loadStorico();
+        loadSampleData();
+        
+        log.info("End Loading Sample Data");
+
+    }
+
+    private void loadStorico() {
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, lodare, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Omaggio.OmaggioCuriaDiocesiana));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, estratti, 10,Omaggio.OmaggioCuriaDiocesiana));
+
+        storicoDao.save(getStoricoBy(gabrielePizzo, messaggio, 10,Cassa.Contrassegno));
+        storicoDao.save(getStoricoBy(gabrielePizzo, lodare, 10,Cassa.Contrassegno));
+        storicoDao.save(getStoricoBy(gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,Omaggio.AbbonamentoItaliaConSconto));
+
+        storicoDao.save(getStoricoBy(matteoParo, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
+        storicoDao.save(getStoricoBy(matteoParo, lodare, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioGesuiti));
+
+        storicoDao.save(getStoricoBy(davidePalma, messaggio, 10,InvioSpedizione.AdpSede,Omaggio.OmaggioCuriaGeneralizia));
+        storicoDao.save(getStoricoBy(micheleSantoro, blocchetti, 1));
+        storicoDao.save(getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2));        
+
+    }
+    private void loadAnagrafica() {
+        antonioRusso=getAR();
+        anagraficaDao.save(antonioRusso);
+        diocesiMilano=getDiocesiMi();
+        anagraficaDao.save(diocesiMilano);
+        gabrielePizzo=getGP();
+        anagraficaDao.save(gabrielePizzo);
+        matteoParo = getMP();
+        anagraficaDao.save(matteoParo);
+        davidePalma = getDP();
+        anagraficaDao.save(davidePalma);
+        micheleSantoro = getMS();
+        anagraficaDao.save(micheleSantoro);
+        pasqualinaSantoro = getPS();
+        anagraficaDao.save(pasqualinaSantoro);
+    }
+
+    private void loadSampleData() {
+        
+        abbonamentoDao.save(getAbbonamentoMs(micheleSantoro, messaggio,lodare,blocchetti,estratti));
+        abbonamentoDao.save(getAbbonamentoGp(gabrielePizzo, estratti, antonioRusso, matteoParo, messaggio,lodare,blocchetti,estratti));
+        Spedizione spedizioneGptoar = spedizioneDao.findByDestinatario(antonioRusso).iterator().next();
         spedizioneGptoar.setNumero(3);
         spedizioneDao.save(spedizioneGptoar);
 
-        Abbonamento abbonamentoDp =getAbbonamentoDp(dp, Mese.MAGGIO,blocchetti);
+        Abbonamento abbonamentoDp =getAbbonamentoDp(davidePalma, Mese.MAGGIO,blocchetti);
         abbonamentoDao.save(abbonamentoDp);
         Incasso incasso = getIncasso5(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
         incassoDao.save(incasso);
@@ -782,7 +820,7 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso);
         abbonamentoDao.save(abbonamentoDp);
         
-        getAbbonamentiIncassi(ar, ms, dp, mp, blocchetti, estratti, lodare)
+        getAbbonamentiIncassi(antonioRusso, micheleSantoro, davidePalma, matteoParo, blocchetti, estratti, lodare)
             .stream().forEach(a->abbonamentoDao.save(a));        
         getIncassi()
             .stream().forEach(c -> incassoDao.save(c));
@@ -869,7 +907,6 @@ public class SmdLoadSampleData implements Runnable {
         adp.setLocked(true);
         userInfoDao.save(adp);
         log.info("creato user adp/adp");
-        log.info("End Loading Sample Data");
    
     }    
 }
