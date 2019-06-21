@@ -300,6 +300,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
 
         p.setCostoUnitario(new BigDecimal(1.50));
+        p.setSpeseSpedizione(new BigDecimal(0.50));
         p.setAbbonamentoItalia(new BigDecimal(15.00));
         p.setAbbonamentoWeb(new BigDecimal(12.00));
         p.setAbbonamentoConSconto(new BigDecimal(15.00));
@@ -331,6 +332,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
         
         p.setCostoUnitario(new BigDecimal(2.00));
+        p.setSpeseSpedizione(new BigDecimal(0.50));
         p.setAbbonamentoItalia(new BigDecimal(20.00));
         p.setAbbonamentoWeb(new BigDecimal(18.00));
         p.setAbbonamentoConSconto(new BigDecimal(18.00));
@@ -363,6 +365,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
 
         p.setCostoUnitario(new BigDecimal(3.00));
+        p.setSpeseSpedizione(new BigDecimal(0.80));
         p.setAbbonamentoItalia(new BigDecimal(6.00));
         p.setAbbonamentoWeb(new BigDecimal(4.00));
         p.setAbbonamentoConSconto(new BigDecimal(6.00));
@@ -385,6 +388,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
         
         p.setCostoUnitario(new BigDecimal(10.00));
+        p.setSpeseSpedizione(new BigDecimal(1.50));
         p.setAbbonamentoItalia(new BigDecimal(10.00));
         p.setAbbonamentoWeb(new BigDecimal(8.00));
         p.setAbbonamentoConSconto(new BigDecimal(10.00));

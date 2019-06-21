@@ -33,6 +33,7 @@ public class Pubblicazione implements SmdEntity {
 
     private boolean active = true;
     
+    private BigDecimal speseSpedizione=BigDecimal.ZERO;
     private BigDecimal costoUnitario=BigDecimal.ZERO;
     private BigDecimal abbonamentoItalia=BigDecimal.ZERO;
     private BigDecimal abbonamentoWeb=BigDecimal.ZERO;
@@ -372,5 +373,13 @@ public class Pubblicazione implements SmdEntity {
 
     public void setAnticipoSpedizione(int anticipoSpedizione) {
         this.anticipoSpedizione = anticipoSpedizione;
+    }
+
+    public BigDecimal getSpeseSpedizione() {
+        return speseSpedizione;
+    }
+
+    public void setSpeseSpedizione(BigDecimal speseSpedizione) {
+        this.speseSpedizione = speseSpedizione;
     }
 }
