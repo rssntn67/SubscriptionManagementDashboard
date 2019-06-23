@@ -8,7 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.ProspettoDao;
@@ -16,7 +16,7 @@ import it.arsinfo.smd.repository.ProspettoDao;
 public class ProspettoSearch extends SmdSearch<Prospetto> {
 
     private Pubblicazione p;
-    private Omaggio omaggio;
+    private TipoEstrattoConto omaggio;
     private Anno anno;
     private Mese mese;
 
@@ -26,7 +26,7 @@ public class ProspettoSearch extends SmdSearch<Prospetto> {
         ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>();
         ComboBox<Anno> filterAnno = new ComboBox<Anno>();
         ComboBox<Mese> filterMese = new ComboBox<Mese>();
-        ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>();
+        ComboBox<TipoEstrattoConto> filterOmaggio = new ComboBox<TipoEstrattoConto>();
 
         setComponents(new HorizontalLayout(filterAnno, filterMese, filterP,
                                            filterOmaggio));
@@ -72,7 +72,7 @@ public class ProspettoSearch extends SmdSearch<Prospetto> {
 
         filterOmaggio.setEmptySelectionAllowed(true);
         filterOmaggio.setPlaceholder("Cerca per Omaggio");
-        filterOmaggio.setItems(EnumSet.allOf(Omaggio.class));
+        filterOmaggio.setItems(EnumSet.allOf(TipoEstrattoConto.class));
         filterOmaggio.addSelectionListener(e -> {
             if (e.getValue() == null) {
                 omaggio = null;

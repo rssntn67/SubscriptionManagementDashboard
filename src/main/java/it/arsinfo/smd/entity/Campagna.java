@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
 
 @Entity
 public class Campagna implements SmdEntity {
@@ -27,13 +26,7 @@ public class Campagna implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Anno anno = Smd.getAnnoProssimo();
-    @Enumerated(EnumType.STRING)
-    private Mese inizio = Mese.GENNAIO;
-    @Enumerated(EnumType.STRING)
-    private Mese fine = Mese.DICEMBRE;
     
-    private boolean rinnovaSoloAbbonatiInRegola;
-
     @OneToMany(cascade = { CascadeType.ALL })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
 
@@ -50,22 +43,6 @@ public class Campagna implements SmdEntity {
         this.anno = anno;
     }
 
-    public Mese getInizio() {
-        return inizio;
-    }
-
-    public void setInizio(Mese inizio) {
-        this.inizio = inizio;
-    }
-
-    public Mese getFine() {
-        return fine;
-    }
-
-    public void setFine(Mese fine) {
-        this.fine = fine;
-    }
-
     public Long getId() {
         return id;
     }
@@ -76,15 +53,6 @@ public class Campagna implements SmdEntity {
 
     public void setAbbonamenti(List<Abbonamento> abbonamenti) {
         this.abbonamenti = abbonamenti;
-    }
-
-    public boolean isRinnovaSoloAbbonatiInRegola() {
-        return rinnovaSoloAbbonatiInRegola;
-    }
-
-    public void setRinnovaSoloAbbonatiInRegola(
-            boolean rinnovaSoloAbbonatiInRegola) {
-        this.rinnovaSoloAbbonatiInRegola = rinnovaSoloAbbonatiInRegola;
     }
 
     public List<CampagnaItem> getCampagnaItems() {
@@ -117,7 +85,7 @@ public class Campagna implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Campagna[id=%d, anno='%s', inizio='%s', fine='%s']", id,anno, inizio,fine);
+        return String.format("Campagna[id=%d, anno='%s']", id,anno);
     }
 
 }

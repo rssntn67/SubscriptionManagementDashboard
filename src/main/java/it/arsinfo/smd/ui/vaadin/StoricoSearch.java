@@ -10,7 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -22,7 +22,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private Anagrafica intestatario;
     private Anagrafica destinatario;
     private Pubblicazione pubblicazione;
-    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
+    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo EC", EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Invio Sped.", EnumSet.allOf(InvioSpedizione.class));
@@ -37,7 +37,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
         setComponents(new HorizontalLayout(filterIntestatario,filterDestinatario,filterPubblicazione),
-                      new HorizontalLayout(filterOmaggio,filterCassa,filterStatoStorico,filterInvioSped,filterInvio));
+                      new HorizontalLayout(filterTipoEstrattoConto,filterCassa,filterStatoStorico,filterInvioSped,filterInvio));
 
         filterIntestatario.setEmptySelectionAllowed(true);
         filterIntestatario.setPlaceholder("Cerca per Intestatario");
@@ -78,8 +78,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
             onChange();
         });
 
-        filterOmaggio.setPlaceholder("Seleziona Omaggio");
-        filterOmaggio.addSelectionListener(e ->onChange());
+        filterTipoEstrattoConto.setPlaceholder("Seleziona Omaggio");
+        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
         filterCassa.setPlaceholder("Seleziona Cassa");
         filterCassa.addSelectionListener(e ->onChange());
         filterInvio.setPlaceholder("Seleziona Invio");
@@ -121,8 +121,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
     }
 
     private List<Storico> filterAll(List<Storico> storici) {
-        if (filterOmaggio.getValue() != null) {
-            storici=storici.stream().filter(s -> s.getOmaggio() == filterOmaggio.getValue()).collect(Collectors.toList());      
+        if (filterTipoEstrattoConto.getValue() != null) {
+            storici=storici.stream().filter(s -> s.getTipoEstrattoConto() == filterTipoEstrattoConto.getValue()).collect(Collectors.toList());      
         }
         if (filterCassa.getValue() != null) {
             storici=storici.stream().filter(s -> s.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      

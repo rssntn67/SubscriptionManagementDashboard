@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
 
 @Entity
@@ -40,7 +40,7 @@ public class Storico implements SmdEntity {
     private List<Nota> note = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
+    private TipoEstrattoConto tipoEstrattoconto = TipoEstrattoConto.Ordinario;
 
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
@@ -54,7 +54,7 @@ public class Storico implements SmdEntity {
     private Integer numero = 1;
     
     @Enumerated(EnumType.STRING)
-    private StatoStorico statoStorico = StatoStorico.NUO;
+    private StatoStorico statoStorico = StatoStorico.NUOVO;
 
     public Storico() {
         super();
@@ -130,15 +130,15 @@ public class Storico implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Storico[id=%d, Pubblicazione='%d', Intestatario='%d', Destinatario='%d', Numero='%d', Omaggio=%s, Invio=%s, Stato=%b, Cassa=%s]",
-                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,omaggio,invio,statoStorico,cassa);
+                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,tipoEstrattoconto,invio,statoStorico,cassa);
     }
 
-    public Omaggio getOmaggio() {
-        return omaggio;
+    public TipoEstrattoConto getTipoEstrattoConto() {
+        return tipoEstrattoconto;
     }
 
-    public void setOmaggio(Omaggio omaggio) {
-        this.omaggio = omaggio;
+    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
+        this.tipoEstrattoconto = omaggio;
     }
 
     public Invio getInvio() {
@@ -181,20 +181,15 @@ public class Storico implements SmdEntity {
     public boolean attivo() {
         boolean regolare = false;
         switch (statoStorico) {
-        case NUO:
+        case NUOVO:
             regolare=true;
             break;
-        case REG:
+        case VALIDO:
             regolare=true;
             break;
-        case OMA:
-            regolare=true;
+        case ANNUL:
             break;
-        case NON:    
-            break;
-        case ANN:
-            break;
-        case SOS:
+        case SOSPESO:
             break;
         default:
             break;

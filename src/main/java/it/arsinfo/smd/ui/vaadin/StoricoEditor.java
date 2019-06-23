@@ -12,7 +12,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -24,8 +24,8 @@ public class StoricoEditor
 
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
-    private final ComboBox<Omaggio> omaggio = new ComboBox<Omaggio>("Omaggio",
-                                                                    EnumSet.allOf(Omaggio.class));
+    private final ComboBox<TipoEstrattoConto> omaggio = new ComboBox<TipoEstrattoConto>("Omaggio",
+                                                                    EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",

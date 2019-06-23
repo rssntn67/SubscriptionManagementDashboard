@@ -11,7 +11,7 @@ import com.vaadin.ui.HorizontalLayout;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
@@ -23,7 +23,7 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
     private Anagrafica destinatario;
     private Pubblicazione pubblicazione;
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Anno", EnumSet.allOf(Anno.class));
-    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Omaggio", EnumSet.allOf(Omaggio.class));
+    private final ComboBox<TipoEstrattoConto> filterOmaggio = new ComboBox<TipoEstrattoConto>("Omaggio", EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Sped.", EnumSet.allOf(InvioSpedizione.class));
     private final CheckBox filterSospesa = new CheckBox("Sospesa");
@@ -117,7 +117,7 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
             spedizioni = spedizioni.stream().filter( s -> s.getAbbonamento().getAnno() == filterAnno.getValue()).collect(Collectors.toList());
         }
         if (filterOmaggio.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getOmaggio() == filterOmaggio.getValue()).collect(Collectors.toList());      
+            spedizioni=spedizioni.stream().filter(s -> s.getTipoEstrattoConto() == filterOmaggio.getValue()).collect(Collectors.toList());      
         }
         if (filterInvio.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      

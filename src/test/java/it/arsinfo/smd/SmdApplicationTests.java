@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -316,9 +316,9 @@ public class SmdApplicationTests {
         List<Storico> storici = storicoDao.findByIntestatario(ms);
         assertEquals(2, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
-            assertEquals(Omaggio.AbbonamentoItalia, anp.getOmaggio());
+            assertEquals(TipoEstrattoConto.Ordinario, anp.getTipoEstrattoConto());
             log.info(anp.toString());
         }
         log.info("");
@@ -329,9 +329,9 @@ public class SmdApplicationTests {
         storici = storicoDao.findByDestinatario(dp);
         assertEquals(1, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
             assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
-            assertEquals(Omaggio.OmaggioCuriaGeneralizia, anp.getOmaggio());
+            assertEquals(TipoEstrattoConto.OmaggioCuriaGeneralizia, anp.getTipoEstrattoConto());
             assertEquals(10, anp.getNumero().intValue());
             log.info(anp.toString());
         }
@@ -342,7 +342,7 @@ public class SmdApplicationTests {
         storici = storicoDao.findByPubblicazione(blocchetti);
         assertEquals(4, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUO, anp.getStatoStorico());
+            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             log.info(anp.toString());
         }
@@ -350,9 +350,9 @@ public class SmdApplicationTests {
 
         log.info("Abbonamenti found with findAll():");
         log.info("-------------------------------");
-        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
+        List<TipoEstrattoConto> abbonamenti = abbonamentoDao.findAll();
         assertEquals(30, abbonamenti.size());
-        for (Abbonamento abbonamento : abbonamenti) {
+        for (TipoEstrattoConto abbonamento : abbonamenti) {
             log.info(abbonamento.toString());
             for (EstrattoConto estrattoConto: abbonamento.getEstrattiConto()) {
                 log.info(estrattoConto.toString());
@@ -370,7 +370,7 @@ public class SmdApplicationTests {
         log.info("-------------------------------");
         abbonamenti = abbonamentoDao.findByIntestatario(ms);
         assertEquals(10, abbonamenti.size());
-        for (Abbonamento abbonamentoms : abbonamenti) {
+        for (TipoEstrattoConto abbonamentoms : abbonamenti) {
             assertEquals(ms.getId().longValue(), abbonamentoms.getIntestatario().getId().longValue());
             log.info(abbonamentoms.toString());
         }
@@ -384,7 +384,7 @@ public class SmdApplicationTests {
             log.info(campagna.toString());
             abbonamenti = abbonamentoDao.findByCampagna(campagna);
             assertEquals(5, abbonamenti.size());
-            for (Abbonamento abbonamento: abbonamenti) {
+            for (TipoEstrattoConto abbonamento: abbonamenti) {
                 assertEquals(campagna.getId().longValue(), abbonamento.getCampagna().getId().longValue());
             }
         }
@@ -442,21 +442,21 @@ public class SmdApplicationTests {
 
         log.info("Abbonamenti found per Costo > 0 e Versamenti Not Null");
         log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
+        for (TipoEstrattoConto abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
             log.info(abb.toString());
         }
         log.info("");
 
         log.info("Abbonamenti found per Costo > 0 e Versamenti Null");
         log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNull(BigDecimal.ZERO)) {
+        for (TipoEstrattoConto abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNull(BigDecimal.ZERO)) {
             log.info(abb.toString());
         }
         log.info("");
 
         log.info("Abbonamenti found per Costo > 0 ");
         log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThan(BigDecimal.ZERO)) {
+        for (TipoEstrattoConto abb : abbonamentoDao.findByCostoGreaterThan(BigDecimal.ZERO)) {
             log.info(abb.toString());
             if (abb.getVersamento() == null)
                 log.info("versamento:null");
@@ -494,10 +494,10 @@ public class SmdApplicationTests {
             log.info(storico.toString());
             StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
-            if (storico.getOmaggio() == Omaggio.AbbonamentoItalia || storico.getOmaggio() == Omaggio.AbbonamentoItaliaConSconto) {
-                assertEquals(StatoStorico.NON, ss);
+            if (storico.getTipoEstrattoConto() == TipoEstrattoConto.Ordinario || storico.getTipoEstrattoConto() == TipoEstrattoConto.Scontato) {
+                assertEquals(StatoStorico.NOREG, ss);
             } else {
-                assertEquals(StatoStorico.OMA, ss);                
+                assertEquals(StatoStorico.OMAGG, ss);                
             }
         }
         log.info("");
@@ -510,7 +510,7 @@ public class SmdApplicationTests {
             log.info(ec.toString());
             assertEquals(russo.getId(), ec.getDestinatario().getId());
             assertEquals(russo.getCognome(),ec.getDestinatario().getCognome());
-            Abbonamento abb = ec.getAbbonamento();
+            TipoEstrattoConto abb = ec.getAbbonamento();
             assertNotNull(abb);
             assertTrue(abb.getEstrattiConto().size() > 0);
         }

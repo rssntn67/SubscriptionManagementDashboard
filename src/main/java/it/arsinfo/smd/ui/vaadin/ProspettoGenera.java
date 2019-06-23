@@ -13,7 +13,7 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.ProspettoDao;
@@ -26,7 +26,7 @@ public class ProspettoGenera extends SmdChangeHandler {
     private final PubblicazioneBox pBox;
     private final SmdBox<Anno> aBox;
     private final SmdBox<Mese> mBox;
-    private final SmdBox<Omaggio> oBox;
+    private final SmdBox<TipoEstrattoConto> oBox;
     public ProspettoGenera(String caption, VaadinIcons icon,final ProspettoDao prospettoDao, AbbonamentoDao abbonamentoDao, List<Pubblicazione> pubblicazioni) {
         pBox = new PubblicazioneBox(pubblicazioni);
         aBox = new SmdBox<Anno>(EnumSet.allOf(Anno.class)) {
@@ -54,15 +54,15 @@ public class ProspettoGenera extends SmdChangeHandler {
             }
         };
 
-        oBox = new SmdBox<Omaggio>(EnumSet.allOf(Omaggio.class)) {
+        oBox = new SmdBox<TipoEstrattoConto>(EnumSet.allOf(TipoEstrattoConto.class)) {
             
             @Override
-            public boolean getReadOnly(Omaggio t, boolean persisted) {
+            public boolean getReadOnly(TipoEstrattoConto t, boolean persisted) {
                 return false;
             }
             
             @Override
-            public String getBoxCaption(Omaggio t) {
+            public String getBoxCaption(TipoEstrattoConto t) {
                 return t.name();
             }
         };
@@ -88,7 +88,7 @@ public class ProspettoGenera extends SmdChangeHandler {
             }
             Set<Mese> mesi = mBox.getSelected().stream()
                     .collect(Collectors.toSet());
-            Set<Omaggio> omaggi = oBox.getSelected().stream()
+            Set<TipoEstrattoConto> omaggi = oBox.getSelected().stream()
                     .collect(Collectors.toSet());
             
             aBox.getSelected().stream().forEach(a -> {

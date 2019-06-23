@@ -1,22 +1,29 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
 public class EstrattoConto implements SmdEntity {
@@ -29,16 +36,13 @@ public class EstrattoConto implements SmdEntity {
     private Abbonamento abbonamento;
 
     @ManyToOne
+    private Pubblicazione pubblicazione;
+
+    @ManyToOne
     private Anagrafica destinatario;
 
     @ManyToOne
-    private Pubblicazione pubblicazione;
-    
-    @ManyToOne
     private Storico storico;
-    
-    @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
 
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
@@ -46,25 +50,22 @@ public class EstrattoConto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
+    @Enumerated(EnumType.STRING)
+    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+
+    @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
+    private List<Spedizione> spedizioni = new ArrayList<>();
+
     private Integer numero = 1;
     
     private BigDecimal importo = BigDecimal.ZERO;
-
-    private boolean sospesa=false;
+    private BigDecimal spesePostali = BigDecimal.ZERO;
 
     public EstrattoConto() {
     }
 
     public Long getId() {
         return id;
-    }
-
-    public Anagrafica getDestinatario() {
-        return destinatario;
-    }
-
-    public void setDestinatario(Anagrafica destinatario) {
-        this.destinatario = destinatario;
     }
 
     public Abbonamento getAbbonamento() {
@@ -83,20 +84,12 @@ public class EstrattoConto implements SmdEntity {
         this.pubblicazione = pubblicazione;
     }
 
-    public Integer getNumero() {
-        return numero;
+    public Storico getStorico() {
+        return storico;
     }
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-    public Omaggio getOmaggio() {
-        return omaggio;
-    }
-
-    public void setOmaggio(Omaggio omaggio) {
-        this.omaggio = omaggio;
+    public void setStorico(Storico storico) {
+        this.storico = storico;
     }
 
     public Invio getInvio() {
@@ -107,32 +100,92 @@ public class EstrattoConto implements SmdEntity {
         this.invio = invio;
     }
 
+    public Integer getNumero() {
+        return numero;
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
+    }
+
+    public TipoEstrattoConto getTipoEstrattoConto() {
+        return tipoEstrattoConto;
+    }
+
+    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
+        this.tipoEstrattoConto = omaggio;
+    }
+
     @Transient
     public String getHeader() {
-        return String.format("%s:Spedizione:Edit:'%s'", abbonamento.getHeader(),pubblicazione.getNome());
+        return String.format("%s:EstrattoConto:Edit:'%s'", abbonamento.getHeader(),pubblicazione.getNome());
     }
 
     @Override
     public String toString() {
-        if (storico == null) {
-            return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Sospeso=%b]", 
-                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio,sospesa);
-        }
-        return String.format("Spedizione[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d, Destinatario=%d, Omaggio=%s, Invio=%s, Sospeso=%b, Storico=%d]", 
-                             id,abbonamento.getId(),pubblicazione.getId(),numero, destinatario.getId(), omaggio, invio, sospesa,storico.getId());
+        return String.format("s:EstrattoConto[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d]", 
+                             id,abbonamento.getId(),pubblicazione.getId(),numero, tipoEstrattoConto);
+    }
+        
+    public BigDecimal getImporto() {
+        return importo;
     }
 
-    public boolean isSospesa() {
-        return sospesa;
+    public void setImporto(BigDecimal importo) {
+        this.importo = importo;
     }
 
-    public void setSospesa(boolean sospesa) {
-        this.sospesa = sospesa;
+    public BigDecimal getSpesePostali() {
+        return spesePostali;
+    }
+
+    public void setSpesePostali(BigDecimal spesePostali) {
+        this.spesePostali = spesePostali;
     }
     
     @Transient
-    public String getDecodeSospesa() {
-        return Smd.decodeForGrid(sospesa);
+    public BigDecimal getTotale() {
+        return importo.add(spesePostali);
+    }
+
+    public List<Spedizione> getSpedizioni() {
+        return spedizioni;
+    }
+
+    public void setSpedizioni(List<Spedizione> spedizioni) {
+        this.spedizioni = spedizioni;
+    }
+    
+    public void addSpedizione(Spedizione spedizione) {
+        if (spedizioni.contains(spedizione)) {
+            spedizioni.remove(spedizione);
+        }
+        spedizioni.add(spedizione);
+    }
+
+    public boolean deleteSpedizione(Spedizione spedizione) {
+        return spedizioni.remove(spedizione);
+    }
+
+    public boolean hasAllMesiPubblicazione() {
+        EnumSet<Mese> mesiPubblicazione = EnumSet.noneOf(Mese.class);
+        for (Spedizione spedizione:spedizioni) {
+            mesiPubblicazione.add(spedizione.getMesePubblicazione());
+        }
+        if (pubblicazione.getMesiPubblicazione() == mesiPubblicazione) {
+            return true;
+        }
+        return false;
+    }
+    
+    public int getNumeroSpedizioniConSpesePostali() {
+        int i = 0;
+        for (Spedizione spedizione :spedizioni) {
+            if (Smd.spedizionePosticipata(spedizione, pubblicazione.getAnticipoSpedizione())) {
+                i++;
+            }
+        }            
+        return i;
     }
 
     @Transient
@@ -143,57 +196,68 @@ public class EstrattoConto implements SmdEntity {
     @Transient
     public String getSottoIntestazione() {
         if (invio == Invio.Destinatario) {
-            return "";
+            if (destinatario.getCo() == null) {
+                return "";
+            } 
+            return "c/o" + destinatario.getCo().getCaption();
         }
-        return "c/o " + abbonamento.getIntestatario().getNome() + " " + abbonamento.getIntestatario().getCognome();
+        return "c/o " + 
+        getAbbonamento().getIntestatario().getCaption();
     }
     
     @Transient
     public String getIndirizzo() {
         if (invio == Invio.Destinatario) {
-            return destinatario.getIndirizzo();
+            if (destinatario.getCo() == null) {
+                return destinatario.getIndirizzo();
+            }
+            return destinatario.getCo().getIndirizzo();            
         }
-        return abbonamento.getIntestatario().getIndirizzo();
+        return getAbbonamento().getIntestatario().getIndirizzo();
     }
 
     @Transient
     public String getCap() {
         if (invio == Invio.Destinatario) {
-            return destinatario.getCap();
+            if (destinatario.getCo() == null) {
+                return destinatario.getCap();
+            }
+            return destinatario.getCo().getCap();        
         }
-        return abbonamento.getIntestatario().getCap();
+        return getAbbonamento().getIntestatario().getCap();
     }
 
     @Transient
     public String getCitta() {
         if (invio == Invio.Destinatario) {
-            return destinatario.getCitta();
+            if (destinatario.getCo() == null) {
+                return destinatario.getCitta();
+            }
+            return destinatario.getCo().getCitta();        
         }
-        return abbonamento.getIntestatario().getCitta();
+        return getAbbonamento().getIntestatario().getCitta();
     }
 
     @Transient
     public Provincia getProvincia() {
         if (invio == Invio.Destinatario) {
-            return destinatario.getProvincia();
+            if (destinatario.getCo() == null) {
+                return destinatario.getProvincia();
+            }
+            return destinatario.getCo().getProvincia();        
         }
-        return abbonamento.getIntestatario().getProvincia();
+        return getAbbonamento().getIntestatario().getProvincia();
 
     }
     @Transient
     public Paese getPaese() {
         if (invio == Invio.Destinatario) {
-            return destinatario.getPaese();
+            if (destinatario.getCo() == null) {
+                return destinatario.getPaese();
+            }
+            return destinatario.getCo().getPaese();        
         }
-        return abbonamento.getIntestatario().getPaese();        
-    }
-
-    public Storico getStorico() {
-        return storico;
-    }
-
-    public void setStorico(Storico storico) {
-        this.storico = storico;
+        return getAbbonamento().getIntestatario().getPaese();        
     }
 
     public InvioSpedizione getInvioSpedizione() {
@@ -204,11 +268,12 @@ public class EstrattoConto implements SmdEntity {
         this.invioSpedizione = invioSpedizione;
     }
 
-    public BigDecimal getImporto() {
-        return importo;
+    public Anagrafica getDestinatario() {
+        return destinatario;
     }
 
-    public void setImporto(BigDecimal importo) {
-        this.importo = importo;
+    public void setDestinatario(Anagrafica destinatario) {
+        this.destinatario = destinatario;
     }
+
 }

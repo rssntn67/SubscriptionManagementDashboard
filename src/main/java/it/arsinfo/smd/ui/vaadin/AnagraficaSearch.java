@@ -16,7 +16,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Invio;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
@@ -59,7 +59,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Cerca Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Cerca Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Cerca Prom. Reg.");
-    private final ComboBox<Omaggio> filterOmaggio = new ComboBox<Omaggio>("Cerca per Omaggio", EnumSet.allOf(Omaggio.class));
+    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Cerca per Omaggio", EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cerca per Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Cerca per Invio", EnumSet.allOf(Invio.class));
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Cerca per Stato", EnumSet.allOf(StatoStorico.class));
@@ -82,7 +82,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            ),
                       new HorizontalLayout(filterTitolo,
                                            filterPaese,
-                                           filterOmaggio,
+                                           filterTipoEstrattoConto,
                                            filterCassa,
                                            filterStatoStorico,
                                            filterInvio),
@@ -146,8 +146,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterElencoMarisaBisi.addValueChangeListener(e -> onChange());
         filterPromotoreRegionale.addValueChangeListener(e -> onChange());
 
-        filterOmaggio.setPlaceholder("Seleziona Omaggio");
-        filterOmaggio.addSelectionListener(e ->onChange());
+        filterTipoEstrattoConto.setPlaceholder("Seleziona Omaggio");
+        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
         filterCassa.setPlaceholder("Seleziona Cassa");
         filterCassa.addSelectionListener(e ->onChange());
         filterInvio.setPlaceholder("Seleziona Invio");
@@ -175,9 +175,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {
 
-        if (filterOmaggio.getValue() != null) {
+        if (filterTipoEstrattoConto.getValue() != null) {
             anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storicoDao.findByOmaggio(filterOmaggio.getValue())) {
+                for (Storico storicoA: storicoDao.findByTipoEstrattoConto(filterTipoEstrattoConto.getValue())) {
                     if (storicoA.getIntestatario().getId() == a.getId()) {
                         return true;
                     }

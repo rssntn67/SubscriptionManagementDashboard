@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
 public class Prospetto implements SmdEntity {
@@ -21,7 +21,7 @@ public class Prospetto implements SmdEntity {
     private Long id;
     
     @Enumerated(EnumType.STRING)
-    private Omaggio omaggio = Omaggio.AbbonamentoItalia;
+    private TipoEstrattoConto omaggio = TipoEstrattoConto.Ordinario;
 
     @ManyToOne
     private Pubblicazione pubblicazione;
@@ -38,7 +38,7 @@ public class Prospetto implements SmdEntity {
     }
 
     public Prospetto(Pubblicazione pubblicazione, Anno anno, Mese mese,
-            Omaggio omaggio) {
+            TipoEstrattoConto omaggio) {
         this.pubblicazione=pubblicazione;
         this.anno=anno;
         this.mese=mese;
@@ -55,11 +55,11 @@ public class Prospetto implements SmdEntity {
                              id,omaggio, anno,mese,stimato);
     }
 
-    public Omaggio getOmaggio() {
+    public TipoEstrattoConto getOmaggio() {
         return omaggio;
     }
 
-    public void setOmaggio(Omaggio omaggio) {
+    public void setOmaggio(TipoEstrattoConto omaggio) {
         this.omaggio = omaggio;
     }
 

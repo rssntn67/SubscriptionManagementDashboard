@@ -33,8 +33,9 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Omaggio;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.Sostitutivo;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -45,6 +46,7 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Prospetto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -83,6 +85,31 @@ public class Smd {
     public static String getProgressivoVersamento(int i) {
         return String.format("%09d",i);
     }
+
+    public static boolean spedizionePosticipata(Spedizione spedizione, int anticipoSpedizione) {
+        if (spedizione.getAnnoPubblicazione() == spedizione.getAnnoSpedizione()) {
+            return spedizione.getMesePubblicazione().getPosizione() - spedizione.getMeseSpedizione().getPosizione() == anticipoSpedizione;
+        }
+        
+        if (spedizione.getAnnoPubblicazione().getAnno() > spedizione.getAnnoSpedizione().getAnno()) {
+            return 12 - spedizione.getMeseSpedizione().getPosizione() + spedizione.getMesePubblicazione().getPosizione() == anticipoSpedizione;
+        }
+        return false;
+    }
+    
+    public static Spedizione creaSpedizione(Mese mesePubblicazione, Anno annoPubblicazione, int anticipoSpedizione) {
+        Spedizione spedizione = new Spedizione();
+        spedizione.setMesePubblicazione(mesePubblicazione);
+        spedizione.setAnnoPubblicazione(annoPubblicazione);
+        if (mesePubblicazione.getPosizione()-anticipoSpedizione <= 0) {
+            spedizione.setMeseSpedizione(Mese.getByPosizione(12-mesePubblicazione.getPosizione()-anticipoSpedizione));
+            spedizione.setAnnoSpedizione(Anno.getAnnoPrecedente(annoPubblicazione));
+        } else {
+            spedizione.setMeseSpedizione(Mese.getByPosizione(mesePubblicazione.getPosizione()-anticipoSpedizione));
+            spedizione.setAnnoSpedizione(annoPubblicazione);
+        }
+        return spedizione;
+    }
     public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         final Set<Long> campagnapubblicazioniIds = new HashSet<>();
         pubblicazioni.stream().forEach(p -> {
@@ -101,9 +128,7 @@ public class Smd {
                 storico -> 
                 (storico.getIntestatario().getId() == a.getId() 
                    && campagnapubblicazioniIds.contains(storico.getPubblicazione().getId()) 
-                   && (!campagna.isRinnovaSoloAbbonatiInRegola() 
-                       || storico.attivo())
-                )
+                   && storico.attivo())
             )
             .forEach(storico -> { 
                 if (!cassaStorico.containsKey(storico.getCassa())) {
@@ -116,28 +141,106 @@ public class Smd {
                 abbonamento.setIntestatario(a);
                 abbonamento.setCampagna(campagna);
                 abbonamento.setAnno(campagna.getAnno());
-                abbonamento.setInizio(campagna.getInizio());
-                abbonamento.setFine(campagna.getFine());
                 abbonamento.setCassa(cassa);
+                abbonamento.setCampo(generaVCampo(abbonamento.getAnno()));
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.PROPOSTA);
                 for (Storico storico: cassaStorico.get(cassa)) {
-                    EstrattoConto estrattoConto = new EstrattoConto();
+                    Pubblicazione pubblicazione = storico.getPubblicazione();
+                    final EstrattoConto estrattoConto = new EstrattoConto();
                     estrattoConto.setStorico(storico);
                     estrattoConto.setAbbonamento(abbonamento);
-                    estrattoConto.setPubblicazione(storico.getPubblicazione());
-                    estrattoConto.setDestinatario(storico.getDestinatario());
+                    estrattoConto.setPubblicazione(pubblicazione);
                     estrattoConto.setNumero(storico.getNumero());
+                    estrattoConto.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+                    estrattoConto.setDestinatario(storico.getDestinatario());
                     estrattoConto.setInvio(storico.getInvio());
                     estrattoConto.setInvioSpedizione(storico.getInvioSpedizione());
-                    estrattoConto.setOmaggio(storico.getOmaggio());
+                    storico.getPubblicazione().getMesiPubblicazione().forEach( mese -> {
+                        Spedizione spedizione = Smd.creaSpedizione(mese,campagna.getAnno(), pubblicazione.getAnticipoSpedizione());
+                        spedizione.setEstrattoConto(estrattoConto);
+                        estrattoConto.addSpedizione(spedizione);
+                    });
+                    calcoloImportoEC(estrattoConto);
                     abbonamento.addEstrattoConto(estrattoConto);
                 }
-                calcoloAbbonamento(abbonamento);
                 abbonamenti.add(abbonamento);
             }
             
         });        
         campagna.setAbbonamenti(abbonamenti);
         return campagna;
+    }
+
+    public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {
+        double costo=0.0;
+        double spesePostali = 0.0;
+        switch (ec.getTipoEstrattoConto()) {
+        case Ordinario:
+            spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
+            costo = ec.getPubblicazione().getAbbonamentoItalia().doubleValue() * ec.getNumero().doubleValue();
+            if (!ec.hasAllMesiPubblicazione()) {
+              
+             costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
+                     * ec.getNumero().doubleValue()
+                     * Double.valueOf(ec.getSpedizioni().size());
+            }
+            break;
+
+        case Web:
+            if (!ec.hasAllMesiPubblicazione()) {
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoWeb().doubleValue()
+                    * ec.getNumero().doubleValue();  
+            break;
+
+        case Scontato:
+            if (!ec.hasAllMesiPubblicazione()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue()
+                * ec.getNumero().doubleValue();  
+            break;
+
+        case Sostenitore:
+            if (!ec.hasAllMesiPubblicazione()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoSostenitore().doubleValue()
+                     * ec.getNumero().doubleValue();  
+            break;
+                
+        case EuropaBacinoMediterraneo:
+            if (!ec.hasAllMesiPubblicazione()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoEuropa().doubleValue()
+                     * ec.getNumero().doubleValue();  
+            break;
+                
+        case AmericaAfricaAsia:
+            if (!ec.hasAllMesiPubblicazione()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoAmericaAsiaAfrica().doubleValue()
+                     * ec.getNumero().doubleValue();  
+            break;
+        case OmaggioCuriaDiocesiana:
+            break;
+        case OmaggioCuriaGeneralizia:
+            break;
+        case OmaggioDirettoreAdp:
+            break;
+        case OmaggioEditore:
+            break;
+        case OmaggioGesuiti:
+            break;
+        default:
+            break;
+
+        }          
+        ec.setSpesePostali(BigDecimal.valueOf(spesePostali));
+        ec.setImporto(BigDecimal.valueOf(costo));
     }
 
     public static List<EstrattoConto> estrattiContoDaAggiornare(List<EstrattoConto> estrattiConto) {
@@ -151,12 +254,12 @@ public class Smd {
     public static boolean getSospendiSpedizione(EstrattoConto estrattoConto) {
 
         boolean sospendiSpedizione=estrattoConto.isSospesa();
-        switch (estrattoConto.getOmaggio()) {
-        case AbbonamentoItalia:
+        switch (estrattoConto.getTipoEstrattoConto()) {
+        case Ordinario:
             sospendiSpedizione = sospendiSpedizione(estrattoConto);
             break;
 
-        case AbbonamentoItaliaConSconto:    
+        case Scontato:    
             sospendiSpedizione = sospendiSpedizione(estrattoConto);
             break;
         case OmaggioCuriaDiocesiana:
@@ -172,27 +275,13 @@ public class Smd {
     }
 
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
-        StatoStorico pagamentoRegolare = StatoStorico.SOS;
-        switch (storico.getOmaggio()) {
-        case AbbonamentoItalia:
+        StatoStorico pagamentoRegolare = StatoStorico.VALIDO;
+        switch (storico.getTipoEstrattoConto()) {
+        case Ordinario:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
-
-        case AbbonamentoItaliaConSconto:    
+        case Scontato:    
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
-            break;
-
-        case OmaggioCuriaDiocesiana:
-            pagamentoRegolare = StatoStorico.OMA;
-            break;
-        case OmaggioCuriaGeneralizia:
-            pagamentoRegolare = StatoStorico.OMA;
-            break;
-        case OmaggioGesuiti:
-            pagamentoRegolare = StatoStorico.OMA;
-            break;
-        case OmaggioDirettoreAdp:
-            pagamentoRegolare = StatoStorico.OMA;
             break;
         default:
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
@@ -201,8 +290,8 @@ public class Smd {
         return pagamentoRegolare;
     }
     
-    private static boolean sospendiSpedizione(EstrattoConto spedizione) {
-        Abbonamento abbonamento = spedizione.getAbbonamento();
+    private static boolean sospendiSpedizione(EstrattoConto estrattoConto) {
+        Abbonamento abbonamento = estrattoConto.getAbbonamento();
             if (abbonamento.getTotale().signum() > 0 &&  abbonamento.getVersamento() == null) {
                 return true;
             }
@@ -221,29 +310,19 @@ public class Smd {
                     continue;
                 }
                 if (abb.getTotale().signum() == 0 ) {
-                    return StatoStorico.REG;
+                    return StatoStorico.VALIDO;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
-                    return StatoStorico.NON;
+                    return StatoStorico.SOSPESO;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() != null) {
-                    return StatoStorico.REG;
+                    return StatoStorico.VALIDO;
                 }
             }
         }
-        return StatoStorico.SOS;
+        return StatoStorico.SOSPESO;
     }
-    public static void calcoloAbbonamento(Abbonamento abbonamento) {
-        double costo = 0.0;
-        Mese inizio = abbonamento.getInizio();
-        Mese fine = abbonamento.getFine();
-        for (EstrattoConto spedizione : abbonamento.getEstrattiConto()) {
-            costo+= calcolaCosto(inizio, fine, spedizione.getPubblicazione(),spedizione.getOmaggio(),spedizione.getNumero());
-        }
-        abbonamento.setCosto(BigDecimal.valueOf(costo));
-        abbonamento.setCampo(generaVCampo(abbonamento.getAnno(), abbonamento.getInizio(), abbonamento.getFine()));
-    }
-    
+        
     /*
      * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
      * riservati al correntista che intende utilizzare tale campo 2 caratteri
@@ -251,7 +330,7 @@ public class Smd {
      * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
      * controcodice: 00 - 92)
      */
-    public static String generaVCampo(Anno anno, Mese inizio, Mese fine) {
+    public static String generaVCampo(Anno anno) {
         // primi 2 caratteri anno
         String campo = anno.getAnnoAsString().substring(2, 4);
         // 3-16
@@ -259,6 +338,7 @@ public class Smd {
         campo += String.format("%02d", Long.parseLong(campo) % 93);
         return campo;
     }
+
     public static boolean checkCampo(String campo) {
         if (campo == null || campo.length() != 18) {
             return false;
@@ -315,76 +395,6 @@ public class Smd {
         return numero;
     }
 
-    public static double calcolaCosto(
-            Mese inizio, 
-            Mese fine, 
-            Pubblicazione pubblicazione, 
-            Omaggio omaggio, 
-            Integer numero) throws UnsupportedOperationException {
-        if (inizio == null || fine == null || inizio.getPosizione() > fine.getPosizione() || pubblicazione == null || omaggio == null
-                || numero == null || pubblicazione.getTipo() == null )
-            throw new UnsupportedOperationException("Valori non ammissibili");
-        double costo = 0.0;
-        switch (omaggio) {
-        case AbbonamentoItalia:
-            if (inizio == Mese.GENNAIO && fine == Mese.DICEMBRE) {
-                costo = pubblicazione.getAbbonamentoItalia().doubleValue() * numero.doubleValue();
-                break;
-            }
-            costo = pubblicazione.getCostoUnitario().doubleValue()
-                     * numero.doubleValue()
-                     * calcolaNumeroPubblicazioni(inizio,fine, pubblicazione.getMesiPubblicazione(),pubblicazione.getTipo());
-            break;
-
-        case AbbonamentoWeb:
-            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
-                if (inizio != Mese.GENNAIO && fine != Mese.DICEMBRE) {
-                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoWeb);
-                }
-            }
-            costo = pubblicazione.getAbbonamentoWeb().doubleValue()
-                    * numero.doubleValue();  
-            break;
-
-        case AbbonamentoItaliaConSconto:
-            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoItaliaConSconto);
-            }
-            costo = pubblicazione.getAbbonamentoConSconto().doubleValue()
-                     * numero.doubleValue();  
-            break;
-
-        case AbbonamentoItaliaSostenitore:
-            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoItaliaSostenitore);
-            }
-            costo = pubblicazione.getAbbonamentoSostenitore().doubleValue()
-                     * numero.doubleValue();  
-            break;
-                
-        case AbbonamentoEuropa:
-            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoEuropa);
-            }
-            costo = pubblicazione.getAbbonamentoEuropa().doubleValue()
-                     * numero.doubleValue();  
-            break;
-                
-        case AbbonamentoAmericaAfricaAsia:
-            if (inizio != Mese.GENNAIO || fine != Mese.DICEMBRE) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + Omaggio.AbbonamentoAmericaAfricaAsia);
-            }
-            costo = pubblicazione.getAbbonamentoAmericaAsiaAfrica().doubleValue()
-                     * numero.doubleValue();  
-            break;
-    
-        default:
-            break;
-
-        }              
-        return costo;
-    }
-
     public static Date getStandardDate(LocalDate localDate) {
         return getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
     }
@@ -407,7 +417,7 @@ public class Smd {
             List<Abbonamento> abbonamenti, 
             Anno anno, 
             Set<Mese> mesi,
-            Set<Omaggio> omaggi) {
+            Set<TipoEstrattoConto> omaggi) {
 
         List<Prospetto> prospetti = new ArrayList<>();
         pubblicazioni.stream().forEach(pubblicazione -> {
@@ -426,17 +436,15 @@ public class Smd {
 
     public static Prospetto generaProspetto(Pubblicazione pubblicazione,
             List<Abbonamento> abbonamenti, Anno anno, Mese mese,
-            Omaggio omaggio) {
+            TipoEstrattoConto omaggio) {
         Prospetto prospetto = new Prospetto(pubblicazione, anno, mese,
                                             omaggio);
         Integer conta = 0;
         for (Abbonamento a : abbonamenti) {
-            if (a.getAnno() == anno
-                    && a.getInizio().getPosizione() <= mese.getPosizione()
-                    && a.getFine().getPosizione() >= mese.getPosizione()) {
+            if (a.getAnno() == anno ) {
                 for (EstrattoConto s : a.getEstrattiConto()) {
                     if (s.getPubblicazione().getId() != pubblicazione.getId()
-                            || s.getOmaggio() != omaggio) {
+                            || s.getTipoEstrattoConto() != omaggio) {
                         continue;
                     }
                     conta += s.getNumero();

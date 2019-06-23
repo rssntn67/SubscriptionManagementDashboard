@@ -11,6 +11,11 @@ public enum Anno {
 	
 	private int anno;
 	
+	public static Anno getAnnoPrecedente(Anno anno) {
+	    int annomenouno= anno.getAnno()-1;
+	    return Anno.valueOf("ANNO"+annomenouno);
+	    
+	}
 	private Anno(int anno) {
 		this.anno=anno;
 	}

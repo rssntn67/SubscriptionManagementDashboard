@@ -75,16 +75,6 @@ public class CampagnaUI extends SmdUI {
 
             @Override
             public void save() {
-                if (get().getId() == null && get().getInizio() == null) {
-                    Notification.show("Selezionare Mese Inizio Prima di Salvare",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null && get().getFine() == null) {
-                    Notification.show("Selezionare Mese Fine Prima di Salvare",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
                 if (get().getId() == null && get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare",
                                       Notification.Type.ERROR_MESSAGE);
@@ -101,19 +91,6 @@ public class CampagnaUI extends SmdUI {
                 if (get().getId() == null
                         && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere anno corrente o successivi",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null
-                        && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere successivo al Mese Fine",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null
-                        && get().getAnno().getAnno() == Smd.getAnnoCorrente().getAnno()
-                        && get().getInizio().getPosizione() < Smd.getMeseCorrente().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il Mese corrente o successivo",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
