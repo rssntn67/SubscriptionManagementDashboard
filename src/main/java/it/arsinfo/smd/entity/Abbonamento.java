@@ -24,6 +24,9 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Incassato;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
 
 @Entity
@@ -209,5 +212,58 @@ public class Abbonamento implements SmdEntity {
     public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
         this.statoAbbonamento = statoAbbonamento;
     }
+    
+    @Transient
+    public String getIntestazione() {
+        return intestatario.getCaption();
+    }
+
+    @Transient
+    public String getSottoIntestazione() {
+        if (intestatario.getCo() == null) {
+            return "";
+        } 
+        return "c/o" + intestatario.getCo().getCaption();
+    }
+    
+    @Transient
+    public String getIndirizzo() {
+        if (intestatario.getCo() == null) {
+            return intestatario.getIndirizzo();
+        }
+        return intestatario.getCo().getIndirizzo();            
+    }
+
+    @Transient
+    public String getCap() {
+        if (intestatario.getCo() == null) {
+            return intestatario.getCap();
+        }
+        return intestatario.getCo().getCap();        
+    }
+
+    @Transient
+    public String getCitta() {
+        if (intestatario.getCo() == null) {
+            return intestatario.getCitta();
+        }
+        return intestatario.getCo().getCitta();        
+    }
+
+    @Transient
+    public Provincia getProvincia() {
+        if (intestatario.getCo() == null) {
+            return intestatario.getProvincia();
+        }
+        return intestatario.getCo().getProvincia();        
+    }
+    @Transient
+    public Paese getPaese() {
+        if (intestatario.getCo() == null) {
+            return intestatario.getPaese();
+        }
+        return intestatario.getCo().getPaese();        
+    }
+
 
 }

@@ -19,10 +19,10 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Invio;
-import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.Stato;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
@@ -48,9 +48,6 @@ public class EstrattoConto implements SmdEntity {
     private Invio invio = Invio.Destinatario;
 
     @Enumerated(EnumType.STRING)
-    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
-
-    @Enumerated(EnumType.STRING)
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
     @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
@@ -61,6 +58,7 @@ public class EstrattoConto implements SmdEntity {
     private BigDecimal importo = BigDecimal.ZERO;
     private BigDecimal spesePostali = BigDecimal.ZERO;
 
+    private Stato statoEstrattoConto=Stato.NUOVO;
     public EstrattoConto() {
     }
 
@@ -213,7 +211,7 @@ public class EstrattoConto implements SmdEntity {
             }
             return destinatario.getCo().getIndirizzo();            
         }
-        return getAbbonamento().getIntestatario().getIndirizzo();
+        return getAbbonamento().getIndirizzo();
     }
 
     @Transient
@@ -224,7 +222,7 @@ public class EstrattoConto implements SmdEntity {
             }
             return destinatario.getCo().getCap();        
         }
-        return getAbbonamento().getIntestatario().getCap();
+        return getAbbonamento().getCap();
     }
 
     @Transient
@@ -235,7 +233,7 @@ public class EstrattoConto implements SmdEntity {
             }
             return destinatario.getCo().getCitta();        
         }
-        return getAbbonamento().getIntestatario().getCitta();
+        return getAbbonamento().getCitta();
     }
 
     @Transient
@@ -246,7 +244,7 @@ public class EstrattoConto implements SmdEntity {
             }
             return destinatario.getCo().getProvincia();        
         }
-        return getAbbonamento().getIntestatario().getProvincia();
+        return getAbbonamento().getProvincia();
 
     }
     @Transient
@@ -257,15 +255,7 @@ public class EstrattoConto implements SmdEntity {
             }
             return destinatario.getCo().getPaese();        
         }
-        return getAbbonamento().getIntestatario().getPaese();        
-    }
-
-    public InvioSpedizione getInvioSpedizione() {
-        return invioSpedizione;
-    }
-
-    public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
-        this.invioSpedizione = invioSpedizione;
+        return getAbbonamento().getPaese();        
     }
 
     public Anagrafica getDestinatario() {
@@ -274,6 +264,14 @@ public class EstrattoConto implements SmdEntity {
 
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
+    }
+
+    public Stato getStatoEstrattoConto() {
+        return statoEstrattoConto;
+    }
+
+    public void setStatoEstrattoConto(Stato statoEstrattoConto) {
+        this.statoEstrattoConto = statoEstrattoConto;
     }
 
 }

@@ -1,6 +1,8 @@
 package it.arsinfo.smd.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,6 +11,7 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
@@ -21,12 +24,15 @@ public class Spedizione implements SmdEntity {
     @ManyToOne
     private EstrattoConto estrattoConto;
     
+    @Enumerated(EnumType.STRING)
+    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
+
+
     private Mese meseSpedizione;
     private Anno annoSpedizione;
     
     private Mese mesePubblicazione;
     private Anno annoPubblicazione;
-    private boolean sospesa=false;
 
     public Spedizione() {
     }
@@ -44,20 +50,30 @@ public class Spedizione implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Spedizione[id=%d, EstrattoConto=%d, Numero=%d, Destinatario=%d, Sospeso=%b]", 
-                             id,estrattoConto.getId(),estrattoConto.getNumero(), estrattoConto.getDestinatario().getId(), sospesa);
+                             id,estrattoConto.getId(),estrattoConto.getNumero(), estrattoConto.getDestinatario().getId(), isSospesa());
     }
 
+    @Transient
     public boolean isSospesa() {
+        boolean sospesa=false;
+        switch (estrattoConto.getStatoEstrattoConto()) {
+            case NUOVO:
+                break;
+            case VALIDO:
+                break;
+            case SOSPESO:
+                sospesa=true;
+                break;
+            default:
+                break;
+        }
         return sospesa;
     }
 
-    public void setSospesa(boolean sospesa) {
-        this.sospesa = sospesa;
-    }
     
     @Transient
     public String getDecodeSospesa() {
-        return Smd.decodeForGrid(sospesa);
+        return Smd.decodeForGrid(isSospesa());
     }
 
     public EstrattoConto getEstrattoConto() {
@@ -98,6 +114,14 @@ public class Spedizione implements SmdEntity {
 
     public void setAnnoPubblicazione(Anno annoPubblicazione) {
         this.annoPubblicazione = annoPubblicazione;
+    }
+
+    public InvioSpedizione getInvioSpedizione() {
+        return invioSpedizione;
+    }
+
+    public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
+        this.invioSpedizione = invioSpedizione;
     }
 
 }

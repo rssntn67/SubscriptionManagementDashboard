@@ -33,7 +33,9 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -44,7 +46,6 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
-import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
@@ -64,7 +65,6 @@ public class SmdLoadSampleData implements Runnable {
     private final IncassoDao incassoDao; 
     private final VersamentoDao versamentoDao;
     private final OperazioneDao operazioneDao;
-    private final ProspettoDao prospettoDao;
     private final UserInfoDao userInfoDao;
     private final PasswordEncoder passwordEncoder;
     
@@ -229,27 +229,35 @@ public class SmdLoadSampleData implements Runnable {
             Mese inizio,
             Mese fine,
             Cassa cassa,
-            BigDecimal spese,
-            Table<Pubblicazione,Anagrafica,Integer> spedizioni) {
-                final Abbonamento abb = new Abbonamento();
-                abb.setAnno(anno);
-                abb.setCassa(cassa);
-                abb.setIntestatario(intestatario);
-                spedizioni.cellSet()
-                .stream().forEach( c -> addSpedizione(abb, c.getRowKey(),c.getColumnKey(),c.getValue()));
-                Smd.calcoloAbbonamento(abb);
-                return abb;   
+            Table<Pubblicazione,Anagrafica,Integer> estrattiConto) {
+ 
+        final Abbonamento abb = new Abbonamento();
+        abb.setAnno(anno);
+        abb.setCassa(cassa);
+        abb.setIntestatario(intestatario);
+        estrattiConto.cellSet()
+        .stream().forEach( ect -> {
+            EstrattoConto ec = Smd.creaEstrattoConto(abb, ect.getRowKey(), ect.getColumnKey(), TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere, ect.getValue(), inizio, anno, fine, anno);
+            abb.addEstrattoConto(ec);
+        });
+        return abb;   
     }
 
-    public static EstrattoConto addSpedizione(TipoEstrattoConto abb, Pubblicazione rowKey,
-            Anagrafica columnKey, Integer value) {
-        EstrattoConto spedizione = new EstrattoConto();
-        spedizione.setAbbonamento(abb);
-        spedizione.setDestinatario(columnKey);
-        spedizione.setPubblicazione(rowKey);
-        spedizione.setNumero(value);
-        abb.addEstrattoConto(spedizione);
-        return spedizione;
+    public static EstrattoConto addEC(Abbonamento abb, Pubblicazione pubblicazione,
+            Anagrafica destinatario, Integer numero, BigDecimal importo) {
+        EstrattoConto ec = new EstrattoConto();
+        ec.setAbbonamento(abb);
+        ec.setDestinatario(destinatario);
+        ec.setPubblicazione(pubblicazione);
+        ec.setNumero(numero);
+        ec.setImporto(importo);
+        abb.addEstrattoConto(ec);
+        for (Mese mese: pubblicazione.getMesiPubblicazione()) {
+                Spedizione spedizione = Smd.creaSpedizione(mese, abb.getAnno(), pubblicazione.getAnticipoSpedizione());
+                spedizione.setEstrattoConto(ec);
+                ec.addSpedizione(spedizione);
+        }
+        return ec;
     }
 
     public static Campagna getCampagnaBy(Anno anno) {
@@ -268,7 +276,6 @@ public class SmdLoadSampleData implements Runnable {
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao,
-            ProspettoDao prospettoDao,
             UserInfoDao userInfoDao,
             PasswordEncoder passwordEncoder,
             boolean loadOnlyPubblicazioniAdp
@@ -282,7 +289,6 @@ public class SmdLoadSampleData implements Runnable {
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
         this.operazioneDao=operazioneDao;
-        this.prospettoDao=prospettoDao;
         this.userInfoDao=userInfoDao;
         this.passwordEncoder=passwordEncoder;
         this.loadOnlyPubblicazioniAdp=loadOnlyPubblicazioniAdp;
@@ -495,7 +501,7 @@ public class SmdLoadSampleData implements Runnable {
         return ps;
     }
     
-    public static TipoEstrattoConto getAbbonamentoMs(Anagrafica ms, Pubblicazione ...pubblicazioni) {
+    public static Abbonamento getAbbonamentoMs(Anagrafica ms, Pubblicazione ...pubblicazioni) {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         for (Pubblicazione pubblicazione: pubblicazioni) {
             spedizioni.put(pubblicazione, ms, 1);
@@ -507,12 +513,11 @@ public class SmdLoadSampleData implements Runnable {
                 Mese.GENNAIO, 
                 Mese.DICEMBRE, 
                 Cassa.Ccp, 
-                BigDecimal.ZERO, 
                 spedizioni
                 );
     }
         
-    public static TipoEstrattoConto getAbbonamentoGp(Anagrafica gp, Pubblicazione pubb, Anagrafica ar, Anagrafica mp, Pubblicazione ...pubblicazioni) {
+    public static Abbonamento getAbbonamentoGp(Anagrafica gp, Pubblicazione pubb, Anagrafica ar, Anagrafica mp, Pubblicazione ...pubblicazioni) {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         for (Pubblicazione pubblicazione: pubblicazioni) {
             spedizioni.put(pubblicazione, gp, 1);
@@ -525,11 +530,10 @@ public class SmdLoadSampleData implements Runnable {
                             Mese.GENNAIO, 
                             Mese.DICEMBRE, 
                             Cassa.Ccp, 
-                            BigDecimal.ZERO, 
                             spedizioni);
     }
     
-    public static TipoEstrattoConto getAbbonamentoDp(Anagrafica dp, Mese inizio, Pubblicazione blocchetti) {
+    public static Abbonamento getAbbonamentoDp(Anagrafica dp, Mese inizio, Pubblicazione blocchetti) {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         spedizioni.put(blocchetti, dp, 1);
         return getAbbonamentoBy(
@@ -538,136 +542,114 @@ public class SmdLoadSampleData implements Runnable {
                             inizio, 
                             Mese.DICEMBRE, 
                             Cassa.Ccp, 
-                            new BigDecimal("3.75"), spedizioni
+                            spedizioni
                             );
     }
     
-    public static List<Abbonamento> getAbbonamentiIncassi(
-            Anagrafica ar, 
-            Anagrafica ms, 
-            Anagrafica dp, 
-            Anagrafica mp, 
-            Pubblicazione blocchetti,Pubblicazione estratti,Pubblicazione lodare) {
+    public List<Abbonamento> getAbbonamentiIncassi() {
         List<Abbonamento> abbonamenti = new ArrayList<>();
-        Abbonamento telematici001 = SmdLoadSampleData.getAbbonamentoBy(ar);
-        addSpedizione(telematici001, blocchetti,ar,1);
-        telematici001.setCosto(new BigDecimal(15));
+        Abbonamento telematici001 = SmdLoadSampleData.getAbbonamentoBy(antonioRusso);
         telematici001.setCampo("000000018000792609");
         telematici001.setAnno(Anno.ANNO2017);
+        addEC(telematici001, messaggio,antonioRusso,1,new BigDecimal(15));
         abbonamenti.add(telematici001);
         
-        TipoEstrattoConto venezia002 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia002, blocchetti,ms,1);
-        venezia002.setCosto(new BigDecimal(15));
+        Abbonamento venezia002 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia002.setCampo("000000018000854368");
         venezia002.setAnno(Anno.ANNO2017);
+        addEC(venezia002, messaggio,micheleSantoro,1,new BigDecimal(15));
         abbonamenti.add(venezia002);
 
-        TipoEstrattoConto venezia003 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia003, blocchetti,ms,1);
-        venezia003.setCosto(new BigDecimal(18));
+        Abbonamento venezia003 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia003.setCampo("000000018000263519");
         venezia003.setAnno(Anno.ANNO2017);
+        addEC(venezia003, lodare,micheleSantoro,1,new BigDecimal(18));
         abbonamenti.add(venezia003);
 
-        TipoEstrattoConto venezia004 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia004, blocchetti,ms,2);
-        venezia004.setCosto(new BigDecimal(30));
+        Abbonamento venezia004 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia004.setCampo("000000018000254017");
         venezia004.setAnno(Anno.ANNO2017);
+        addEC(venezia004, messaggio,micheleSantoro,2,new BigDecimal(30));
         abbonamenti.add(venezia004);
 
-        TipoEstrattoConto venezia005 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia005, blocchetti,ms,2);
-        venezia005.setCosto(new BigDecimal(37));
+        Abbonamento venezia005 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia005.setCampo("000000018000761469");
         venezia005.setAnno(Anno.ANNO2017);
+        addEC(venezia005, messaggio,micheleSantoro,1,new BigDecimal(15));
+        addEC(venezia005, lodare,micheleSantoro,1,new BigDecimal(16));
+        addEC(venezia005, blocchetti,micheleSantoro,1,new BigDecimal(6));
         abbonamenti.add(venezia005);
 
-        TipoEstrattoConto venezia006 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia006, blocchetti,ms,3);
-        venezia006.setCosto(new BigDecimal(48));
+        Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia006.setCampo("000000018000253916");
         venezia006.setAnno(Anno.ANNO2017);
+        addEC(venezia006, blocchetti,micheleSantoro,8,new BigDecimal(48));
         abbonamenti.add(venezia006);
 
-        TipoEstrattoConto venezia007 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia007, blocchetti,ms,10);
-        venezia007.setCosto(new BigDecimal(70));
+        Abbonamento venezia007 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia007.setCampo("000000018000800386");
         venezia007.setAnno(Anno.ANNO2017);
+        addEC(venezia007, blocchetti,micheleSantoro,12,new BigDecimal(70));
         abbonamenti.add(venezia007);
         
-        TipoEstrattoConto venezia008 = SmdLoadSampleData.getAbbonamentoBy(ms);
-        addSpedizione(venezia008, blocchetti,ms,15);
-        venezia008.setCosto(new BigDecimal(84));
+        Abbonamento venezia008 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia008.setCampo("000000018000508854");
         venezia008.setAnno(Anno.ANNO2017);
+        addEC(venezia008, blocchetti,micheleSantoro,15,new BigDecimal(84));
         abbonamenti.add(venezia008);
 
-        TipoEstrattoConto firenze009 = SmdLoadSampleData.getAbbonamentoBy(dp);
-        addSpedizione(firenze009, estratti,dp,1);
-        firenze009.setCosto(new BigDecimal(10));
+        Abbonamento firenze009 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze009.setCampo("000000018000686968");
         firenze009.setAnno(Anno.ANNO2017);
+        addEC(firenze009, estratti,davidePalma,1,new BigDecimal(10));
         abbonamenti.add(firenze009);
         
-        TipoEstrattoConto firenze010 = SmdLoadSampleData.getAbbonamentoBy(dp);
-        addSpedizione(firenze010, lodare,dp,1);
-        firenze010.setCosto(new BigDecimal(15));
+        Abbonamento firenze010 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze010.setCampo("000000018000198318");
         firenze010.setAnno(Anno.ANNO2017);
+        addEC(firenze010, lodare,davidePalma,1,new BigDecimal(15));
         abbonamenti.add(firenze010);
 
-        TipoEstrattoConto firenze011 = SmdLoadSampleData.getAbbonamentoBy(dp);
-        addSpedizione(firenze011, lodare,dp,1);
-        firenze011.setCosto(new BigDecimal(15));
+        Abbonamento firenze011 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze011.setCampo("000000018000201449");
         firenze011.setAnno(Anno.ANNO2017);
+        addEC(firenze011, lodare,davidePalma,1,new BigDecimal(15));
         abbonamenti.add(firenze011);
 
-        TipoEstrattoConto firenze012 = SmdLoadSampleData.getAbbonamentoBy(dp);
-        addSpedizione(firenze012, lodare,dp,3);
-        firenze012.setCosto(new BigDecimal(33));
+        Abbonamento firenze012 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCampo("000000018000633491");
+        addEC(firenze012, lodare,davidePalma,2,new BigDecimal(33));
         abbonamenti.add(firenze012);
         
-        TipoEstrattoConto firenze013 = SmdLoadSampleData.getAbbonamentoBy(dp);
-        addSpedizione(firenze013, lodare,dp,10);
-        addSpedizione(firenze013, estratti,dp,10);
-        addSpedizione(firenze013, blocchetti,dp,10);
-        firenze013.setCosto(new BigDecimal(108));
+        Abbonamento firenze013 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCampo("000000018000196500");
+        addEC(firenze013, blocchetti,davidePalma,18,new BigDecimal(108));
         abbonamenti.add(firenze013);
         
-        TipoEstrattoConto bari014 = SmdLoadSampleData.getAbbonamentoBy(mp);
-        addSpedizione(bari014, lodare,mp,1);
-        bari014.setCosto(new BigDecimal(12));
+        Abbonamento bari014 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari014.setAnno(Anno.ANNO2017);
         bari014.setCampo("000000018000106227");
+        addEC(bari014, blocchetti,matteoParo,2,new BigDecimal(12));
         abbonamenti.add(bari014);
 
-        TipoEstrattoConto bari015 = SmdLoadSampleData.getAbbonamentoBy(mp);
-        addSpedizione(bari015, lodare,mp,3);
-        bari015.setCosto(new BigDecimal(36));
+        Abbonamento bari015 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari015.setAnno(Anno.ANNO2017);
         bari015.setCampo("000000018000077317");
+        addEC(bari015, blocchetti,matteoParo,6,new BigDecimal(36));
         abbonamenti.add(bari015);
 
-        TipoEstrattoConto bari016 = SmdLoadSampleData.getAbbonamentoBy(mp);
-        addSpedizione(bari016, lodare,mp,5);
-        bari016.setCosto(new BigDecimal(60));
+        Abbonamento bari016 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari016.setAnno(Anno.ANNO2017);
         bari016.setCampo("000000018000125029");
+        addEC(bari016, messaggio,matteoParo,4,new BigDecimal(60));
         abbonamenti.add(bari016);
 
-        TipoEstrattoConto bari017 = SmdLoadSampleData.getAbbonamentoBy(mp);
-        addSpedizione(bari017, estratti,mp,10);
-        bari017.setCosto(new BigDecimal(67));
+        Abbonamento bari017 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari017.setAnno(Anno.ANNO2017);
         bari017.setCampo("000000018000065383");
+        addEC(bari017, estratti,matteoParo,12,new BigDecimal(67));
         abbonamenti.add(bari017);
         return abbonamenti;
     }
@@ -820,7 +802,7 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso);
         abbonamentoDao.save(abbonamentoDp);
         
-        getAbbonamentiIncassi(antonioRusso, micheleSantoro, davidePalma, matteoParo, blocchetti, estratti, lodare)
+        getAbbonamentiIncassi()
             .stream().forEach(a->abbonamentoDao.save(a));        
         getIncassi()
             .stream().forEach(c -> incassoDao.save(c));
@@ -843,62 +825,32 @@ public class SmdLoadSampleData implements Runnable {
                         )
                      );
 
-        Smd.generaOperazioni(pubblicazioneDao.findAll(),
-                             abbonamentoDao.findByAnno(Anno.ANNO2017),
-                             Anno.ANNO2017,
-                             EnumSet.allOf(Mese.class)).forEach(p -> {
-                                 operazioneDao.save(p);
-                             });
- 
-        Smd.generaOperazioni(pubblicazioneDao.findAll(),
-                             abbonamentoDao.findByAnno(Anno.ANNO2018),
-                             Anno.ANNO2018,
-                             EnumSet.allOf(Mese.class)).forEach(p -> {
-                                 operazioneDao.save(p);
-                             });
+        pubblicazioneDao.findAll().stream().forEach(p -> 
+            EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
+                EnumSet.allOf(Mese.class).stream().forEach(mese -> {
+                    Operazione op = Smd.generaOperazione(p, abbonamentoDao.findByAnno(Anno.ANNO2017), mese, anno);
+                    if (op.getStimato() > 0 ) {
+                        operazioneDao.save(op);                               
+                    }
+                })
+            )
+        );
 
-        Smd.generaOperazioni(pubblicazioneDao.findAll(),
-                             abbonamentoDao.findByAnno(Anno.ANNO2019),
-                             Anno.ANNO2019,
-                             EnumSet.allOf(Mese.class)).forEach(p -> {
-                                 operazioneDao.save(p);
-                             });
-
-        Smd.generaProspetti(pubblicazioneDao.findAll(),
-                            abbonamentoDao.findByAnno(Anno.ANNO2017),
-                            Anno.ANNO2017, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(TipoEstrattoConto.class)).forEach(p -> {
-                                prospettoDao.save(p);
-                            });
-
-        Smd.generaProspetti(pubblicazioneDao.findAll(),
-                            abbonamentoDao.findByAnno(Anno.ANNO2018),
-                            Anno.ANNO2018, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(TipoEstrattoConto.class)).forEach(p -> {
-                                prospettoDao.save(p);
-                            });
-        Smd.generaProspetti(pubblicazioneDao.findAll(),
-                            abbonamentoDao.findByAnno(Anno.ANNO2019),
-                            Anno.ANNO2019, EnumSet.allOf(Mese.class),
-                            EnumSet.allOf(TipoEstrattoConto.class)).forEach(p -> {
-                                prospettoDao.save(p);
-                            });
-        
         operazioneDao.findAll()
             .stream()
             .filter(o -> o.getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()
                           && o.getDefinitivo() == -1 )
             .forEach(o -> {
-                o.setDefinitivo(o.getStimato()+3);
+                o.setDefinitivo(o.getStimato()+30);
                 operazioneDao.save(o);
                 log.info(o.toString());
             });
         operazioneDao.findByAnno(Smd.getAnnoCorrente())
             .stream()
-            .filter(o -> o.getMese().getPosizione() <= Smd.getMeseCorrente().getPosizione()
+            .filter(o -> o.getMese().getPosizione() < Smd.getMeseCorrente().getPosizione()
                     && o.getDefinitivo() == -1)
             .forEach(o -> {
-                o.setDefinitivo(o.getStimato()+3);
+                o.setDefinitivo(o.getStimato()+30);
                 operazioneDao.save(o);
                 log.info(o.toString());
             });

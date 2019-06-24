@@ -11,7 +11,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.Stato;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Storico;
@@ -67,7 +67,7 @@ public class StoricoUI extends SmdUI {
                 float delta = 1.0f/storici.size();
                 pb.setValue(0.0f);
                 storici.stream().forEach( s -> {
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    Stato calcolato =  Smd.getStatoStorico(s, abbonamenti);
                     if (s.getStatoStorico() != calcolato) {
                         s.setStatoStorico(calcolato);
                         storicoDao.save(s);

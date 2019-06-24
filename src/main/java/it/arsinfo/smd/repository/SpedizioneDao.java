@@ -4,19 +4,19 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.Invio;
-import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Spedizione;
 
-public interface SpedizioneDao extends JpaRepository<EstrattoConto, Long> {
-
-	List<EstrattoConto> findByAbbonamento(TipoEstrattoConto abbonamento);
-        List<EstrattoConto> findByPubblicazione(Pubblicazione pubblicazione);
-        List<EstrattoConto> findByDestinatario(Anagrafica destinatario);
-        List<EstrattoConto> findByDestinatarioAndPubblicazione(Anagrafica destinatario, Pubblicazione pubblicazione);
-        List<EstrattoConto> findByOmaggio(TipoEstrattoConto omaggio);
-        List<EstrattoConto> findByInvio(Invio invio);
+public interface SpedizioneDao extends JpaRepository<Spedizione, Long> {
+    List<Spedizione> findByEstrattoConto(EstrattoConto ec);
+    List<Spedizione> findByMeseSpedizione(Mese mese);
+    List<Spedizione> findByMesePubblicazione(Mese mese);
+    List<Spedizione> findByAnnoSpedizione(Anno anno);
+    List<Spedizione> findByAnnoPubblicazione(Anno anno);
+    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizione(Mese mese,Anno anno);
+    List<Spedizione> findByMesePubblicazioneAndAnnoPubblicazione(Mese mese, Anno anno);
+       
+    
 }

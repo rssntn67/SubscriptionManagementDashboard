@@ -1,14 +1,13 @@
 package it.arsinfo.smd.data;
 
-public enum StatoStorico {
+public enum Stato {
     NUOVO("Nuovo"),
-    ANNUL("Annullato"),
     VALIDO("Valido"),
     SOSPESO("Sospeso");
     
     String descr;
     
-    private StatoStorico(String descr) {
+    private Stato(String descr) {
         this.descr=descr;
     }
 

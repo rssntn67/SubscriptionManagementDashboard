@@ -18,7 +18,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.Stato;
 
 @Entity
 public class Storico implements SmdEntity {
@@ -54,7 +54,7 @@ public class Storico implements SmdEntity {
     private Integer numero = 1;
     
     @Enumerated(EnumType.STRING)
-    private StatoStorico statoStorico = StatoStorico.NUOVO;
+    private Stato statoStorico = Stato.NUOVO;
 
     public Storico() {
         super();
@@ -169,11 +169,11 @@ public class Storico implements SmdEntity {
         note.add(nota);
     }
 
-    public StatoStorico getStatoStorico() {
+    public Stato getStatoStorico() {
         return statoStorico;
     }
 
-    public void setStatoStorico(StatoStorico statoStorico) {
+    public void setStatoStorico(Stato statoStorico) {
         this.statoStorico = statoStorico;
     }
     
@@ -187,7 +187,7 @@ public class Storico implements SmdEntity {
         case VALIDO:
             regolare=true;
             break;
-        case ANNUL:
+        case INVIOEC:
             break;
         case SOSPESO:
             break;

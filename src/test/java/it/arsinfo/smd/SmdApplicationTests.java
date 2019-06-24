@@ -28,7 +28,7 @@ import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.Stato;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -316,7 +316,7 @@ public class SmdApplicationTests {
         List<Storico> storici = storicoDao.findByIntestatario(ms);
         assertEquals(2, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
+            assertEquals(Stato.NUOVO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             assertEquals(TipoEstrattoConto.Ordinario, anp.getTipoEstrattoConto());
             log.info(anp.toString());
@@ -329,7 +329,7 @@ public class SmdApplicationTests {
         storici = storicoDao.findByDestinatario(dp);
         assertEquals(1, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
+            assertEquals(Stato.NUOVO, anp.getStatoStorico());
             assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
             assertEquals(TipoEstrattoConto.OmaggioCuriaGeneralizia, anp.getTipoEstrattoConto());
             assertEquals(10, anp.getNumero().intValue());
@@ -342,7 +342,7 @@ public class SmdApplicationTests {
         storici = storicoDao.findByPubblicazione(blocchetti);
         assertEquals(4, storici.size());
         for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
+            assertEquals(Stato.NUOVO, anp.getStatoStorico());
             assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
             log.info(anp.toString());
         }
@@ -492,12 +492,12 @@ public class SmdApplicationTests {
         abbonamenti = abbonamentoDao.findAll();
         for (Storico storico : storicoDao.findAll()) {
             log.info(storico.toString());
-            StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
+            Stato ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
             if (storico.getTipoEstrattoConto() == TipoEstrattoConto.Ordinario || storico.getTipoEstrattoConto() == TipoEstrattoConto.Scontato) {
-                assertEquals(StatoStorico.NOREG, ss);
+                assertEquals(Stato.NOREG, ss);
             } else {
-                assertEquals(StatoStorico.OMAGG, ss);                
+                assertEquals(Stato.OMAGG, ss);                
             }
         }
         log.info("");

@@ -45,7 +45,6 @@ public abstract class SmdUI extends UI {
     public final static String URL_INCASSI = "/incassi";
     public final static String URL_VERSAMENTI = "/versamenti";
     public final static String URL_OPERAZIONI = "/operazioni";
-    public final static String URL_PROSPETTI = "/prospetti";
     public final static String URL_NOTE = "/note";
     public final static String URL_USER = "/user";
     public final static String URL_RESET = "/reset";
@@ -96,7 +95,6 @@ public abstract class SmdUI extends UI {
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));
         links.add(new Link("Operazioni", new ExternalResource(URL_OPERAZIONI)));
-        links.add(new Link("Prospetti", new ExternalResource(URL_PROSPETTI)));
         links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
         links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
         if (loggedInUser.getRole() == Role.ADMIN ) {
