@@ -131,7 +131,7 @@ public class IncassoUI extends IncassoAbstractUI {
                         
                         if (associabili.size() == 1 ) {
                             Abbonamento associabile = associabili.iterator().next();
-                            if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).signum() == 0) {
+                            if (v.getImporto().subtract(associabile.getTotale()).signum() == 0) {
                                 incassa(associabile, v);
                             }
                         }
@@ -195,7 +195,7 @@ public class IncassoUI extends IncassoAbstractUI {
                     
                     if (associabili.size() == 1 ) {
                         Abbonamento associabile = associabili.iterator().next();
-                        if (v.getImporto().subtract(associabile.getCosto().subtract(associabile.getSpese())).signum() == 0) {
+                        if (v.getImporto().subtract(associabile.getTotale()).signum() == 0) {
                             incassa(associabile, v);
                         }
                     }

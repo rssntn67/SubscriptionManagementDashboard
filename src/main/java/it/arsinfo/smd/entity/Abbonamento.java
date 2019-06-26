@@ -174,7 +174,7 @@ public class Abbonamento implements SmdEntity {
     }
     
     @Transient
-    public Incassato getIncassato() {
+    public Incassato getStatoIncasso() {
         if (getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }
@@ -202,6 +202,14 @@ public class Abbonamento implements SmdEntity {
             return getTotale();
         }
         return getTotale().subtract(versamento.getImporto());
+    }
+
+    @Transient
+    public BigDecimal getIncassato() {
+        if (versamento == null) {
+            return BigDecimal.ZERO;
+        }
+        return versamento.getImporto();
     }
 
     public StatoAbbonamento getStatoAbbonamento() {

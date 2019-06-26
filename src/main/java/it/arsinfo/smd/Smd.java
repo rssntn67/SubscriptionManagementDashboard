@@ -458,11 +458,9 @@ public class Smd {
         return op;        
     }
 
-    public static List<Spedizione> listaSpedizioni(List<Abbonamento> abbonamenti, InvioSpedizione invioSpedizione) {
+    public static List<Spedizione> listaSpedizioni(List<Abbonamento> abbonamenti, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
         final List<Spedizione> spedizioni = new ArrayList<>();
-        Anno anno = getAnnoCorrente();
-        Mese mese = getMeseCorrente();
-        abbonamenti.stream().filter(a ->a.getAnno() == anno)
+        abbonamenti.stream()
             .forEach(a -> {
                 a.getEstrattiConto().stream()
                 .forEach( ec -> {
@@ -608,6 +606,12 @@ public class Smd {
         incasso.setEsatti(incasso.getDocumenti());
         incasso.setImportoErrati(BigDecimal.ZERO);
         incasso.setImportoEsatti(incasso.getImporto());
+    }
+
+    public static List<EstrattoConto> generaEstrattoConto(
+            List<EstrattoConto> findAll) {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }

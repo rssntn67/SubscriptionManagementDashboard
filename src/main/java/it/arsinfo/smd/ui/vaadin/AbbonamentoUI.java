@@ -34,7 +34,7 @@ public class AbbonamentoUI extends SmdUI {
     AbbonamentoDao abbonamentoDao;
 
     @Autowired
-    EstrattoContoDao spedizioneDao;
+    EstrattoContoDao estrattoContoDao;
 
     @Autowired
     AnagraficaDao anagraficaDao;
@@ -64,14 +64,6 @@ public class AbbonamentoUI extends SmdUI {
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
             @Override
             public void save() {                
-                if (get().getId() == null && get().getInizio() == null ) {
-                    Notification.show("Selezionare Mese Inizio Prima di Salvare", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null && get().getFine() == null ) {
-                    Notification.show("Selezionare Mese Fine Prima di Salvare", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
                 if (get().getId() == null && get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
                     return;
@@ -80,24 +72,17 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null  && get().getInizio().getPosizione() > get().getFine().getPosizione()) {
-                    Notification.show("Anno corrente: il Mese Inizio deve essere il corrente o successivo", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
                 if (get().getId() == null && get().getEstrattiConto().isEmpty()) {
-                    Notification.show("Aggiungere Spedizione Prima di Salvare", Notification.Type.WARNING_MESSAGE);
+                    Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
-                }
-                if (get().getId() == null) {
-                    Smd.calcoloAbbonamento((get()));
                 }
                 super.save();
             }
         };
 
-        EstrattoContoAdd spedizioneAdd = new EstrattoContoAdd("Aggiungi spedizione");
-        EstrattoContoGrid spedizioneGrid = new EstrattoContoGrid("Spedizioni");
-        EstrattoContoEditor spedizioneEditor = new EstrattoContoEditor(spedizioneDao, pubblicazioni, anagrafica) {
+        EstrattoContoAdd estrattoContoAdd = new EstrattoContoAdd("Aggiungi EC");
+        EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
+        EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
                 if (get().getDestinatario() == null) {
@@ -108,25 +93,25 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
+                Smd.calcoloImportoEC(get());
+                get().setAbbonamento(editor.get());
                 editor.get().addEstrattoConto(get());
-                Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
             
             @Override 
             public void delete() {
                 editor.get().deleteEstrattoConto(get());
-                Smd.calcoloAbbonamento(editor.get());
                 onChange();
             };
         };
 
-        addSmdComponents(spedizioneEditor,editor,spedizioneAdd,spedizioneGrid, add,search, grid);
+        addSmdComponents(estrattoContoEditor,editor,estrattoContoAdd,estrattoContoGrid, add,search, grid);
 
         editor.setVisible(false);
-        spedizioneEditor.setVisible(false);
-        spedizioneAdd.setVisible(false);
-        spedizioneGrid.setVisible(false);
+        estrattoContoEditor.setVisible(false);
+        estrattoContoAdd.setVisible(false);
+        estrattoContoGrid.setVisible(false);
         
         add.setChangeHandler(() -> {
             setHeader("Abbonamento:Nuovo");
@@ -135,8 +120,8 @@ public class AbbonamentoUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(add.generate());
-            spedizioneAdd.setAbbonamento(editor.get());
-            spedizioneAdd.setVisible(true);
+            estrattoContoAdd.setAbbonamento(editor.get());
+            estrattoContoAdd.setVisible(true);
         });
         
         search.setChangeHandler(() -> grid.populate(search.find()));
@@ -150,16 +135,16 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
-            spedizioneAdd.setVisible(false);
-            spedizioneEditor.setVisible(false);
-            spedizioneGrid.populate(spedizioneDao.findByAbbonamento(grid.getSelected()));;
+            estrattoContoAdd.setVisible(false);
+            estrattoContoEditor.setVisible(false);
+            estrattoContoGrid.populate(estrattoContoDao.findByAbbonamento(grid.getSelected()));;
         });
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            spedizioneAdd.setVisible(false);
-            spedizioneEditor.setVisible(false);
-            spedizioneGrid.setVisible(false);
+            estrattoContoAdd.setVisible(false);
+            estrattoContoEditor.setVisible(false);
+            estrattoContoGrid.setVisible(false);
             setHeader("Abbonamento");
             showMenu();
             add.setVisible(true);
@@ -167,34 +152,33 @@ public class AbbonamentoUI extends SmdUI {
             grid.populate(search.find());
         });
         
-        spedizioneAdd.setChangeHandler(() -> {
+        estrattoContoAdd.setChangeHandler(() -> {
             setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
             hideMenu();
-            spedizioneEditor.edit(spedizioneAdd.generate());
+            estrattoContoEditor.edit(estrattoContoAdd.generate());
             editor.setVisible(false);
-            spedizioneAdd.setVisible(false);
+            estrattoContoAdd.setVisible(false);
         });
         
-        spedizioneEditor.setChangeHandler(() -> {
+        estrattoContoEditor.setChangeHandler(() -> {
             setHeader("Abbonamento:Nuovo");
-            spedizioneAdd.setVisible(editor.get().getId() == null);
-            spedizioneEditor.setVisible(false);
-            Smd.calcoloAbbonamento(editor.get());
-            editor.edit(spedizioneEditor.get().getAbbonamento());
-            spedizioneGrid.populate(editor.get().getEstrattiConto());
+            estrattoContoAdd.setVisible(editor.get().getId() == null);
+            estrattoContoEditor.setVisible(false);
+            editor.edit(estrattoContoEditor.get().getAbbonamento());
+            estrattoContoGrid.populate(editor.get().getEstrattiConto());
         });
         
-        spedizioneGrid.setChangeHandler(() -> {
-            if (spedizioneGrid.getSelected() == null) {
+        estrattoContoGrid.setChangeHandler(() -> {
+            if (estrattoContoGrid.getSelected() == null) {
                 return;
             }
             if (editor.get().getId() == null) {
-                setHeader(spedizioneGrid.getSelected().getHeader());
-                spedizioneEditor.edit(spedizioneGrid.getSelected());
+                setHeader(estrattoContoGrid.getSelected().getHeader());
+                estrattoContoEditor.edit(estrattoContoGrid.getSelected());
                 add.setVisible(false);
                 search.setVisible(false);
                 editor.setVisible(false);
-                spedizioneAdd.setVisible(false);
+                estrattoContoAdd.setVisible(false);
             }
         });
 
@@ -203,6 +187,6 @@ public class AbbonamentoUI extends SmdUI {
     }
 
     public List<EstrattoConto> findByAbbonamaneto(Abbonamento abbonamento) {
-        return spedizioneDao.findByAbbonamento(abbonamento);
+        return estrattoContoDao.findByAbbonamento(abbonamento);
     }
 }

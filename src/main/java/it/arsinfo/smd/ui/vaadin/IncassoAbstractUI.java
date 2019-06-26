@@ -70,7 +70,7 @@ public abstract class IncassoAbstractUI extends SmdUI {
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
-                .filter(abb -> abb.getIncassato() == Incassato.No 
+                .filter(abb -> abb.getStatoIncasso() == Incassato.No 
                         && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
                         && (versamento.getBollettino() != Bollettino.TIPO674) 
                             || abb.getCampo().equals(versamento.getCampo())

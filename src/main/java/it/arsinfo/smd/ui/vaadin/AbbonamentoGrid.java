@@ -14,27 +14,25 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
 
     public AbbonamentoGrid(String gridName) {
         super(new Grid<>(Abbonamento.class),gridName);
-        setColumns("intestatario.caption","campo","totale","costo", "spese","incassato","cassa", "anno", "inizio","fine","campagnaAsString");
+        setColumns("intestatario.caption","campo","totale","incassato","residuo","statoAbbonamento.descr","statoIncasso","cassa", "anno","campagnaAsString");
         setColumnCaption("intestatario.caption", "Intestatario");
+        setColumnCaption("statoAbbonamento.descr", "Stato");
         setColumnCaption("campagnaAsString", "Campagna");
         gridfooter = getGrid().prependFooterRow();
     }
     @Override
     public void populate(List<Abbonamento> items) {
         super.populate(items);
-        gridfooter.getCell("campo").setHtml("<strong>Importo Totale:</strong>");
         gridfooter.getCell("totale").setHtml("<b>"+getTotale(items).toString()+"</b>");
-        gridfooter.getCell("costo").setHtml("<b>"+getCosto(items).toString()+"</b>");
-        gridfooter.getCell("spese").setHtml("<b>"+getSpese(items).toString()+"</b>");
         gridfooter.getCell("incassato").setHtml("<b>"+getIncassato(items).toString()+"</b>");
-        gridfooter.getCell("cassa").setHtml("-------");
-
+        gridfooter.getCell("residuo").setHtml("<b>"+getResiduo(items).toString()+"</b>");
+ 
     }
     
     private BigDecimal getTotale(List<Abbonamento> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Abbonamento abbonamneto:abbonamenti) {
-            importo=importo.add(abbonamneto.getTotale());
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getTotale());
         }
         return importo;
     }
@@ -48,18 +46,10 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         return importo;
     }
 
-    private BigDecimal getCosto(List<Abbonamento> abbonamenti) {
+    private BigDecimal getResiduo(List<Abbonamento> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Abbonamento abbonamneto:abbonamenti) {
-            importo=importo.add(abbonamneto.getCosto());
-        }
-        return importo;
-    }
-
-    private BigDecimal getSpese(List<Abbonamento> abbonamenti) {
-        BigDecimal importo = BigDecimal.ZERO;
-        for (Abbonamento abbonamneto:abbonamenti) {
-            importo=importo.add(abbonamneto.getSpese());
+            importo=importo.add(abbonamneto.getResiduo());
         }
         return importo;
     }

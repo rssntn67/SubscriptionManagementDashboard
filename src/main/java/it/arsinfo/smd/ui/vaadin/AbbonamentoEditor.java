@@ -14,7 +14,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -24,33 +24,34 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
+    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
+            EnumSet.allOf(StatoAbbonamento.class));
+
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
             EnumSet.allOf(Anno.class));
-    private final ComboBox<Mese> inizio = new ComboBox<Mese>("Selezionare Inizio",
-            EnumSet.allOf(Mese.class));
-    private final ComboBox<Mese> fine = new ComboBox<Mese>("Selezionare Fine",
-          EnumSet.allOf(Mese.class));
 
-    private final TextField costo = new TextField("Costo");
+    private final TextField totale = new TextField("Totale");
+    private final TextField residuo = new TextField("Residuo");
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
     private final TextField campo = new TextField("V Campo Poste Italiane");
     private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Selezionare ccp",
             EnumSet.allOf(Ccp.class));
-    private final TextField spese = new TextField("Spese Spedizione");
+
 
     private final ComboBox<Incassato> incassato = new ComboBox<Incassato>("",EnumSet.allOf(Incassato.class));
     public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
-        HorizontalLayout pri = new HorizontalLayout(campagna,intestatario,
-                                                    anno, inizio, fine);
-        HorizontalLayout sec = new HorizontalLayout(incassato,costo,spese,cassa,campo,
+        HorizontalLayout pri = new HorizontalLayout(statoAbbonamento,campagna,intestatario,
+                                                    anno);
+        HorizontalLayout sec = new HorizontalLayout(incassato,cassa,campo,
                                                     ccp);
         
+        HorizontalLayout tri = new HorizontalLayout(totale,residuo);
 
-        setComponents(getActions(),pri, sec);
+        setComponents(getActions(),pri, sec,tri);
         
         campagna.setItems(campagne);
         campagna.setItemCaptionGenerator(Campagna::getCaption);
@@ -62,14 +63,11 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
 
-        inizio.setItemCaptionGenerator(Mese::getNomeBreve);
-        inizio.setEmptySelectionAllowed(false);
-        
-        fine.setItemCaptionGenerator(Mese::getNomeBreve);
-        fine.setEmptySelectionAllowed(false);
-
+        statoAbbonamento.setReadOnly(true);
+        statoAbbonamento.setItemCaptionGenerator(StatoAbbonamento::getDescr);
         campagna.setReadOnly(true);
-        costo.setReadOnly(true);
+        totale.setReadOnly(true);
+        residuo.setReadOnly(true);
         campo.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
@@ -80,11 +78,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .bind(Abbonamento::getIntestatario,Abbonamento::setIntestatario);
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(inizio).asRequired().bind("inizio");
-        getBinder().forField(fine).bind("fine");
-
-        getBinder().forField(costo).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getCosto,
-                                                                                                                           Abbonamento::setCosto);
         getBinder().forField(cassa).bind("cassa");
         getBinder().forField(campo).asRequired().withValidator(ca -> ca != null,
                 "Deve essere definito").bind(Abbonamento::getCampo,
@@ -92,8 +85,14 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(ccp).bind("ccp");
         
 
-        getBinder().forField(spese).asRequired().withConverter(new StringToBigDecimalConverter("Conversione in Eur")).bind(Abbonamento::getSpese,
-                                                                                                                      Abbonamento::setSpese);
+        getBinder()
+            .forField(totale)
+            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .bind("totale");
+        getBinder()
+            .forField(residuo)
+            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .bind("residuo");
         getBinder().forField(incassato).bind("incassato");
 
     }
@@ -106,9 +105,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getCancel().setEnabled(!persisted);
         intestatario.setReadOnly(persisted);
         anno.setReadOnly(persisted);
-        inizio.setReadOnly(persisted);
-        fine.setReadOnly(persisted);
-        spese.setReadOnly(persisted);
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
@@ -116,8 +112,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         cassa.setReadOnly(persisted);
 
         if (persisted && 
-                abbonamento.getCosto().doubleValue() == BigDecimal.ZERO.doubleValue() && 
-                abbonamento.getSpese().doubleValue() == BigDecimal.ZERO.doubleValue()) {
+                abbonamento.getTotale().doubleValue() == BigDecimal.ZERO.doubleValue()) {
             cassa.setVisible(false);
             campo.setVisible(false);
             ccp.setVisible(false);

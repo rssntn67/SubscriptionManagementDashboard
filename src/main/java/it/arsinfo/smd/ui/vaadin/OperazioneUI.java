@@ -12,6 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -46,7 +47,7 @@ public class OperazioneUI extends SmdUI {
     private StoricoDao storicoDao;
 
     @Autowired
-    private EstrattoContoDao spedizioneDao;
+    private EstrattoContoDao estrattoContoDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -54,14 +55,14 @@ public class OperazioneUI extends SmdUI {
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdProgressBar pb = new SmdProgressBar();
-        SmdButton bss = new SmdButton("Aggiorna Stato Storici e Spedizioni", VaadinIcons.CLOUD);
+        SmdButton bss = new SmdButton("Genera Estratto Conto", VaadinIcons.CLOUD);
 
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
-        EstrattoContoGrid spedGrid = new EstrattoContoGrid("Spedizioni");
+        SpedizioneGrid spedGrid = new SpedizioneGrid("Spedizioni");
         addSmdComponents(pb,spedGrid,generaShow,bss,genera,editor,search,grid);
         
         
@@ -79,7 +80,7 @@ public class OperazioneUI extends SmdUI {
             new Thread(() -> {
                 List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
                 List<Storico> storici = storicoDao.findAll();
-                List<EstrattoConto> aggiornamenti = Smd.estrattiContoDaAggiornare(spedizioneDao.findAll());
+                List<EstrattoConto> aggiornamenti = Smd.generaEstrattoConto(estrattoContoDao.findAll());
                 if (aggiornamenti.isEmpty() && storici.isEmpty()) {
                     return;
                 }
@@ -98,9 +99,8 @@ public class OperazioneUI extends SmdUI {
                     });
 
                 });
-                aggiornamenti.stream().forEach(s -> {
-                    s.setSospesa(!s.isSospesa());
-                    spedizioneDao.save(s);
+                aggiornamenti.stream().forEach(ec -> {
+                    estrattoContoDao.save(ec);
                         access(() -> {
                             pb.setValue(pb.getValue()+delta);
                             grid.populate(search.find());
@@ -162,7 +162,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.generaSpedizioni(abbonamentoDao.findByAnno(op.getAnno()), op));
+                spedGrid.populate(Smd.listaSpedizioni(abbonamentoDao.findAll(), InvioSpedizione.Spedizioniere,op.getMese(),op.getAnno()));
             });
             return button;
         });
@@ -174,7 +174,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.generaSpedizioniCassa(abbonamentoDao.findByAnno(op.getAnno()), op));
+                spedGrid.populate(Smd.listaSpedizioni(abbonamentoDao.findAll(), InvioSpedizione.AdpSede,op.getMese(),op.getAnno()));
             });
             return button;
         });

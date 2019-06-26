@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
@@ -35,8 +36,8 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Smd.getMeseCorrente();
 
-    private Integer definitivoSped = -1;
-    private Integer definitivoSede = -1;
+    private Integer definitivoSped = 0;
+    private Integer definitivoSede = 0;
 
     private Integer stimatoSped = 0;
 
@@ -162,5 +163,16 @@ public class Operazione implements SmdEntity {
     public void setStimatoSede(Integer stimatoSede) {
         this.stimatoSede = stimatoSede;
     }
+    
+    @Transient
+    public int getTotaleStimato() {
+        return stimatoSede+stimatoSped;
+    }
+    
+    @Transient
+    public int getTotaleDefinitivo() {
+        return definitivoSede+definitivoSped;
+    }
+
     
 }

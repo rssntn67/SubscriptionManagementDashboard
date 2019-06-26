@@ -13,9 +13,10 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     public OperazioneGrid(String gridName) {
         super(new Grid<>(Operazione.class), gridName);
-        setColumns("pubblicazione.nome", "sped","sede","stimato","definitivo","mese","anno");
+        setColumns("mese","anno","pubblicazione.nome", "mesePubblicazione","annoPubblicazione",
+                   "stimatoSped","stimatoSede","totaleStimato",
+                   "definitivoSped","definitivoSede","totaleDefinitivo");
         setColumnCaption("pubblicazione.nome", "Pubblicazione");
-        setColumnCaption("stimato", "Quantità");
         gridfooter = getGrid().prependFooterRow();
     }
 
@@ -23,26 +24,34 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
     public void populate(List<Operazione> items) {
         super.populate(items);
         gridfooter.getCell("pubblicazione.nome").setHtml("<strong> Totali:</strong>");
-        gridfooter.getCell("sped").setHtml("<b>"+getTotaleSped(items).toString()+"</b>");
-        gridfooter.getCell("sede").setHtml("<b>"+getTotaleSede(items).toString()+"</b>");
-        gridfooter.getCell("stimato").setHtml("<b>"+getTotaleStimato(items).toString()+"</b>");
-        gridfooter.getCell("definitivo").setHtml("<b>"+getTotaleDefinitivo(items).toString()+"</b>");
-        gridfooter.getCell("mese").setHtml("-------");
-        gridfooter.getCell("anno").setHtml("-------");
-
+        gridfooter.getCell("stimatoSped").setHtml("<b>"+getStimatoSped(items).toString()+"</b>");
+        gridfooter.getCell("stimatoSede").setHtml("<b>"+getStimatoSede(items).toString()+"</b>");
+        gridfooter.getCell("totaleStimato").setHtml("<b>"+getStimato(items).toString()+"</b>");
+        gridfooter.getCell("definitivoSped").setHtml("<b>"+getDefSped(items).toString()+"</b>");
+        gridfooter.getCell("definitivoSede").setHtml("<b>"+getDefSede(items).toString()+"</b>");
+        gridfooter.getCell("totaleDefinitivo").setHtml("<b>"+getDefinitivo(items).toString()+"</b>");
+ 
     }
 
-    private Integer getTotaleDefinitivo(List<Operazione> items) {
-        return items.stream().filter(o -> o.getDefinitivo() != null).mapToInt(o -> o.getDefinitivo()).sum();
+    private Integer getDefinitivo(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getTotaleDefinitivo()).sum();
     }
 
-    private Integer getTotaleStimato(List<Operazione> items) {
-        return items.stream().filter(o -> o.getStimato() != null).mapToInt(o -> o.getStimato()).sum();
+    private Integer getStimato(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getTotaleStimato()).sum();
     }
-    private Integer getTotaleSped(List<Operazione> items) {
-        return items.stream().filter(o -> o.getSped() != null).mapToInt(o -> o.getSped()).sum();
+    private Integer getStimatoSped(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getStimatoSped()).sum();
     }
-    private Integer getTotaleSede(List<Operazione> items) {
-        return items.stream().filter(o -> o.getSede() != null).mapToInt(o -> o.getSede()).sum();
+    private Integer getStimatoSede(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getStimatoSede()).sum();
     }
+    private Integer getDefSped(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getDefinitivoSped()).sum();
+    }
+    private Integer getDefSede(List<Operazione> items) {
+        return items.stream().mapToInt(o -> o.getDefinitivoSede()).sum();
+    }
+
+    
 }

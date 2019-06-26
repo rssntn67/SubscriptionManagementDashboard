@@ -4,17 +4,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
-import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 
 public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
@@ -25,9 +23,7 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Anno", EnumSet.allOf(Anno.class));
     private final ComboBox<TipoEstrattoConto> filterOmaggio = new ComboBox<TipoEstrattoConto>("Omaggio", EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
-    private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Sped.", EnumSet.allOf(InvioSpedizione.class));
-    private final CheckBox filterSospesa = new CheckBox("Sospesa");
-    private final CheckBox filterNonSospesa = new CheckBox("Attiva");
+    
         
     public EstrattoContoSearch(EstrattoContoDao spedizioneDao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
@@ -37,8 +33,7 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
         setComponents(new HorizontalLayout(filterIntestatario,filterDestinatario,filterPubblicazione),
-                      new HorizontalLayout(filterAnno,filterOmaggio,filterInvioSped,filterInvio),
-                      new HorizontalLayout(filterSospesa,filterNonSospesa));
+                      new HorizontalLayout(filterAnno,filterOmaggio,filterInvio));
 
         filterIntestatario.setEmptySelectionAllowed(true);
         filterIntestatario.setPlaceholder("Cerca per Intestatario");
@@ -85,13 +80,7 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
         filterOmaggio.setPlaceholder("Seleziona Omaggio");
         filterOmaggio.addSelectionListener(e ->onChange());
         filterInvio.setPlaceholder("Seleziona Invio");
-        filterInvio.addSelectionListener(e ->onChange());
-        filterInvioSped.setPlaceholder("Seleziona Sped.");
-        filterInvioSped.addSelectionListener(e ->onChange());
-        filterSospesa.addValueChangeListener(e ->onChange());
-        filterNonSospesa.addValueChangeListener(e ->onChange());
-
-        
+        filterInvio.addSelectionListener(e ->onChange());        
 
     }
 
@@ -121,15 +110,6 @@ public class EstrattoContoSearch extends SmdSearch<EstrattoConto> {
         }
         if (filterInvio.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      
-        }
-        if (filterInvioSped.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == filterInvioSped.getValue()).collect(Collectors.toList());      
-        }
-        if (filterSospesa.getValue()) {
-            spedizioni=spedizioni.stream().filter(s -> s.isSospesa()).collect(Collectors.toList());      
-        }
-        if (filterNonSospesa.getValue()) {
-            spedizioni=spedizioni.stream().filter(s -> !s.isSospesa()).collect(Collectors.toList());      
         }
         
         return spedizioni;
