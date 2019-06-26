@@ -11,7 +11,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.Stato;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -26,7 +26,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Invio Sped.", EnumSet.allOf(InvioSpedizione.class));
-    private final ComboBox<Stato> filterStatoStorico = new ComboBox<Stato>("Stato", EnumSet.allOf(Stato.class));
+    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
 
     public StoricoSearch(StoricoDao storicoDao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
@@ -87,7 +87,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterInvioSped.setPlaceholder("Seleziona Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
         filterStatoStorico.setPlaceholder("Seleziona Stato");
-        filterStatoStorico.setItemCaptionGenerator(Stato::getDescr);
+        filterStatoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
         filterStatoStorico.addSelectionListener(e ->onChange());
 
         

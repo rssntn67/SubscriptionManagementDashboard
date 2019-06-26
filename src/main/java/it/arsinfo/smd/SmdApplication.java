@@ -16,11 +16,10 @@ import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
-import it.arsinfo.smd.repository.ProspettoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -53,7 +52,6 @@ public class SmdApplication {
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao, 
-            ProspettoDao prospettoDao, 
             UserInfoDao userInfoDao, 
             PasswordEncoder passwordEncoder) {
         return (args) -> {
@@ -77,15 +75,11 @@ public class SmdApplication {
                       incassoDao, 
                       versamentoDao, 
                       operazioneDao,
-                      prospettoDao,
                       userInfoDao,
                       passwordEncoder,
                       loadOnlyPubblicazioniAdp
                       )).start();
             }
-            
-            
-            
         };
     }
 

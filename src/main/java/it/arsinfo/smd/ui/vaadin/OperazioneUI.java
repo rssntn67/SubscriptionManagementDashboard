@@ -12,7 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.Stato;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
@@ -86,7 +86,7 @@ public class OperazioneUI extends SmdUI {
                 float delta = 1.0f/(storici.size() + aggiornamenti.size());
                 pb.setValue(0.0f);
                 storici.stream().forEach( s -> {
-                    Stato calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
                     if (s.getStatoStorico() != calcolato) {
                         s.setStatoStorico(calcolato);
                         storicoDao.save(s);

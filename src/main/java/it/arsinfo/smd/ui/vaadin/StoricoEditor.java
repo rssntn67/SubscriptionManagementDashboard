@@ -13,7 +13,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.Stato;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -34,7 +34,7 @@ public class StoricoEditor
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
 
-    private final ComboBox<Stato> statoStorico = new ComboBox<Stato>("Stato", EnumSet.allOf(Stato.class));
+    private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
     private final TextField nota = new TextField("Aggiungi Nota");
 
@@ -57,7 +57,7 @@ public class StoricoEditor
         omaggio.setEmptySelectionAllowed(false);
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
-        statoStorico.setItemCaptionGenerator(Stato::getDescr);
+        statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
 
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponentsAndExpand(destinatario);

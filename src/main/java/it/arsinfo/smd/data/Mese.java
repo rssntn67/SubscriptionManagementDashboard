@@ -18,6 +18,12 @@ public enum Mese {
 	private int posizione;
 	private String code;
 
+	public static Mese getMeseSuccessivo(Mese mese) {
+	    if (mese == Mese.DICEMBRE) 
+	        return Mese.GENNAIO;
+	    return getByPosizione(mese.getPosizione()+1);
+	}
+	
 	public static Mese getByPosizione(int posizione) {
             for (Mese mese: values()) {
                 if (mese.getPosizione() == posizione) {

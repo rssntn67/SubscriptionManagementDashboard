@@ -7,8 +7,15 @@ public enum Anno {
 	ANNO2019(2019),
 	ANNO2020(2020),
 	ANNO2021(2021),
-	ANNO2022(2022),
-	ANNO2023(2023);
+        ANNO2022(2022),
+	ANNO2023(2023),
+        ANNO2024(2024),
+        ANNO2025(2025),
+        ANNO2026(2026),
+        ANNO2027(2027),
+        ANNO2028(2028),
+        ANNO2029(2029),
+	ANNO2030(2030);
 	
 	private int anno;
 	
@@ -17,6 +24,11 @@ public enum Anno {
 	    return Anno.valueOf("ANNO"+annomenouno);
 	    
 	}
+        public static Anno getAnnoSuccessivo(Anno anno) {
+            int annopiuuno= anno.getAnno()+1;
+            return Anno.valueOf("ANNO"+annopiuuno);
+            
+        }
 	private Anno(int anno) {
 		this.anno=anno;
 	}

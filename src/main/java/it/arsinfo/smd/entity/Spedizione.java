@@ -9,10 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoSpedizione;
 
 @Entity
 public class Spedizione implements SmdEntity {
@@ -27,6 +27,8 @@ public class Spedizione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
+    @Enumerated(EnumType.STRING)
+    private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
     private Mese meseSpedizione;
     private Anno annoSpedizione;
@@ -49,31 +51,16 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, EstrattoConto=%d, Numero=%d, Destinatario=%d, Sospeso=%b]", 
-                             id,estrattoConto.getId(),estrattoConto.getNumero(), estrattoConto.getDestinatario().getId(), isSospesa());
-    }
-
-    @Transient
-    public boolean isSospesa() {
-        boolean sospesa=false;
-        switch (estrattoConto.getStatoEstrattoConto()) {
-            case NUOVO:
-                break;
-            case VALIDO:
-                break;
-            case SOSPESO:
-                sospesa=true;
-                break;
-            default:
-                break;
-        }
-        return sospesa;
-    }
-
-    
-    @Transient
-    public String getDecodeSospesa() {
-        return Smd.decodeForGrid(isSospesa());
+        return String.format("Spedizione[id=%d, %s %s, %s %s %s, num. %d, %s, %s ]", 
+                             id,
+                             meseSpedizione,
+                             annoSpedizione,
+                             estrattoConto.getPubblicazione().getNome(),
+                             mesePubblicazione, 
+                             annoPubblicazione, 
+                             estrattoConto.getNumero(), 
+                             estrattoConto.getIntestazione(), 
+                             statoSpedizione);
     }
 
     public EstrattoConto getEstrattoConto() {
@@ -122,6 +109,14 @@ public class Spedizione implements SmdEntity {
 
     public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
         this.invioSpedizione = invioSpedizione;
+    }
+
+    public StatoSpedizione getStatoSpedizione() {
+        return statoSpedizione;
+    }
+
+    public void setStatoSpedizione(StatoSpedizione statoSpedizione) {
+        this.statoSpedizione = statoSpedizione;
     }
 
 }

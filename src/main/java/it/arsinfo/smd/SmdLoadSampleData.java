@@ -253,7 +253,7 @@ public class SmdLoadSampleData implements Runnable {
         ec.setImporto(importo);
         abb.addEstrattoConto(ec);
         for (Mese mese: pubblicazione.getMesiPubblicazione()) {
-                Spedizione spedizione = Smd.creaSpedizione(mese, abb.getAnno(), pubblicazione.getAnticipoSpedizione());
+                Spedizione spedizione = Smd.creaSpedizione(mese, abb.getAnno(), pubblicazione, InvioSpedizione.Spedizioniere,numero);
                 spedizione.setEstrattoConto(ec);
                 ec.addSpedizione(spedizione);
         }
@@ -829,7 +829,7 @@ public class SmdLoadSampleData implements Runnable {
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
                 EnumSet.allOf(Mese.class).stream().forEach(mese -> {
                     Operazione op = Smd.generaOperazione(p, abbonamentoDao.findByAnno(Anno.ANNO2017), mese, anno);
-                    if (op.getStimato() > 0 ) {
+                    if (op.getStimatoSped() > 0 ) {
                         operazioneDao.save(op);                               
                     }
                 })
@@ -839,18 +839,20 @@ public class SmdLoadSampleData implements Runnable {
         operazioneDao.findAll()
             .stream()
             .filter(o -> o.getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()
-                          && o.getDefinitivo() == -1 )
+                          && o.getDefinitivoSped() == -1 )
             .forEach(o -> {
-                o.setDefinitivo(o.getStimato()+30);
+                o.setDefinitivoSped(o.getStimatoSped()+30);
+                o.setDefinitivoSede(o.getStimatoSede()+30);
                 operazioneDao.save(o);
                 log.info(o.toString());
             });
         operazioneDao.findByAnno(Smd.getAnnoCorrente())
             .stream()
             .filter(o -> o.getMese().getPosizione() < Smd.getMeseCorrente().getPosizione()
-                    && o.getDefinitivo() == -1)
+                    && o.getDefinitivoSped() == -1)
             .forEach(o -> {
-                o.setDefinitivo(o.getStimato()+30);
+                o.setDefinitivoSped(o.getStimatoSped()+30);
+                o.setDefinitivoSede(o.getStimatoSede()+30);
                 operazioneDao.save(o);
                 log.info(o.toString());
             });

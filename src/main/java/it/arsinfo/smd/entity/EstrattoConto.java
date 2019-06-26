@@ -22,7 +22,6 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
-import it.arsinfo.smd.data.Stato;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
@@ -58,7 +57,6 @@ public class EstrattoConto implements SmdEntity {
     private BigDecimal importo = BigDecimal.ZERO;
     private BigDecimal spesePostali = BigDecimal.ZERO;
 
-    private Stato statoEstrattoConto=Stato.NUOVO;
     public EstrattoConto() {
     }
 
@@ -265,13 +263,4 @@ public class EstrattoConto implements SmdEntity {
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
     }
-
-    public Stato getStatoEstrattoConto() {
-        return statoEstrattoConto;
-    }
-
-    public void setStatoEstrattoConto(Stato statoEstrattoConto) {
-        this.statoEstrattoConto = statoEstrattoConto;
-    }
-
 }
