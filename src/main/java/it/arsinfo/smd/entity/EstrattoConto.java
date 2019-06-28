@@ -119,8 +119,8 @@ public class EstrattoConto implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("s:EstrattoConto[id=%d, Abbonamento=%d, Pubblicazione=%d, Numero=%d]", 
-                             id,abbonamento.getId(),pubblicazione.getId(),numero, tipoEstrattoConto);
+        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoEstrattoConto);
     }
         
     public BigDecimal getImporto() {
@@ -168,10 +168,13 @@ public class EstrattoConto implements SmdEntity {
         for (Spedizione spedizione:spedizioni) {
             mesiPubblicazione.add(spedizione.getMesePubblicazione());
         }
-        if (pubblicazione.getMesiPubblicazione() == mesiPubblicazione) {
-            return true;
+        for (Mese mese: pubblicazione.getMesiPubblicazione() ) {
+            if (mesiPubblicazione.contains(mese)) {
+                continue;
+            }
+            return false;
         }
-        return false;
+        return true;
     }
     
     public int getNumeroSpedizioniConSpesePostali() {

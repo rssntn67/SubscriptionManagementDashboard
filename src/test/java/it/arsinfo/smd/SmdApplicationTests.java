@@ -434,32 +434,6 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Abbonamenti found per Costo > 0 e Versamenti Not Null");
-        log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNotNull(BigDecimal.ZERO)) {
-            log.info(abb.toString());
-        }
-        log.info("");
-
-        log.info("Abbonamenti found per Costo > 0 e Versamenti Null");
-        log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThanAndVersamentoNull(BigDecimal.ZERO)) {
-            log.info(abb.toString());
-        }
-        log.info("");
-
-        log.info("Abbonamenti found per Costo > 0 ");
-        log.info("-------------------------------");
-        for (Abbonamento abb : abbonamentoDao.findByCostoGreaterThan(BigDecimal.ZERO)) {
-            log.info(abb.toString());
-            if (abb.getVersamento() == null)
-                log.info("versamento:null");
-            else
-                log.info(abb.getVersamento().getId().toString());
-
-        }
-        log.info("");
-
         log.info("versamenti found by incasso1");
         log.info("-------------------------------");
         for (Versamento versamento : versamentoDao.findByIncasso(incasso1)) {
@@ -481,8 +455,9 @@ public class SmdApplicationTests {
             log.info(storico.toString());
             StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
+            assertEquals(StatoStorico.NUOVO, storico.getStatoStorico());
             if (storico.getTipoEstrattoConto() == TipoEstrattoConto.Ordinario || storico.getTipoEstrattoConto() == TipoEstrattoConto.Scontato) {
-                assertEquals(StatoStorico.NUOVO, ss);
+                assertEquals(StatoStorico.SOSPESO, ss);
             } else {
                 assertEquals(StatoStorico.VALIDO, ss);                
             }

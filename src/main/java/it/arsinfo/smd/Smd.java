@@ -29,13 +29,12 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Sostitutivo;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -87,23 +86,23 @@ public class Smd {
 
     public static boolean spedizionePosticipata(Spedizione spedizione, int anticipoSpedizione) {
         if (spedizione.getAnnoPubblicazione() == spedizione.getAnnoSpedizione()) {
-            return spedizione.getMesePubblicazione().getPosizione() - spedizione.getMeseSpedizione().getPosizione() == anticipoSpedizione;
+            return !(spedizione.getMesePubblicazione().getPosizione() - spedizione.getMeseSpedizione().getPosizione() == anticipoSpedizione);
         }
         
         if (spedizione.getAnnoPubblicazione().getAnno() > spedizione.getAnnoSpedizione().getAnno()) {
-            return 12 - spedizione.getMeseSpedizione().getPosizione() + spedizione.getMesePubblicazione().getPosizione() == anticipoSpedizione;
+            return !(12 - spedizione.getMeseSpedizione().getPosizione() + spedizione.getMesePubblicazione().getPosizione() == anticipoSpedizione);
         }
-        return false;
+        return true;
     }
     
-    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese inizioMese, Anno inizioAnno, Mese fineMese, Anno fineAnno, EnumSet<Mese> mesi) {
-        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese inizioMese, Anno inizioAnno, Mese fineMese, Anno fineAnno, EnumSet<Mese> mesi) throws UnsupportedOperationException {
         if (inizioAnno.getAnno() > fineAnno.getAnno()) {
-            return map;
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
         }
         if (inizioAnno == fineAnno && inizioMese.getPosizione() > fineMese.getPosizione()) {
-            return map;
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
         }
+        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
         Anno anno = inizioAnno;
         while (anno.getAnno() <= fineAnno.getAnno()) {
             EnumSet<Mese> mesiin = EnumSet.noneOf(Mese.class);
@@ -131,45 +130,44 @@ public class Smd {
         return map;
     }
 
-    public static EstrattoConto creaEstrattoConto (
-            Abbonamento abb, 
-            Pubblicazione p, 
-            Anagrafica destinatario, 
-            TipoEstrattoConto tipoEstrattoConto,
-            Invio invio,
+    public static EstrattoConto generaEC(
+            EstrattoConto ec,
             InvioSpedizione invioSpedizione,
-            Integer numero,
             Mese meseinizio,
             Anno annoinizio,
             Mese mesefine,
             Anno annofine
-            ) {
-        EstrattoConto ec = new EstrattoConto();
-        ec.setAbbonamento(abb);
-        ec.setPubblicazione(p);
-        ec.setDestinatario(destinatario);
-        ec.setTipoEstrattoConto(tipoEstrattoConto);
-        ec.setNumero(numero);
-        ec.setInvio(invio);
-        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(meseinizio, annoinizio, mesefine, annofine, p.getMesiPubblicazione());
+            ) throws UnsupportedOperationException {
+        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(meseinizio, annoinizio, mesefine, annofine, ec.getPubblicazione().getMesiPubblicazione());
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).stream().forEach(mese -> {
-                Spedizione spedizione = creaSpedizione(mese, anno, p, invioSpedizione, numero);
+                Spedizione spedizione = creaSpedizione(ec,mese, anno, invioSpedizione);
                 spedizione.setEstrattoConto(ec);
                 ec.addSpedizione(spedizione);
             });
+        }
+        if (ec.getSpedizioni().isEmpty()) {
+            throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
         }
         calcoloImportoEC(ec);
         return ec;
     }
     
-    public static Spedizione creaSpedizione(Mese mesePubblicazione, Anno annoPubblicazione, Pubblicazione p, InvioSpedizione invioSpedizione, int numero) {
+    public static Spedizione creaSpedizione(EstrattoConto ec, Mese mesePubblicazione, Anno annoPubblicazione, InvioSpedizione invioSpedizione) throws UnsupportedOperationException {
         Mese spedMese = null;
         Anno spedAnno = null;
-        int anticipoSpedizione = p.getAnticipoSpedizione();
-        int max_spedizioniere=p.getMaxSpedizioniere();
+        if (ec == null ) {
+            throw new UnsupportedOperationException("cannot create spedizione for null estratto conto: " +invioSpedizione+mesePubblicazione+annoPubblicazione);
+        }
+        if (ec.getPubblicazione() == null ) {
+            throw new UnsupportedOperationException("cannot create spedizione for null pubblicazione: " +invioSpedizione+mesePubblicazione+annoPubblicazione);
+        }
+        if (!ec.getPubblicazione().getMesiPubblicazione().contains(mesePubblicazione)) {
+            throw new UnsupportedOperationException("cannot create spedizione for month pubblicazione: " +invioSpedizione+mesePubblicazione+annoPubblicazione);            
+        }
+        int anticipoSpedizione = ec.getPubblicazione().getAnticipoSpedizione();
         if (mesePubblicazione.getPosizione()-anticipoSpedizione <= 0) {
-            spedMese = Mese.getByPosizione(12-mesePubblicazione.getPosizione()-anticipoSpedizione);
+            spedMese = Mese.getByPosizione(12+mesePubblicazione.getPosizione()-anticipoSpedizione);
             spedAnno = Anno.getAnnoPrecedente(annoPubblicazione);
         } else {
             spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()-anticipoSpedizione);
@@ -180,15 +178,13 @@ public class Smd {
             spedAnno = getAnnoCorrente();
             invioSpedizione = InvioSpedizione.AdpSede;
         }
-        if (numero > max_spedizioniere) {
-            invioSpedizione = InvioSpedizione.AdpSede;
-        }
         Spedizione spedizione = new Spedizione();
         spedizione.setMesePubblicazione(mesePubblicazione);
         spedizione.setAnnoPubblicazione(annoPubblicazione);
         spedizione.setMeseSpedizione(spedMese);
         spedizione.setAnnoSpedizione(spedAnno);
         spedizione.setInvioSpedizione(invioSpedizione);
+        spedizione.setEstrattoConto(ec);
         return spedizione;
     }
     public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
@@ -228,21 +224,20 @@ public class Smd {
                 for (Storico storico: cassaStorico.get(cassa)) {
                     Pubblicazione pubblicazione = 
                             campagnapubblicazioniIds.get(storico.getPubblicazione().getId());
-                    final EstrattoConto estrattoConto = new EstrattoConto();
-                    estrattoConto.setStorico(storico);
-                    estrattoConto.setAbbonamento(abbonamento);
-                    estrattoConto.setPubblicazione(pubblicazione);
-                    estrattoConto.setNumero(storico.getNumero());
-                    estrattoConto.setTipoEstrattoConto(storico.getTipoEstrattoConto());
-                    estrattoConto.setDestinatario(storico.getDestinatario());
-                    estrattoConto.setInvio(storico.getInvio());
+                    final EstrattoConto ec = new EstrattoConto();
+                    ec.setStorico(storico);
+                    ec.setAbbonamento(abbonamento);
+                    ec.setPubblicazione(pubblicazione);
+                    ec.setNumero(storico.getNumero());
+                    ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+                    ec.setDestinatario(storico.getDestinatario());
+                    ec.setInvio(storico.getInvio());
                     storico.getPubblicazione().getMesiPubblicazione().forEach( mese -> {
-                        Spedizione spedizione = Smd.creaSpedizione(mese,campagna.getAnno(), pubblicazione,storico.getInvioSpedizione(),storico.getNumero());
-                        spedizione.setEstrattoConto(estrattoConto);
-                        estrattoConto.addSpedizione(spedizione);
+                        Spedizione spedizione = Smd.creaSpedizione(ec, mese,campagna.getAnno(), storico.getInvioSpedizione());
+                        ec.addSpedizione(spedizione);
                     });
-                    calcoloImportoEC(estrattoConto);
-                    abbonamento.addEstrattoConto(estrattoConto);
+                    calcoloImportoEC(ec);
+                    abbonamento.addEstrattoConto(ec);
                 }
                 abbonamenti.add(abbonamento);
             }
@@ -257,11 +252,11 @@ public class Smd {
         double spesePostali = 0.0;
         switch (ec.getTipoEstrattoConto()) {
         case Ordinario:
-            spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
             costo = ec.getPubblicazione().getAbbonamentoItalia().doubleValue() * ec.getNumero().doubleValue();
             if (!ec.hasAllMesiPubblicazione()) {
+            spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
               
-             costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
+            costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
                      * ec.getNumero().doubleValue()
                      * Double.valueOf(ec.getSpedizioni().size());
             }
@@ -276,11 +271,13 @@ public class Smd {
             break;
 
         case Scontato:
+            costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue() * ec.getNumero().doubleValue();
             if (!ec.hasAllMesiPubblicazione()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
+                costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
+                        * ec.getNumero().doubleValue()
+                        * Double.valueOf(ec.getSpedizioni().size());
             }
-            costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue()
-                * ec.getNumero().doubleValue();  
             break;
 
         case Sostenitore:

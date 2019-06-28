@@ -40,7 +40,7 @@ public class Storico implements SmdEntity {
     private List<Nota> note = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoconto = TipoEstrattoConto.Ordinario;
+    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
@@ -129,16 +129,21 @@ public class Storico implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, Pubblicazione='%d', Intestatario='%d', Destinatario='%d', Numero='%d', Omaggio=%s, Invio=%s, Stato=%b, Cassa=%s]",
-                             id, pubblicazione.getId(), intestatario.getId(), destinatario.getId(), numero,tipoEstrattoconto,invio,statoStorico,cassa);
+        return String.format("Storico[id=%d, , '%d %s' a '%s', ->'%s', %s %s, %s, %s]",
+                             id, 
+                             numero, 
+                             pubblicazione.getNome(), 
+                             intestatario.getCaption(), 
+                             destinatario.getCaption(), 
+                             tipoEstrattoConto,invio,statoStorico,cassa);
     }
 
     public TipoEstrattoConto getTipoEstrattoConto() {
-        return tipoEstrattoconto;
+        return tipoEstrattoConto;
     }
 
     public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
-        this.tipoEstrattoconto = omaggio;
+        this.tipoEstrattoConto = omaggio;
     }
 
     public Invio getInvio() {

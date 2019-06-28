@@ -19,6 +19,5 @@ public interface EstrattoContoDao extends JpaRepository<EstrattoConto, Long> {
         List<EstrattoConto> findByAbbonamento(TipoEstrattoConto abbonamento);
         List<EstrattoConto> findByDestinatario(Anagrafica destinatario);
         List<EstrattoConto> findByDestinatarioAndPubblicazione(Anagrafica destinatario, Pubblicazione pubblicazione);
-        List<EstrattoConto> findByOmaggio(TipoEstrattoConto omaggio);
         List<EstrattoConto> findByInvio(Invio invio);
 }

@@ -57,8 +57,6 @@ public class Pubblicazione implements SmdEntity {
 
     private int anticipoSpedizione=3;
     
-    private int maxSpedizioniere=0;
-
     @Enumerated(EnumType.STRING)
     private Anno anno=Smd.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
@@ -385,11 +383,4 @@ public class Pubblicazione implements SmdEntity {
         this.speseSpedizione = speseSpedizione;
     }
 
-    public int getMaxSpedizioniere() {
-        return maxSpedizioniere;
-    }
-
-    public void setMaxSpedizioniere(int maxSpedizioniere) {
-        this.maxSpedizioniere = maxSpedizioniere;
-    }
 }

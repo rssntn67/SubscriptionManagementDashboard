@@ -237,7 +237,12 @@ public class SmdLoadSampleData implements Runnable {
         abb.setIntestatario(intestatario);
         estrattiConto.cellSet()
         .stream().forEach( ect -> {
-            EstrattoConto ec = Smd.creaEstrattoConto(abb, ect.getRowKey(), ect.getColumnKey(), TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere, ect.getValue(), inizio, anno, fine, anno);
+            EstrattoConto ec = new EstrattoConto();
+            ec.setAbbonamento(abb);
+            ec.setPubblicazione(ect.getRowKey());
+            ec.setDestinatario(ect.getColumnKey());
+            ec.setNumero(ect.getValue());
+            ec = Smd.generaEC(ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
             abb.addEstrattoConto(ec);
         });
         return abb;   
@@ -253,8 +258,7 @@ public class SmdLoadSampleData implements Runnable {
         ec.setImporto(importo);
         abb.addEstrattoConto(ec);
         for (Mese mese: pubblicazione.getMesiPubblicazione()) {
-                Spedizione spedizione = Smd.creaSpedizione(mese, abb.getAnno(), pubblicazione, InvioSpedizione.Spedizioniere,numero);
-                spedizione.setEstrattoConto(ec);
+                Spedizione spedizione = Smd.creaSpedizione(ec,mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
                 ec.addSpedizione(spedizione);
         }
         return ec;

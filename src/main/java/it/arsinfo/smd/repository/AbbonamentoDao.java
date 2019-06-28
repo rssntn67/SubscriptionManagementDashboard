@@ -1,6 +1,5 @@
 package it.arsinfo.smd.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,9 +18,6 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 	List<Abbonamento> findByVersamento(Versamento versamento);
 	List<Abbonamento> findByCampo(String campo);
         List<Abbonamento> findByAnno(Anno anno);
-	List<Abbonamento> findByCostoGreaterThanAndVersamentoNotNull(BigDecimal costo);
-        List<Abbonamento> findByCostoGreaterThanAndVersamentoNull(BigDecimal costo);
-        List<Abbonamento> findByCostoGreaterThan(BigDecimal costo);
 	Long deleteByCampagna(Campagna campagna);
 
 }
