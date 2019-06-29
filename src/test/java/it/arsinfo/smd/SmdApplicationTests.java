@@ -182,7 +182,7 @@ public class SmdApplicationTests {
                               versamentoDao, 
                               operazioneDao,
                               userInfoDao,
-                              passwordEncoder,false).run();
+                              passwordEncoder,false,false,true).run();
 
         auth =
                 new UsernamePasswordAuthenticationToken("adp", "adp");

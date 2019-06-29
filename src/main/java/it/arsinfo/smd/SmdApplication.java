@@ -36,6 +36,9 @@ public class SmdApplication {
     @Value("${load.pubblicazioni.adp}")
     private String loadPubblicazioniAdp;
 
+    @Value("${load.sample.anagrafica}")
+    private String loadSampleAnagraficaAdp;
+
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
     }
@@ -62,9 +65,13 @@ public class SmdApplication {
                 log.info("creato user admin/admin");
             }
 
-            boolean load = loadSampleData != null && loadSampleData.equals("true");
-            boolean loadOnlyPubblicazioniAdp = !load && loadPubblicazioniAdp != null && loadPubblicazioniAdp.equals("true");
-            if (load || loadOnlyPubblicazioniAdp) {
+            boolean loadSD = loadSampleData != null && loadSampleData.equals("true");
+            log.info("loadSampleData="+loadSD);
+            boolean loadPAdp = loadPubblicazioniAdp != null && loadPubblicazioniAdp.equals("true");
+            log.info("loadPubblicazioniAdp="+loadPAdp);
+            boolean loadSA = loadSampleAnagraficaAdp != null && loadSampleAnagraficaAdp.equals("true");
+            log.info("loadSampleAnagraficaAdp="+loadSA);
+            if (loadSD || loadPAdp || loadSA) {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 
@@ -77,7 +84,9 @@ public class SmdApplication {
                       operazioneDao,
                       userInfoDao,
                       passwordEncoder,
-                      loadOnlyPubblicazioniAdp
+                      loadPAdp,
+                      loadSA,
+                      loadSD
                       )).start();
             }
         };

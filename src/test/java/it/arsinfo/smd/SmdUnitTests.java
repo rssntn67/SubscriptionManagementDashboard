@@ -305,7 +305,7 @@ public class SmdUnitTests {
         
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             EstrattoConto ec = creaECStd(messaggio, tpec, 10); 
-            assertTrue(ec.hasAllMesiPubblicazione());
+            assertTrue(ec.isAbbonamentoAnnuale());
             assertEquals(11, ec.getSpedizioni().size());
             System.err.println(ec);
             for (Spedizione s : ec.getSpedizioni()) {
@@ -318,7 +318,7 @@ public class SmdUnitTests {
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             EstrattoConto ec = creaECStd(lodare, tpec, 10); 
-            assertTrue(ec.hasAllMesiPubblicazione());
+            assertTrue(ec.isAbbonamentoAnnuale());
             assertEquals(12, ec.getSpedizioni().size());
             assertEquals(0, ec.getNumeroSpedizioniConSpesePostali());
             verificaImportoAbbonamentoAnnuale(ec,lodare,10);
@@ -327,7 +327,7 @@ public class SmdUnitTests {
         Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             EstrattoConto ec = creaECStd(blocchetti, tpec, 45); 
-            assertTrue(ec.hasAllMesiPubblicazione());
+            assertTrue(ec.isAbbonamentoAnnuale());
             assertEquals(2, ec.getSpedizioni().size());
             assertEquals(0, ec.getNumeroSpedizioniConSpesePostali());
             verificaImportoAbbonamentoAnnuale(ec,blocchetti,45);
@@ -336,7 +336,7 @@ public class SmdUnitTests {
         Pubblicazione estratti = SmdLoadSampleData.getEstratti();
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             EstrattoConto ec = creaECStd( estratti, tpec, 11); 
-            assertTrue(ec.hasAllMesiPubblicazione());
+            assertTrue(ec.isAbbonamentoAnnuale());
             assertEquals(1, ec.getSpedizioni().size());
             assertEquals(0, ec.getNumeroSpedizioniConSpesePostali());
             verificaImportoAbbonamentoAnnuale(ec,estratti,11);
@@ -348,7 +348,7 @@ public class SmdUnitTests {
     public void testCalcolaImporti() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         EstrattoConto ec = creaEC(Mese.GENNAIO, Smd.getAnnoPassato(), Mese.MARZO, Smd.getAnnoPassato(),messaggio, TipoEstrattoConto.Scontato, 1);
-        assertTrue(!ec.hasAllMesiPubblicazione());
+        assertTrue(!ec.isAbbonamentoAnnuale());
         assertEquals(3, ec.getSpedizioni().size());
         assertEquals(3, ec.getNumeroSpedizioniConSpesePostali());
         assertEquals(messaggio.getCostoUnitario().doubleValue()*3, ec.getImporto().doubleValue(),0);

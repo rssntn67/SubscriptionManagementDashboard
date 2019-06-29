@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
@@ -163,10 +164,18 @@ public class EstrattoConto implements SmdEntity {
         return spedizioni.remove(spedizione);
     }
 
-    public boolean hasAllMesiPubblicazione() {
+    public boolean isAbbonamentoAnnuale() {
+        if (spedizioni.size() != pubblicazione.getMesiPubblicazione().size()) {
+            return false;
+        }
         EnumSet<Mese> mesiPubblicazione = EnumSet.noneOf(Mese.class);
+        EnumSet<Anno> anniPubblicazione = EnumSet.noneOf(Anno.class);
         for (Spedizione spedizione:spedizioni) {
             mesiPubblicazione.add(spedizione.getMesePubblicazione());
+            anniPubblicazione.add(spedizione.getAnnoPubblicazione());
+            if (anniPubblicazione.size() > 1) {
+                return false;
+            }
         }
         for (Mese mese: pubblicazione.getMesiPubblicazione() ) {
             if (mesiPubblicazione.contains(mese)) {

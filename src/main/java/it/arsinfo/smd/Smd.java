@@ -138,6 +138,11 @@ public class Smd {
             Mese mesefine,
             Anno annofine
             ) throws UnsupportedOperationException {
+        log.info("generaEC: "+ ec);
+        log.info("generaEC: meseInizio:"+ meseinizio);
+        log.info("generaEC: annoInizio:"+ annoinizio);
+        log.info("generaEC: meseFine:"+ mesefine);
+        log.info("generaEC: annoFine:"+ annofine);
         Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(meseinizio, annoinizio, mesefine, annofine, ec.getPubblicazione().getMesiPubblicazione());
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).stream().forEach(mese -> {
@@ -253,7 +258,7 @@ public class Smd {
         switch (ec.getTipoEstrattoConto()) {
         case Ordinario:
             costo = ec.getPubblicazione().getAbbonamentoItalia().doubleValue() * ec.getNumero().doubleValue();
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale() || ec.getNumeroSpedizioniConSpesePostali() > 0) {
             spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
               
             costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
@@ -263,7 +268,7 @@ public class Smd {
             break;
 
         case Web:
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale()) {
                     throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoWeb().doubleValue()
@@ -272,7 +277,7 @@ public class Smd {
 
         case Scontato:
             costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue() * ec.getNumero().doubleValue();
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale() || ec.getNumeroSpedizioniConSpesePostali() > 0) {
                 spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
                 costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
                         * ec.getNumero().doubleValue()
@@ -281,7 +286,7 @@ public class Smd {
             break;
 
         case Sostenitore:
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoSostenitore().doubleValue()
@@ -289,7 +294,7 @@ public class Smd {
             break;
                 
         case EuropaBacinoMediterraneo:
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoEuropa().doubleValue()
@@ -297,7 +302,7 @@ public class Smd {
             break;
                 
         case AmericaAfricaAsia:
-            if (!ec.hasAllMesiPubblicazione()) {
+            if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoAmericaAsiaAfrica().doubleValue()

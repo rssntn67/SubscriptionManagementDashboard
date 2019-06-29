@@ -68,8 +68,10 @@ public class SmdLoadSampleData implements Runnable {
     private final UserInfoDao userInfoDao;
     private final PasswordEncoder passwordEncoder;
     
-    private final boolean loadOnlyPubblicazioniAdp;
-    private Pubblicazione messaggio;
+    private final boolean loadPubblicazioniAdp;
+    private final boolean loadSampleAnagrafica;
+    private final boolean loadSampleData;
+       private Pubblicazione messaggio;
     private Pubblicazione lodare;
     private Pubblicazione estratti;
     private Pubblicazione blocchetti;
@@ -283,7 +285,9 @@ public class SmdLoadSampleData implements Runnable {
             OperazioneDao operazioneDao,
             UserInfoDao userInfoDao,
             PasswordEncoder passwordEncoder,
-            boolean loadOnlyPubblicazioniAdp
+            boolean loadPubblicazioniAdp,
+            boolean loadSampleAnagrafica,
+            boolean loadSampleData
     ) {
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
@@ -296,7 +300,9 @@ public class SmdLoadSampleData implements Runnable {
         this.operazioneDao=operazioneDao;
         this.userInfoDao=userInfoDao;
         this.passwordEncoder=passwordEncoder;
-        this.loadOnlyPubblicazioniAdp=loadOnlyPubblicazioniAdp;
+        this.loadPubblicazioniAdp=loadPubblicazioniAdp;
+        this.loadSampleAnagrafica=loadSampleAnagrafica;
+        this.loadSampleData=loadSampleData;
     }
     
     public static Pubblicazione getMessaggio() {
@@ -738,18 +744,24 @@ public class SmdLoadSampleData implements Runnable {
     }
     @Override
     public void run() {
-        log.info("Start Loading Sample Data");
         
-        loadPubblicazioniAdp();
-        if (loadOnlyPubblicazioniAdp) {
-            return;
+        if (loadPubblicazioniAdp || loadSampleData) {
+            log.info("Start Loading Pubblicazioni Adp");
+           loadPubblicazioniAdp();
+            log.info("End Loading Pubblicazioni Adp");
         }
         
-        loadAnagrafica();
-        loadStorico();
-        loadSampleData();
-        
-        log.info("End Loading Sample Data");
+        if (loadSampleAnagrafica || loadSampleData) {
+            log.info("Start Loading Sample Anagrafica");
+            loadAnagrafica();
+            log.info("End Loading Sample Anagrafica");
+        }
+        if (loadSampleData) {
+            log.info("Start Loading Sample Data");
+            loadStorico();
+            loadSampleData();
+            log.info("End Loading Sample Data");
+        }        
 
     }
 

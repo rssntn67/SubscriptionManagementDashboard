@@ -147,23 +147,23 @@ public class EstrattoContoEditor
     }
 
     public Anno getAnnoInizio() {
-        return annoInizio.getValue();
+        return annoInizio.getOptionalValue().get();
     }
     
     public Anno getAnnoFine() {
-        return annoInizio.getValue();
+        return annoFine.getOptionalValue().get();
     }
     
     public Mese getMeseInizio() {
-        return meseInizio.getValue();
+        return meseInizio.getOptionalValue().get();
     }
     
     public Mese getMeseFine() {
-        return meseFine.getValue();
+        return meseFine.getOptionalValue().get();
     }
 
     public InvioSpedizione getInvioSpedizione() {
-        return invioSpedizione.getValue();
+        return invioSpedizione.getOptionalValue().get();
     }
     
     public void setDestinatario(Anagrafica anagrafica) {
