@@ -127,14 +127,10 @@ public class IncassoUI extends IncassoAbstractUI {
                     .stream()
                     .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCampo() != null)
                     .forEach(v-> {
-                        List<Abbonamento> associabili = getAssociabili(v);
-                        
-                        if (associabili.size() == 1 ) {
-                            Abbonamento associabile = associabili.iterator().next();
-                            if (v.getImporto().subtract(associabile.getTotale()).signum() == 0) {
-                                incassa(associabile, v);
-                            }
-                        }
+                    getAssociabili(v)
+                    .stream()
+                    .filter(abb -> abb.getCampo() != null && abb.getCampo().equals(v.getCampo()))
+                    .forEach(abb -> incassa(abb, v));                        
                     });
             }
             grid.populate(search.find());                

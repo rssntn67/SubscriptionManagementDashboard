@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
@@ -70,11 +69,9 @@ public abstract class IncassoAbstractUI extends SmdUI {
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
-                .filter(abb -> abb.getStatoIncasso() == Incassato.No 
-                        && versamento.getResiduo().subtract(abb.getTotale()).compareTo(BigDecimal.ZERO) >= 0
-                        && (versamento.getBollettino() != Bollettino.TIPO674) 
-                            || abb.getCampo().equals(versamento.getCampo())
-                            )
+                .filter(abb -> 
+                    abb.getStatoIncasso() == Incassato.No 
+                    )
                 .collect(Collectors.toList());
     }
     

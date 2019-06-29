@@ -12,6 +12,8 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoSpedizione;
 
 @Entity
@@ -118,5 +120,51 @@ public class Spedizione implements SmdEntity {
     public void setStatoSpedizione(StatoSpedizione statoSpedizione) {
         this.statoSpedizione = statoSpedizione;
     }
+
+    @Transient
+    public String getPubblicazione() {
+        return estrattoConto.getPubblicazione().getNome();
+    }
+    
+    @Transient
+    public Integer getNumero() {
+        return estrattoConto.getNumero();
+    }
+    
+    @Transient
+    public String getIntestazione() {
+        return estrattoConto.getIntestazione();
+    }
+    
+    @Transient
+    public String getSottoIntestazione() {
+        return estrattoConto.getSottoIntestazione();
+    }
+    
+    @Transient
+    public String getIndirizzo() {
+        return estrattoConto.getIndirizzo();
+    }
+
+    @Transient
+    public String getCap() {
+        return estrattoConto.getCap();
+    }
+
+    @Transient
+    public String getCitta() {
+        return estrattoConto.getCitta();
+    }
+    
+    @Transient
+    public Provincia getProvincia() {
+        return estrattoConto.getProvincia();
+    }
+    
+    @Transient
+    public Paese getPaese() {
+        return estrattoConto.getPaese();
+    }
+
 
 }

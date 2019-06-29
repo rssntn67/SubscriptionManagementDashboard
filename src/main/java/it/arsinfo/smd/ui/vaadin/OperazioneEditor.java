@@ -74,6 +74,7 @@ public class OperazioneEditor
             .withConverter(new StringToIntegerConverter(""))
             .withValidator(num -> num > 0,"deve essere maggiore di 0")
             .bind(Operazione::getDefinitivoSped, Operazione::setDefinitivoSped);
+        
         getBinder()
         .forField(stimatoSped)
         .withConverter(new StringToIntegerConverter(""))
@@ -85,12 +86,13 @@ public class OperazioneEditor
         .withConverter(new StringToIntegerConverter(""))
         .withValidator(num -> num > 0,"deve essere maggiore di 0")
         .bind(Operazione::getDefinitivoSede, Operazione::setDefinitivoSede);
-    getBinder()
-    .forField(stimatoSped)
+    
+        getBinder()
+    .forField(stimatoSede)
     .withConverter(new StringToIntegerConverter(""))
     .bind(Operazione::getStimatoSede, Operazione::setStimatoSede);
 
-        getBinder().bindInstanceFields(this);
+    getBinder().bindInstanceFields(this);
 
     }
 
