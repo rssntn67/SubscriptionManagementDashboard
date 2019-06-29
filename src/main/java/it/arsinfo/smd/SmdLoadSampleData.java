@@ -235,6 +235,7 @@ public class SmdLoadSampleData implements Runnable {
         abb.setAnno(anno);
         abb.setCassa(cassa);
         abb.setIntestatario(intestatario);
+        abb.setCampo(Smd.generaVCampo(anno));
         estrattiConto.cellSet()
         .stream().forEach( ect -> {
             EstrattoConto ec = new EstrattoConto();
