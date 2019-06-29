@@ -44,7 +44,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
-        HorizontalLayout pri = new HorizontalLayout(statoAbbonamento,campagna,intestatario,
+        HorizontalLayout pri = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
                                                     anno);
         HorizontalLayout sec = new HorizontalLayout(incassato,cassa,campo,
                                                     ccp);
@@ -63,7 +63,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
 
-        statoAbbonamento.setReadOnly(true);
         statoAbbonamento.setItemCaptionGenerator(StatoAbbonamento::getDescr);
         campagna.setReadOnly(true);
         totale.setReadOnly(true);
@@ -94,15 +93,16 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
         getBinder().forField(incassato).bind("incassato");
+        getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
 
     }
 
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled(persisted && abbonamento.getVersamento() != null);
-        getSave().setEnabled(!persisted);
-        getCancel().setEnabled(!persisted);
+        getDelete().setEnabled(persisted && abbonamento.getVersamento() == null);
+        getSave().setEnabled(!persisted || abbonamento.getCampagna() == null);
+        getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null);
         intestatario.setReadOnly(persisted);
         anno.setReadOnly(persisted);
         campo.setVisible(persisted);
@@ -110,6 +110,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         ccp.setReadOnly(persisted);
         incassato.setVisible(persisted);
         cassa.setReadOnly(persisted);
+        campagna.setVisible(persisted);
+        statoAbbonamento.setReadOnly(persisted && abbonamento.getCampagna() != null);
 
         if (persisted && 
                 abbonamento.getTotale().doubleValue() == BigDecimal.ZERO.doubleValue()) {

@@ -13,9 +13,9 @@ public class EstrattoContoAdd extends SmdAdd<EstrattoConto> {
     
     @Override
     public EstrattoConto generate() {
-        EstrattoConto spedizione = new EstrattoConto();
-        spedizione.setAbbonamento(abbonamento);
-        return spedizione;
+        EstrattoConto ec = new EstrattoConto();
+        ec.setAbbonamento(abbonamento);
+        return ec;
     }
 
     public Abbonamento getAbbonamento() {

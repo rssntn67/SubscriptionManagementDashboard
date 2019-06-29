@@ -76,6 +76,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
+                get().setCampo(Smd.generaVCampo(get().getAnno()));
                 super.save();
             }
         };
@@ -93,7 +94,13 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                Smd.calcoloImportoEC(get());
+                try {
+                    Smd.generaEC(
+                         get(),getInvioSpedizione(),getMeseInizio(),getAnnoInizio(),getMeseFine(),getAnnoFine());
+                } catch (UnsupportedOperationException e) {
+                    Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
                 get().setAbbonamento(editor.get());
                 editor.get().addEstrattoConto(get());
                 onChange();
@@ -156,6 +163,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
             hideMenu();
             estrattoContoEditor.edit(estrattoContoAdd.generate());
+            estrattoContoEditor.setDestinatario(editor.get().getIntestatario());
             editor.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });

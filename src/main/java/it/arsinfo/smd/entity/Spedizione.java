@@ -32,10 +32,14 @@ public class Spedizione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
+    @Enumerated(EnumType.STRING)
     private Mese meseSpedizione;
+    @Enumerated(EnumType.STRING)
     private Anno annoSpedizione;
     
+    @Enumerated(EnumType.STRING)
     private Mese mesePubblicazione;
+    @Enumerated(EnumType.STRING)
     private Anno annoPubblicazione;
 
     public Spedizione() {
