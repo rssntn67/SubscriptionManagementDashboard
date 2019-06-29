@@ -71,7 +71,8 @@ public class SmdLoadSampleData implements Runnable {
     private final boolean loadPubblicazioniAdp;
     private final boolean loadSampleAnagrafica;
     private final boolean loadSampleData;
-       private Pubblicazione messaggio;
+    private final boolean createDemoUser;
+    private Pubblicazione messaggio;
     private Pubblicazione lodare;
     private Pubblicazione estratti;
     private Pubblicazione blocchetti;
@@ -287,6 +288,7 @@ public class SmdLoadSampleData implements Runnable {
             PasswordEncoder passwordEncoder,
             boolean loadPubblicazioniAdp,
             boolean loadSampleAnagrafica,
+            boolean createDemoUser,
             boolean loadSampleData
     ) {
         this.anagraficaDao=anagraficaDao;
@@ -302,6 +304,7 @@ public class SmdLoadSampleData implements Runnable {
         this.passwordEncoder=passwordEncoder;
         this.loadPubblicazioniAdp=loadPubblicazioniAdp;
         this.loadSampleAnagrafica=loadSampleAnagrafica;
+        this.createDemoUser=createDemoUser;
         this.loadSampleData=loadSampleData;
     }
     
@@ -758,10 +761,13 @@ public class SmdLoadSampleData implements Runnable {
         }
         if (loadSampleData) {
             log.info("Start Loading Sample Data");
-            loadStorico();
             loadSampleData();
             log.info("End Loading Sample Data");
         }        
+        
+        if (createDemoUser || loadSampleData) {
+            createDemoUser();
+        }
 
     }
 
@@ -802,6 +808,8 @@ public class SmdLoadSampleData implements Runnable {
 
     private void loadSampleData() {
         
+        loadStorico();
+
         abbonamentoDao.save(getAbbonamentoMs(micheleSantoro, messaggio,lodare,blocchetti,estratti));
         abbonamentoDao.save(getAbbonamentoGp(gabrielePizzo, estratti, antonioRusso, matteoParo, messaggio,lodare,blocchetti,estratti));
         EstrattoConto spedizioneGptoar = estrattoContoDao.findByDestinatario(antonioRusso).iterator().next();
@@ -874,10 +882,14 @@ public class SmdLoadSampleData implements Runnable {
                 log.info(o.toString());
             });
         
+   
+    }   
+    
+    private void createDemoUser() {
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER);
         adp.setLocked(true);
         userInfoDao.save(adp);
         log.info("creato user adp/adp");
-   
-    }    
+        
+    }
 }

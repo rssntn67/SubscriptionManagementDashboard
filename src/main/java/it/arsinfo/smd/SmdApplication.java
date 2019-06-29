@@ -39,6 +39,9 @@ public class SmdApplication {
     @Value("${load.sample.anagrafica}")
     private String loadSampleAnagraficaAdp;
 
+    @Value("${create.demo.user}")
+    private String  createDemoUser;
+
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
     }
@@ -71,6 +74,8 @@ public class SmdApplication {
             log.info("loadPubblicazioniAdp="+loadPAdp);
             boolean loadSA = loadSampleAnagraficaAdp != null && loadSampleAnagraficaAdp.equals("true");
             log.info("loadSampleAnagraficaAdp="+loadSA);
+            boolean creaDU = createDemoUser != null && createDemoUser.equals("true");
+            log.info("createDemoUser="+creaDU);
             if (loadSD || loadPAdp || loadSA) {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
@@ -86,6 +91,7 @@ public class SmdApplication {
                       passwordEncoder,
                       loadPAdp,
                       loadSA,
+                      creaDU,
                       loadSD
                       )).start();
             }
