@@ -1,18 +1,24 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 
@@ -33,12 +39,12 @@ public class Pubblicazione implements SmdEntity {
 
     private boolean active = true;
     
-    private BigDecimal speseSpedizione=BigDecimal.ZERO;
+    @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
+    private List<SpesaSpedizione> speseSpedizione = new ArrayList<>();
+
     private BigDecimal costoUnitario=BigDecimal.ZERO;
-    private BigDecimal abbonamentoItalia=BigDecimal.ZERO;
+    private BigDecimal abbonamento=BigDecimal.ZERO;
     private BigDecimal abbonamentoWeb=BigDecimal.ZERO;
-    private BigDecimal abbonamentoEuropa=BigDecimal.ZERO;
-    private BigDecimal abbonamentoAmericaAsiaAfrica=BigDecimal.ZERO;
     private BigDecimal abbonamentoSostenitore=BigDecimal.ZERO;
     private BigDecimal abbonamentoConSconto=BigDecimal.ZERO;
 
@@ -84,8 +90,8 @@ public class Pubblicazione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Pubblicazione='%s', CostoUnitario='%.2f', CostoScontato='%.2f']",
-                             id, nome, tipo, getMesiPubblicazione(),costoUnitario,abbonamentoItalia);
+        return String.format("Pubblicazione[id=%d, Nome='%s', Tipo='%s', Pubblicazione='%s', CostoUnitario='%.2f', Abbonamento='%.2f']",
+                             id, nome, tipo, getMesiPubblicazione(),costoUnitario,abbonamento);
     }
 
     public Pubblicazione(String nome, TipoPubblicazione tipo) {
@@ -222,29 +228,12 @@ public class Pubblicazione implements SmdEntity {
         this.descrizione = descrizione;
     }
 
-    public BigDecimal getAbbonamentoItalia() {
-        return abbonamentoItalia;
+    public BigDecimal getAbbonamento() {
+        return abbonamento;
     }
 
-    public void setAbbonamentoItalia(BigDecimal abbonamentoItalia) {
-        this.abbonamentoItalia = abbonamentoItalia;
-    }
-
-    public BigDecimal getAbbonamentoEuropa() {
-        return abbonamentoEuropa;
-    }
-
-    public void setAbbonamentoEuropa(BigDecimal abbonamentoEuropa) {
-        this.abbonamentoEuropa = abbonamentoEuropa;
-    }
-
-    public BigDecimal getAbbonamentoAmericaAsiaAfrica() {
-        return abbonamentoAmericaAsiaAfrica;
-    }
-
-    public void setAbbonamentoAmericaAsiaAfrica(
-            BigDecimal abbonamentoAmericaAsiaAfrica) {
-        this.abbonamentoAmericaAsiaAfrica = abbonamentoAmericaAsiaAfrica;
+    public void setAbbonamento(BigDecimal abbonamento) {
+        this.abbonamento = abbonamento;
     }
 
     public BigDecimal getAbbonamentoSostenitore() {
@@ -375,12 +364,33 @@ public class Pubblicazione implements SmdEntity {
         this.anticipoSpedizione = anticipoSpedizione;
     }
 
-    public BigDecimal getSpeseSpedizione() {
+    public List<SpesaSpedizione> getSpeseSpedizione() {
         return speseSpedizione;
     }
 
-    public void setSpeseSpedizione(BigDecimal speseSpedizione) {
+    public void setSpeseSpedizione(List<SpesaSpedizione> speseSpedizione) {
         this.speseSpedizione = speseSpedizione;
+    }
+
+    public void addSpesaSpedizione(SpesaSpedizione spesaSpedizione) {
+        if (speseSpedizione.contains(spesaSpedizione)) {
+            speseSpedizione.remove(spesaSpedizione);
+        }
+        speseSpedizione.add(spesaSpedizione);
+    }
+
+    public boolean deleteSpesaSpedizione(SpesaSpedizione spesaSpedizione) {
+        return speseSpedizione.remove(spesaSpedizione);
+    }
+    
+    @Transient
+    public SpesaSpedizione getSpesaSpedizioneBy(AreaSpedizione areaSpedizione, Integer i) {
+        for (SpesaSpedizione ssitem: speseSpedizione) {
+            if (ssitem.getAreaSpedizione() == areaSpedizione && ssitem.getNumero() == i) {
+                return ssitem;
+            }
+        }
+        return null;
     }
 
 }

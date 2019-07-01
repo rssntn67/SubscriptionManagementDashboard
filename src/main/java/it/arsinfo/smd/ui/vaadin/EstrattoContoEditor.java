@@ -26,7 +26,7 @@ public class EstrattoContoEditor
 
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
-    private final ComboBox<TipoEstrattoConto> tipoEstrattoconto = new ComboBox<TipoEstrattoConto>("Omaggio",
+    private final ComboBox<TipoEstrattoConto> tipoEstrattoconto = new ComboBox<TipoEstrattoConto>("Tipo",
                                                                     EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));

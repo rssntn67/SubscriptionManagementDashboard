@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -153,7 +154,7 @@ public class SmdUnitTests {
             assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case Ordinario:
-            assertEquals(p.getAbbonamentoItalia().multiply(new BigDecimal(numero)).doubleValue()
+            assertEquals(p.getAbbonamento().multiply(new BigDecimal(numero)).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
             assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
@@ -169,16 +170,6 @@ public class SmdUnitTests {
             break;
         case Web:
             assertEquals(p.getAbbonamentoWeb().multiply(new BigDecimal(numero)).doubleValue()
-                         ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
-            break;
-        case AmericaAfricaAsia:
-            assertEquals(p.getAbbonamentoAmericaAsiaAfrica().multiply(new BigDecimal(numero)).doubleValue()
-                         ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
-            break;
-        case EuropaBacinoMediterraneo:
-            assertEquals(p.getAbbonamentoEuropa().multiply(new BigDecimal(numero)).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
             assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
@@ -347,12 +338,12 @@ public class SmdUnitTests {
     @Test
     public void testCalcolaImporti() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        EstrattoConto ec = creaEC(Mese.GENNAIO, Smd.getAnnoPassato(), Mese.MARZO, Smd.getAnnoPassato(),messaggio, TipoEstrattoConto.Scontato, 1);
+        EstrattoConto ec = creaEC(Mese.GENNAIO, Smd.getAnnoPassato(), Mese.MARZO, Smd.getAnnoPassato(),messaggio, TipoEstrattoConto.Ordinario, 1);
         assertTrue(!ec.isAbbonamentoAnnuale());
         assertEquals(3, ec.getSpedizioni().size());
         assertEquals(3, ec.getNumeroSpedizioniConSpesePostali());
         assertEquals(messaggio.getCostoUnitario().doubleValue()*3, ec.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getSpeseSpedizione().doubleValue()*3, ec.getSpesePostali().doubleValue(),0);
+        assertEquals(messaggio.getSpesaSpedizioneBy(AreaSpedizione.Italia, 3).getSpeseSpedizione().doubleValue()*3, ec.getSpesePostali().doubleValue(),0);
         ec.getSpedizioni().stream().forEach(s -> assertEquals(s.getInvioSpedizione(),InvioSpedizione.AdpSede));
         try {
             creaEC(Mese.MARZO, Anno.ANNO2019, Mese.GENNAIO, Anno.ANNO2019, messaggio, TipoEstrattoConto.Scontato, 1);

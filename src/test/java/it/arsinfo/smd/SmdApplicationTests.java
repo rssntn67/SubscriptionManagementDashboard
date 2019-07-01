@@ -48,6 +48,8 @@ import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
@@ -84,6 +86,10 @@ public class SmdApplicationTests {
     private NotaDao notaDao;
     @Autowired
     private UserInfoDao userInfoDao;
+    @Autowired
+    private SpedizioneDao spedizioneDao;
+    @Autowired
+    private SpesaSpedizioneDao spesaSpedizioneDao;
 
     @Autowired
     private SecurityConfig securityConfig;
@@ -106,7 +112,6 @@ public class SmdApplicationTests {
         assertNotNull(pubblicazioneDao);
         assertNotNull(estrattoContoDao);
         assertNotNull(storicoDao);
-        assertNotNull(notaDao);
         assertNotNull(campagnaDao);
         assertNotNull(campagnaItemDao);
         assertNotNull(notaDao);
@@ -115,6 +120,9 @@ public class SmdApplicationTests {
         assertNotNull(incassoDao);
         assertNotNull(operazioneDao);
         assertNotNull(userInfoDao);
+        assertNotNull(spedizioneDao);
+        assertNotNull(spesaSpedizioneDao);
+
         assertNotNull(securityConfig);
         assertNotNull(userDetailsService);
         assertTrue(userDetailsService instanceof UserDetailsServiceImpl);

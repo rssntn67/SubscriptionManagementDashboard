@@ -24,12 +24,9 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
     private final TextField editore = new TextField("Editore");
     private final ComboBox<TipoPubblicazione> tipo = new ComboBox<TipoPubblicazione>("Tipo",EnumSet.allOf(TipoPubblicazione.class));
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno Pubblicazione", EnumSet.allOf(Anno.class));
-    private final TextField speseSpedizione = new TextField("Spese di Spedizione");
     private final TextField costoUnitario = new TextField("Costo Unitario");
-    private final TextField abbonamentoItalia=new TextField("Abbonamento");
+    private final TextField abbonamento=new TextField("Abbonamento");
     private final TextField abbonamentoWeb=new TextField("Abbonamento Web");
-    private final TextField abbonamentoEuropa=new TextField("Abbonamento Europa-Bac.Med.");
-    private final TextField abbonamentoAmericaAsiaAfrica=new TextField("Abbonamento Ame-Asia-Afr");
     private final TextField abbonamentoSostenitore=new TextField("Abbonamento Sostenitore");
     private final TextField abbonamentoConSconto=new TextField("Abbonamento con Sconto");
 
@@ -51,18 +48,16 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
     private final CheckBox active = new CheckBox("Active");
 
     HorizontalLayout basicA = new HorizontalLayout(nome, tipo, descrizione);
-    HorizontalLayout basicB = new HorizontalLayout(autore,editore,anno,anticipoSpedizione);
-    HorizontalLayout costiA = new HorizontalLayout(costoUnitario,
-                                                  abbonamentoItalia,
-                                                  abbonamentoConSconto,
-                                                  speseSpedizione
-                                                  );
-    HorizontalLayout costiB = new HorizontalLayout(
-                                                  abbonamentoSostenitore,
-                                                  abbonamentoAmericaAsiaAfrica,
-                                                  abbonamentoEuropa,
-                                                  abbonamentoWeb
-                                                  );
+    HorizontalLayout basicB = new HorizontalLayout(
+                                           autore,editore,anno,anticipoSpedizione
+                                           );
+    HorizontalLayout costiA = new HorizontalLayout(
+                                           costoUnitario,
+                                           abbonamento,
+                                           abbonamentoConSconto,
+                                           abbonamentoSostenitore,
+                                           abbonamentoWeb
+                                              );
     HorizontalLayout checkA = new HorizontalLayout(active);
     HorizontalLayout checkB = new HorizontalLayout(gen,feb,mar,apr,mag,giu);
     HorizontalLayout checkC = new HorizontalLayout(lug,ago,set,ott,nov,dic);
@@ -70,7 +65,7 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
     public PubblicazioneEditor(PubblicazioneDao repo) {
 
         super(repo,new Binder<>(Pubblicazione.class));
-        setComponents(getActions(),basicA,basicB, costiA, costiB,checkA,checkB,checkC);
+        setComponents(getActions(),basicA,basicB, costiA, checkA,checkB,checkC);
         
         getBinder().forField(nome)
             .asRequired("Il Nome della Pubblicazione e' abbligatorio")
@@ -95,23 +90,17 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         .bind(Pubblicazione::getAnticipoSpedizione,
                                         Pubblicazione::setAnticipoSpedizione);
 
-        getBinder().forField(speseSpedizione)
-        .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-        .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
-        .bind(Pubblicazione::getSpeseSpedizione,Pubblicazione::setSpeseSpedizione);
-
         getBinder().forField(costoUnitario)
             .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
             .bind(Pubblicazione::getCostoUnitario,Pubblicazione::setCostoUnitario);
 
-        getBinder().forField(abbonamentoItalia)
+        getBinder().forField(abbonamento)
         .asRequired()
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
-        .bind(Pubblicazione::getAbbonamentoItalia,Pubblicazione::setAbbonamentoItalia);
+        .bind(Pubblicazione::getAbbonamento,Pubblicazione::setAbbonamento);
 
         getBinder().forField(abbonamentoWeb)
         .asRequired()
@@ -124,18 +113,6 @@ public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
         .bind(Pubblicazione::getAbbonamentoConSconto,Pubblicazione::setAbbonamentoConSconto);
-
-        getBinder().forField(abbonamentoEuropa)
-        .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-        .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
-        .bind(Pubblicazione::getAbbonamentoEuropa,Pubblicazione::setAbbonamentoEuropa);
-
-        getBinder().forField(abbonamentoAmericaAsiaAfrica)
-        .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-        .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
-        .bind(Pubblicazione::getAbbonamentoAmericaAsiaAfrica,Pubblicazione::setAbbonamentoAmericaAsiaAfrica);
 
         getBinder().forField(abbonamentoSostenitore)
         .asRequired()

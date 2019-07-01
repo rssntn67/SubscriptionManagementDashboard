@@ -12,6 +12,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -34,6 +35,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Cerca per Paese",
             EnumSet.allOf(Paese.class));
+
+    private final ComboBox<AreaSpedizione> filterAreaSpedizione = new ComboBox<AreaSpedizione>("Cerca per Area Spedizione",
+            EnumSet.allOf(AreaSpedizione.class));
 
     private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Cerca per Provincia",
             EnumSet.allOf(Provincia.class));
@@ -82,6 +86,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            ),
                       new HorizontalLayout(filterTitolo,
                                            filterPaese,
+                                           filterAreaSpedizione,
                                            filterTipoEstrattoConto,
                                            filterCassa,
                                            filterStatoStorico,
@@ -129,6 +134,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterPaese.setPlaceholder("Seleziona Paese");
         filterPaese.setItemCaptionGenerator(Paese::getNome);
         filterPaese.addSelectionListener(e -> onChange());
+        filterAreaSpedizione.setPlaceholder("Seleziona Area");
+        filterAreaSpedizione.addSelectionListener(e -> onChange());
 
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
         filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
@@ -219,6 +226,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
         if (filterPaese.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterPaese.getValue() == a.getPaese()).collect(Collectors.toList());
+        }
+        if (filterAreaSpedizione.getValue() != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> filterAreaSpedizione.getValue() == a.getAreaSpedizione()).collect(Collectors.toList());
         }
         if (filterProvincia.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterProvincia.getValue() == a.getProvincia()).collect(Collectors.toList());

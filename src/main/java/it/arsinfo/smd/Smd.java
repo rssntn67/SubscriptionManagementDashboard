@@ -45,6 +45,7 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 
@@ -257,13 +258,40 @@ public class Smd {
         double spesePostali = 0.0;
         switch (ec.getTipoEstrattoConto()) {
         case Ordinario:
-            costo = ec.getPubblicazione().getAbbonamentoItalia().doubleValue() * ec.getNumero().doubleValue();
+            costo = ec.getPubblicazione().getAbbonamento().doubleValue() * ec.getNumero().doubleValue();
             if (!ec.isAbbonamentoAnnuale() || ec.getNumeroSpedizioniConSpesePostali() > 0) {
-            spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
               
-            costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
+                costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
                      * ec.getNumero().doubleValue()
                      * Double.valueOf(ec.getSpedizioni().size());
+            }
+            SpesaSpedizione ss = ec.getPubblicazione().getSpesaSpedizioneBy(ec.getAbbonamento().getIntestatario().getAreaSpedizione(),ec.getNumero());
+            switch (ec.getAbbonamento().getIntestatario().getAreaSpedizione()) {
+            case Italia:
+                if (ec.getNumeroSpedizioniConSpesePostali() == 0) {
+                    break;
+                }
+                if (ss == null ) {
+                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area Italia numero:" + ec.getNumero());                    
+                }
+                spesePostali = ss.getSpeseSpedizione().doubleValue()
+                        * ec.getNumeroSpedizioniConSpesePostali();
+                break;
+            case EuropaBacinoMediterraneo:
+                if (ss == null ) {
+                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area EuropaBacinoMediterraneo numero:" + ec.getNumero());                    
+                }
+                spesePostali = ss.getSpeseSpedizione().doubleValue()
+                        * ec.getSpedizioni().size();
+
+            case AmericaAfricaAsia:
+                if (ss == null ) {
+                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area AmericaAsiaAfrica numero:" + ec.getNumero());                    
+                }
+                spesePostali = ss.getSpeseSpedizione().doubleValue()
+                        * ec.getSpedizioni().size();
+            default:
+                break;
             }
             break;
 
@@ -276,13 +304,10 @@ public class Smd {
             break;
 
         case Scontato:
-            costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue() * ec.getNumero().doubleValue();
-            if (!ec.isAbbonamentoAnnuale() || ec.getNumeroSpedizioniConSpesePostali() > 0) {
-                spesePostali = ec.getPubblicazione().getSpeseSpedizione().doubleValue() * ec.getNumeroSpedizioniConSpesePostali();
-                costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
-                        * ec.getNumero().doubleValue()
-                        * Double.valueOf(ec.getSpedizioni().size());
+            if (!ec.isAbbonamentoAnnuale()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
             }
+            costo = ec.getPubblicazione().getAbbonamentoConSconto().doubleValue() * ec.getNumero().doubleValue();
             break;
 
         case Sostenitore:
@@ -293,21 +318,6 @@ public class Smd {
                      * ec.getNumero().doubleValue();  
             break;
                 
-        case EuropaBacinoMediterraneo:
-            if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
-            }
-            costo = ec.getPubblicazione().getAbbonamentoEuropa().doubleValue()
-                     * ec.getNumero().doubleValue();  
-            break;
-                
-        case AmericaAfricaAsia:
-            if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
-            }
-            costo = ec.getPubblicazione().getAbbonamentoAmericaAsiaAfrica().doubleValue()
-                     * ec.getNumero().doubleValue();  
-            break;
         case OmaggioCuriaDiocesiana:
             break;
         case OmaggioCuriaGeneralizia:

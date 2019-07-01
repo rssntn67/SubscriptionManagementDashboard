@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Paese;
@@ -44,7 +45,10 @@ public class Anagrafica implements SmdEntity {
     private String cap;
     private String citta;
     @Enumerated(EnumType.STRING)
-    private Paese paese = Paese.ND;
+    private Paese paese = Paese.ITALIA;
+
+    @Enumerated(EnumType.STRING)
+    private AreaSpedizione areaSpedizione = AreaSpedizione.Italia;
 
     private String email;
     private String telefono;
@@ -327,5 +331,13 @@ public class Anagrafica implements SmdEntity {
 
     public void setCo(Anagrafica co) {
         this.co = co;
+    }
+
+    public AreaSpedizione getAreaSpedizione() {
+        return areaSpedizione;
+    }
+
+    public void setAreaSpedizione(AreaSpedizione areaSpedizione) {
+        this.areaSpedizione = areaSpedizione;
     }
 }

@@ -15,6 +15,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Diocesi;
@@ -36,6 +37,7 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -66,6 +68,7 @@ public class SmdLoadSampleData implements Runnable {
     private final VersamentoDao versamentoDao;
     private final OperazioneDao operazioneDao;
     private final UserInfoDao userInfoDao;
+
     private final PasswordEncoder passwordEncoder;
     
     private final boolean loadPubblicazioniAdp;
@@ -317,14 +320,11 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
 
         p.setCostoUnitario(new BigDecimal(1.50));
-        p.setSpeseSpedizione(new BigDecimal(0.50));
-        p.setAbbonamentoItalia(new BigDecimal(15.00));
+        p.setAbbonamento(new BigDecimal(15.00));
         p.setAbbonamentoWeb(new BigDecimal(12.00));
         p.setAbbonamentoConSconto(new BigDecimal(15.00));
-        p.setAbbonamentoEuropa(new BigDecimal(58.00));
-        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(68.00));
         p.setAbbonamentoSostenitore(new BigDecimal(50.00));
-        
+
         p.setGen(true);
         p.setFeb(true);
         p.setMar(true);
@@ -337,6 +337,64 @@ public class SmdLoadSampleData implements Runnable {
         p.setOtt(true);
         p.setNov(true);
         p.setDic(true);
+
+        for (int i=1; i<3;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(3.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=3; i<8;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(5.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=8; i<15 ;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(5.50));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        SpesaSpedizione sS1 = new SpesaSpedizione();
+        sS1.setPubblicazione(p);
+        sS1.setNumero(1);
+        sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        sS1.setSpeseSpedizione(new BigDecimal(3.90));
+        p.addSpesaSpedizione(sS1);
+
+        SpesaSpedizione sS2 = new SpesaSpedizione();
+        sS2.setPubblicazione(p);
+        sS2.setNumero(2);
+        sS2.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        sS2.setSpeseSpedizione(new BigDecimal(5.70));
+        p.addSpesaSpedizione(sS2);
+        
+        SpesaSpedizione sS3 = new SpesaSpedizione();
+        sS3.setPubblicazione(p);
+        sS3.setNumero(1);
+        sS3.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        sS3.setSpeseSpedizione(new BigDecimal(4.80));
+        p.addSpesaSpedizione(sS3);
+
+        SpesaSpedizione sS4 = new SpesaSpedizione();
+        sS4.setPubblicazione(p);
+        sS4.setNumero(2);
+        sS4.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        sS4.setSpeseSpedizione(new BigDecimal(8.60));
+        p.addSpesaSpedizione(sS4);
+            
+        
+        
         return p;
     }
     
@@ -349,12 +407,9 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
         
         p.setCostoUnitario(new BigDecimal(2.00));
-        p.setSpeseSpedizione(new BigDecimal(0.50));
-        p.setAbbonamentoItalia(new BigDecimal(20.00));
+        p.setAbbonamento(new BigDecimal(20.00));
         p.setAbbonamentoWeb(new BigDecimal(18.00));
         p.setAbbonamentoConSconto(new BigDecimal(18.00));
-        p.setAbbonamentoEuropa(new BigDecimal(65.00));
-        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(75.00));
         p.setAbbonamentoSostenitore(new BigDecimal(50.00));
 
         p.setGen(true);
@@ -370,7 +425,41 @@ public class SmdLoadSampleData implements Runnable {
         p.setNov(true);
         p.setDic(true);
 
+
+        SpesaSpedizione sS1 = new SpesaSpedizione();
+        sS1.setPubblicazione(p);
+        sS1.setNumero(1);
+        sS1.setAreaSpedizione(AreaSpedizione.Italia);
+        sS1.setSpeseSpedizione(new BigDecimal(3.00));
+        p.addSpesaSpedizione(sS1);
+
+        SpesaSpedizione sS2 = new SpesaSpedizione();
+        sS2.setPubblicazione(p);
+        sS2.setNumero(1);
+        sS2.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        sS2.setSpeseSpedizione(new BigDecimal(5.70));
+        p.addSpesaSpedizione(sS2);
+
+        SpesaSpedizione sS3 = new SpesaSpedizione();
+        sS3.setPubblicazione(p);
+        sS3.setNumero(1);
+        sS3.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        sS3.setSpeseSpedizione(new BigDecimal(8.60));
+        p.addSpesaSpedizione(sS3);
+
+        SpesaSpedizione sS4 = new SpesaSpedizione();
+        sS4.setPubblicazione(p);
+        sS4.setNumero(2);
+        sS4.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        sS4.setSpeseSpedizione(new BigDecimal(9.00));
+        p.addSpesaSpedizione(sS4);
+
+        
+        
         return p;
+        
+        
+        
     }
 
     public static Pubblicazione getBlocchetti() {
@@ -382,40 +471,181 @@ public class SmdLoadSampleData implements Runnable {
         p.setEditore("ADP");
 
         p.setCostoUnitario(new BigDecimal(3.00));
-        p.setSpeseSpedizione(new BigDecimal(0.80));
-        p.setAbbonamentoItalia(new BigDecimal(6.00));
+        p.setAbbonamento(new BigDecimal(6.00));
         p.setAbbonamentoWeb(new BigDecimal(4.00));
         p.setAbbonamentoConSconto(new BigDecimal(6.00));
-        p.setAbbonamentoEuropa(new BigDecimal(14.00));
-        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(16.00));
         p.setAbbonamentoSostenitore(new BigDecimal(12.00));
 
         p.setMar(true);
         p.setSet(true);
         p.setAnticipoSpedizione(4);
+        
+        SpesaSpedizione sS = new SpesaSpedizione();
+        sS.setPubblicazione(p);
+        sS.setNumero(1);
+        sS.setAreaSpedizione(AreaSpedizione.Italia);
+        sS.setSpeseSpedizione(new BigDecimal(2.00));
+        p.addSpesaSpedizione(sS);
+
+        for (int i=2; i<5;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(3.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=5; i<11;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(5.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=11; i<20 ;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.Italia);
+            sS1.setSpeseSpedizione(new BigDecimal(5.50));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=1; i<2;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+            sS1.setSpeseSpedizione(new BigDecimal(4.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=2; i<4;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+            sS1.setSpeseSpedizione(new BigDecimal(5.70));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=4; i<6;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+            sS1.setSpeseSpedizione(new BigDecimal(6.50));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=6; i<15;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+            sS1.setSpeseSpedizione(new BigDecimal(8.50));
+            p.addSpesaSpedizione(sS1);
+        }
+        
+        for (int i=15; i<35;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+            sS1.setSpeseSpedizione(new BigDecimal(13.50));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=1; i<2;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+            sS1.setSpeseSpedizione(new BigDecimal(5.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=2; i<4;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+            sS1.setSpeseSpedizione(new BigDecimal(8.60));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=4; i<6;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+            sS1.setSpeseSpedizione(new BigDecimal(9.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+        for (int i=6; i<15;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+            sS1.setSpeseSpedizione(new BigDecimal(13.50));
+            p.addSpesaSpedizione(sS1);
+        }
+        
+        for (int i=15; i<35;i++) {
+            SpesaSpedizione sS1 = new SpesaSpedizione();
+            sS1.setPubblicazione(p);
+            sS1.setNumero(i);
+            sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+            sS1.setSpeseSpedizione(new BigDecimal(23.00));
+            p.addSpesaSpedizione(sS1);
+        }
+
+
         return p;
     }
     
     public static Pubblicazione getEstratti() {
         Pubblicazione p = new Pubblicazione("Estratti",
                                                    TipoPubblicazione.ANNUALE);
-        p.setDescrizione("Serie di dodici estratti del Messaggio");
+        p.setDescrizione("Serie di dodici Manifesti del Messaggio");
         p.setActive(true);
         p.setAutore("AAVV");
         p.setEditore("ADP");
         
         p.setCostoUnitario(new BigDecimal(10.00));
-        p.setSpeseSpedizione(new BigDecimal(1.50));
-        p.setAbbonamentoItalia(new BigDecimal(10.00));
+        p.setAbbonamento(new BigDecimal(10.00));
         p.setAbbonamentoWeb(new BigDecimal(8.00));
         p.setAbbonamentoConSconto(new BigDecimal(10.00));
-        p.setAbbonamentoEuropa(new BigDecimal(24.00));
-        p.setAbbonamentoAmericaAsiaAfrica(new BigDecimal(36.00));
         p.setAbbonamentoSostenitore(new BigDecimal(10.00));
 
         p.setLug(true);
-        
         p.setAnticipoSpedizione(4);
+
+        SpesaSpedizione sS = new SpesaSpedizione();
+        sS.setPubblicazione(p);
+        sS.setNumero(1);
+        sS.setAreaSpedizione(AreaSpedizione.Italia);
+        sS.setSpeseSpedizione(BigDecimal.ZERO);
+        p.addSpesaSpedizione(sS);
+
+        SpesaSpedizione sSE = new SpesaSpedizione();
+        sSE.setPubblicazione(p);
+        sSE.setNumero(1);
+        sSE.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        sSE.setSpeseSpedizione(BigDecimal.ZERO);
+        p.addSpesaSpedizione(sSE);
+
+        SpesaSpedizione sSA = new SpesaSpedizione();
+        sSA.setPubblicazione(p);
+        sSA.setNumero(1);
+        sSA.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        sSA.setSpeseSpedizione(BigDecimal.ZERO);
+        p.addSpesaSpedizione(sSA);
+
         return p;
     }
     

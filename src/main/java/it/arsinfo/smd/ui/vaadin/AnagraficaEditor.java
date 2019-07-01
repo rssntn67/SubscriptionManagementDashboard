@@ -9,6 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Paese;
@@ -38,6 +39,9 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final TextField citta = new TextField("Citta'");
     private final ComboBox<Paese> paese = new ComboBox<Paese>("Paese",
                                                               EnumSet.allOf(Paese.class));
+    private final ComboBox<AreaSpedizione> areaSpedizione = new ComboBox<AreaSpedizione>("Area spedizione",
+            EnumSet.allOf(AreaSpedizione.class));
+
     private final TextField email = new TextField("Email");
     private final TextField telefono = new TextField("Telefono");
     private final TextField cellulare = new TextField("Cellulare");
@@ -78,6 +82,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       regioneDirettoreDiocesano
                                                       );
         HorizontalLayout riga3 = new HorizontalLayout(paese,
+                                                      areaSpedizione,
                                                       email, 
                                                       telefono,
                                                       cellulare, 
@@ -115,6 +120,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         paese.setItemCaptionGenerator(Paese::getNome);
         paese.setEmptySelectionAllowed(false);
         co.setItemCaptionGenerator(Anagrafica::getCaption);
+        areaSpedizione.setEmptySelectionAllowed(false);
 
     }
 
