@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
@@ -36,6 +37,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
@@ -211,6 +213,9 @@ public class SmdApplicationTests {
             assertEquals(Smd.getAnnoCorrente(), pubblicazione.getAnno());
             assertTrue(pubblicazione.isActive());
             log.info(pubblicazione.toString());
+            for (SpesaSpedizione spesaSped: pubblicazione.getSpeseSpedizione()) {
+                log.info(spesaSped.toString());
+            }
         }
         log.info("");
 
@@ -220,22 +225,27 @@ public class SmdApplicationTests {
         Pubblicazione estratti = pubblicazioni.iterator().next();
         log.info("--------------------------------------------");
         log.info(estratti.toString());
+        assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         EnumSet<Mese> pubs = estratti.getMesiPubblicazione();
         assertEquals(1, pubs.size());
+        assertEquals(Long.parseLong("117"), estratti.getId().longValue());
         assertEquals(Mese.LUGLIO, pubs.iterator().next());
-        assertTrue(estratti.isLug());
         assertFalse(estratti.isGen());
         assertFalse(estratti.isFeb());
         assertFalse(estratti.isMar());
         assertFalse(estratti.isApr());
         assertFalse(estratti.isMag());
         assertFalse(estratti.isGiu());
+        assertTrue(estratti.isLug());
         assertFalse(estratti.isAgo());
         assertFalse(estratti.isSet());
         assertFalse(estratti.isOtt());
         assertFalse(estratti.isNov());
         assertFalse(estratti.isDic());
-               assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
+        
+        SpesaSpedizione spesaSpedizioneEstrattiItalia = estratti.getSpesaSpedizioneBy(AreaSpedizione.Italia, 1);
+        assertNotNull(spesaSpedizioneEstrattiItalia);
+        log.info(spesaSpedizioneEstrattiItalia.toString());
         log.info("");
 
         log.info("Pubblicazione found with findByTipo('MENSILE'):");
@@ -254,25 +264,71 @@ public class SmdApplicationTests {
         assertEquals(Long.parseLong("5"), messaggio.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
         assertEquals("Messaggio", messaggio.getNome());
+        assertTrue(messaggio.isGen());
+        assertTrue(messaggio.isFeb());
+        assertTrue(messaggio.isMar());
+        assertTrue(messaggio.isApr());
+        assertTrue(messaggio.isMag());
+        assertTrue(messaggio.isGiu());
+        assertTrue(messaggio.isLug());
+        assertFalse(messaggio.isAgo());
+        assertTrue(messaggio.isSet());
+        assertTrue(messaggio.isOtt());
+        assertTrue(messaggio.isNov());
+        assertTrue(messaggio.isDic());
         log.info(messaggio.toString());
+        SpesaSpedizione ssMessaggioAmerica = messaggio.getSpesaSpedizioneBy(AreaSpedizione.AmericaAfricaAsia, 2);
+        assertNotNull(ssMessaggioAmerica);
+        log.info(ssMessaggioAmerica.toString());
         log.info("");
 
-        Pubblicazione lodare = pubblicazioneDao.findById(6L).get();
-        log.info("lodare found with findOne(6L):");
+        Pubblicazione lodare = pubblicazioneDao.findById(24L).get();
+        log.info("lodare found with findOne(24L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("6"), lodare.getId().longValue());
+        assertEquals(Long.parseLong("24"), lodare.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
         assertEquals("Lodare", lodare.getNome());
+        assertTrue(lodare.isGen());
+        assertTrue(lodare.isFeb());
+        assertTrue(lodare.isMar());
+        assertTrue(lodare.isApr());
+        assertTrue(lodare.isMag());
+        assertTrue(lodare.isGiu());
+        assertTrue(lodare.isLug());
+        assertTrue(lodare.isAgo());
+        assertTrue(lodare.isSet());
+        assertTrue(lodare.isOtt());
+        assertTrue(lodare.isNov());
+        assertTrue(lodare.isDic());
+
         log.info(lodare.toString());
         log.info("");
 
-        Pubblicazione blocchetti = pubblicazioneDao.findById(7L).get();
-        log.info("lodare found with findOne(6L):");
+        Pubblicazione blocchetti = pubblicazioneDao.findById(29L).get();
+        log.info("blocchetti found with findOne(29L):");
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("7"), blocchetti.getId().longValue());
+        assertEquals(Long.parseLong("29"), blocchetti.getId().longValue());
         assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
         assertEquals("Blocchetti", blocchetti.getNome());
+        assertFalse(blocchetti.isGen());
+        assertFalse(blocchetti.isFeb());
+        assertTrue(blocchetti.isMar());
+        assertFalse(blocchetti.isApr());
+        assertFalse(blocchetti.isMag());
+        assertFalse(blocchetti.isGiu());
+        assertFalse(blocchetti.isLug());
+        assertFalse(blocchetti.isAgo());
+        assertTrue(blocchetti.isSet());
+        assertFalse(blocchetti.isOtt());
+        assertFalse(blocchetti.isNov());
+        assertFalse(blocchetti.isDic());
         log.info(blocchetti.toString());
+        log.info("");
+
+        Pubblicazione nestratti = pubblicazioneDao.findById(117L).get();
+        log.info("estratti found with findOne(117L):");
+        log.info("--------------------------------");
+        assertEquals(Long.parseLong("117"), nestratti.getId().longValue());
         log.info("");
 
         log.info("Anagrafica found with findAll():");
@@ -284,9 +340,9 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Anagrafica Russo found with findOne(9L):");
+        log.info("Anagrafica Russo found with findOne(121L):");
         log.info("--------------------------------------------");
-        Anagrafica russo = anagraficaDao.findById(9L).get();
+        Anagrafica russo = anagraficaDao.findById(121L).get();
         assertEquals("Russo", russo.getCognome());
         log.info(russo.toString());
         log.info("");
@@ -325,8 +381,8 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        log.info("Storico found with findByDestinatario('davide palma id=15'):");
         Anagrafica dp = anagraficaDao.findByCognomeContainingIgnoreCase("Palma").iterator().next();
+        log.info("Storico found with findByDestinatario('davide palma'):");
         log.info("--------------------------------------------");
         storici = storicoDao.findByDestinatario(dp);
         assertEquals(1, storici.size());
@@ -460,10 +516,10 @@ public class SmdApplicationTests {
         log.info("-------------------------------");
         abbonamenti = abbonamentoDao.findAll();
         for (Storico storico : storicoDao.findAll()) {
+            assertEquals(StatoStorico.NUOVO, storico.getStatoStorico());
             log.info(storico.toString());
             StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
             log.info("StatoStoricoCalcolato: " + ss.getDescr());
-            assertEquals(StatoStorico.NUOVO, storico.getStatoStorico());
             if (storico.getTipoEstrattoConto() == TipoEstrattoConto.Ordinario || storico.getTipoEstrattoConto() == TipoEstrattoConto.Scontato) {
                 assertEquals(StatoStorico.SOSPESO, ss);
             } else {

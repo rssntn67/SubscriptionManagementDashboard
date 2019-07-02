@@ -88,89 +88,15 @@ public class SmdLoadSampleData implements Runnable {
     private Anagrafica micheleSantoro;
     private Anagrafica pasqualinaSantoro;
 
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            InvioSpedizione invio,
-            TipoEstrattoConto omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setTipoEstrattoConto(omaggio);
-        storico.setInvioSpedizione(invio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa,
-            TipoEstrattoConto omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setTipoEstrattoConto(omaggio);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setCassa(cassa);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            TipoEstrattoConto omaggio
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setTipoEstrattoConto(omaggio);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
     public static Storico getStoricoBy(
             Anagrafica intestatario, 
             Anagrafica destinatario, 
             Pubblicazione pubblicazione, 
             int numero, 
-            TipoEstrattoConto omaggio
+            Cassa cassa,
+            TipoEstrattoConto omaggio,
+            Invio invio,
+            InvioSpedizione invioSpedizione
         ) {
         Storico storico = new Storico(); 
         storico.setIntestatario(intestatario);
@@ -178,38 +104,9 @@ public class SmdLoadSampleData implements Runnable {
         storico.setPubblicazione(pubblicazione);
         storico.setNumero(numero);
         storico.setTipoEstrattoConto(omaggio);
-        storico.setInvio(Invio.Intestatario);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Pubblicazione pubblicazione, 
-            int numero) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(intestatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
-    }
-
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Anagrafica destinatario,
-            Pubblicazione pubblicazione, 
-            int numero) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(destinatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
+        storico.setCassa(cassa);
+        storico.setInvio(invio);
+        storico.setInvioSpedizione(invioSpedizione);
         Nota nota= new Nota(storico);
         nota.setDescription("Creato storico");
         storico.getNote().add(nota);
@@ -745,14 +642,15 @@ public class SmdLoadSampleData implements Runnable {
         return ps;
     }
     
-    public static Abbonamento getAbbonamentoMs(Anagrafica ms, Pubblicazione ...pubblicazioni) {
+    public Abbonamento getAbbonamentoMs() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
-        for (Pubblicazione pubblicazione: pubblicazioni) {
-            spedizioni.put(pubblicazione, ms, 1);
-        }
-        
+        spedizioni.put(messaggio, micheleSantoro, 1);
+        spedizioni.put(lodare, micheleSantoro, 1);
+        spedizioni.put(blocchetti, micheleSantoro, 1);
+        spedizioni.put(estratti, micheleSantoro, 1);
+                  
         return getAbbonamentoBy(
-                ms, 
+                micheleSantoro, 
                 Smd.getAnnoCorrente(), 
                 Mese.GENNAIO, 
                 Mese.DICEMBRE, 
@@ -761,15 +659,16 @@ public class SmdLoadSampleData implements Runnable {
                 );
     }
         
-    public static Abbonamento getAbbonamentoGp(Anagrafica gp, Pubblicazione pubb, Anagrafica ar, Anagrafica mp, Pubblicazione ...pubblicazioni) {
+    public Abbonamento getAbbonamentoGp() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
-        for (Pubblicazione pubblicazione: pubblicazioni) {
-            spedizioni.put(pubblicazione, gp, 1);
-        }
-        spedizioni.put(pubb, ar, 2);
-        spedizioni.put(pubb, mp, 2);
+        spedizioni.put(messaggio, gabrielePizzo, 1);
+        spedizioni.put(lodare, gabrielePizzo, 1);
+        spedizioni.put(blocchetti, gabrielePizzo, 1);
+        spedizioni.put(estratti, gabrielePizzo, 1);
+        spedizioni.put(estratti, antonioRusso, 1);
+        spedizioni.put(estratti,matteoParo, 1);
         return getAbbonamentoBy(
-                            gp, 
+                            gabrielePizzo, 
                             Smd.getAnnoCorrente(), 
                             Mese.GENNAIO, 
                             Mese.DICEMBRE, 
@@ -777,13 +676,13 @@ public class SmdLoadSampleData implements Runnable {
                             spedizioni);
     }
     
-    public static Abbonamento getAbbonamentoDp(Anagrafica dp, Mese inizio, Pubblicazione blocchetti) {
+    public  Abbonamento getAbbonamentoDp() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
-        spedizioni.put(blocchetti, dp, 1);
+        spedizioni.put(blocchetti, davidePalma, 1);
         return getAbbonamentoBy(
-                            dp, 
+                            davidePalma, 
                             Smd.getAnnoCorrente(), 
-                            inizio, 
+                            Mese.MAGGIO, 
                             Mese.DICEMBRE, 
                             Cassa.Ccp, 
                             spedizioni
@@ -1001,24 +900,6 @@ public class SmdLoadSampleData implements Runnable {
 
     }
 
-    private void loadStorico() {
-        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,TipoEstrattoConto.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, lodare, 10,TipoEstrattoConto.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,TipoEstrattoConto.OmaggioCuriaDiocesiana));
-        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, estratti, 10,TipoEstrattoConto.OmaggioCuriaDiocesiana));
-
-        storicoDao.save(getStoricoBy(gabrielePizzo, messaggio, 10,Cassa.Contrassegno));
-        storicoDao.save(getStoricoBy(gabrielePizzo, lodare, 10,Cassa.Contrassegno));
-        storicoDao.save(getStoricoBy(gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoEstrattoConto.Scontato));
-
-        storicoDao.save(getStoricoBy(matteoParo, messaggio, 10,InvioSpedizione.AdpSede,TipoEstrattoConto.OmaggioGesuiti));
-        storicoDao.save(getStoricoBy(matteoParo, lodare, 10,InvioSpedizione.AdpSede,TipoEstrattoConto.OmaggioGesuiti));
-
-        storicoDao.save(getStoricoBy(davidePalma, messaggio, 10,InvioSpedizione.AdpSede,TipoEstrattoConto.OmaggioCuriaGeneralizia));
-        storicoDao.save(getStoricoBy(micheleSantoro, blocchetti, 1));
-        storicoDao.save(getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2));        
-
-    }
     private void loadAnagrafica() {
         antonioRusso=getAR();
         anagraficaDao.save(antonioRusso);
@@ -1034,20 +915,36 @@ public class SmdLoadSampleData implements Runnable {
         anagraficaDao.save(micheleSantoro);
         pasqualinaSantoro = getPS();
         anagraficaDao.save(pasqualinaSantoro);
+        
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+
+        storicoDao.save(getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoEstrattoConto.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+
+        storicoDao.save(getStoricoBy(matteoParo,matteoParo, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
+        storicoDao.save(getStoricoBy(matteoParo,matteoParo, lodare, 1, Cassa.Ccp,TipoEstrattoConto.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
+
+        storicoDao.save(getStoricoBy(davidePalma,davidePalma, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaGeneralizia,Invio.Destinatario,InvioSpedizione.AdpSede));
+        
+        storicoDao.save(getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, Cassa.Ccp,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storicoDao.save(getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,Cassa.Ccp,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));        
+
     }
 
     private void loadSampleData() {
         
-        loadStorico();
-
-        abbonamentoDao.save(getAbbonamentoMs(micheleSantoro, messaggio,lodare,blocchetti,estratti));
-        abbonamentoDao.save(getAbbonamentoGp(gabrielePizzo, estratti, antonioRusso, matteoParo, messaggio,lodare,blocchetti,estratti));
+        abbonamentoDao.save(getAbbonamentoDp());
+        abbonamentoDao.save(getAbbonamentoMs());
+        abbonamentoDao.save(getAbbonamentoGp());
         EstrattoConto spedizioneGptoar = estrattoContoDao.findByDestinatario(antonioRusso).iterator().next();
         spedizioneGptoar.setNumero(3);
         estrattoContoDao.save(spedizioneGptoar);
 
-        Abbonamento abbonamentoDp =getAbbonamentoDp(davidePalma, Mese.MAGGIO,blocchetti);
-        abbonamentoDao.save(abbonamentoDp);
+        Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
         Incasso incasso = getIncasso5(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
         incassoDao.save(incasso);
         incasso.getVersamenti().stream().forEach(v-> {

@@ -346,8 +346,21 @@ public class Smd {
         case Scontato:    
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
             break;
-        default:
+        case Sostenitore:    
             pagamentoRegolare = checkVersamento(storico, abbonamenti);
+        case Web:    
+            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+        case OmaggioCuriaDiocesiana:
+            break;
+        case OmaggioCuriaGeneralizia:
+            break;
+        case OmaggioGesuiti:
+            break;
+        case OmaggioDirettoreAdp:
+            break;
+        case OmaggioEditore:
+            break;
+        default:
             break;
         }
         return pagamentoRegolare;
