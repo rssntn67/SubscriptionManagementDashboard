@@ -77,6 +77,11 @@ public class SpesaSpedizioneEditor
         areaSpedizione.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
         numero.setReadOnly(persisted);
+        if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
+            getSave().setEnabled(false);
+        } else {
+            getSave().setEnabled(true);
+        }        
         speseSpedizione.focus();        
     }
 

@@ -7,6 +7,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 
 @SpringUI(path = SmdUI.URL_PUBBLICAZIONI)
 @Title("Pubblicazioni ADP")
@@ -20,6 +21,9 @@ public class PubblicazioneUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazionedao;
 
+    @Autowired
+    SpesaSpedizioneDao spesaSpedizioneDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Pubblicazioni");
@@ -27,8 +31,19 @@ public class PubblicazioneUI extends SmdUI {
         PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
         PubblicazioneGrid grid = new PubblicazioneGrid("Pubblicazioni");
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
-        addSmdComponents(editor,add, search, grid);
+        
+        SpesaSpedizioneAdd speseSpedAdd = new SpesaSpedizioneAdd("Aggiungi Spese Spedizione");
+        SpesaSpedizioneEditor speseSpedEditor = 
+                new SpesaSpedizioneEditor(spesaSpedizioneDao, pubblicazionedao.findAll());
+        
+        SpesaSpedizioneGrid speseSpedGrid = new SpesaSpedizioneGrid("Spese Spedizione");
+        
+        
+        addSmdComponents(speseSpedAdd,editor,speseSpedEditor,speseSpedGrid,add, search, grid);
+        speseSpedAdd.setVisible(false);
         editor.setVisible(false);
+        speseSpedEditor.setVisible(false);
+        speseSpedGrid.setVisible(false);
 
         add.setChangeHandler(()-> {
             setHeader(String.format("Pubblicazione:Nuova"));
@@ -52,6 +67,9 @@ public class PubblicazioneUI extends SmdUI {
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
+            speseSpedAdd.setPubblicazione(grid.getSelected());
+            speseSpedAdd.setVisible(true);
+            speseSpedGrid.populate(spesaSpedizioneDao.findByPubblicazione(grid.getSelected()));
         });
 
         editor.setChangeHandler(() -> {
@@ -61,8 +79,36 @@ public class PubblicazioneUI extends SmdUI {
             search.setVisible(true);
             setHeader("Pubblicazioni");
             editor.setVisible(false);
+            speseSpedGrid.setVisible(false);
+            speseSpedAdd.setVisible(false);
         });
 
+        speseSpedAdd.setChangeHandler(() -> {
+            speseSpedEditor.edit(speseSpedAdd.generate());
+            setHeader(String.format("%s:SpesaSpedizione:Nuova",editor.get().getHeader()));
+            speseSpedAdd.setVisible(false);
+            editor.setVisible(false);
+        });
+        
+        speseSpedGrid.setChangeHandler(() -> {
+            if (speseSpedGrid.getSelected() == null) {
+                return;
+            }
+            setHeader("Edit:SpesaSpedizione");
+            speseSpedEditor.edit(speseSpedGrid.getSelected());
+            add.setVisible(false);
+            search.setVisible(false);
+            editor.setVisible(false);
+            speseSpedAdd.setVisible(false);
+        });
+        
+        speseSpedEditor.setChangeHandler(() -> {
+            speseSpedGrid.populate((spesaSpedizioneDao.findByPubblicazione(grid.getSelected())));
+            setHeader(grid.getSelected().getHeader());
+            editor.setVisible(true);
+            speseSpedEditor.setVisible(false);
+            speseSpedAdd.setVisible(true);
+        });
         grid.populate(search.findAll());
 
     }
