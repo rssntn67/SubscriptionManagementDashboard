@@ -29,10 +29,12 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -193,6 +195,22 @@ public class Smd {
         spedizione.setEstrattoConto(ec);
         return spedizione;
     }
+    
+    public static Campagna inviaPropostaAbbonamentoCampagna(final Campagna campagna, List<Abbonamento> abbonamenti) {
+        campagna.setStatoCampagna(StatoCampagna.Inviata);
+        List<Abbonamento> updated = abbonamenti.stream()
+                .filter(abb -> abb.getCampagna().getId().longValue() == campagna.getId().longValue())
+                .map(abb -> {
+                    if (abb.getStatoIncasso() ==  Incassato.Omaggio) {
+                        abb.setStatoAbbonamento(StatoAbbonamento.Validato);
+                    } else {
+                        abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
+                    }
+                    return abb;
+                }).collect(Collectors.toList());
+        campagna.setAbbonamenti(updated);
+        return campagna;
+    }
     public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
         pubblicazioni.stream().forEach(p -> {
@@ -226,7 +244,7 @@ public class Smd {
                 abbonamento.setAnno(campagna.getAnno());
                 abbonamento.setCassa(cassa);
                 abbonamento.setCampo(generaVCampo(abbonamento.getAnno()));
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.PROPOSTA);
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
                 for (Storico storico: cassaStorico.get(cassa)) {
                     Pubblicazione pubblicazione = 
                             campagnapubblicazioniIds.get(storico.getPubblicazione().getId());

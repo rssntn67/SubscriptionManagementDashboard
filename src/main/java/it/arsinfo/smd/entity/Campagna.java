@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
 
 @Entity
 public class Campagna implements SmdEntity {
@@ -26,7 +27,10 @@ public class Campagna implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Anno anno = Smd.getAnnoProssimo();
-    
+
+    @Enumerated(EnumType.STRING)
+    private StatoCampagna statoCampagna=StatoCampagna.Generata;
+
     @OneToMany(cascade = { CascadeType.ALL })
     List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
 
@@ -80,12 +84,20 @@ public class Campagna implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("Campagna%s", anno.getAnnoAsString());
+        return String.format("Campagna%s %s", anno.getAnnoAsString(), statoCampagna);
     }
     
     @Override
     public String toString() {
-        return String.format("Campagna[id=%d, anno='%s']", id,anno);
+        return String.format("Campagna[id=%d, '%s' %s]", id,anno,statoCampagna);
+    }
+
+    public StatoCampagna getStatoCampagna() {
+        return statoCampagna;
+    }
+
+    public void setStatoCampagna(StatoCampagna statoCampagna) {
+        this.statoCampagna = statoCampagna;
     }
 
 }

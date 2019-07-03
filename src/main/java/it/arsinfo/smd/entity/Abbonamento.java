@@ -54,7 +54,7 @@ public class Abbonamento implements SmdEntity {
     private Ccp ccp = Ccp.UNO;
 
     @Enumerated(EnumType.STRING)
-    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.PROPOSTA;
+    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();

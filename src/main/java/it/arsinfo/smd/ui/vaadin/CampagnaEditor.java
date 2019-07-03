@@ -8,6 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.repository.CampagnaDao;
 
@@ -15,8 +16,11 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
                                                            EnumSet.allOf(Anno.class));
- 
-    private HorizontalLayout pri = new HorizontalLayout(anno);
+
+    private final ComboBox<StatoCampagna> statoCampagna = new ComboBox<StatoCampagna>("Stato",
+            EnumSet.allOf(StatoCampagna.class));
+
+    private HorizontalLayout pri = new HorizontalLayout(anno,statoCampagna);
 
     public CampagnaEditor(CampagnaDao repo) {
 
@@ -25,6 +29,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
+        statoCampagna.setReadOnly(true);
         getBinder().bindInstanceFields(this);
 
         setVisible(false);
@@ -37,7 +42,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         anno.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
-        getDelete().setEnabled(!persisted || campagna.getAnno().getAnno() > Smd.getAnnoCorrente().getAnno()
+        getDelete().setEnabled(!persisted || (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Smd.getAnnoCorrente().getAnno())
                 );
         anno.focus();
 

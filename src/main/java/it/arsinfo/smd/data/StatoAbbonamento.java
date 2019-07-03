@@ -1,10 +1,11 @@
 package it.arsinfo.smd.data;
 
 public enum StatoAbbonamento {
-    PROPOSTA("Proposta"),
-    INVIOEC("Inviato Estratto Conto"),
-    VALIDATO("Validato"),
-    ANNULLATO("Annullato");
+    Nuovo("Nuova Proposta"),
+    Proposto("Inviata Proposta"),
+    Validato("Validato"),
+    InviatoEC("Inviato Estratto Conto"),
+    Annullato("Annullato");
     
     String descr;
     

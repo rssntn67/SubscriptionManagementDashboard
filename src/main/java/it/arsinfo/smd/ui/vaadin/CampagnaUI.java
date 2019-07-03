@@ -13,6 +13,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -159,7 +160,30 @@ public class CampagnaUI extends SmdUI {
         });
 
         grid.addComponentColumn(campagna -> {
-            Button button = new Button("Genera Ccp", VaadinIcons.ENVELOPES);
+            Button button = new Button("Invia Proposta Abbonamento Ccp", VaadinIcons.ENVELOPES);
+            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Generata);
+            button.addClickListener(click -> {
+                Smd.inviaPropostaAbbonamentoCampagna(campagna, abbonamentoDao.findByCampagna(campagna));
+                campagnaDao.save(campagna);
+                campagna.getAbbonamenti().stream().forEach(abb -> abbonamentoDao.save(abb));
+                setHeader("Campagna::Ccp");
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.edit(campagna);
+                abbonamentoGrid
+                .populate(
+                  abbonamentoDao.findByCampagna(campagna)
+                      .stream()
+                      .filter(a -> a.getTotale().signum() > 0)
+                      .collect(Collectors.toList()));
+                grid.setVisible(false);
+            });
+            return button;
+        });
+
+        grid.addComponentColumn(campagna -> {
+            Button button = new Button("Visualizza Proposta Abbonamento Inviata", VaadinIcons.ENVELOPES);
+            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Inviata);
             button.addClickListener(click -> {
                 setHeader("Campagna::Ccp");
                 add.setVisible(false);
