@@ -165,7 +165,6 @@ public class CampagnaUI extends SmdUI {
             button.addClickListener(click -> {
                 Smd.inviaPropostaAbbonamentoCampagna(campagna, abbonamentoDao.findByCampagna(campagna));
                 campagnaDao.save(campagna);
-                campagna.getAbbonamenti().stream().forEach(abb -> abbonamentoDao.save(abb));
                 setHeader("Campagna::Ccp");
                 add.setVisible(false);
                 search.setVisible(false);

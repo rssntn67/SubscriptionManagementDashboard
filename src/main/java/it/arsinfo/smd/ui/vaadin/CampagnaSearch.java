@@ -21,7 +21,8 @@ public class CampagnaSearch extends SmdSearch<Campagna> {
 
         setComponents(new HorizontalLayout(filterAnno));
 
-        filterAnno.setEmptySelectionAllowed(false);
+        filterAnno.setEmptySelectionAllowed(true);
+        filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
         filterAnno.setPlaceholder("Cerca per Anno");
 
         filterAnno.addSelectionListener(e -> {
