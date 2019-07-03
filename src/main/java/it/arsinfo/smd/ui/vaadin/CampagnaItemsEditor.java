@@ -21,7 +21,7 @@ public class CampagnaItemsEditor
 
             @Override
             public boolean getReadOnly(Pubblicazione t, boolean persisted) {
-                return persisted;
+                return true;
             }
 
             @Override

@@ -26,7 +26,7 @@ public class HomeUI extends SmdUI {
         AbsoluteLayout left = new AbsoluteLayout();
         left.setWidth("1600px");
         left.setHeight("1000px");        
-        left.addComponent(new Label("Benvenuto nel programma gestione abbonamenti ADP"), "left: 320px; top: 200px;");
+        left.addComponent(new Label("Benvenuto nel programma gestione abbonamenti ADP"), "left: 150px; top: 200px;");
         VerticalLayout right = new VerticalLayout();
         right.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
         right.addComponents(getPageLinks());

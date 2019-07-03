@@ -87,6 +87,7 @@ public abstract class SmdUI extends UI {
     public Link[] getPageLinks() {
         List<Link> links = new ArrayList<>();
         UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
+        links.add(new Link("Home",new ExternalResource(APP_URL)));
         links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
         links.add(new Link("Campagna", new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));

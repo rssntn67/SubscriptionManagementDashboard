@@ -1,6 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,8 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.CampagnaItem;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -51,8 +53,9 @@ public class CampagnaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
-        CampagnaItemsEditor campagnaItemEditor = new CampagnaItemsEditor(pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
-                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList()));
+        List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
+                                                                                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
+        CampagnaItemsEditor campagnaItemEditor = new CampagnaItemsEditor(attivi);
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("Campagne");
@@ -89,20 +92,14 @@ public class CampagnaUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null
-                        && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
-                    Notification.show("Anno deve essere anno corrente o successivi",
+                        && get().getAnno().getAnno() <= Smd.getAnnoCorrente().getAnno()) {
+                    Notification.show("Anno deve essere almeno anno successivo",
                                       Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null
-                        && campagnaItemEditor.getSelected().isEmpty()) {
-                    Notification.show("Selezionare almeno una Pubblicazione Per Generare la Campagna Abbonamenti",
-                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
                 Smd.generaCampagna(get(), anagraficaDao.findAll(),
                                    storicoDao.findAll(),
-                                   campagnaItemEditor.getSelected());
+                                   attivi);
                 super.save();
             }
 
@@ -120,7 +117,12 @@ public class CampagnaUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(add.generate());
-            campagnaItemEditor.edit(new ArrayList<>(), false);
+            campagnaItemEditor.edit(attivi.stream().map(p -> {
+                CampagnaItem ci = new CampagnaItem();
+                ci.setPubblicazione(p);
+                ci.setCampagna(editor.get());
+                return ci;
+            }).collect(Collectors.toList()), false);
         });
 
         search.setChangeHandler(() -> grid.populate(search.find()));
