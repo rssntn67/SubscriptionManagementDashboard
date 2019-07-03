@@ -7,6 +7,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -29,7 +30,24 @@ public class HomeUI extends SmdUI {
         left.addComponent(new Label("Benvenuto nel programma gestione abbonamenti ADP"), "left: 150px; top: 200px;");
         VerticalLayout right = new VerticalLayout();
         right.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        right.addComponents(getPageLinks());
+                
+        right.addComponent(new Label("Gestione Anagrafiche:"));
+        right.addComponents(new HorizontalLayout(getAnagraficaLinks()));
+        right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Campagne:"));
+        right.addComponents(new HorizontalLayout(getCampagnaLink()));
+        right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Abbonamenti:"));
+        right.addComponents(new HorizontalLayout(getAbbonamentoLinks()));
+        right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Pubblicazioni:"));
+        right.addComponents(new HorizontalLayout(getPubblicazioneLink()));
+        right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Incassi:"));
+        right.addComponents(new HorizontalLayout(getIncassoLinks()));
+        right.addComponent(new Label(""));
+        right.addComponents(new HorizontalLayout(getUserLinks()));
+        
         layout.addComponents(left,
                              right);
         setContent(layout);

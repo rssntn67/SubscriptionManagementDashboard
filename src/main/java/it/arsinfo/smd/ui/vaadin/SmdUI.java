@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.vaadin;
+    package it.arsinfo.smd.ui.vaadin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -29,7 +31,7 @@ public abstract class SmdUI extends UI {
      */
     private static final long serialVersionUID = 7884064928998716106L;
     private VerticalLayout layout = new VerticalLayout();
-    private HorizontalLayout menu = new HorizontalLayout();
+    private MenuBar menu = new MenuBar();
     private Label header = new Label("");
     public static final String APP_URL = "/";
     public final static String URL_LOGIN = "/login.html";
@@ -41,6 +43,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_ESTRATTO_CONTO = "/estrattoconto";
+    public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_INCASSI = "/incassi";
     public final static String URL_VERSAMENTI = "/versamenti";
@@ -53,12 +56,39 @@ public abstract class SmdUI extends UI {
     protected void init(VaadinRequest request, String head) {
 
         loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
-        menu.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        menu.addComponents(getPageLinks());
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
+        final Label selection = new Label("-");
+        layout.addComponent(selection);
         setContent(layout);
+        
+        MenuBar.Command mycommand = new MenuBar.Command() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+            MenuItem previous = null;
+
+            public void menuSelected(MenuItem selectedItem) {
+                selection.setValue("Ordered a " +
+                        selectedItem.getText() +
+                        " from menu.");
+
+                if (previous != null)
+                    previous.setStyleName(null);
+                selectedItem.setStyleName("highlight");
+                previous = selectedItem;
+            }
+        };
+        
+        MenuItem home = menu.addItem("Home",null, mycommand);
+        MenuItem anagrafica = menu.addItem("Anagrafica",null,mycommand);
+        MenuItem campagne = menu.addItem("Campagne",null,mycommand);
+        MenuItem abbonamenti = menu.addItem("Abbonamenti",null,mycommand);
+        MenuItem pubblicazioni = menu.addItem("Pubblicazioni",null,mycommand);
+        MenuItem incassi = menu.addItem("Incassi");
+        MenuItem user = menu.addItem("User", null,mycommand);
 
     }
 
@@ -84,20 +114,45 @@ public abstract class SmdUI extends UI {
         }
     }
 
-    public Link[] getPageLinks() {
+    public Link getHomePageLink() {
+        return new Link("Home",new ExternalResource(APP_URL));        
+    }
+    
+    public Link getCampagnaLink() {
+        return new Link("Campagna", new ExternalResource(URL_CAMPAGNA));
+        
+    }
+    
+    public Link getPubblicazioneLink() {
+        return new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI));    
+    }
+    
+    public Link[] getAnagraficaLinks() {
         List<Link> links = new ArrayList<>();
-        UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
-        links.add(new Link("Home",new ExternalResource(APP_URL)));
-        links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));
-        links.add(new Link("Campagna", new ExternalResource(URL_CAMPAGNA)));
-        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Estratti Conto",  new ExternalResource(URL_ESTRATTO_CONTO)));
         links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));
-        links.add(new Link("Operazioni", new ExternalResource(URL_OPERAZIONI)));
+        return links.toArray((new Link[links.size()]));
+    }
+
+    public Link[] getAbbonamentoLinks() {
+        List<Link> links = new ArrayList<>();
+        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link("Estratti Conto",  new ExternalResource(URL_ESTRATTO_CONTO)));
+        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
+        return links.toArray((new Link[links.size()]));
+    }
+
+    public Link[] getIncassoLinks() {
+        List<Link> links = new ArrayList<>();
         links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
         links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
+        return links.toArray((new Link[links.size()]));
+    }
+
+    public Link[] getUserLinks() {
+        List<Link> links = new ArrayList<>();
+        UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         if (loggedInUser.getRole() == Role.ADMIN ) {
             links.add(new Link("Amministrazione Utenti", new ExternalResource(URL_USER)));
         } 
