@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		reg = reg.antMatchers("/VAADIN/**").permitAll();
 		// Require authentication for all URLS ("/**")
 		reg = reg.antMatchers(SmdUI.URL_USER).hasAnyAuthority(Role.ADMIN.name());
+                reg = reg.antMatchers(SmdUI.URL_RESET).hasAnyAuthority(Role.USER.name(),Role.ADMIN.name());
 		reg = reg.antMatchers("/**").hasAnyAuthority(UserInfo.getRoleNames());
 		HttpSecurity sec = reg.and();
 

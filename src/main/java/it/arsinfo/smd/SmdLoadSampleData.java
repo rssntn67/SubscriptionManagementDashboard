@@ -75,6 +75,7 @@ public class SmdLoadSampleData implements Runnable {
     private final boolean loadSampleAnagrafica;
     private final boolean loadSampleData;
     private final boolean createDemoUser;
+    private final boolean createNormalUser;
     private Pubblicazione messaggio;
     private Pubblicazione lodare;
     private Pubblicazione estratti;
@@ -189,6 +190,7 @@ public class SmdLoadSampleData implements Runnable {
             boolean loadPubblicazioniAdp,
             boolean loadSampleAnagrafica,
             boolean createDemoUser,
+            boolean createNormalUser,
             boolean loadSampleData
     ) {
         this.anagraficaDao=anagraficaDao;
@@ -205,6 +207,7 @@ public class SmdLoadSampleData implements Runnable {
         this.loadPubblicazioniAdp=loadPubblicazioniAdp;
         this.loadSampleAnagrafica=loadSampleAnagrafica;
         this.createDemoUser=createDemoUser;
+        this.createNormalUser=createNormalUser;
         this.loadSampleData=loadSampleData;
     }
     
@@ -897,6 +900,10 @@ public class SmdLoadSampleData implements Runnable {
         if (createDemoUser || loadSampleData) {
             createDemoUser();
         }
+        
+        if (createNormalUser) {
+            createNormalUser();
+        }
 
     }
 
@@ -976,7 +983,8 @@ public class SmdLoadSampleData implements Runnable {
                             pubblicazioneDao.findAll()
                         )
                      );
-
+        
+        //FIXME
         pubblicazioneDao.findAll().stream().forEach(p -> 
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
                 EnumSet.allOf(Mese.class).stream().forEach(mese -> {
@@ -1013,10 +1021,17 @@ public class SmdLoadSampleData implements Runnable {
     }   
     
     private void createDemoUser() {
-        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.USER);
-        adp.setLocked(true);
+        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
         userInfoDao.save(adp);
         log.info("creato user adp/adp");
         
     }
+    
+    private void createNormalUser() {
+        UserInfo adp = new UserInfo("iser", passwordEncoder.encode("pass"), Role.USER);
+        userInfoDao.save(adp);
+        log.info("creato user user/pass");
+        
+    }
+
 }

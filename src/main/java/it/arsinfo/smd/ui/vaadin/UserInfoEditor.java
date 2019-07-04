@@ -10,7 +10,6 @@ import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.validator.BeanValidator;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -32,17 +31,14 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
     private final ComboBox<Role> role = new ComboBox<Role>("Selezionare il ruolo",EnumSet.allOf(Role.class));
     private final PasswordField password = new PasswordField("password");
     private final PasswordField confirm = new PasswordField("confirm");
-    private final CheckBox locked = new CheckBox("Utente locked");
 
     private boolean persisted;
     public UserInfoEditor(UserInfoDao repo, PasswordEncoder passwordEncoder) {
         super(repo, new Binder<>(UserInfo.class));
         setComponents(getActions(),
                       new HorizontalLayout(username,role),
-                      new HorizontalLayout(password,confirm),
-                      locked);
+                      new HorizontalLayout(password,confirm));
         
-        getBinder().forField(locked).bind("locked");
         getBinder().forField(username).asRequired().bind("username");
         getBinder().forField(role).asRequired().bind("role");
         getBinder().forField(password).withValidator(passwordValidator)
@@ -112,11 +108,7 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
         this.persisted = persisted;
         confirm.clear();
         username.setReadOnly(persisted);
-        role.setReadOnly("admin".equals(obj.getUsername()) || obj.isLocked());
         password.setRequiredIndicatorVisible(!persisted);
-        password.setReadOnly(obj.isLocked());
-        confirm.setVisible(!obj.isLocked());
-        getDelete().setEnabled(!obj.isLocked() && !"admin".equals(obj.getUsername()));
     }
     
     private Validator<String> passwordValidator = new Validator<String>() {

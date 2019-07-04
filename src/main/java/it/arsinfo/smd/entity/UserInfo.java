@@ -25,7 +25,7 @@ public class UserInfo implements SmdEntity {
     public enum Role {
         ADMIN,
         USER,
-        VIEWER,
+        LOCKED,
     }
     
     @Id
@@ -42,8 +42,6 @@ public class UserInfo implements SmdEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
-
-    private boolean locked = false;
 
     public UserInfo() {
         username = "user";
@@ -74,14 +72,6 @@ public class UserInfo implements SmdEntity {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
     }
 
     public Long getId() {

@@ -42,6 +42,9 @@ public class SmdApplication {
     @Value("${create.demo.user}")
     private String  createDemoUser;
 
+    @Value("${create.normal.user}")
+    private String  createNormalUser;
+
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
     }
@@ -76,6 +79,8 @@ public class SmdApplication {
             log.info("loadSampleAnagraficaAdp="+loadSA);
             boolean creaDU = createDemoUser != null && createDemoUser.equals("true");
             log.info("createDemoUser="+creaDU);
+            boolean creaNU =  createNormalUser != null && createNormalUser.equals("true");
+            log.info("createNormalUser="+creaNU);
             if (loadSD || loadPAdp || loadSA) {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
@@ -92,6 +97,7 @@ public class SmdApplication {
                       loadPAdp,
                       loadSA,
                       creaDU,
+                      creaNU,
                       loadSD
                       )).start();
             }

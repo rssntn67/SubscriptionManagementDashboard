@@ -3,13 +3,13 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
@@ -52,43 +52,132 @@ public abstract class SmdUI extends UI {
     public final static String URL_USER = "/user";
     public final static String URL_RESET = "/reset";
 
+    private static final Logger log = LoggerFactory.getLogger(SmdUI.class);
+
     private UserInfo loggedInUser;
     protected void init(VaadinRequest request, String head) {
 
+        log.info("init: " + request.getPathInfo());
         loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
-        final Label selection = new Label("-");
-        layout.addComponent(selection);
         setContent(layout);
         
-        MenuBar.Command mycommand = new MenuBar.Command() {
-            /**
-             * 
-             */
+        menu.addItem("Home",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
-            MenuItem previous = null;
-
+            
             public void menuSelected(MenuItem selectedItem) {
-                selection.setValue("Ordered a " +
-                        selectedItem.getText() +
-                        " from menu.");
-
-                if (previous != null)
-                    previous.setStyleName(null);
-                selectedItem.setStyleName("highlight");
-                previous = selectedItem;
+                getUI().getPage().setLocation(APP_URL);;
             }
-        };
+        });
         
-        MenuItem home = menu.addItem("Home",null, mycommand);
-        MenuItem anagrafica = menu.addItem("Anagrafica",null,mycommand);
-        MenuItem campagne = menu.addItem("Campagne",null,mycommand);
-        MenuItem abbonamenti = menu.addItem("Abbonamenti",null,mycommand);
-        MenuItem pubblicazioni = menu.addItem("Pubblicazioni",null,mycommand);
-        MenuItem incassi = menu.addItem("Incassi");
-        MenuItem user = menu.addItem("User", null,mycommand);
+        menu.addItem("Pubblicazioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_PUBBLICAZIONI);
+            }
+        });
+
+        menu.addItem("Campagna",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_CAMPAGNA);
+            }
+        });
+
+        MenuItem anagrafica = menu.addItem("Gestione Anagrafica",null);
+        
+        anagrafica.addItem("Anagrafica",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ANAGRAFICA);
+            }
+        } );
+        anagrafica.addItem("Storico",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_STORICO);
+            }
+        } );
+        anagrafica.addItem("Note",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_NOTE);
+            }
+        } );
+        
+        MenuItem abbonamenti = menu.addItem("Gestione Abbonamenti",null);
+        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ABBONAMENTI);
+            }
+        } );
+        abbonamenti.addItem("Estratti Conto",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ESTRATTO_CONTO);
+            }
+        } );
+
+        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_SPEDIZIONI);
+            }
+        } );
+
+        MenuItem incassi = menu.addItem("Gestione Incassi",null);
+        incassi.addItem("Incassi",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_INCASSI);
+            }
+        } );
+        incassi.addItem("Versamenti",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_VERSAMENTI);
+            }
+        } );
+
+        MenuItem user = menu.addItem("User", null);
+        user.addItem("Logout: "+ loggedInUser.getUsername(),new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_LOGOUT);
+            }
+        } );
+       if (loggedInUser.getRole() == Role.ADMIN ) {
+           user.addItem("Amministrazione Utenti",new MenuBar.Command() {
+                private static final long serialVersionUID = 1L;
+                
+                public void menuSelected(MenuItem selectedItem) {
+                    getUI().getPage().setLocation(URL_USER);
+                }
+            } );
+        } 
+        if (!(loggedInUser.getRole() == Role.LOCKED)) {
+            user.addItem("Reset Password",new MenuBar.Command() {
+                private static final long serialVersionUID = 1L;
+                
+                public void menuSelected(MenuItem selectedItem) {
+                    getUI().getPage().setLocation(URL_RESET);
+                }
+            } );
+        }
 
     }
 
@@ -156,7 +245,7 @@ public abstract class SmdUI extends UI {
         if (loggedInUser.getRole() == Role.ADMIN ) {
             links.add(new Link("Amministrazione Utenti", new ExternalResource(URL_USER)));
         } 
-        if (!loggedInUser.isLocked()) {
+        if (!(loggedInUser.getRole() == Role.LOCKED)) {
             links.add(new Link("Reset Password", new ExternalResource(URL_RESET)));
         }
         links.add(new Link(String.format("Logout: %s",loggedInUser.getUsername()),

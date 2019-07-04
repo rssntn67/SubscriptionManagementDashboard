@@ -14,6 +14,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.ui.security.SecurityUtils;
 
@@ -80,7 +81,7 @@ public class ResetPassEditor extends SmdEditor<UserInfo> {
 
     @Override
     public void focus(boolean persisted, UserInfo obj) {
-        resetPassword.setEnabled(!obj.isLocked());
+        resetPassword.setEnabled(!obj.getRole().equals(Role.LOCKED));
     }
     
     private Validator<String> passwordValidator = new Validator<String>() {
