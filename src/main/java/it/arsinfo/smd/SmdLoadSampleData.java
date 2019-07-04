@@ -1028,7 +1028,7 @@ public class SmdLoadSampleData implements Runnable {
     }
     
     private void createNormalUser() {
-        UserInfo adp = new UserInfo("iser", passwordEncoder.encode("pass"), Role.USER);
+        UserInfo adp = new UserInfo("user", passwordEncoder.encode("pass"), Role.USER);
         userInfoDao.save(adp);
         log.info("creato user user/pass");
         
