@@ -55,7 +55,8 @@ public class OperazioneUI extends SmdUI {
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdProgressBar pb = new SmdProgressBar();
-        SmdButton bss = new SmdButton("Genera Estratto Conto", VaadinIcons.CLOUD);
+        SmdButton gss = new SmdButton("Genera Estratto Conto", VaadinIcons.CLOUD);
+        SmdButton bss = new SmdButton("Aggiorna Stato Storici", VaadinIcons.CLOUD);
 
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
@@ -63,7 +64,7 @@ public class OperazioneUI extends SmdUI {
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
         SpedizioneGrid spedGrid = new SpedizioneGrid("Spedizioni");
-        addSmdComponents(pb,spedGrid,generaShow,bss,genera,editor,search,grid);
+        addSmdComponents(pb,spedGrid,generaShow,gss,bss,genera,editor,search,grid);
         
         
         pb.setVisible(false);
@@ -73,9 +74,44 @@ public class OperazioneUI extends SmdUI {
 
         pb.setChangeHandler(() ->{});
         spedGrid.setChangeHandler(() ->{});
+        
         bss.setChangeHandler(()-> {
             setHeader("Calcola Stato....");
             bss.getButton().setEnabled(false);
+            pb.setVisible(true);
+            new Thread(() -> {
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
+                List<Storico> storici = storicoDao.findAll();
+                float delta = 1.0f/storici.size();
+                pb.setValue(0.0f);
+                storici.stream().forEach( s -> {
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    if (s.getStatoStorico() != calcolato) {
+                        s.setStatoStorico(calcolato);
+                        storicoDao.save(s);
+                    }
+                    access(() -> {
+                        pb.setValue(pb.getValue()+delta);
+                        grid.populate(search.find());
+                        this.push();
+                    });
+                });
+
+                access(() -> {
+                    pb.setValue(0.0f);
+                    pb.setVisible(false);
+                    bss.getButton().setEnabled(true);
+                    setHeader("Storico");
+                    grid.populate(search.find());
+                    this.push();
+                });
+
+            }).start();            
+        });
+
+        gss.setChangeHandler(()-> {
+            setHeader("Calcola Stato....");
+            gss.getButton().setEnabled(false);
             pb.setVisible(true);
             new Thread(() -> {
                 List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
@@ -110,7 +146,7 @@ public class OperazioneUI extends SmdUI {
                 access(() -> {
                     pb.setValue(0.0f);
                     pb.setVisible(false);
-                    bss.getButton().setEnabled(true);
+                    gss.getButton().setEnabled(true);
                     setHeader("Operazioni");
                     grid.populate(search.find());
                     this.push();
@@ -121,7 +157,7 @@ public class OperazioneUI extends SmdUI {
 
         generaShow.setChangeHandler(() -> {
             generaShow.setVisible(false);
-            bss.setVisible(false);
+            gss.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
             genera.edit();        
@@ -130,7 +166,7 @@ public class OperazioneUI extends SmdUI {
             generaShow.setVisible(true);
             spedGrid.setVisible(false);
             genera.setVisible(false);
-            bss.setVisible(true);
+            gss.setVisible(true);
             search.setVisible(true);
             grid.setVisible(true);
         }); 
@@ -141,7 +177,7 @@ public class OperazioneUI extends SmdUI {
             }
             generaShow.setVisible(false);
             search.setVisible(false);
-            bss.setVisible(false);
+            gss.setVisible(false);
             grid.setVisible(false);
             editor.edit(grid.getSelected());   
         });
@@ -149,7 +185,7 @@ public class OperazioneUI extends SmdUI {
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             generaShow.setVisible(true);
-            bss.setVisible(true);
+            gss.setVisible(true);
             spedGrid.setVisible(false);
             search.setVisible(true);
             grid.populate(search.find());;            

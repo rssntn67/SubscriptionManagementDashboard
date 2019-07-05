@@ -39,14 +39,14 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(Ccp.class));
 
 
-    private final ComboBox<Incassato> incassato = new ComboBox<Incassato>("",EnumSet.allOf(Incassato.class));
+    private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
     public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
 
         HorizontalLayout pri = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
                                                     anno);
-        HorizontalLayout sec = new HorizontalLayout(incassato,cassa,campo,
+        HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,campo,
                                                     ccp);
         
         HorizontalLayout tri = new HorizontalLayout(totale,residuo);
@@ -92,7 +92,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .forField(residuo)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
-        getBinder().forField(incassato).bind("incassato");
+        getBinder().forField(statoIncasso).bind("statoIncasso");
         getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
 
     }
@@ -108,7 +108,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         campo.setVisible(persisted);
         campo.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        incassato.setVisible(persisted);
+        statoIncasso.setVisible(persisted);
         cassa.setReadOnly(persisted);
         campagna.setVisible(persisted);
         statoAbbonamento.setReadOnly(persisted && abbonamento.getCampagna() != null);

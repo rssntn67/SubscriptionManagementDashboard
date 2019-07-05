@@ -38,6 +38,7 @@ import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -213,7 +214,9 @@ public class Smd {
     }
     public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
-        pubblicazioni.stream().forEach(p -> {
+        pubblicazioni.stream()
+        .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
+        .forEach(p -> {
             CampagnaItem ci = new CampagnaItem();
             ci.setCampagna(campagna);
             ci.setPubblicazione(p);
@@ -248,20 +251,7 @@ public class Smd {
                 for (Storico storico: cassaStorico.get(cassa)) {
                     Pubblicazione pubblicazione = 
                             campagnapubblicazioniIds.get(storico.getPubblicazione().getId());
-                    final EstrattoConto ec = new EstrattoConto();
-                    ec.setStorico(storico);
-                    ec.setAbbonamento(abbonamento);
-                    ec.setPubblicazione(pubblicazione);
-                    ec.setNumero(storico.getNumero());
-                    ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
-                    ec.setDestinatario(storico.getDestinatario());
-                    ec.setInvio(storico.getInvio());
-                    storico.getPubblicazione().getMesiPubblicazione().forEach( mese -> {
-                        Spedizione spedizione = Smd.creaSpedizione(ec, mese,campagna.getAnno(), storico.getInvioSpedizione());
-                        ec.addSpedizione(spedizione);
-                    });
-                    calcoloImportoEC(ec);
-                    abbonamento.addEstrattoConto(ec);
+                    generaDaStorico(abbonamento, storico, pubblicazione);
                 }
                 abbonamenti.add(abbonamento);
             }
@@ -269,6 +259,50 @@ public class Smd {
         });        
         campagna.setAbbonamenti(abbonamenti);
         return campagna;
+    }
+    
+    public static EstrattoConto generaDaStorico(Abbonamento abb,Storico storico,Pubblicazione p) {
+        final EstrattoConto ec = new EstrattoConto();
+        ec.setStorico(storico);
+        ec.setAbbonamento(abb);
+        ec.setPubblicazione(p);
+        ec.setNumero(storico.getNumero());
+        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+        ec.setDestinatario(storico.getDestinatario());
+        ec.setInvio(storico.getInvio());
+        storico.getPubblicazione().getMesiPubblicazione().forEach( mese -> {
+            Spedizione spedizione = Smd.creaSpedizione(ec, mese,abb.getAnno(), storico.getInvioSpedizione());
+            ec.addSpedizione(spedizione);
+        });
+        calcoloImportoEC(ec);
+        abb.addEstrattoConto(ec);
+        return ec;
+    }
+    
+    
+    public static Abbonamento aggiornaAbbonamento(Abbonamento abbonamento,List<Pubblicazione> pubblicazioni, List<Storico> storici) {
+        if (abbonamento.getAnno() != Smd.getAnnoProssimo()) {
+            return abbonamento;
+        }
+        abbonamento.getEstrattiConto().clear();
+        final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
+        pubblicazioni.stream()
+        .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
+        .forEach(p -> {
+            campagnapubblicazioniIds.put(p.getId(),p);            
+        });
+        storici
+        .stream()
+        .filter( 
+             s -> abbonamento.getCassa() == s.getCassa() && campagnapubblicazioniIds.containsKey(s.getPubblicazione().getId()) && s.attivo())
+        .forEach(storico-> {
+            Pubblicazione pubblicazione = 
+                    campagnapubblicazioniIds.get(storico.getPubblicazione().getId());
+            generaDaStorico(abbonamento, storico, pubblicazione);
+        });
+        
+        return abbonamento;
+        
     }
 
     public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {

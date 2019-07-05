@@ -16,8 +16,10 @@ import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_ANAGRAFICA)
@@ -41,6 +43,11 @@ public class AnagraficaUI extends SmdUI {
     NotaDao notaDao;
     @Autowired
     CampagnaDao campagnaDao;
+    @Autowired
+    EstrattoContoDao estrattoContoDao;
+    
+    @Autowired
+    SpedizioneDao spedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -54,6 +61,9 @@ public class AnagraficaUI extends SmdUI {
         StoricoEditor storicoEditor = 
                 new StoricoEditor(
                       storicoDao,
+                      abbonamentoDao,
+                      estrattoContoDao,
+                      spedizioneDao,
                       pubblicazioneDao.findAll(),
                       anagraficaDao.findAll()
         ) {
@@ -81,8 +91,8 @@ public class AnagraficaUI extends SmdUI {
                          storicoAdd,
                          editor, 
                          storicoEditor,
-                         storicoGrid, 
                          notaGrid,
+                         storicoGrid, 
                          add,
                          search, 
                          grid);

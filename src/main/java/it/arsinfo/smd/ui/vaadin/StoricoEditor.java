@@ -3,20 +3,30 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 public class StoricoEditor
@@ -24,7 +34,7 @@ public class StoricoEditor
 
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
-    private final ComboBox<TipoEstrattoConto> omaggio = new ComboBox<TipoEstrattoConto>("Omaggio",
+    private final ComboBox<TipoEstrattoConto> tipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo",
                                                                     EnumSet.allOf(TipoEstrattoConto.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
@@ -38,11 +48,19 @@ public class StoricoEditor
     
     private final TextField nota = new TextField("Aggiungi Nota");
 
+    private static final Logger log = LoggerFactory.getLogger(StoricoEditor.class);
+
     public StoricoEditor(
             StoricoDao storicoDao,
-            List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafiche) {
+            AbbonamentoDao abbonamentoDao,
+            EstrattoContoDao estrattoContoDao,
+            SpedizioneDao spedizioneDao,
+            List<Pubblicazione> pubblicazioni, 
+            List<Anagrafica> anagrafiche) {
 
         super(storicoDao, new Binder<>(Storico.class) );
+        SmdButton update = new SmdButton("Salva ed Aggiorna Campagna", VaadinIcons.ARCHIVES);
+        update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -54,7 +72,7 @@ public class StoricoEditor
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         cassa.setEmptySelectionAllowed(false);
-        omaggio.setEmptySelectionAllowed(false);
+        tipoEstrattoConto.setEmptySelectionAllowed(false);
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
         statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
@@ -63,12 +81,35 @@ public class StoricoEditor
         pri.addComponentsAndExpand(destinatario);
         pri.addComponent(pubblicazione);
         pri.addComponent(numero);
-        pri.addComponents(cassa,omaggio,invio,invioSpedizione);
-        pri.addComponentsAndExpand(statoStorico);
+        pri.addComponents(statoStorico);
+        
+        HorizontalLayout hhh = new HorizontalLayout();
+        hhh.addComponentsAndExpand(tipoEstrattoConto);
+        hhh.addComponents(cassa,invio,invioSpedizione);
 
         HorizontalLayout sec = new HorizontalLayout();
         sec.addComponentsAndExpand(nota);
-        setComponents(getActions(),pri,sec);
+        setComponents(getActions(),update.getButton(),pri,hhh,sec);
+        
+        update.setChangeHandler(() -> {
+            save();
+            for (Abbonamento abb:abbonamentoDao.findByIntestatario(get().getIntestatario())) {
+                log.info(abb.toString());
+                if ( abb.getAnno() == Smd.getAnnoProssimo()
+                          && abb.getCampagna() != null)
+                abbonamentoDao.delete(abb);
+            }
+            /*
+            abbonamentoDao.findByIntestatario(get().getIntestatario())
+            .stream()
+            .filter(a -> a.getAnno() == Smd.getAnnoProssimo()
+                          && a.getCampagna() != null)
+            .forEach(abb -> {
+                abbonamentoDao.save(Smd.aggiornaAbbonamento(abb, pubblicazioni, storicoDao.findByIntestatario(get().getIntestatario())));
+            });
+            */
+
+        });
  
         getBinder()
             .forField(numero)
@@ -89,6 +130,7 @@ public class StoricoEditor
         } else {
             getSave().setEnabled(true);
         }
+        getDelete().setEnabled(false);
         
         numero.focus();
     }

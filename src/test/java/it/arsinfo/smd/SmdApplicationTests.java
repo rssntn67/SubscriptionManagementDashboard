@@ -106,9 +106,8 @@ public class SmdApplicationTests {
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
-    
     @Test
-    public void testSmd() {
+    public void testAutowire() {
         assertNotNull(abbonamentoDao);
         assertNotNull(anagraficaDao);
         assertNotNull(pubblicazioneDao);
@@ -131,8 +130,11 @@ public class SmdApplicationTests {
         assertNotNull(passwordEncoder);
         assertTrue(passwordEncoder instanceof BCryptPasswordEncoder);
         assertNotNull(authenticationSuccessHandler);
-        assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);
-
+        assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);        
+    }
+    
+    @Test
+    public void testLoginAdmin() {
         Authentication auth =
                 new UsernamePasswordAuthenticationToken("admin", "admin");
         try {
@@ -152,10 +154,14 @@ public class SmdApplicationTests {
             assertTrue(true);
 
         }
-        
+
         UserInfo admin = userInfoDao.findById(1L).get();
         assertEquals("admin", admin.getUsername());
 
+    }
+    
+    @Test
+    public void testAnagrafica() {
         Anagrafica dm = SmdLoadSampleData.getDiocesiMi();
         anagraficaDao.save(dm);
         assertEquals(1, anagraficaDao.findAll().size());
@@ -179,8 +185,14 @@ public class SmdApplicationTests {
                     });
 
         anagraficaDao.deleteAll();
-        assertEquals(0, anagraficaDao.findAll().size());
-        
+        assertEquals(0, anagraficaDao.findAll().size());       
+    }
+    
+    @Test
+    public void testSmdSampleData() {
+
+
+         
         new SmdLoadSampleData(
                               anagraficaDao, 
                               storicoDao, 
@@ -194,7 +206,7 @@ public class SmdApplicationTests {
                               userInfoDao,
                               passwordEncoder,false,false,false,false,true).run();
 
-        auth =
+        Authentication auth =
                 new UsernamePasswordAuthenticationToken("adp", "adp");
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
