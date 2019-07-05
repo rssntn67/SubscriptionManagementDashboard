@@ -3,12 +3,14 @@ package it.arsinfo.smd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,34 +27,24 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.entity.EstrattoConto;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -144,82 +136,142 @@ public class SmdApplicationTests {
             assertTrue(false);
         }
 
-        auth =
-                new UsernamePasswordAuthenticationToken("adp", "adp");
-        try {
-            securityConfig.authenticationManagerBean().authenticate(auth);
-            assertTrue(false);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            assertTrue(true);
-
-        }
-
         UserInfo admin = userInfoDao.findById(1L).get();
         assertEquals("admin", admin.getUsername());
 
     }
     
-    @Test
-    public void testAnagrafica() {
-        Anagrafica dm = SmdLoadSampleData.getDiocesiMi();
-        anagraficaDao.save(dm);
-        assertEquals(1, anagraficaDao.findAll().size());
-        assertEquals(Long.parseLong("2"), dm.getId().longValue());
+    @Test 
+    public void testPubblicazioneDaoCRUD() {
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        Pubblicazione p = new Pubblicazione("prova", TipoPubblicazione.MENSILE);
+        p.setAbbonamento(new BigDecimal("30.00"));
+        p.setAbbonamentoConSconto(new BigDecimal("20.00"));
+        p.setAbbonamentoSostenitore(new BigDecimal("100.00"));
+        p.setAbbonamentoWeb(new BigDecimal("10.00"));
+        p.setCostoUnitario(new BigDecimal("2.50"));
         
-        Anagrafica ar = SmdLoadSampleData.getAR();
-        ar.setCo(dm);
-        anagraficaDao.save(ar);
-        assertEquals(2, anagraficaDao.findAll().size());
-        assertEquals(Long.parseLong("3"), ar.getId().longValue());
+        p.setFeb(true);
+        p.setApr(true);
+        p.setSet(true);
+        p.setNov(true);
+        
+        pubblicazioneDao.save(p);
+        assertEquals(1, pubblicazioneDao.findAll().size());
+        assertEquals(0, spesaSpedizioneDao.findAll().size());
 
-        Anagrafica ps = SmdLoadSampleData.getPS();
-        ps.setCo(dm);
-        anagraficaDao.save(ps);
-        assertEquals(3, anagraficaDao.findAll().size());
-        assertEquals(Long.parseLong("4"), ps.getId().longValue());
+        SpesaSpedizione s1p = new SpesaSpedizione();
+        s1p.setPubblicazione(p);
+        s1p.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        s1p.setNumero(1);
+        s1p.setSpeseSpedizione(new BigDecimal("4.45"));
+        p.addSpesaSpedizione(s1p);
+        spesaSpedizioneDao.save(s1p);
+        
+        assertEquals(1, p.getSpeseSpedizione().size());
+        assertEquals(1, pubblicazioneDao.findAll().size());
+        assertEquals(1, spesaSpedizioneDao.findAll().size());
 
-        anagraficaDao.findAll().stream().filter(a -> a.getCo() != null).forEach(a -> {
-            System.out.println(a);
-            System.out.println(a.getCo());
-                    });
+        SpesaSpedizione s2p = new SpesaSpedizione();
+        s2p.setPubblicazione(p);
+        s2p.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        s2p.setNumero(1);
+        s2p.setSpeseSpedizione(new BigDecimal("7.45"));
+        p.addSpesaSpedizione(s2p);
+        spesaSpedizioneDao.save(s2p);
 
-        anagraficaDao.deleteAll();
-        assertEquals(0, anagraficaDao.findAll().size());       
+        assertEquals(1, pubblicazioneDao.findAll().size());
+        assertEquals(2, spesaSpedizioneDao.findAll().size());
+
+        spesaSpedizioneDao.findAll().stream().forEach( msg -> log.info(msg.toString()));
+
+        Pubblicazione p1 = new Pubblicazione("zz", TipoPubblicazione.MENSILE);
+        p1.setAbbonamento(new BigDecimal("30.00"));
+        p1.setAbbonamentoConSconto(new BigDecimal("20.00"));
+        p1.setAbbonamentoSostenitore(new BigDecimal("120.00"));
+        p1.setAbbonamentoWeb(new BigDecimal("10.00"));
+        p1.setCostoUnitario(new BigDecimal("3.00"));
+        
+        p1.setFeb(true);
+        p1.setApr(true);
+        p1.setSet(true);
+        p1.setNov(true);
+        
+        SpesaSpedizione sp1 = new SpesaSpedizione();
+        sp1.setPubblicazione(p1);
+        sp1.setAreaSpedizione(AreaSpedizione.Italia);
+        sp1.setNumero(1);
+        sp1.setSpeseSpedizione(new BigDecimal("1.50"));
+        p1.addSpesaSpedizione(sp1);
+        pubblicazioneDao.save(p1);
+        spesaSpedizioneDao.save(sp1);
+        
+        assertEquals(2, pubblicazioneDao.findAll().size());
+        assertEquals(3, spesaSpedizioneDao.findAll().size());
+
+        List<Pubblicazione> ff = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Pr");
+        assertEquals(1, ff.size());
+        Pubblicazione ffp = ff.iterator().next();
+        assertEquals(p.getId(), ffp.getId());
+        assertEquals("prova", ffp.getNome());
+        log.info(ffp.toString());
+        ffp.getSpeseSpedizione().stream().forEach(ss -> log.info(ss.toString()));
+        assertEquals(2, ffp.getSpeseSpedizione().size());
+        
+        assertEquals(2, pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE).size());
+        assertEquals(0, pubblicazioneDao.findByTipo(TipoPubblicazione.SEMESTRALE).size());
+        
+        List<SpesaSpedizione> sps = spesaSpedizioneDao.findByPubblicazione(p);
+        assertEquals(2, sps.size());
+        sps.stream().forEach(spsp -> assertEquals(p.getId().longValue(), spsp.getPubblicazione().getId().longValue()));
+
+        assertEquals(1, 
+             spesaSpedizioneDao.findByAreaSpedizioneAndNumero(AreaSpedizione.Italia, 1).size());
+        assertEquals(1, 
+                     spesaSpedizioneDao.findByAreaSpedizioneAndNumero(AreaSpedizione.AmericaAfricaAsia, 1).size());
+        assertEquals(1, 
+                     spesaSpedizioneDao.findByAreaSpedizioneAndNumero(AreaSpedizione.EuropaBacinoMediterraneo, 1).size());
+        assertEquals(0, 
+                     spesaSpedizioneDao.findByAreaSpedizioneAndNumero(AreaSpedizione.Italia, 2).size());
+
+        pubblicazioneDao.delete(p1);
+        assertEquals(1, pubblicazioneDao.findAll().size());
+        assertEquals(2, spesaSpedizioneDao.findAll().size());
+        pubblicazioneDao.delete(p);
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, spesaSpedizioneDao.findAll().size());
+               
     }
-    
-    @Test
-    public void testSmdSampleData() {
 
+    @Test 
+    public void testPubblicazioniAdp() {
+        
+        assertEquals(0, pubblicazioneDao.findAll().size());
 
-         
-        new SmdLoadSampleData(
-                              anagraficaDao, 
-                              storicoDao, 
-                              pubblicazioneDao, 
-                              abbonamentoDao, 
-                              estrattoContoDao, 
-                              campagnaDao, 
-                              incassoDao, 
-                              versamentoDao, 
-                              operazioneDao,
-                              userInfoDao,
-                              passwordEncoder,false,false,false,false,true).run();
-
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken("adp", "adp");
-        try {
-            securityConfig.authenticationManagerBean().authenticate(auth);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            assertTrue(false);
-        }
-
+        Pubblicazione m = SmdLoadSampleData.getMessaggio();
+        pubblicazioneDao.save(m);
+        m.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
+        
+        Pubblicazione l = SmdLoadSampleData.getLodare();
+        l.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
+        pubblicazioneDao.save(l);
+        
+        Pubblicazione b =SmdLoadSampleData.getBlocchetti();
+        pubblicazioneDao.save(b);
+        b.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
+        
+        Pubblicazione e = SmdLoadSampleData.getEstratti();
+        pubblicazioneDao.save(e);
+        e.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
+        
         log.info("Pubblicazioni found with findAll():");
         log.info("-------------------------------");
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         assertEquals(4, pubblicazioni.size());
+        Map<String, Long> nameToIdMap = new HashMap<>();
         for (Pubblicazione pubblicazione : pubblicazioni) {
+            assertNotNull(pubblicazione.getId());
+            nameToIdMap.put(pubblicazione.getNome(), pubblicazione.getId());
             assertEquals("AAVV", pubblicazione.getAutore());
             assertEquals("ADP", pubblicazione.getEditore());
             assertEquals(Smd.getAnnoCorrente(), pubblicazione.getAnno());
@@ -237,10 +289,10 @@ public class SmdApplicationTests {
         Pubblicazione estratti = pubblicazioni.iterator().next();
         log.info("--------------------------------------------");
         log.info(estratti.toString());
+        assertEquals(nameToIdMap.get(estratti.getNome()).longValue(), estratti.getId().longValue());
         assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         EnumSet<Mese> pubs = estratti.getMesiPubblicazione();
         assertEquals(1, pubs.size());
-        assertEquals(Long.parseLong("117"), estratti.getId().longValue());
         assertEquals(Mese.LUGLIO, pubs.iterator().next());
         assertFalse(estratti.isGen());
         assertFalse(estratti.isFeb());
@@ -270,10 +322,10 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        Pubblicazione messaggio = pubblicazioneDao.findById(5L).get();
-        log.info("Messaggio found with findOne(5L):");
+        Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("messaggio")).get();
+        log.info("Messaggio found with findOne: "+nameToIdMap.get("messaggio"));
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("5"), messaggio.getId().longValue());
+        assertEquals(nameToIdMap.get("messaggio").longValue(), messaggio.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
         assertEquals("Messaggio", messaggio.getNome());
         assertTrue(messaggio.isGen());
@@ -294,32 +346,18 @@ public class SmdApplicationTests {
         log.info(ssMessaggioAmerica.toString());
         log.info("");
 
-        Pubblicazione lodare = pubblicazioneDao.findById(24L).get();
-        log.info("lodare found with findOne(24L):");
+        Pubblicazione lodare = pubblicazioneDao.findById(nameToIdMap.get("lodare")).get();
+        log.info("lodare found with findOne: " + nameToIdMap.get("lodare"));
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("24"), lodare.getId().longValue());
-        assertEquals(TipoPubblicazione.MENSILE, lodare.getTipo());
-        assertEquals("Lodare", lodare.getNome());
-        assertTrue(lodare.isGen());
-        assertTrue(lodare.isFeb());
-        assertTrue(lodare.isMar());
-        assertTrue(lodare.isApr());
-        assertTrue(lodare.isMag());
-        assertTrue(lodare.isGiu());
-        assertTrue(lodare.isLug());
-        assertTrue(lodare.isAgo());
-        assertTrue(lodare.isSet());
-        assertTrue(lodare.isOtt());
-        assertTrue(lodare.isNov());
-        assertTrue(lodare.isDic());
+        assertEquals(nameToIdMap.get("lodare").longValue(), lodare.getId().longValue());
 
         log.info(lodare.toString());
         log.info("");
 
-        Pubblicazione blocchetti = pubblicazioneDao.findById(29L).get();
-        log.info("blocchetti found with findOne(29L):");
+        Pubblicazione blocchetti = pubblicazioneDao.findById(nameToIdMap.get("blocchetti")).get();
+        log.info("blocchetti found with findOne:" + nameToIdMap.get("blocchetti"));
         log.info("--------------------------------");
-        assertEquals(Long.parseLong("29"), blocchetti.getId().longValue());
+        assertEquals(nameToIdMap.get("blocchetti").longValue(), blocchetti.getId().longValue());
         assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
         assertEquals("Blocchetti", blocchetti.getNome());
         assertFalse(blocchetti.isGen());
@@ -336,222 +374,81 @@ public class SmdApplicationTests {
         assertFalse(blocchetti.isDic());
         log.info(blocchetti.toString());
         log.info("");
-
-        Pubblicazione nestratti = pubblicazioneDao.findById(117L).get();
-        log.info("estratti found with findOne(117L):");
-        log.info("--------------------------------");
-        assertEquals(Long.parseLong("117"), nestratti.getId().longValue());
-        log.info("");
-
-        log.info("Anagrafica found with findAll():");
-        log.info("-------------------------------");
-        List<Anagrafica> anagrafiche = anagraficaDao.findAll();
-        assertEquals(7, anagrafiche.size());
-        for (Anagrafica customer : anagrafiche) {
-            log.info(customer.toString());
-        }
-        log.info("");
-
-        log.info("Anagrafica Russo found with findOne(121L):");
-        log.info("--------------------------------------------");
-        Anagrafica russo = anagraficaDao.findById(121L).get();
-        assertEquals("Russo", russo.getCognome());
-        log.info(russo.toString());
-        log.info("");
-
-        log.info("Anagrafica found with findByLastNameStartsWithIgnoreCase('Russo'):");
-        log.info("--------------------------------------------");
-        anagrafiche = anagraficaDao.findByCognomeContainingIgnoreCase("rUsSo");
-        assertEquals(1, anagrafiche.size());
-        for (Anagrafica ana : anagrafiche) {
-            assertEquals("Russo", ana.getCognome());
-            log.info(ana.toString());
-        }
-        log.info("");
-
-        log.info("Anagrafica found with findByDiocesi('ROMA'):");
-        log.info("--------------------------------------------");
-        anagrafiche = anagraficaDao.findByDiocesi(Diocesi.DIOCESI168);
-        assertEquals(2, anagrafiche.size());
-        for (Anagrafica roma : anagrafiche) {
-            assertEquals(Diocesi.DIOCESI168, roma.getDiocesi());
-            log.info(roma.toString());
-        }
-        log.info("");
-
-        log.info("Storico found with findByIntestatario('michele santoro id=17'):");
-        log.info("--------------------------------------------");
-        Anagrafica ms = anagraficaDao.findByCognomeContainingIgnoreCase("Santoro").iterator().next();
-        assertEquals("Michele", ms.getNome());
-        List<Storico> storici = storicoDao.findByIntestatario(ms);
-        assertEquals(2, storici.size());
-        for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
-            assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
-            assertEquals(TipoEstrattoConto.Ordinario, anp.getTipoEstrattoConto());
-            log.info(anp.toString());
-        }
-        log.info("");
-
-        Anagrafica dp = anagraficaDao.findByCognomeContainingIgnoreCase("Palma").iterator().next();
-        log.info("Storico found with findByDestinatario('davide palma'):");
-        log.info("--------------------------------------------");
-        storici = storicoDao.findByDestinatario(dp);
-        assertEquals(1, storici.size());
-        for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
-            assertEquals(messaggio.getId(), anp.getPubblicazione().getId());
-            assertEquals(TipoEstrattoConto.OmaggioCuriaGeneralizia, anp.getTipoEstrattoConto());
-            assertEquals(10, anp.getNumero().intValue());
-            log.info(anp.toString());
-        }
-        log.info("");
-
-        log.info("Storico found with findByPubblicazione('blocchetti'):");
-        log.info("--------------------------------------------");
-        storici = storicoDao.findByPubblicazione(blocchetti);
-        assertEquals(4, storici.size());
-        for (Storico anp : storici) {
-            assertEquals(StatoStorico.NUOVO, anp.getStatoStorico());
-            assertEquals(blocchetti.getId(), anp.getPubblicazione().getId());
-            log.info(anp.toString());
-        }
-        log.info("");
-
-        log.info("Abbonamenti found with findAll():");
-        log.info("-------------------------------");
-        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
-        assertEquals(30, abbonamenti.size());
-        for (Abbonamento abbonamento : abbonamenti) {
-            log.info(abbonamento.toString());
-            for (EstrattoConto estrattoConto: abbonamento.getEstrattiConto()) {
-                log.info(estrattoConto.toString());
-                if (abbonamento.getCampagna() == null) {
-                    assertNull(estrattoConto.getStorico());
-                } else {
-                    assertNotNull(estrattoConto.getStorico());
-                }
-                
-            }
-        }
-        log.info("");
-
-        log.info("Abbonamenti found with findByIntestatario(ms):");
-        log.info("-------------------------------");
-        abbonamenti = abbonamentoDao.findByIntestatario(ms);
-        assertEquals(10, abbonamenti.size());
-        for (Abbonamento abbonamentoms : abbonamenti) {
-            assertEquals(ms.getId().longValue(), abbonamentoms.getIntestatario().getId().longValue());
-            log.info(abbonamentoms.toString());
-        }
-        log.info("");
-
-        log.info("Campagna found with findAll():");
-        log.info("-------------------------------");
-        List<Campagna> campagne = campagnaDao.findAll();
-        assertEquals(2, campagne.size());
-        for (Campagna campagna : campagne) {
-            log.info(campagna.toString());
-            abbonamenti = abbonamentoDao.findByCampagna(campagna);
-            assertEquals(5, abbonamenti.size());
-            for (Abbonamento abbonamento: abbonamenti) {
-                assertEquals(campagna.getId().longValue(), abbonamento.getCampagna().getId().longValue());
-            }
-        }
-        log.info("");
-
-        log.info("Versamenti found with findAll():");
-        log.info("-------------------------------");
-        for (Versamento versamento : versamentoDao.findAll()) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("Incassi found with findAll():");
-        log.info("-------------------------------");
-        for (Incasso incasso : incassoDao.findAll()) {
-            log.info(incasso.toString());
-        }
-        log.info("");
-
-        log.info("Versamenti found by findByIncasso(incasso1):");
-        log.info("-------------------------------");
-        Incasso incasso1 = incassoDao.findByCuas(Cuas.TELEMATICI).iterator().next();
-        for (Versamento versamento : versamentoDao.findByIncasso(incasso1)) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("Versamenti found by findByImporto(new BigDecimal(\"40.00\"):");
-        log.info("-------------------------------");
-        for (Versamento versamento : versamentoDao.findByImporto(new BigDecimal("40.00"))) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("Versamenti found by data contabile 2017-ott-06:");
-        log.info("-------------------------------");
-        for (Versamento versamento : versamentoDao.findByDataContabile(Smd.getStandardDate("171006"))) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("Versamenti found by data pagamento 2017-ott-03:");
-        log.info("-------------------------------");
-        for (Versamento versamento : versamentoDao.findByDataPagamento(Smd.getStandardDate("171003"))) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("Incassi found by CUAS.VENEZIA:");
-        log.info("-------------------------------");
-        for (Incasso incasso : incassoDao.findByCuas(Cuas.VENEZIA)) {
-            log.info(incasso.toString());
-        }
-        log.info("");
-
-        log.info("versamenti found by incasso1");
-        log.info("-------------------------------");
-        for (Versamento versamento : versamentoDao.findByIncasso(incasso1)) {
-            log.info(versamento.toString());
-        }
-        log.info("");
-
-        log.info("operazioni found by findAll");
-        log.info("-------------------------------");
-        for (Operazione operazione : operazioneDao.findAll()) {
-            log.info(operazione.toString());
-        }
-        log.info("");
         
-        log.info("stato Storico found by findAll");
-        log.info("-------------------------------");
-        abbonamenti = abbonamentoDao.findAll();
-        for (Storico storico : storicoDao.findAll()) {
-            assertEquals(StatoStorico.NUOVO, storico.getStatoStorico());
-            log.info(storico.toString());
-            StatoStorico ss = Smd.getStatoStorico(storico, abbonamenti);
-            log.info("StatoStoricoCalcolato: " + ss.getDescr());
-            if (storico.getTipoEstrattoConto() == TipoEstrattoConto.Ordinario || storico.getTipoEstrattoConto() == TipoEstrattoConto.Scontato) {
-                assertEquals(StatoStorico.SOSPESO, ss);
-            } else {
-                assertEquals(StatoStorico.VALIDO, ss);                
-            }
-        }
-        log.info("");
-
-        log.info("EstrattoConto find by Destinatario");
-        log.info("-------------------------------");
-        List<EstrattoConto> estrattiConto = estrattoContoDao.findByDestinatario(russo);
-        assertEquals(10, estrattiConto.size());
-        for (EstrattoConto ec : estrattiConto) {
-            log.info(ec.toString());
-            assertEquals(russo.getId(), ec.getDestinatario().getId());
-            assertEquals(russo.getCognome(),ec.getDestinatario().getCognome());
-            Abbonamento abb = ec.getAbbonamento();
-            assertNotNull(abb);
-            assertTrue(abb.getEstrattiConto().size() > 0);
-        }
+        pubblicazioneDao.delete(messaggio);
+        pubblicazioneDao.delete(blocchetti);
+        pubblicazioneDao.delete(lodare);
+        pubblicazioneDao.delete(estratti);
+        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, spesaSpedizioneDao.findAll().size());
+        
     }
+
+    @Test
+    public void testAnagraficaCo() {
+        Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
+        anagraficaDao.save(diocesiMilano);
+        assertEquals(1, anagraficaDao.findAll().size());
         
+        Anagrafica ar = SmdLoadSampleData.getAR();
+        ar.setCo(diocesiMilano);
+        anagraficaDao.save(ar);
+        assertEquals(2, anagraficaDao.findAll().size());
+        
+        List<Anagrafica> withco = anagraficaDao.findAll()
+                .stream()
+                .filter(a -> a.getCo() != null)
+                .collect(Collectors.toList());
+
+        assertEquals(1, withco.size());
+        Anagrafica ff = withco.iterator().next();
+        assertEquals(ar.getId().longValue(), ff.getId().longValue());
+        
+        try {
+            anagraficaDao.delete(diocesiMilano);
+            assertTrue(false);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        assertEquals(2, anagraficaDao.findAll().size());       
+        anagraficaDao.delete(ar);
+        assertEquals(1, anagraficaDao.findAll().size());       
+        anagraficaDao.delete(diocesiMilano);
+        assertEquals(0, anagraficaDao.findAll().size());       
+    }
+
+    @Test
+    public void TestUserInfo() {
+        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
+        userInfoDao.save(adp);
+        
+        UserInfo user = new UserInfo("user", passwordEncoder.encode("pass"), Role.USER);
+        userInfoDao.save(user);
+        
+        assertEquals(3, userInfoDao.findAll().size());
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("adp", "adp");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+        
+        auth =
+                new UsernamePasswordAuthenticationToken("user", "pass");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+        
+        userInfoDao.delete(user);
+        userInfoDao.deleteById(adp.getId());
+
+        assertEquals(1, userInfoDao.findAll().size());
+        
+    }        
 }

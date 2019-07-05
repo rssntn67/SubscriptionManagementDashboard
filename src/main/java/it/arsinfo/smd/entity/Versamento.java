@@ -2,16 +2,15 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -27,11 +26,8 @@ public class Versamento implements SmdEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
-    @OneToMany
-    private List<Abbonamento> abbonamenti; 
-    
-    @ManyToOne
+        
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Incasso incasso;
 
     private String bobina;
@@ -177,12 +173,7 @@ public class Versamento implements SmdEntity {
         return String.format("Versamento[id=%d,Incasso=%d,progressivo='%s',campo='%s',operazione='%s'valido='%b', importo='%.2f', incassato='%.2f', residuo='%.2f']",
                              id,incasso.getId(),progressivo,campo, operazione,isCampovalido(),importo,incassato,getResiduo());
     }
-    public List<Abbonamento> getAbbonamenti() {
-        return abbonamenti;
-    }
-    public void setAbbonamenti(List<Abbonamento> abbonamenti) {
-        this.abbonamenti = abbonamenti;
-    }
+
     @Transient
     public BigDecimal getResiduo() {
         return importo.subtract(incassato);

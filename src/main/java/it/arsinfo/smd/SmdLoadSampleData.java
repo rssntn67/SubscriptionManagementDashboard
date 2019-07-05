@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,29 +128,35 @@ public class SmdLoadSampleData implements Runnable {
         return abbonamento;
     }
 
+    public static List<EstrattoConto> getEstrattiConto(Anno anno, 
+            Mese inizio,
+            Mese fine,
+            Abbonamento abb, Table<Pubblicazione,Anagrafica,Integer> estrattiConto) {
+        return estrattiConto.cellSet()
+        .stream().map( ect -> {
+            EstrattoConto ec = new EstrattoConto();
+            ec.setAbbonamento(abb);
+            ec.setPubblicazione(ect.getRowKey());
+            ec.setDestinatario(ect.getColumnKey());
+            ec.setNumero(ect.getValue());
+            ec = Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
+            return ec;
+        }).collect(Collectors.toList());        
+    }
+    
     public static Abbonamento getAbbonamentoBy(
             Anagrafica intestatario, 
             Anno anno, 
             Mese inizio,
             Mese fine,
-            Cassa cassa,
-            Table<Pubblicazione,Anagrafica,Integer> estrattiConto) {
+            Cassa cassa
+            ) {
  
         final Abbonamento abb = new Abbonamento();
         abb.setAnno(anno);
         abb.setCassa(cassa);
         abb.setIntestatario(intestatario);
         abb.setCampo(Smd.generaVCampo(anno));
-        estrattiConto.cellSet()
-        .stream().forEach( ect -> {
-            EstrattoConto ec = new EstrattoConto();
-            ec.setAbbonamento(abb);
-            ec.setPubblicazione(ect.getRowKey());
-            ec.setDestinatario(ect.getColumnKey());
-            ec.setNumero(ect.getValue());
-            ec = Smd.generaEC(ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
-            abb.addEstrattoConto(ec);
-        });
         return abb;   
     }
 
@@ -161,7 +168,6 @@ public class SmdLoadSampleData implements Runnable {
         ec.setPubblicazione(pubblicazione);
         ec.setNumero(numero);
         ec.setImporto(importo);
-        abb.addEstrattoConto(ec);
         for (Mese mese: pubblicazione.getMesiPubblicazione()) {
                 Spedizione spedizione = Smd.creaSpedizione(ec,mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
                 ec.addSpedizione(spedizione);
@@ -645,24 +651,27 @@ public class SmdLoadSampleData implements Runnable {
         return ps;
     }
     
-    public Abbonamento getAbbonamentoMs() {
+    private void saveAbbonamentoMs() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         spedizioni.put(messaggio, micheleSantoro, 1);
         spedizioni.put(lodare, micheleSantoro, 1);
         spedizioni.put(blocchetti, micheleSantoro, 1);
         spedizioni.put(estratti, micheleSantoro, 1);
                   
-        return getAbbonamentoBy(
+        Abbonamento abb =  getAbbonamentoBy(
                 micheleSantoro, 
                 Smd.getAnnoCorrente(), 
                 Mese.GENNAIO, 
                 Mese.DICEMBRE, 
-                Cassa.Ccp, 
-                spedizioni
+                Cassa.Ccp
                 );
+        List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
+        abbonamentoDao.save(abb);
+        estrattiConto.stream().forEach(ec -> estrattoContoDao.save(ec));
+
     }
         
-    public Abbonamento getAbbonamentoGp() {
+    private void saveAbbonamentoGp() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         spedizioni.put(messaggio, gabrielePizzo, 1);
         spedizioni.put(lodare, gabrielePizzo, 1);
@@ -670,26 +679,32 @@ public class SmdLoadSampleData implements Runnable {
         spedizioni.put(estratti, gabrielePizzo, 1);
         spedizioni.put(estratti, antonioRusso, 1);
         spedizioni.put(estratti,matteoParo, 1);
-        return getAbbonamentoBy(
+        Abbonamento abb = getAbbonamentoBy(
                             gabrielePizzo, 
                             Smd.getAnnoCorrente(), 
                             Mese.GENNAIO, 
                             Mese.DICEMBRE, 
-                            Cassa.Ccp, 
-                            spedizioni);
+                            Cassa.Ccp 
+                            );
+        List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
+        abbonamentoDao.save(abb);
+        estrattiConto.stream().forEach(ec -> estrattoContoDao.save(ec));
     }
     
-    public  Abbonamento getAbbonamentoDp() {
+    public  void saveAbbonamentoDp() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
         spedizioni.put(blocchetti, davidePalma, 1);
-        return getAbbonamentoBy(
+        Abbonamento abb = getAbbonamentoBy(
                             davidePalma, 
                             Smd.getAnnoCorrente(), 
                             Mese.MAGGIO, 
                             Mese.DICEMBRE, 
-                            Cassa.Ccp, 
-                            spedizioni
+                            Cassa.Ccp
                             );
+        List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, spedizioni);
+        abbonamentoDao.save(abb);
+        estrattiConto.stream().forEach(ec -> estrattoContoDao.save(ec));
+
     }
     
     public List<Abbonamento> getAbbonamentiIncassi() {
@@ -944,12 +959,9 @@ public class SmdLoadSampleData implements Runnable {
 
     private void loadSampleData() {
         
-        abbonamentoDao.save(getAbbonamentoDp());
-        abbonamentoDao.save(getAbbonamentoMs());
-        abbonamentoDao.save(getAbbonamentoGp());
-        EstrattoConto spedizioneGptoar = estrattoContoDao.findByDestinatario(antonioRusso).iterator().next();
-        spedizioneGptoar.setNumero(3);
-        estrattoContoDao.save(spedizioneGptoar);
+        saveAbbonamentoDp();
+        saveAbbonamentoMs();
+        saveAbbonamentoGp();
 
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
         Incasso incasso = getIncasso5(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
@@ -966,6 +978,8 @@ public class SmdLoadSampleData implements Runnable {
         getIncassi()
             .stream().forEach(c -> incassoDao.save(c));
 
+        //FIXME
+        /*
         campagnaDao.save(
                  Smd.generaCampagna(
                     getCampagnaBy(Anno.ANNO2018),
@@ -983,12 +997,13 @@ public class SmdLoadSampleData implements Runnable {
                             pubblicazioneDao.findAll()
                         )
                      );
+                     */
         
         //FIXME
         pubblicazioneDao.findAll().stream().forEach(p -> 
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
                 EnumSet.allOf(Mese.class).stream().forEach(mese -> {
-                    Operazione op = Smd.generaOperazione(p, abbonamentoDao.findByAnno(Anno.ANNO2017), mese, anno);
+                    Operazione op = Smd.generaOperazione(p, estrattoContoDao.findAll(), mese, anno);
                     if (op.getStimatoSped() > 0 ) {
                         operazioneDao.save(op);                               
                     }

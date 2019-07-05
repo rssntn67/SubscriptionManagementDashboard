@@ -8,12 +8,15 @@ import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -38,6 +41,9 @@ public class StoricoUI extends SmdUI {
     StoricoDao storicoDao;
 
     @Autowired
+    NotaDao notaDao;
+
+    @Autowired
     AbbonamentoDao abbonamentoDao;
     
     @Autowired
@@ -52,6 +58,7 @@ public class StoricoUI extends SmdUI {
         SmdProgressBar pb = new SmdProgressBar();
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        StoricoAdd add = new StoricoAdd("Aggiungi Storico");
         StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
         StoricoEditor editor = 
@@ -61,7 +68,27 @@ public class StoricoUI extends SmdUI {
                                   estrattoContoDao,
                                   spedizioneDao,
                                   pubblicazioni, 
-                                  anagrafica);
+                                  anagrafica) {
+            @Override
+            public void save() {
+                if (getPubblicazione().isEmpty()) {
+                    Notification.show("Pubblicazione deve essere valorizzata");
+                    return;
+                }
+                super.save();
+                if (!getNota().isEmpty()) {
+                    Nota nota = new Nota(get());
+                    nota.setDescription(getNota().getValue());
+                    notaDao.save(nota);
+                    getNota().clear();
+                }
+            }
+        };
+        
+        NotaGrid notaGrid = new NotaGrid("Note");
+        notaGrid.getGrid().setColumns("data","description");
+        notaGrid.getGrid().setHeight("200px");
+
         addSmdComponents(pb,editor,search, grid);
         pb.setVisible(false);
         editor.setVisible(false);
@@ -76,6 +103,7 @@ public class StoricoUI extends SmdUI {
                 return;
             }
             editor.edit(grid.getSelected());
+            notaGrid.populate(notaDao.findByStorico(grid.getSelected()));
             setHeader(grid.getSelected().getHeader());
             hideMenu();
             search.setVisible(false);
@@ -87,7 +115,18 @@ public class StoricoUI extends SmdUI {
             search.setVisible(true);
             setHeader("Storico");
             editor.setVisible(false);
+            notaGrid.setVisible(false);
+            add.setVisible(true);
         });
+
+        add.setChangeHandler(() -> {
+            editor.edit(add.generate());
+            setHeader(String.format("%s:Storico:Nuovo",editor.get().getHeader()));
+            add.setVisible(false);
+            editor.setVisible(false);
+        });
+
+        notaGrid.setChangeHandler(() -> {});
 
         grid.populate(search.find());
 

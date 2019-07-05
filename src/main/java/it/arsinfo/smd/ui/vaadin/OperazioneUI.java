@@ -59,7 +59,7 @@ public class OperazioneUI extends SmdUI {
         SmdButton bss = new SmdButton("Aggiorna Stato Storici", VaadinIcons.CLOUD);
 
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
-        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, abbonamentoDao, pubblicazioni);
+        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, estrattoContoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
@@ -85,7 +85,7 @@ public class OperazioneUI extends SmdUI {
                 float delta = 1.0f/storici.size();
                 pb.setValue(0.0f);
                 storici.stream().forEach( s -> {
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
                     if (s.getStatoStorico() != calcolato) {
                         s.setStatoStorico(calcolato);
                         storicoDao.save(s);
@@ -123,7 +123,7 @@ public class OperazioneUI extends SmdUI {
                 float delta = 1.0f/(storici.size() + aggiornamenti.size());
                 pb.setValue(0.0f);
                 storici.stream().forEach( s -> {
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti);
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
                     if (s.getStatoStorico() != calcolato) {
                         s.setStatoStorico(calcolato);
                         storicoDao.save(s);
@@ -198,7 +198,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.listaSpedizioni(abbonamentoDao.findAll(), InvioSpedizione.Spedizioniere,op.getMese(),op.getAnno()));
+                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.Spedizioniere,op.getMese(),op.getAnno()));
             });
             return button;
         });
@@ -210,7 +210,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.listaSpedizioni(abbonamentoDao.findAll(), InvioSpedizione.AdpSede,op.getMese(),op.getAnno()));
+                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.AdpSede,op.getMese(),op.getAnno()));
             });
             return button;
         });

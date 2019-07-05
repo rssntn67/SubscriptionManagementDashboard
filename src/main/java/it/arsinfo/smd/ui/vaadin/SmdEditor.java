@@ -6,6 +6,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.entity.SmdEntity;
@@ -50,14 +51,23 @@ public abstract class SmdEditor<T extends SmdEntity>
     }
 
     public void delete() {
-        repositoryDao.delete(smdObj);
-        onChange();
+        try {
+            repositoryDao.delete(smdObj);
+            onChange();
+        } catch (Exception e) {
+            Notification.show("Non è possibile cancellare: " +e.getMessage(),
+                              Notification.Type.ERROR_MESSAGE);
+        }
     }
 
     public void save() {
-        repositoryDao.save(smdObj);
-        onChange();
-    }
+        try {
+            repositoryDao.save(smdObj);
+            onChange();
+        } catch (Exception e) {
+            Notification.show("Non è possibile salvare: " +e.getMessage(),
+                              Notification.Type.ERROR_MESSAGE);
+        }    }
     
     public final void edit(T c) {
         if (c == null) {

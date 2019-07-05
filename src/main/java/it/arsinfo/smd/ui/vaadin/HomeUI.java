@@ -32,10 +32,10 @@ public class HomeUI extends SmdUI {
         right.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
                 
         right.addComponent(new Label("Gestione Anagrafiche:"));
-        right.addComponents(new HorizontalLayout(getAnagraficaLinks()));
+        right.addComponents(new HorizontalLayout(getAnagraficaLink()));
         right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Campagne:"));
-        right.addComponents(new HorizontalLayout(getCampagnaLink()));
+        right.addComponents(new HorizontalLayout(getCampagnaLinks()));
         right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Abbonamenti:"));
         right.addComponents(new HorizontalLayout(getAbbonamentoLinks()));
@@ -45,6 +45,9 @@ public class HomeUI extends SmdUI {
         right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Incassi:"));
         right.addComponents(new HorizontalLayout(getIncassoLinks()));
+        right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Operazioni :"));
+        right.addComponents(new HorizontalLayout(getOperazioniLink()));
         right.addComponent(new Label(""));
         right.addComponents(new HorizontalLayout(getUserLinks()));
         

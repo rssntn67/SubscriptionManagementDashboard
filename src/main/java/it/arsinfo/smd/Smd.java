@@ -135,6 +135,7 @@ public class Smd {
     }
 
     public static EstrattoConto generaEC(
+            Abbonamento abb,
             EstrattoConto ec,
             InvioSpedizione invioSpedizione,
             Mese meseinizio,
@@ -159,6 +160,7 @@ public class Smd {
             throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
         }
         calcoloImportoEC(ec);
+        abb.setTotale(abb.getTotale().add(abb.getTotale()));
         return ec;
     }
     
@@ -197,9 +199,9 @@ public class Smd {
         return spedizione;
     }
     
-    public static Campagna inviaPropostaAbbonamentoCampagna(final Campagna campagna, List<Abbonamento> abbonamenti) {
+    public static List<Abbonamento> inviaPropostaAbbonamentoCampagna(final Campagna campagna, List<Abbonamento> abbonamenti) {
         campagna.setStatoCampagna(StatoCampagna.Inviata);
-        List<Abbonamento> updated = abbonamenti.stream()
+        return abbonamenti.stream()
                 .filter(abb -> abb.getCampagna().getId().longValue() == campagna.getId().longValue())
                 .map(abb -> {
                     if (abb.getStatoIncasso() ==  Incassato.Omaggio) {
@@ -209,10 +211,9 @@ public class Smd {
                     }
                     return abb;
                 }).collect(Collectors.toList());
-        campagna.setAbbonamenti(updated);
-        return campagna;
     }
-    public static Campagna generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
+
+    public static List<Abbonamento> generaCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
         pubblicazioni.stream()
         .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
@@ -257,8 +258,8 @@ public class Smd {
             }
             
         });        
-        campagna.setAbbonamenti(abbonamenti);
-        return campagna;
+        return abbonamenti;
+
     }
     
     public static EstrattoConto generaDaStorico(Abbonamento abb,Storico storico,Pubblicazione p) {
@@ -275,7 +276,6 @@ public class Smd {
             ec.addSpedizione(spedizione);
         });
         calcoloImportoEC(ec);
-        abb.addEstrattoConto(ec);
         return ec;
     }
     
@@ -284,7 +284,6 @@ public class Smd {
         if (abbonamento.getAnno() != Smd.getAnnoProssimo()) {
             return abbonamento;
         }
-        abbonamento.getEstrattiConto().clear();
         final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
         pubblicazioni.stream()
         .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
@@ -389,19 +388,19 @@ public class Smd {
     }
 
 
-    public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti) {
+    public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estratticonto) {
         StatoStorico pagamentoRegolare = StatoStorico.VALIDO;
         switch (storico.getTipoEstrattoConto()) {
         case Ordinario:
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
             break;
         case Scontato:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
             break;
         case Sostenitore:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
         case Web:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti);
+            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
         case OmaggioCuriaDiocesiana:
             break;
         case OmaggioCuriaGeneralizia:
@@ -418,14 +417,14 @@ public class Smd {
         return pagamentoRegolare;
     }
     
-    private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti) {
+    private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estrattiConto) {
         for (Abbonamento abb: abbonamenti) {
             if (abb.getIntestatario().getId() != storico.getIntestatario().getId() 
                     || abb.getCampagna() == null
                     || abb.getAnno().getAnno() != getAnnoCorrente().getAnno()) {
                 continue;
             }
-            for (EstrattoConto sped: abb.getEstrattiConto()) {
+            for (EstrattoConto sped: estrattiConto) {
                 if (sped.getStorico().getId() != storico.getId()) {
                     continue;
                 }
@@ -491,7 +490,7 @@ public class Smd {
 
     public static List<Operazione> generaOperazioni(
             List<Pubblicazione> pubblicazioni, 
-            List<Abbonamento> abbonamenti
+            List<EstrattoConto> abbonamenti
         ) {
         Anno anno = getAnnoCorrente();
         Mese mese = getMeseCorrente();
@@ -508,45 +507,40 @@ public class Smd {
 
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
-            List<Abbonamento> abbonamenti, Mese mese, Anno anno) {
+            List<EstrattoConto> estratticonto,Mese mese, Anno anno) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
-        abbonamenti.stream()
-            .forEach( a -> a.getEstrattiConto().stream()
-              .filter(ec -> ec.getPubblicazione().getId() == pubblicazione.getId())
-              .forEach(ec -> ec.getSpedizioni().stream()
-                  .filter( s ->s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getMeseSpedizione() == mese && s.getAnnoSpedizione() == anno)
-                      .forEach( s -> 
-                          {
-                              switch (s.getInvioSpedizione()) {
-                              case  Spedizioniere: 
-                                  op.setStimatoSped(op.getStimatoSped()+ec.getNumero());
-                                  break;
-                              case AdpSede:
-                                  op.setStimatoSede(op.getStimatoSede()+ec.getNumero());
-                                  break;
-                              default:
-                                break;
-                              }
+        estratticonto.stream()
+          .filter(ec -> ec.getPubblicazione().getId() == pubblicazione.getId())
+          .forEach(ec -> ec.getSpedizioni().stream()
+              .filter( s ->s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getMeseSpedizione() == mese && s.getAnnoSpedizione() == anno)
+                  .forEach( s -> 
+                      {
+                          switch (s.getInvioSpedizione()) {
+                          case  Spedizioniere: 
+                              op.setStimatoSped(op.getStimatoSped()+ec.getNumero());
+                              break;
+                          case AdpSede:
+                              op.setStimatoSede(op.getStimatoSede()+ec.getNumero());
+                              break;
+                          default:
+                            break;
+                          }
                          }
                           )
-                  )
              );
                         
         return op;        
     }
 
-    public static List<Spedizione> listaSpedizioni(List<Abbonamento> abbonamenti, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
+    public static List<Spedizione> listaSpedizioni(List<EstrattoConto> abbonamenti, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
         final List<Spedizione> spedizioni = new ArrayList<>();
         abbonamenti.stream()
-            .forEach(a -> {
-                a.getEstrattiConto().stream()
                 .forEach( ec -> {
                     spedizioni.addAll(ec.getSpedizioni().stream().filter(s -> 
                                 s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getInvioSpedizione() == invioSpedizione
                                 && s.getMeseSpedizione() == mese
                                 && s.getAnnoSpedizione() == anno
                             ).collect(Collectors.toList()));
-                });
         });
         return spedizioni;
     }

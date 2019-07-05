@@ -59,6 +59,7 @@ public class AbbonamentoUI extends SmdUI {
         } else {
             add.setPrimoIntestatario(anagrafica.iterator().next());
         }
+        EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
@@ -72,7 +73,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getEstrattiConto().isEmpty()) {
+                if (get().getId() == null && !estrattoContoGrid.getGrid().iterator().hasNext()) {
                     Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
@@ -82,7 +83,6 @@ public class AbbonamentoUI extends SmdUI {
         };
 
         EstrattoContoAdd estrattoContoAdd = new EstrattoContoAdd("Aggiungi EC");
-        EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
         EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
@@ -95,20 +95,18 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    Smd.generaEC(
+                    Smd.generaEC(editor.get(),
                          get(),getInvioSpedizione(),getMeseInizio(),getAnnoInizio(),getMeseFine(),getAnnoFine());
                 } catch (UnsupportedOperationException e) {
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                     return;
                 }
                 get().setAbbonamento(editor.get());
-                editor.get().addEstrattoConto(get());
                 onChange();
             };
             
             @Override 
             public void delete() {
-                editor.get().deleteEstrattoConto(get());
                 onChange();
             };
         };
@@ -173,7 +171,8 @@ public class AbbonamentoUI extends SmdUI {
             estrattoContoAdd.setVisible(editor.get().getId() == null);
             estrattoContoEditor.setVisible(false);
             editor.edit(estrattoContoEditor.get().getAbbonamento());
-            estrattoContoGrid.populate(editor.get().getEstrattiConto());
+            //FIXME
+            //estrattoContoGrid.populate(editor.get().getEstrattiConto());
         });
         
         estrattoContoGrid.setChangeHandler(() -> {

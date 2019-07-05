@@ -1,20 +1,16 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -42,11 +38,11 @@ public class Abbonamento implements SmdEntity {
 
     @ManyToOne
     private Campagna campagna;
-    @ManyToOne
+    @OneToOne
     private Versamento versamento;
-    @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
-    private List<EstrattoConto> estrattiConto = new ArrayList<>();
 
+    private BigDecimal totale=BigDecimal.ZERO;
+    
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
     private String campo;
@@ -58,8 +54,6 @@ public class Abbonamento implements SmdEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
-
-    
 
     public Abbonamento() {
     }
@@ -123,26 +117,6 @@ public class Abbonamento implements SmdEntity {
         this.campo = campo;
     }
 
-    public List<EstrattoConto> getEstrattiConto() {
-        return new ArrayList<>(estrattiConto);
-    }
-
-    public void setEstrattiConto(
-            List<EstrattoConto> listaAbbonamentoPubblicazione) {
-        this.estrattiConto = listaAbbonamentoPubblicazione;
-    }
-    
-    public void addEstrattoConto(EstrattoConto estrattoConto) {
-        if (estrattiConto.contains(estrattoConto)) {
-            estrattiConto.remove(estrattoConto);
-        }
-        estrattiConto.add(estrattoConto);
-    }
-
-    public boolean deleteEstrattoConto(EstrattoConto estrattoConto) {
-        return estrattiConto.remove(estrattoConto);
-    }
-
     public Cassa getCassa() {
         return cassa;
     }
@@ -188,12 +162,6 @@ public class Abbonamento implements SmdEntity {
             return Incassato.SiConOfferta;
         }
         return Incassato.Parzialmente;
-    }
-    
-    @Transient
-    public BigDecimal getTotale() {
-       return
-           estrattiConto.stream().map(EstrattoConto::getTotale).reduce(BigDecimal.ZERO,BigDecimal::add);
     }
     
     @Transient
@@ -270,6 +238,14 @@ public class Abbonamento implements SmdEntity {
             return intestatario.getPaese();
         }
         return intestatario.getCo().getPaese();        
+    }
+
+    public BigDecimal getTotale() {
+        return totale;
+    }
+
+    public void setTotale(BigDecimal totale) {
+        this.totale = totale;
     }
 
 

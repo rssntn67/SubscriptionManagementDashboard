@@ -8,7 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 
 public class OperazioneGenera extends SmdChangeHandler {
@@ -16,7 +16,7 @@ public class OperazioneGenera extends SmdChangeHandler {
     private final HorizontalLayout buttons = new HorizontalLayout();
     private final Button genera;
     private final Button indietro;
-    public OperazioneGenera(String caption, VaadinIcons icon,OperazioneDao operazioneDao, AbbonamentoDao abbonamentoDao, List<Pubblicazione> pubblicazioni) {
+    public OperazioneGenera(String caption, VaadinIcons icon,OperazioneDao operazioneDao, EstrattoContoDao abbonamentoDao, List<Pubblicazione> pubblicazioni) {
         indietro = new Button("indietro");
         indietro.addClickListener(click -> onChange());
         genera = new Button(caption,icon);

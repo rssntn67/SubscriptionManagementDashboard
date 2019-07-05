@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -50,7 +49,7 @@ public class EstrattoConto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="estrattoConto",orphanRemoval=true, fetch=FetchType.EAGER)
     private List<Spedizione> spedizioni = new ArrayList<>();
 
     private Integer numero = 1;

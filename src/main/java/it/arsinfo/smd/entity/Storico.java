@@ -3,10 +3,10 @@ package it.arsinfo.smd.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,8 +17,8 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
 public class Storico implements SmdEntity {
@@ -36,7 +36,7 @@ public class Storico implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy="storico", orphanRemoval=true, fetch=FetchType.EAGER)
     private List<Nota> note = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,7 @@
 package it.arsinfo.smd.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,10 +18,10 @@ public class CampagnaItem
         @GeneratedValue(strategy = GenerationType.AUTO)
         private Long id;
         
-        @ManyToOne
+        @ManyToOne(optional=false,fetch=FetchType.EAGER)
         private Campagna campagna;
 
-        @ManyToOne
+        @ManyToOne(optional=false,fetch=FetchType.LAZY)
         private Pubblicazione pubblicazione;
         
         public Long getId() {

@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -57,53 +55,14 @@ public class AnagraficaUI extends SmdUI {
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         
-        StoricoAdd storicoAdd = new StoricoAdd("Aggiungi Storico");
-        StoricoEditor storicoEditor = 
-                new StoricoEditor(
-                      storicoDao,
-                      abbonamentoDao,
-                      estrattoContoDao,
-                      spedizioneDao,
-                      pubblicazioneDao.findAll(),
-                      anagraficaDao.findAll()
-        ) {
-            @Override
-            public void save() {
-                if (getPubblicazione().isEmpty()) {
-                    Notification.show("Pubblicazione deve essere valorizzata");
-                    return;
-                }
-                super.save();
-                if (!getNota().isEmpty()) {
-                    Nota nota = new Nota(get());
-                    nota.setDescription(getNota().getValue());
-                    notaDao.save(nota);
-                    getNota().clear();
-                }
-            }
-        };
-        StoricoGrid storicoGrid = new StoricoGrid("Storico");
-        NotaGrid notaGrid = new NotaGrid("Note");
-        notaGrid.getGrid().setColumns("data","description");
-        notaGrid.getGrid().setHeight("200px");
         
         addSmdComponents(
-                         storicoAdd,
                          editor, 
-                         storicoEditor,
-                         notaGrid,
-                         storicoGrid, 
                          add,
                          search, 
                          grid);
 
-        storicoAdd.setVisible(false);
-        storicoEditor.setVisible(false);
-        storicoGrid.setVisible(false);
-        notaGrid.setVisible(false);
         editor.setVisible(false);
-
-        notaGrid.setChangeHandler(() -> {});
         
         add.setChangeHandler(() -> {
             setHeader("Anagrafica:Nuova");
@@ -127,9 +86,6 @@ public class AnagraficaUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
-            storicoAdd.setIntestatario(grid.getSelected());
-            storicoAdd.setVisible(true);
-            storicoGrid.populate(findByCustomer(grid.getSelected()));
         });
 
         editor.setChangeHandler(() -> {
@@ -137,44 +93,8 @@ public class AnagraficaUI extends SmdUI {
             editor.setVisible(false);
             setHeader("Anagrafica");
             showMenu();
-            storicoGrid.setVisible(false);
-            storicoAdd.setVisible(false);
             add.setVisible(true);
             search.setVisible(true);
-        });
-
-        storicoGrid.setChangeHandler(() -> {
-            if (storicoGrid.getSelected() == null) {
-                return;
-            }
-            setHeader(storicoGrid.getSelected().getHeader());
-            //FIXME to be better defined (the status should be calculated based on the user operation
-            //storicoGrid.getSelected().
-            //    setStatoStorico(Smd.getStatoStorico(storicoGrid.getSelected(),
-            //                   abbonamentoDao.findByIntestatario(storicoGrid.getSelected().getIntestatario())));
-            //storicoDao.save(storicoGrid.getSelected());
-            storicoEditor.edit(storicoGrid.getSelected());
-            notaGrid.populate(notaDao.findByStorico(storicoGrid.getSelected()));
-            add.setVisible(false);
-            search.setVisible(false);
-            editor.setVisible(false);
-            storicoAdd.setVisible(false);
-        });
-
-        storicoEditor.setChangeHandler(() -> {
-            storicoGrid.populate(findByCustomer(grid.getSelected()));
-            setHeader(grid.getSelected().getHeader());
-            editor.setVisible(true);
-            storicoEditor.setVisible(false);
-            notaGrid.setVisible(false);
-            storicoAdd.setVisible(true);
-        });
-
-        storicoAdd.setChangeHandler(() -> {
-            storicoEditor.edit(storicoAdd.generate());
-            setHeader(String.format("%s:Storico:Nuovo",editor.get().getHeader()));
-            storicoAdd.setVisible(false);
-            editor.setVisible(false);
         });
 
         grid.populate(search.findAll());

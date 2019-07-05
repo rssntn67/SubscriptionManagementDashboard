@@ -80,31 +80,31 @@ public abstract class SmdUI extends UI {
             }
         });
 
-        menu.addItem("Campagna",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_CAMPAGNA);
-            }
-        });
-
-        MenuItem anagrafica = menu.addItem("Gestione Anagrafica",null);
-        
-        anagrafica.addItem("Anagrafica",new MenuBar.Command() {
+        menu.addItem("Anagrafica",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ANAGRAFICA);
             }
+        });
+
+        MenuItem campagne = menu.addItem("Gestione Campagne",null);
+        
+        campagne.addItem("Campagna",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_CAMPAGNA);
+            }
         } );
-        anagrafica.addItem("Storico",new MenuBar.Command() {
+        campagne.addItem("Storico",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_STORICO);
             }
         } );
-        anagrafica.addItem("Note",new MenuBar.Command() {
+        campagne.addItem("Note",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
@@ -151,6 +151,14 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(URL_VERSAMENTI);
             }
         } );
+
+        menu.addItem("Operazioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_OPERAZIONI);
+            }
+        });
 
         MenuItem user = menu.addItem("User", null);
         user.addItem("Logout: "+ loggedInUser.getUsername(),new MenuBar.Command() {
@@ -207,18 +215,23 @@ public abstract class SmdUI extends UI {
         return new Link("Home",new ExternalResource(APP_URL));        
     }
     
-    public Link getCampagnaLink() {
-        return new Link("Campagna", new ExternalResource(URL_CAMPAGNA));
+    public Link getAnagraficaLink() {
+        return new Link("Anagrafica", new ExternalResource(URL_ANAGRAFICA));
         
     }
-    
+
+    public Link getOperazioniLink() {
+        return new Link("Operazioni", new ExternalResource(URL_OPERAZIONI));
+        
+    }
+
     public Link getPubblicazioneLink() {
         return new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI));    
     }
     
-    public Link[] getAnagraficaLinks() {
+    public Link[] getCampagnaLinks() {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("Anagrafica",   new ExternalResource(URL_ANAGRAFICA)));
+        links.add(new Link("Campagna",   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));
         return links.toArray((new Link[links.size()]));

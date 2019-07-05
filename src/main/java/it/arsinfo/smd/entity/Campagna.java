@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,10 +31,7 @@ public class Campagna implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private StatoCampagna statoCampagna=StatoCampagna.Generata;
 
-    @OneToMany(cascade = { CascadeType.ALL })
-    List<Abbonamento> abbonamenti = new ArrayList<Abbonamento>();
-
-    @OneToMany(cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
 
     public Campagna() {}
@@ -49,14 +46,6 @@ public class Campagna implements SmdEntity {
 
     public Long getId() {
         return id;
-    }
-
-    public List<Abbonamento> getAbbonamenti() {
-        return abbonamenti;
-    }
-
-    public void setAbbonamenti(List<Abbonamento> abbonamenti) {
-        this.abbonamenti = abbonamenti;
     }
 
     public List<CampagnaItem> getCampagnaItems() {

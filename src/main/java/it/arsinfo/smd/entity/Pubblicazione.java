@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,7 +38,7 @@ public class Pubblicazione implements SmdEntity {
 
     private boolean active = true;
     
-    @OneToMany(cascade = { CascadeType.ALL }, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="pubblicazione", orphanRemoval=true, fetch=FetchType.EAGER)
     private List<SpesaSpedizione> speseSpedizione = new ArrayList<>();
 
     private BigDecimal costoUnitario=BigDecimal.ZERO;
