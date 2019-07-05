@@ -20,6 +20,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -39,6 +40,9 @@ public class SmdApplication {
     @Value("${load.sample.anagrafica}")
     private String loadSampleAnagraficaAdp;
 
+    @Value("${load.sample.storico}")
+    private String loadSampleStoricoAdp;
+
     @Value("${create.demo.user}")
     private String  createDemoUser;
 
@@ -54,7 +58,8 @@ public class SmdApplication {
     public CommandLineRunner loadData(
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
-            PubblicazioneDao pubblicazioneDao, 
+            PubblicazioneDao pubblicazioneDao,
+            SpesaSpedizioneDao spesaSpedizioneDao,
             AbbonamentoDao abbonamentoDao,
             EstrattoContoDao spedizioneDao,
             CampagnaDao campagnaDao, 
@@ -77,6 +82,8 @@ public class SmdApplication {
             log.info("loadPubblicazioniAdp="+loadPAdp);
             boolean loadSA = loadSampleAnagraficaAdp != null && loadSampleAnagraficaAdp.equals("true");
             log.info("loadSampleAnagraficaAdp="+loadSA);
+            boolean loadSS = loadSampleStoricoAdp != null && loadSampleStoricoAdp.equals("true");
+            log.info("loadSampleStoricoAdp="+loadSS);
             boolean creaDU = createDemoUser != null && createDemoUser.equals("true");
             log.info("createDemoUser="+creaDU);
             boolean creaNU =  createNormalUser != null && createNormalUser.equals("true");
@@ -86,6 +93,7 @@ public class SmdApplication {
                       anagraficaDao, 
                       storicoDao, 
                       pubblicazioneDao, 
+                      spesaSpedizioneDao,
                       abbonamentoDao, 
                       spedizioneDao, 
                       campagnaDao, 
@@ -96,6 +104,7 @@ public class SmdApplication {
                       passwordEncoder,
                       loadPAdp,
                       loadSA,
+                      loadSS,
                       creaDU,
                       creaNU,
                       loadSD

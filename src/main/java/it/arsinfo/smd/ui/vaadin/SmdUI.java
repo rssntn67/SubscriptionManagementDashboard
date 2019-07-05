@@ -71,20 +71,21 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(APP_URL);;
             }
         });
-        
-        menu.addItem("Pubblicazioni",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_PUBBLICAZIONI);
-            }
-        });
 
         menu.addItem("Anagrafica",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ANAGRAFICA);
+            }
+        });
+
+        
+        menu.addItem("Pubblicazioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_PUBBLICAZIONI);
             }
         });
 

@@ -36,6 +36,7 @@ public class SpesaSpedizioneEditor
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        pubblicazione.setReadOnly(true);
 
         areaSpedizione.setEmptySelectionAllowed(false);
         areaSpedizione.setPlaceholder("Area Spedizione");
@@ -75,7 +76,6 @@ public class SpesaSpedizioneEditor
     @Override
     public void focus(boolean persisted, SpesaSpedizione obj) {
         areaSpedizione.setReadOnly(persisted);
-        pubblicazione.setReadOnly(persisted);
         numero.setReadOnly(persisted);
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);

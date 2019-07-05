@@ -31,10 +31,10 @@ public class EstrattoConto implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private Abbonamento abbonamento;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     private Pubblicazione pubblicazione;
 
     @ManyToOne
@@ -49,7 +49,7 @@ public class EstrattoConto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
-    @OneToMany(mappedBy="estrattoConto",orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="estrattoConto",orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Spedizione> spedizioni = new ArrayList<>();
 
     private Integer numero = 1;

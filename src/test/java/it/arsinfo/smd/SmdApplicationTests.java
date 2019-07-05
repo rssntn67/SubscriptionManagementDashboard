@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -125,6 +126,46 @@ public class SmdApplicationTests {
         assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);        
     }
     
+    @Test
+    public void testAnagraficaCRUD() {
+        assertEquals(0, anagraficaDao.findAll().size());
+        Anagrafica antonioRusso =  SmdLoadSampleData.getAR();
+        anagraficaDao.save(antonioRusso);
+        assertEquals(1, anagraficaDao.findAll().size());
+        
+        assertNotNull(anagraficaDao.findById(antonioRusso.getId()));
+        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("us").size());
+        assertEquals(0,anagraficaDao.findByCognomeContainingIgnoreCase("Rosso").size());
+        assertEquals(1,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
+        assertEquals(0,anagraficaDao.findByDiocesi(Diocesi.DIOCESI115).size());
+        
+        Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
+        anagraficaDao.save(diocesiMilano);
+        assertEquals(2, anagraficaDao.findAll().size());
+        
+        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("ar").size());
+        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("mi").size());
+        assertEquals(2,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
+        assertEquals(0,anagraficaDao.findByDiocesi(Diocesi.DIOCESI115).size());
+        
+        antonioRusso.setCo(diocesiMilano);
+        anagraficaDao.save(antonioRusso);
+        
+        assertEquals(0,anagraficaDao.findByCo(antonioRusso).size());
+        assertEquals(1,anagraficaDao.findByCo(diocesiMilano).size());
+        
+        try {
+            anagraficaDao.delete(diocesiMilano);
+            assertTrue(false);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+        
+        anagraficaDao.delete(antonioRusso);
+        anagraficaDao.delete(diocesiMilano);
+        
+        assertEquals(0, anagraficaDao.findAll().size());        
+    }
     @Test
     public void testLoginAdmin() {
         Authentication auth =
@@ -419,7 +460,7 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void TestUserInfo() {
+    public void testUserInfo() {
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
         userInfoDao.save(adp);
         

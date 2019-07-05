@@ -36,7 +36,7 @@ public class Storico implements SmdEntity {
     @ManyToOne
     private Pubblicazione pubblicazione;
     
-    @OneToMany(mappedBy="storico", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="storico", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Nota> note = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)

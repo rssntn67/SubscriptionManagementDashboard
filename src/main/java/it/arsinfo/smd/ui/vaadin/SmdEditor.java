@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.vaadin.data.Binder;
@@ -15,6 +17,8 @@ public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {
 
     private final JpaRepository<T, Long> repositoryDao;
+
+    private static final Logger log = LoggerFactory.getLogger(SmdEditor.class);
 
     private T smdObj;
 
@@ -53,21 +57,19 @@ public abstract class SmdEditor<T extends SmdEntity>
     public void delete() {
         try {
             repositoryDao.delete(smdObj);
+            log.info("delete:" + smdObj.toString());
             onChange();
         } catch (Exception e) {
-            Notification.show("Non è possibile cancellare: " +e.getMessage(),
+            log.warn("delete failed for :" + smdObj.toString() +". Error log: " + e.getMessage());
+            Notification.show("Non è possibile cancellare questo recordo è utilizzato da altri elementi.",
                               Notification.Type.ERROR_MESSAGE);
         }
     }
 
     public void save() {
-        try {
             repositoryDao.save(smdObj);
             onChange();
-        } catch (Exception e) {
-            Notification.show("Non è possibile salvare: " +e.getMessage(),
-                              Notification.Type.ERROR_MESSAGE);
-        }    }
+    }
     
     public final void edit(T c) {
         if (c == null) {

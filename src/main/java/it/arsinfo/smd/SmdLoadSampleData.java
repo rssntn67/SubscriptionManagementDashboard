@@ -50,6 +50,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
@@ -60,11 +61,12 @@ public class SmdLoadSampleData implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     private final AnagraficaDao anagraficaDao; 
-    private final StoricoDao storicoDao;
     private final PubblicazioneDao pubblicazioneDao;
+    private final SpesaSpedizioneDao spesaSpedizioneDao;
     private final AbbonamentoDao abbonamentoDao;
     private final EstrattoContoDao estrattoContoDao;
     private final CampagnaDao campagnaDao;
+    private final StoricoDao storicoDao;
     private final IncassoDao incassoDao; 
     private final VersamentoDao versamentoDao;
     private final OperazioneDao operazioneDao;
@@ -74,6 +76,7 @@ public class SmdLoadSampleData implements Runnable {
     
     private final boolean loadPubblicazioniAdp;
     private final boolean loadSampleAnagrafica;
+    private final boolean loadSampleStorico;
     private final boolean loadSampleData;
     private final boolean createDemoUser;
     private final boolean createNormalUser;
@@ -185,6 +188,7 @@ public class SmdLoadSampleData implements Runnable {
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
             PubblicazioneDao pubblicazioneDao, 
+            SpesaSpedizioneDao spesaSpedizioneDao, 
             AbbonamentoDao abbonamentoDao,
             EstrattoContoDao spedizioneDao,
             CampagnaDao campagnaDao, 
@@ -195,6 +199,7 @@ public class SmdLoadSampleData implements Runnable {
             PasswordEncoder passwordEncoder,
             boolean loadPubblicazioniAdp,
             boolean loadSampleAnagrafica,
+            boolean loadSampleStorico,
             boolean createDemoUser,
             boolean createNormalUser,
             boolean loadSampleData
@@ -202,6 +207,7 @@ public class SmdLoadSampleData implements Runnable {
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
         this.pubblicazioneDao=pubblicazioneDao;
+        this.spesaSpedizioneDao=spesaSpedizioneDao;
         this.abbonamentoDao=abbonamentoDao;
         this.estrattoContoDao=spedizioneDao;
         this.campagnaDao=campagnaDao;
@@ -212,6 +218,7 @@ public class SmdLoadSampleData implements Runnable {
         this.passwordEncoder=passwordEncoder;
         this.loadPubblicazioniAdp=loadPubblicazioniAdp;
         this.loadSampleAnagrafica=loadSampleAnagrafica;
+        this.loadSampleStorico=loadSampleStorico;
         this.createDemoUser=createDemoUser;
         this.createNormalUser=createNormalUser;
         this.loadSampleData=loadSampleData;
@@ -887,25 +894,33 @@ public class SmdLoadSampleData implements Runnable {
         estratti = getEstratti();
         
         pubblicazioneDao.save(messaggio);
+        messaggio.getSpeseSpedizione().stream().forEach(spsp -> spesaSpedizioneDao.save(spsp));
         pubblicazioneDao.save(lodare);
+        lodare.getSpeseSpedizione().stream().forEach(spsp -> spesaSpedizioneDao.save(spsp));
         pubblicazioneDao.save(blocchetti);
+        blocchetti.getSpeseSpedizione().stream().forEach(spsp -> spesaSpedizioneDao.save(spsp));        
         pubblicazioneDao.save(estratti);
-        
+        estratti.getSpeseSpedizione().stream().forEach(spsp -> spesaSpedizioneDao.save(spsp));                
     }
     @Override
     public void run() {
         
-        if (loadPubblicazioniAdp || loadSampleData) {
+        if (loadPubblicazioniAdp || loadSampleStorico || loadSampleData) {
             log.info("Start Loading Pubblicazioni Adp");
            loadPubblicazioniAdp();
             log.info("End Loading Pubblicazioni Adp");
         }
         
-        if (loadSampleAnagrafica || loadSampleData) {
+        if (loadSampleAnagrafica || loadSampleStorico ||loadSampleData) {
             log.info("Start Loading Sample Anagrafica");
             loadAnagrafica();
             log.info("End Loading Sample Anagrafica");
         }
+        
+        if (loadSampleStorico || loadSampleData) {
+            loadStorico();
+        }
+        
         if (loadSampleData) {
             log.info("Start Loading Sample Data");
             loadSampleData();
@@ -937,7 +952,9 @@ public class SmdLoadSampleData implements Runnable {
         anagraficaDao.save(micheleSantoro);
         pasqualinaSantoro = getPS();
         anagraficaDao.save(pasqualinaSantoro);
+    }
         
+    private void loadStorico() {
         storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
         storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
         storicoDao.save(getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));

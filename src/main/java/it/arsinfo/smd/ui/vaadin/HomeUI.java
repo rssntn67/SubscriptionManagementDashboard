@@ -34,22 +34,20 @@ public class HomeUI extends SmdUI {
         right.addComponent(new Label("Gestione Anagrafiche:"));
         right.addComponents(new HorizontalLayout(getAnagraficaLink()));
         right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Pubblicazioni:"));
+        right.addComponents(new HorizontalLayout(getPubblicazioneLink()));
+        right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Campagne:"));
         right.addComponents(new HorizontalLayout(getCampagnaLinks()));
         right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Abbonamenti:"));
         right.addComponents(new HorizontalLayout(getAbbonamentoLinks()));
         right.addComponent(new Label(""));
-        right.addComponent(new Label("Gestione Pubblicazioni:"));
-        right.addComponents(new HorizontalLayout(getPubblicazioneLink()));
-        right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Incassi:"));
         right.addComponents(new HorizontalLayout(getIncassoLinks()));
         right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Operazioni :"));
         right.addComponents(new HorizontalLayout(getOperazioniLink()));
-        right.addComponent(new Label(""));
-        right.addComponents(new HorizontalLayout(getUserLinks()));
         
         layout.addComponents(left,
                              right);
