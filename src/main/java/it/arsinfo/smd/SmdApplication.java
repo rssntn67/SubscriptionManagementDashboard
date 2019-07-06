@@ -90,7 +90,7 @@ public class SmdApplication {
             log.info("createDemoUser="+creaDU);
             boolean creaNU =  createNormalUser != null && createNormalUser.equals("true");
             log.info("createNormalUser="+creaNU);
-            if (loadSD || loadPAdp || loadSA) {
+            if (loadSD || loadPAdp || loadSA || loadSS || creaDU || creaNU) {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 

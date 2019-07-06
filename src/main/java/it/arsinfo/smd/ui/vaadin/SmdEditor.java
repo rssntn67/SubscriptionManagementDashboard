@@ -67,8 +67,15 @@ public abstract class SmdEditor<T extends SmdEntity>
     }
 
     public void save() {
+        try {
             repositoryDao.save(smdObj);
+            log.info("save:" + smdObj.toString());
             onChange();
+        } catch (Exception e) {
+            log.warn("save failed for :" + smdObj.toString() +". Error log: " + e.getMessage());
+            Notification.show("Non è possibile cancellare questo recordo è utilizzato da altri elementi.",
+                              Notification.Type.ERROR_MESSAGE);
+        }
     }
     
     public final void edit(T c) {

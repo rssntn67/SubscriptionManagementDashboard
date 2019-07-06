@@ -9,6 +9,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
@@ -71,8 +72,16 @@ public class StoricoUI extends SmdUI {
                                   anagrafica) {
             @Override
             public void save() {
+                if (getIntestatario().isEmpty()) {
+                    Notification.show("Intestatario deve essere valorizzato", Type.ERROR_MESSAGE);
+                    return;                    
+                }
+                if (getDestinatario().isEmpty()) {
+                    Notification.show("Destinatario deve essere valorizzato", Type.ERROR_MESSAGE);
+                    return;                    
+                }
                 if (getPubblicazione().isEmpty()) {
-                    Notification.show("Pubblicazione deve essere valorizzata");
+                    Notification.show("Pubblicazione deve essere valorizzata", Type.ERROR_MESSAGE);
                     return;
                 }
                 super.save();
@@ -89,9 +98,11 @@ public class StoricoUI extends SmdUI {
         notaGrid.getGrid().setColumns("data","description");
         notaGrid.getGrid().setHeight("200px");
 
-        addSmdComponents(pb,editor,search, grid);
+        addSmdComponents(pb,add,editor,notaGrid,search, grid);
         pb.setVisible(false);
         editor.setVisible(false);
+        notaGrid.setVisible(false);
+
         pb.setChangeHandler(() ->{});
         
         search.setChangeHandler(()-> {
@@ -102,11 +113,12 @@ public class StoricoUI extends SmdUI {
             if (grid.getSelected() == null) {
                 return;
             }
+            hideMenu();
+            search.setVisible(false);
             editor.edit(grid.getSelected());
             notaGrid.populate(notaDao.findByStorico(grid.getSelected()));
             setHeader(grid.getSelected().getHeader());
-            hideMenu();
-            search.setVisible(false);
+            add.setVisible(false);
         });
 
         editor.setChangeHandler(() -> {
@@ -121,9 +133,8 @@ public class StoricoUI extends SmdUI {
 
         add.setChangeHandler(() -> {
             editor.edit(add.generate());
-            setHeader(String.format("%s:Storico:Nuovo",editor.get().getHeader()));
+            setHeader(String.format("Storico:Nuovo"));
             add.setVisible(false);
-            editor.setVisible(false);
         });
 
         notaGrid.setChangeHandler(() -> {});

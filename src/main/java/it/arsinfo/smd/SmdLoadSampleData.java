@@ -922,7 +922,9 @@ public class SmdLoadSampleData implements Runnable {
         }
         
         if (loadSampleStorico || loadSampleData) {
+            log.info("Start Loading Sample storico");
             loadStorico();
+            log.info("End Loading Sample Storico");
         }
         
         if (loadSampleData) {

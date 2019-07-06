@@ -32,6 +32,7 @@ import it.arsinfo.smd.repository.StoricoDao;
 public class StoricoEditor
         extends SmdEditor<Storico> {
 
+    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
     private final ComboBox<TipoEstrattoConto> tipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo",
@@ -61,15 +62,22 @@ public class StoricoEditor
         super(storicoDao, new Binder<>(Storico.class) );
         SmdButton update = new SmdButton("Salva ed Aggiorna Campagna", VaadinIcons.ARCHIVES);
         update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-        pubblicazione.setEmptySelectionAllowed(false);
-        pubblicazione.setPlaceholder("Pubblicazione");
-        pubblicazione.setItems(pubblicazioni);
-        pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        
+        intestatario.setEmptySelectionAllowed(false);
+        intestatario.setPlaceholder("Intestatario");
+        intestatario.setItems(anagrafiche);
+        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
+
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafiche);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
+
+        pubblicazione.setEmptySelectionAllowed(false);
+        pubblicazione.setPlaceholder("Pubblicazione");
+        pubblicazione.setItems(pubblicazioni);
+        pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
 
         cassa.setEmptySelectionAllowed(false);
         tipoEstrattoConto.setEmptySelectionAllowed(false);
@@ -78,6 +86,7 @@ public class StoricoEditor
         statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
 
         HorizontalLayout pri = new HorizontalLayout();
+        pri.addComponentsAndExpand(intestatario);
         pri.addComponentsAndExpand(destinatario);
         pri.addComponent(pubblicazione);
         pri.addComponent(numero);
@@ -99,7 +108,7 @@ public class StoricoEditor
                           && abb.getCampagna() != null)
                 abbonamentoDao.delete(abb);
             }
-            /*
+            /* FIXME
             abbonamentoDao.findByIntestatario(get().getIntestatario())
             .stream()
             .filter(a -> a.getAnno() == Smd.getAnnoProssimo()
@@ -140,5 +149,13 @@ public class StoricoEditor
     
     public ComboBox<Pubblicazione> getPubblicazione() {
         return pubblicazione;
+    }
+
+    public ComboBox<Anagrafica> getDestinatario() {
+        return destinatario;
+    }
+
+    public ComboBox<Anagrafica> getIntestatario() {
+        return intestatario;
     }
 }
