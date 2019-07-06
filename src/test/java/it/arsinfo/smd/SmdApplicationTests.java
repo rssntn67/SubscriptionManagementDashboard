@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
@@ -35,7 +36,9 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -687,6 +690,16 @@ public class SmdApplicationTests {
     }
     
     @Test 
-    public void testCampagnaCRUD() {
+    public void testAbbonamento() {
+        Anagrafica tizio = SmdLoadSampleData.getGP();
+        anagraficaDao.save(tizio);
+        
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.ANNO2019, Cassa.Ccp);
+        abbonamentoDao.save(abb);
+        
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        pubblicazioneDao.save(messaggio);
+        Smd.ge
+        
     }
 }

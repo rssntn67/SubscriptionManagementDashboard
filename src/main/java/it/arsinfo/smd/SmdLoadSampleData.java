@@ -51,6 +51,7 @@ import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
@@ -66,6 +67,7 @@ public class SmdLoadSampleData implements Runnable {
     private final SpesaSpedizioneDao spesaSpedizioneDao;
     private final AbbonamentoDao abbonamentoDao;
     private final EstrattoContoDao estrattoContoDao;
+    private final SpedizioneDao spedizioneDao;
     private final CampagnaDao campagnaDao;
     private final StoricoDao storicoDao;
     private final NotaDao notaDao;
@@ -152,8 +154,6 @@ public class SmdLoadSampleData implements Runnable {
     public static Abbonamento getAbbonamentoBy(
             Anagrafica intestatario, 
             Anno anno, 
-            Mese inizio,
-            Mese fine,
             Cassa cassa
             ) {
  
@@ -180,12 +180,6 @@ public class SmdLoadSampleData implements Runnable {
         return ec;
     }
 
-    public static Campagna getCampagnaBy(Anno anno) {
-        Campagna campagna=new Campagna();
-        campagna.setAnno(anno);
-        return campagna;
-    }
-
     public SmdLoadSampleData(
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
@@ -193,7 +187,8 @@ public class SmdLoadSampleData implements Runnable {
             PubblicazioneDao pubblicazioneDao, 
             SpesaSpedizioneDao spesaSpedizioneDao, 
             AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao spedizioneDao,
+            EstrattoContoDao estrattoContoDao,
+            SpedizioneDao spedizioneDao,
             CampagnaDao campagnaDao, 
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
@@ -213,7 +208,8 @@ public class SmdLoadSampleData implements Runnable {
         this.pubblicazioneDao=pubblicazioneDao;
         this.spesaSpedizioneDao=spesaSpedizioneDao;
         this.abbonamentoDao=abbonamentoDao;
-        this.estrattoContoDao=spedizioneDao;
+        this.estrattoContoDao=estrattoContoDao;
+        this.spedizioneDao=spedizioneDao;
         this.campagnaDao=campagnaDao;
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
@@ -672,8 +668,6 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb =  getAbbonamentoBy(
                 micheleSantoro, 
                 Smd.getAnnoCorrente(), 
-                Mese.GENNAIO, 
-                Mese.DICEMBRE, 
                 Cassa.Ccp
                 );
         List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
@@ -693,8 +687,6 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb = getAbbonamentoBy(
                             gabrielePizzo, 
                             Smd.getAnnoCorrente(), 
-                            Mese.GENNAIO, 
-                            Mese.DICEMBRE, 
                             Cassa.Ccp 
                             );
         List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
@@ -708,8 +700,6 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb = getAbbonamentoBy(
                             davidePalma, 
                             Smd.getAnnoCorrente(), 
-                            Mese.MAGGIO, 
-                            Mese.DICEMBRE, 
                             Cassa.Ccp
                             );
         List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, spedizioni);
@@ -1006,27 +996,11 @@ public class SmdLoadSampleData implements Runnable {
         getIncassi()
             .stream().forEach(c -> incassoDao.save(c));
 
-        //FIXME
-        /*
-        campagnaDao.save(
-                 Smd.generaCampagna(
-                    getCampagnaBy(Anno.ANNO2018),
-                    anagraficaDao.findAll(),
-                    storicoDao.findAll(),
-                    pubblicazioneDao.findAll()
-                )
-             );
-
-        campagnaDao.save(
-                         Smd.generaCampagna(
-                            getCampagnaBy(Anno.ANNO2019),
-                            anagraficaDao.findAll(),
-                            storicoDao.findAll(),
-                            pubblicazioneDao.findAll()
-                        )
-                     );
-                     */
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.ANNO2018);
         
+        loadCampagna(Anno.ANNO2018);
+        loadCampagna(Anno.ANNO2019);
         //FIXME
         pubblicazioneDao.findAll().stream().forEach(p -> 
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
@@ -1062,6 +1036,35 @@ public class SmdLoadSampleData implements Runnable {
         
    
     }   
+    
+    private void loadCampagna(Anno anno) {
+        Campagna campagna = new Campagna();
+        campagna.setAnno(anno);
+        List<Abbonamento> abbonamenti = 
+            Smd.generaAbbonamentiCampagna(
+                                      campagna, 
+                                      anagraficaDao.findAll(), 
+                                      storicoDao.findAll(),
+                                      pubblicazioneDao.findAll()
+          );
+        
+        campagnaDao.save(campagna);
+        for (Abbonamento abb:abbonamenti) {
+            List<EstrattoConto> ecs = new ArrayList<>();
+            for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
+                ecs.add(Smd.generaECDaStorico(abb, storico));
+            }
+            if (ecs.isEmpty()) {
+                continue;
+            }
+            abbonamentoDao.save(abb);
+            ecs.stream().forEach( ec -> {
+                estrattoContoDao.save(ec);
+                ec.getSpedizioni().stream().forEach(sped -> spedizioneDao.save(sped));
+            });
+        }
+
+    }
     
     private void createDemoUser() {
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
