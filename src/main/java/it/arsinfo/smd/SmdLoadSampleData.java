@@ -144,7 +144,7 @@ public class SmdLoadSampleData implements Runnable {
             ec.setPubblicazione(ect.getRowKey());
             ec.setDestinatario(ect.getColumnKey());
             ec.setNumero(ect.getValue());
-            ec = Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
+            Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
             return ec;
         }).collect(Collectors.toList());        
     }

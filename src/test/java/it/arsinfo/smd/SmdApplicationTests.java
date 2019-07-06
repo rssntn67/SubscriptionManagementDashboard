@@ -685,4 +685,8 @@ public class SmdApplicationTests {
         assertEquals(0, anagraficaDao.findAll().size());
                 
     }
+    
+    @Test 
+    public void testCampagnaCRUD() {
+    }
 }

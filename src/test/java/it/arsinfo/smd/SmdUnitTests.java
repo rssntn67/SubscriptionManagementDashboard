@@ -68,7 +68,8 @@ public class SmdUnitTests {
         ec.setPubblicazione(p);
         ec.setTipoEstrattoConto(tipo);
         ec.setDestinatario(SmdLoadSampleData.getAR());
-        return Smd.generaEC(abb,ec,InvioSpedizione.Spedizioniere,inizio, ai, fine, ai);
+        Smd.generaEC(abb,ec,InvioSpedizione.Spedizioniere,inizio, ai, fine, ai);
+        return ec;
     }
     @Test
     public void testMesiPubblicazione() {

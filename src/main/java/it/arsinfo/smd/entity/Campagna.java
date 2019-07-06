@@ -89,4 +89,12 @@ public class Campagna implements SmdEntity {
         this.statoCampagna = statoCampagna;
     }
 
+   @Transient
+   public boolean hasPubblicazione(Pubblicazione p) {
+       return 
+           campagnaItems
+           .stream()
+           .filter(ci ->  ci.getPubblicazione().getId() == p.getId())
+           .collect(Collectors.toList()).size() == 1;
+   }
 }
