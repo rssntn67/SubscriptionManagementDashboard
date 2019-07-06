@@ -53,7 +53,7 @@ public class Spedizione implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("%s:Spedizione:Edit:'%s'", estrattoConto.getHeader());
+        return String.format("Spedizione:Edit");
     }
 
     @Override

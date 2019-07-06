@@ -26,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
@@ -38,7 +37,7 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -690,16 +689,35 @@ public class SmdApplicationTests {
     }
     
     @Test 
-    public void testAbbonamento() {
+    public void testAbbonamentoCRUD() {
+        assertEquals(0, abbonamentoDao.findAll().size());
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.ANNO2019, Cassa.Ccp);
-        abbonamentoDao.save(abb);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
         
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         pubblicazioneDao.save(messaggio);
-        Smd.ge
+        EstrattoConto ec = new EstrattoConto();
+        ec.setAbbonamento(abb);
+        ec.setDestinatario(tizio);
+        ec.setPubblicazione(messaggio);
+        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec);
+        ec.getSpedizioni().forEach(sped -> spedizioneDao.save(sped));
         
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(1, estrattoContoDao.findAll().size());
+        assertEquals(1, estrattoContoDao.findByAbbonamento(abb).size());
+        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findAll().size());
+        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findByEstrattoConto(ec).size());
+                
+        assertEquals(0, spedizioneDao.findByMesePubblicazioneAndAnnoPubblicazione(Mese.AGOSTO, Smd.getAnnoCorrente()).size());
+        
+        abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        estrattoContoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
     }
 }

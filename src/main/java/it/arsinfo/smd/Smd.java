@@ -175,7 +175,7 @@ public class Smd {
             throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
         }
         calcoloImportoEC(ec);
-        abb.setTotale(abb.getTotale().add(abb.getTotale()));
+        abb.setTotale(abb.getTotale().add(ec.getTotale()));
     }
     
     public static Spedizione creaSpedizione(EstrattoConto ec, Mese mesePubblicazione, Anno annoPubblicazione, InvioSpedizione invioSpedizione) throws UnsupportedOperationException {

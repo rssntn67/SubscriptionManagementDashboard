@@ -34,7 +34,7 @@ public class EstrattoConto implements SmdEntity {
     @ManyToOne(fetch=FetchType.LAZY)
     private Abbonamento abbonamento;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
 
     @ManyToOne
@@ -114,13 +114,13 @@ public class EstrattoConto implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("%s:EstrattoConto:Edit:'%s'", abbonamento.getHeader(),pubblicazione.getNome());
+        return String.format("EstrattoConto:Edit");
     }
 
     @Override
     public String toString() {
-        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoEstrattoConto);
+        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %d' %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getId(), tipoEstrattoConto);
     }
         
     public BigDecimal getImporto() {

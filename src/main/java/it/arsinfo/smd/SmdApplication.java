@@ -21,6 +21,7 @@ import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
@@ -63,7 +64,8 @@ public class SmdApplication {
             PubblicazioneDao pubblicazioneDao,
             SpesaSpedizioneDao spesaSpedizioneDao,
             AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao spedizioneDao,
+            EstrattoContoDao estrattoContoDao,
+            SpedizioneDao spedizioneDao,
             CampagnaDao campagnaDao, 
             IncassoDao incassoDao, 
             VersamentoDao versamentoDao,
@@ -98,7 +100,8 @@ public class SmdApplication {
                       pubblicazioneDao, 
                       spesaSpedizioneDao,
                       abbonamentoDao, 
-                      spedizioneDao, 
+                      estrattoContoDao,
+                      spedizioneDao,
                       campagnaDao, 
                       incassoDao, 
                       versamentoDao, 
