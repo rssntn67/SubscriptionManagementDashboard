@@ -50,8 +50,8 @@ public class Nota implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Storico='%d', descrizione='%s', Data='%td %tb %tY %tR %tZ', %s]",
-                             id, storico.getId(), description,
+        return String.format("Nota[id=%d, '%s', '%s', '%td %tb %tY %tR %tZ']",
+                             id, storico.getCaption(), description,
                              data, data, data, data, data);
     }
 

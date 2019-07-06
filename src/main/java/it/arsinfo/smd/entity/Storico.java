@@ -27,13 +27,13 @@ public class Storico implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica intestatario;
 
-    @ManyToOne
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
 
-    @ManyToOne
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
     
     @OneToMany(mappedBy="storico", orphanRemoval=true, fetch=FetchType.LAZY)

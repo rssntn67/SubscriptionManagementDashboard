@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -24,6 +25,7 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
         List<Storico> findByTipoEstrattoConto(TipoEstrattoConto omaggio);
         List<Storico> findByCassa(Cassa cassa);
         List<Storico> findByInvio(Invio invio);
+        List<Storico> findByInvioSpedizione(InvioSpedizione invioSpedizione);
         List<Storico> findByStatoStorico(StatoStorico statoStorico);
 
 }

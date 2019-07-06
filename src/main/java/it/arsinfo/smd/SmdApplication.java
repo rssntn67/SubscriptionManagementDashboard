@@ -18,6 +18,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
@@ -58,6 +59,7 @@ public class SmdApplication {
     public CommandLineRunner loadData(
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
+            NotaDao notaDao,
             PubblicazioneDao pubblicazioneDao,
             SpesaSpedizioneDao spesaSpedizioneDao,
             AbbonamentoDao abbonamentoDao,
@@ -92,6 +94,7 @@ public class SmdApplication {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 
+                      notaDao,
                       pubblicazioneDao, 
                       spesaSpedizioneDao,
                       abbonamentoDao, 

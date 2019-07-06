@@ -27,12 +27,19 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -127,6 +134,56 @@ public class SmdApplicationTests {
     }
     
     @Test
+    public void testLoginAdmin() {
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("admin", "admin");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+
+        UserInfo admin = userInfoDao.findById(1L).get();
+        assertEquals("admin", admin.getUsername());
+
+    }
+
+    @Test
+    public void testUserInfo() {
+        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
+        userInfoDao.save(adp);
+        
+        UserInfo user = new UserInfo("user", passwordEncoder.encode("pass"), Role.USER);
+        userInfoDao.save(user);
+        
+        assertEquals(3, userInfoDao.findAll().size());
+        Authentication auth =
+                new UsernamePasswordAuthenticationToken("adp", "adp");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+        
+        auth =
+                new UsernamePasswordAuthenticationToken("user", "pass");
+        try {
+            securityConfig.authenticationManagerBean().authenticate(auth);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            assertTrue(false);
+        }
+        
+        userInfoDao.delete(user);
+        userInfoDao.deleteById(adp.getId());
+
+        assertEquals(1, userInfoDao.findAll().size());
+        
+    }        
+
+    @Test
     public void testAnagraficaCRUD() {
         assertEquals(0, anagraficaDao.findAll().size());
         Anagrafica antonioRusso =  SmdLoadSampleData.getAR();
@@ -161,27 +218,46 @@ public class SmdApplicationTests {
             log.info(e.getMessage());
         }
         
+        anagraficaDao.findAll().stream().forEach( a -> log.info(a.toString()));
         anagraficaDao.delete(antonioRusso);
         anagraficaDao.delete(diocesiMilano);
         
         assertEquals(0, anagraficaDao.findAll().size());        
     }
+    
     @Test
-    public void testLoginAdmin() {
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken("admin", "admin");
+    public void testAnagraficaCo() {
+        Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
+        anagraficaDao.save(diocesiMilano);
+        assertEquals(1, anagraficaDao.findAll().size());
+        
+        Anagrafica ar = SmdLoadSampleData.getAR();
+        ar.setCo(diocesiMilano);
+        anagraficaDao.save(ar);
+        assertEquals(2, anagraficaDao.findAll().size());
+        
+        List<Anagrafica> withco = anagraficaDao.findAll()
+                .stream()
+                .filter(a -> a.getCo() != null)
+                .collect(Collectors.toList());
+
+        assertEquals(1, withco.size());
+        Anagrafica ff = withco.iterator().next();
+        assertEquals(ar.getId().longValue(), ff.getId().longValue());
+        
         try {
-            securityConfig.authenticationManagerBean().authenticate(auth);
+            anagraficaDao.delete(diocesiMilano);
+            assertTrue(false);
         } catch (Exception e) {
             log.info(e.getMessage());
-            assertTrue(false);
         }
-
-        UserInfo admin = userInfoDao.findById(1L).get();
-        assertEquals("admin", admin.getUsername());
-
+        assertEquals(2, anagraficaDao.findAll().size());       
+        anagraficaDao.delete(ar);
+        assertEquals(1, anagraficaDao.findAll().size());       
+        anagraficaDao.delete(diocesiMilano);
+        assertEquals(0, anagraficaDao.findAll().size());       
     }
-    
+
     @Test 
     public void testPubblicazioneDaoCRUD() {
         assertEquals(0, pubblicazioneDao.findAll().size());
@@ -224,8 +300,6 @@ public class SmdApplicationTests {
         assertEquals(1, pubblicazioneDao.findAll().size());
         assertEquals(2, spesaSpedizioneDao.findAll().size());
 
-        spesaSpedizioneDao.findAll().stream().forEach( msg -> log.info(msg.toString()));
-
         Pubblicazione p1 = new Pubblicazione("zz", TipoPubblicazione.MENSILE);
         p1.setAbbonamento(new BigDecimal("30.00"));
         p1.setAbbonamentoConSconto(new BigDecimal("20.00"));
@@ -249,6 +323,9 @@ public class SmdApplicationTests {
         
         assertEquals(2, pubblicazioneDao.findAll().size());
         assertEquals(3, spesaSpedizioneDao.findAll().size());
+
+        anagraficaDao.findAll().stream().forEach( msg -> log.info(msg.toString()));
+        spesaSpedizioneDao.findAll().stream().forEach( msg -> log.info(msg.toString()));
 
         List<Pubblicazione> ff = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Pr");
         assertEquals(1, ff.size());
@@ -294,8 +371,8 @@ public class SmdApplicationTests {
         m.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
         
         Pubblicazione l = SmdLoadSampleData.getLodare();
-        l.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
         pubblicazioneDao.save(l);
+        l.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
         
         Pubblicazione b =SmdLoadSampleData.getBlocchetti();
         pubblicazioneDao.save(b);
@@ -363,10 +440,12 @@ public class SmdApplicationTests {
         }
         log.info("");
 
-        Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("messaggio")).get();
-        log.info("Messaggio found with findOne: "+nameToIdMap.get("messaggio"));
+        assertTrue(nameToIdMap.containsKey("Messaggio"));
+        assertNotNull(nameToIdMap.get("Messaggio"));
+        Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("Messaggio")).get();
+        log.info("Messaggio found with findOne: "+nameToIdMap.get("Messaggio"));
         log.info("--------------------------------");
-        assertEquals(nameToIdMap.get("messaggio").longValue(), messaggio.getId().longValue());
+        assertEquals(nameToIdMap.get("Messaggio").longValue(), messaggio.getId().longValue());
         assertEquals(TipoPubblicazione.MENSILE, messaggio.getTipo());
         assertEquals("Messaggio", messaggio.getNome());
         assertTrue(messaggio.isGen());
@@ -387,18 +466,18 @@ public class SmdApplicationTests {
         log.info(ssMessaggioAmerica.toString());
         log.info("");
 
-        Pubblicazione lodare = pubblicazioneDao.findById(nameToIdMap.get("lodare")).get();
-        log.info("lodare found with findOne: " + nameToIdMap.get("lodare"));
+        Pubblicazione lodare = pubblicazioneDao.findById(nameToIdMap.get("Lodare")).get();
+        log.info("lodare found with findOne: " + nameToIdMap.get("Lodare"));
         log.info("--------------------------------");
-        assertEquals(nameToIdMap.get("lodare").longValue(), lodare.getId().longValue());
+        assertEquals(nameToIdMap.get("Lodare").longValue(), lodare.getId().longValue());
 
         log.info(lodare.toString());
         log.info("");
 
-        Pubblicazione blocchetti = pubblicazioneDao.findById(nameToIdMap.get("blocchetti")).get();
-        log.info("blocchetti found with findOne:" + nameToIdMap.get("blocchetti"));
+        Pubblicazione blocchetti = pubblicazioneDao.findById(nameToIdMap.get("Blocchetti")).get();
+        log.info("blocchetti found with findOne:" + nameToIdMap.get("Blocchetti"));
         log.info("--------------------------------");
-        assertEquals(nameToIdMap.get("blocchetti").longValue(), blocchetti.getId().longValue());
+        assertEquals(nameToIdMap.get("Blocchetti").longValue(), blocchetti.getId().longValue());
         assertEquals(TipoPubblicazione.SEMESTRALE, blocchetti.getTipo());
         assertEquals("Blocchetti", blocchetti.getNome());
         assertFalse(blocchetti.isGen());
@@ -422,74 +501,188 @@ public class SmdApplicationTests {
         pubblicazioneDao.delete(estratti);
         
         assertEquals(0, pubblicazioneDao.findAll().size());
-        assertEquals(0, spesaSpedizioneDao.findAll().size());
-        
+        assertEquals(0, spesaSpedizioneDao.findAll().size());       
     }
-
-    @Test
-    public void testAnagraficaCo() {
-        Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
-        anagraficaDao.save(diocesiMilano);
-        assertEquals(1, anagraficaDao.findAll().size());
-        
-        Anagrafica ar = SmdLoadSampleData.getAR();
-        ar.setCo(diocesiMilano);
-        anagraficaDao.save(ar);
-        assertEquals(2, anagraficaDao.findAll().size());
-        
-        List<Anagrafica> withco = anagraficaDao.findAll()
-                .stream()
-                .filter(a -> a.getCo() != null)
-                .collect(Collectors.toList());
-
-        assertEquals(1, withco.size());
-        Anagrafica ff = withco.iterator().next();
-        assertEquals(ar.getId().longValue(), ff.getId().longValue());
+    
+    @Test 
+    public void testStoricoCRUD() {
+        //you should be not able to create a storico 
+        // without intestatario,destinatario and pubblicazione
+        assertEquals(0, storicoDao.findAll().size());
+        Storico storico = new Storico();
         
         try {
-            anagraficaDao.delete(diocesiMilano);
+            storicoDao.save(storico);
             assertTrue(false);
         } catch (Exception e) {
+            assertEquals(0, storicoDao.findAll().size());
             log.info(e.getMessage());
         }
-        assertEquals(2, anagraficaDao.findAll().size());       
-        anagraficaDao.delete(ar);
-        assertEquals(1, anagraficaDao.findAll().size());       
-        anagraficaDao.delete(diocesiMilano);
-        assertEquals(0, anagraficaDao.findAll().size());       
+        
+        Anagrafica antonioRusso = SmdLoadSampleData.getAR();
+        anagraficaDao.save(antonioRusso);
+        
+        storico.setDestinatario(antonioRusso);
+
+        try {
+            storicoDao.save(storico);
+            assertTrue(false);
+        } catch (Exception e) {
+            assertEquals(0, storicoDao.findAll().size());
+            log.info(e.getMessage());
+        }
+        
+        Anagrafica matteoParo = SmdLoadSampleData.getMP();
+        anagraficaDao.save(matteoParo);
+        
+        storico.setIntestatario(matteoParo);
+
+        try {
+            storicoDao.save(storico);
+            assertTrue(false);
+        } catch (Exception e) {
+            assertEquals(0, storicoDao.findAll().size());
+            log.info(e.getMessage());
+        }
+        
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        pubblicazioneDao.save(messaggio);
+        
+        storico.setPubblicazione(messaggio);
+        storicoDao.save(storico);
+        assertEquals(1, storicoDao.findAll().size());
+        
+        //seems not updating id from...
+        storico = storicoDao.findAll().iterator().next();
+
+        Pubblicazione lodare = SmdLoadSampleData.getLodare();
+        pubblicazioneDao.save(lodare);
+
+        Storico storico1 = new Storico();
+        storico1.setIntestatario(matteoParo);
+        storico1.setDestinatario(matteoParo);
+        storico1.setPubblicazione(lodare);
+        storico1.setTipoEstrattoConto(TipoEstrattoConto.OmaggioGesuiti);
+        storico1.setInvioSpedizione(InvioSpedizione.AdpSede);
+        storico1.setNumero(10);
+        storico1.setInvio(Invio.Intestatario);
+        storicoDao.save(storico1);
+        assertEquals(2, storicoDao.findAll().size());
+        assertEquals(0, notaDao.findAll().size());
+        
+
+        Nota nota = new Nota();
+        nota.setStorico(storico);
+        nota.setDescription("Test Nota");
+        notaDao.save(nota);
+        assertEquals(1, notaDao.findAll().size());
+        
+        Nota nota1 = new Nota();
+        nota1.setStorico(storico1);
+        nota1.setDescription("Storico");
+        notaDao.save(nota1);
+        assertEquals(2, notaDao.findAll().size());
+        
+        storico.setStatoStorico(StatoStorico.SOSPESO);
+        storicoDao.save(storico);
+        Nota nota2 = new Nota();
+        nota2.setStorico(storico);
+        nota2.setDescription("Aggiornato Stato a SOSPESO data......");
+        notaDao.save(nota2);
+        assertEquals(3, notaDao.findAll().size());
+        assertEquals(2, storicoDao.findAll().size());
+
+        assertEquals(0, storicoDao.findByStatoStorico(StatoStorico.VALIDO).size());
+        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.NUOVO).size());
+        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.SOSPESO).size());
+
+        assertEquals(1, storicoDao.findByInvio(Invio.Intestatario).size());
+        assertEquals(1, storicoDao.findByInvio(Invio.Destinatario).size());
+        
+        assertEquals(2, storicoDao.findByCassa(Cassa.Ccp).size());
+        assertEquals(0, storicoDao.findByCassa(Cassa.Contrassegno).size());
+        
+        assertEquals(1, storicoDao.findByInvioSpedizione(InvioSpedizione.AdpSede).size());
+        assertEquals(1, storicoDao.findByInvioSpedizione(InvioSpedizione.Spedizioniere).size());
+
+        assertEquals(1, storicoDao.findByTipoEstrattoConto(TipoEstrattoConto.Ordinario).size());
+        assertEquals(1, storicoDao.findByTipoEstrattoConto(TipoEstrattoConto.OmaggioGesuiti).size());
+        assertEquals(0, storicoDao.findByTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp).size());
+
+        assertEquals(1, storicoDao.findByDestinatario(antonioRusso).size());
+        assertEquals(1, storicoDao.findByDestinatario(matteoParo).size());
+
+        assertEquals(2, storicoDao.findByIntestatario(matteoParo).size());
+        assertEquals(0, storicoDao.findByIntestatario(antonioRusso).size());
+
+        assertEquals(1, storicoDao.findByPubblicazione(lodare).size());
+        assertEquals(1, storicoDao.findByPubblicazione(messaggio).size());
+        
+        assertEquals(1, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, antonioRusso, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, antonioRusso, lodare).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, matteoParo, messaggio).size());
+        assertEquals(1, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, matteoParo, lodare).size());
+
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, matteoParo, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, matteoParo, lodare).size());
+
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, antonioRusso, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, antonioRusso, lodare).size());
+        
+        assertEquals(1, notaDao.findByStorico(storico1).size());
+        assertEquals(2, notaDao.findByStorico(storico).size());
+        
+        assertEquals(1, notaDao.findByDescriptionContainingIgnoreCase("sospeso").size());
+
+        storicoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        notaDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+
+        notaDao.delete(nota2);
+        assertEquals(2, notaDao.findAll().size());
+        assertEquals(2, storicoDao.findAll().size());
+        
+        storicoDao.delete(storico);
+        assertEquals(1, notaDao.findAll().size());
+        assertEquals(1, storicoDao.findAll().size());
+        
+        storico1 = storicoDao.findAll().iterator().next();
+        storicoDao.delete(storico1);
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size()); 
+        pubblicazioneDao.deleteAll();
+        anagraficaDao.deleteAll();
+
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+
     }
-
+    
     @Test
-    public void testUserInfo() {
-        UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
-        userInfoDao.save(adp);
+    public void testSmdLoadStorico() {
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());
         
-        UserInfo user = new UserInfo("user", passwordEncoder.encode("pass"), Role.USER);
-        userInfoDao.save(user);
+        Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
+        pubblicazioneDao.save(blocchetti);
+        Anagrafica matteo = SmdLoadSampleData.getMS();
+        anagraficaDao.save(matteo);
         
-        assertEquals(3, userInfoDao.findAll().size());
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken("adp", "adp");
-        try {
-            securityConfig.authenticationManagerBean().authenticate(auth);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            assertTrue(false);
-        }
+        Storico storico = SmdLoadSampleData.getStoricoBy(matteo, matteo, blocchetti, 100, Cassa.Carte, TipoEstrattoConto.Sostenitore, Invio.Destinatario, InvioSpedizione.AdpSede);
+        storicoDao.save(storico);
+        storico.getNote().stream().forEach(nota -> notaDao.save(nota));
+        assertEquals(1, notaDao.findAll().size());
+        assertEquals(1, storicoDao.findAll().size());
         
-        auth =
-                new UsernamePasswordAuthenticationToken("user", "pass");
-        try {
-            securityConfig.authenticationManagerBean().authenticate(auth);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            assertTrue(false);
-        }
-        
-        userInfoDao.delete(user);
-        userInfoDao.deleteById(adp.getId());
+        storicoDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        anagraficaDao.deleteAll();
 
-        assertEquals(1, userInfoDao.findAll().size());
-        
-    }        
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+                
+    }
 }
