@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,13 +16,18 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.CampagnaItem;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_CAMPAGNA)
@@ -50,6 +56,12 @@ public class CampagnaUI extends SmdUI {
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
+    
+    @Autowired
+    EstrattoContoDao estrattoContoDao;
+    
+    @Autowired
+    SpedizioneDao spedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -79,29 +91,51 @@ public class CampagnaUI extends SmdUI {
 
             @Override
             public void save() {
-                if (get().getId() == null && get().getAnno() == null) {
+                if (get().getId() != null) {
+                    Notification.show("Impossibile Rigenerare Campagna",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null
-                        && !campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
+                if (!campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
                     Notification.show("E' stata già generata la Campagna per Anno "
                             + get().getAnno()
                             + ". Solo una Campagna per Anno",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null
-                        && get().getAnno().getAnno() <= Smd.getAnnoCorrente().getAnno()) {
+                if (get().getAnno().getAnno() <= Smd.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere almeno anno successivo",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                Smd.generaAbbonamentiCampagna(get(), anagraficaDao.findAll(),
+                List<Abbonamento> abbonamentiCampagna = Smd.generaAbbonamentiCampagna(get(), anagraficaDao.findAll(),
                                    storicoDao.findAll(),
                                    attivi);
+                if (abbonamentiCampagna.isEmpty()) {
+                    Notification.show("Non ci sono abbonamenti per la Campagna",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 super.save();
+                for (Abbonamento abb:abbonamentiCampagna) {
+                    List<EstrattoConto> ecs = new ArrayList<>();
+                    for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
+                        ecs.add(Smd.generaECDaStorico(abb, storico));
+                    }
+                    if (ecs.isEmpty()) {
+                        continue;
+                    }
+                    abbonamentoDao.save(abb);
+                    ecs.stream().forEach( ec -> {
+                        estrattoContoDao.save(ec);
+                        ec.getSpedizioni().stream().forEach(sped -> spedizioneDao.save(sped));
+                    });
+                }
             }
 
         };
