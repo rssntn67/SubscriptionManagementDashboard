@@ -98,7 +98,7 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                Smd.generaCampagna(get(), anagraficaDao.findAll(),
+                Smd.generaAbbonamentiCampagna(get(), anagraficaDao.findAll(),
                                    storicoDao.findAll(),
                                    attivi);
                 super.save();
