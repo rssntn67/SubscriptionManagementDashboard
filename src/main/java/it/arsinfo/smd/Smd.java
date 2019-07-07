@@ -159,11 +159,13 @@ public class Smd {
             Mese mesefine,
             Anno annofine
             ) throws UnsupportedOperationException {
-        log.info("generaEC: "+ ec);
-        log.info("generaEC: meseInizio:"+ meseinizio);
-        log.info("generaEC: annoInizio:"+ annoinizio);
-        log.info("generaEC: meseFine:"+ mesefine);
-        log.info("generaEC: annoFine:"+ annofine);
+        log.info("generaEC: "+ ec.getDestinatario().getCaption());
+        log.info("generaEC: "+ ec.getPubblicazione().getNome());
+        log.info("generaEC: meseInizio: "+ meseinizio.getNomeBreve());
+        log.info("generaEC: annoInizio: "+ annoinizio.getAnnoAsString());
+        log.info("generaEC: meseFine: "+ mesefine.getNomeBreve());
+        log.info("generaEC: annoFine: "+ annofine.getAnnoAsString());
+        log.info("generaEC: quantità: "+ ec.getNumero());
         Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(meseinizio, annoinizio, mesefine, annofine, ec.getPubblicazione().getMesiPubblicazione());
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).stream().forEach(mese -> {

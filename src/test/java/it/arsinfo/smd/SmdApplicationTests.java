@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -45,6 +46,7 @@ import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -741,14 +743,80 @@ public class SmdApplicationTests {
     @Test 
     public void testVersamentoCRUD() {
         assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
         Incasso incasso = SmdLoadSampleData.getIncassoTelematici();
         incassoDao.save(incasso);
-        
         incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
         
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
                 
+        incassoDao.delete(incasso);
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+                
+    }
+    
+    @Test
+    public void testIncassa() {
+        Anagrafica davidePalma = SmdLoadSampleData.getDP();
+        anagraficaDao.save(davidePalma);
+
+        Pubblicazione b = SmdLoadSampleData.getBlocchetti();
+        pubblicazioneDao.save(b);
+        b.getSpeseSpedizione().forEach(sps -> spesaSpedizioneDao.save(sps));
+
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(
+                            davidePalma, 
+                            Smd.getAnnoCorrente(), 
+                            Cassa.Ccp
+                            );
+        
+        EstrattoConto ec = new EstrattoConto();
+        ec.setDestinatario(davidePalma);
+        ec.setPubblicazione(b);
+        ec.setNumero(2);
+        ec.setAbbonamento(abb);
+        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.SETTEMBRE, Smd.getAnnoProssimo());
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec);
+        ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+        
+        Incasso incasso = SmdLoadSampleData.getIncassoByImportoAndCampo(abb.getTotale(), abb.getCampo());
+        incassoDao.save(incasso);
+        incasso.getVersamenti().stream().forEach(v-> {
+            versamentoDao.save(v);
+        });
+
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+
+        incasso.getVersamenti().stream().forEach(v-> {
+            versamentoDao.save(
+                           Smd.incassa(incasso,v, abb));
+        });
+        incassoDao.save(incasso);
+        abbonamentoDao.save(abb);
+
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+
+        assertEquals(0, abb.getResiduo().doubleValue(),0);
+        assertEquals(0, incasso.getResiduo().doubleValue(),0);
+        assertEquals(Incassato.Si, abb.getStatoIncasso());
+        
+        Versamento versamento = versamentoDao.findAll().iterator().next();        
+        List<Abbonamento> abbonamenti = abbonamentoDao.findByVersamento(versamento);
+        assertEquals(1, abbonamenti.size());
+        Abbonamento abbonamento = abbonamenti.iterator().next();
+        assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
+        
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        incassoDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        anagraficaDao.deleteAll();
         
     }
 }

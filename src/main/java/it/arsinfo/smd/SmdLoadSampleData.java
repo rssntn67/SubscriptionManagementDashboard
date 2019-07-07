@@ -1008,14 +1008,7 @@ public class SmdLoadSampleData implements Runnable {
         
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
         Incasso incasso = getIncassoByImportoAndCampo(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
-        //Incassa abbonamentoDp
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v-> {
-            versamentoDao.save(
-                           Smd.incassa(incasso,v, abbonamentoDp));
-        });
-        incassoDao.save(incasso);
-        abbonamentoDao.save(abbonamentoDp);
         
         
         Campagna campagna = new Campagna();
