@@ -819,4 +819,59 @@ public class SmdApplicationTests {
         anagraficaDao.deleteAll();
         
     }
+    
+    @Test
+    public void testSmdLoadSampleData() {
+        new SmdLoadSampleData(
+                                         anagraficaDao, 
+                                         storicoDao, 
+                                         notaDao,
+                                         pubblicazioneDao, 
+                                         spesaSpedizioneDao,
+                                         abbonamentoDao, 
+                                         estrattoContoDao,
+                                         spedizioneDao,
+                                         campagnaDao, 
+                                         incassoDao, 
+                                         versamentoDao, 
+                                         operazioneDao,
+                                         userInfoDao,
+                                         passwordEncoder,
+                                         false,
+                                         false,
+                                         false,
+                                         false,
+                                         false,
+                                         true
+                                         ).run();
+        
+        assertEquals(7, anagraficaDao.findAll().size());
+        assertEquals(4, pubblicazioneDao.findAll().size());
+        assertEquals(12, storicoDao.findAll().size());
+        assertEquals(2, campagnaDao.findAll().size());
+        assertEquals(30, abbonamentoDao.findAll().size());
+        campagnaDao.findAll().forEach( c -> {
+            assertEquals(5, abbonamentoDao.findByCampagna(c).size());
+        });
+        assertEquals(54, estrattoContoDao.findAll().size());
+        assertEquals(310, spedizioneDao.findAll().size());
+                      
+        assertEquals(5, incassoDao.findAll().size());
+        assertEquals(23, versamentoDao.findAll().size());
+
+        operazioneDao.deleteAll();
+        spedizioneDao.deleteAll();
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        campagnaDao.deleteAll();
+        storicoDao.deleteAll();
+        anagraficaDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        incassoDao.deleteAll();
+        
+        
+        
+    }
+    
+    
 }

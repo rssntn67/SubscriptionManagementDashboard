@@ -932,7 +932,7 @@ public class SmdLoadSampleData implements Runnable {
             log.info("End Loading Sample Data");
         }        
         
-        if (createDemoUser || loadSampleData) {
+        if (createDemoUser) {
             createDemoUser();
         }
         
