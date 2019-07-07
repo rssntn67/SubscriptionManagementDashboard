@@ -33,6 +33,7 @@ import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -758,7 +759,39 @@ public class SmdApplicationTests {
     }
     
     @Test
+    public void testAbbonamentoAggiungiEstrattoConto() {
+        
+    }
+
+    @Test
+    public void testAbbonamentoRimuoviEstrattoConto() {
+        
+    }
+
+    @Test
+    public void testAbbonamentoAggiornaEstrattoConto() {
+        
+    }
+
+    @Test
+    public void testAggiornaStatoAbbonamento() {
+        
+    }
+
+    @Test
+    public void testCampagnaCRUD() {
+        
+    }
+
+    @Test
+    public void testAggiornaCampagna() {
+        
+    }
+
+    
+    @Test
     public void testIncassa() {
+        
         Anagrafica davidePalma = SmdLoadSampleData.getDP();
         anagraficaDao.save(davidePalma);
 
@@ -811,7 +844,7 @@ public class SmdApplicationTests {
         assertEquals(1, abbonamenti.size());
         Abbonamento abbonamento = abbonamenti.iterator().next();
         assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
-        
+        assertEquals(StatoAbbonamento.Validato, abbonamento.getStatoAbbonamento());
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
         incassoDao.deleteAll();

@@ -594,6 +594,7 @@ public class Smd {
         versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
         incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
         abbonamento.setVersamento(versamento);
+        abbonamento.setStatoAbbonamento(StatoAbbonamento.Validato);
         return versamento;
     }
 
