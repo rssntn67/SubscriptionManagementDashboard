@@ -73,12 +73,12 @@ public class Campagna implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("Campagna%s %s", anno.getAnnoAsString(), statoCampagna);
+        return String.format("Camp.%s", anno.getAnnoAsString());
     }
     
     @Override
     public String toString() {
-        return String.format("Campagna[id=%d, '%s' %s]", id,anno,statoCampagna);
+        return String.format("Campagna[id=%d, '%d' %s]", id,anno.getAnno(),statoCampagna);
     }
 
     public StatoCampagna getStatoCampagna() {

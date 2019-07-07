@@ -813,7 +813,7 @@ public class SmdLoadSampleData implements Runnable {
         EstrattoConto ec001v005 = addEC(venezia005, messaggio,micheleSantoro,1,new BigDecimal(15));
         EstrattoConto ec002v005 = addEC(venezia005, lodare,micheleSantoro,1,new BigDecimal(16));
         EstrattoConto ec003v005 = addEC(venezia005, blocchetti,micheleSantoro,1,new BigDecimal(6));
-        save(venezia003, ec001v005,ec002v005,ec003v005);
+        save(venezia005, ec001v005,ec002v005,ec003v005);
 
         Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia006.setCampo("000000018000253916");
@@ -1017,6 +1017,7 @@ public class SmdLoadSampleData implements Runnable {
         loadCampagna(Anno.ANNO2018);
         loadCampagna(Anno.ANNO2019);
         //FIXME
+        /*
         pubblicazioneDao.findAll().stream().forEach(p -> 
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
                 EnumSet.allOf(Mese.class).stream().forEach(mese -> {
@@ -1048,6 +1049,8 @@ public class SmdLoadSampleData implements Runnable {
                 operazioneDao.save(o);
                 log.info(o.toString());
             });
+            
+            */
         
    
     }   

@@ -4,11 +4,16 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.util.StringUtils;
+
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -16,11 +21,13 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
+    private String searchCampo;
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
-
+    private final ComboBox<StatoAbbonamento> filterStatoAbbonamento
+    = new ComboBox<StatoAbbonamento>();
     public AbbonamentoSearch(AbbonamentoDao abbonamentoDao,
             List<Anagrafica> anagrafica, List<Campagna> campagne) {
         super(abbonamentoDao);
@@ -28,8 +35,19 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
         ComboBox<Anno> filterAnno = new ComboBox<Anno>();
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
+        
+        TextField filterCampo = new TextField();
 
-        setComponents(new HorizontalLayout(filterAnagrafica,filterCampagna,filterAnno,filterCassa));
+
+        setComponents(new HorizontalLayout(filterAnagrafica,filterStatoAbbonamento),
+                      new HorizontalLayout(filterCampo,filterCampagna,filterAnno,filterCassa));
+
+        filterCampo.setPlaceholder("Cerca per V Campo");
+        filterCampo.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCampo.addValueChangeListener(e -> {
+            searchCampo = e.getValue();
+            onChange();
+        });
 
         filterCampagna.setEmptySelectionAllowed(true);
         filterCampagna.setPlaceholder("Cerca per Campagna");
@@ -58,7 +76,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         });
 
         filterAnagrafica.setEmptySelectionAllowed(true);
-        filterAnagrafica.setPlaceholder("Cerca per Cliente");
+        filterAnagrafica.setPlaceholder("Cerca per Intestatario");
         filterAnagrafica.setItems(anagrafica);
         filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
         filterAnagrafica.addSelectionListener(e -> {
@@ -70,9 +88,13 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             onChange();
         });
         
-        filterCassa.setPlaceholder("Seleziona Cassa");
+        filterCassa.setPlaceholder("Cerca per Cassa");
         filterCassa.setItems(EnumSet.allOf(Cassa.class));
         filterCassa.addSelectionListener(e ->onChange());
+
+        filterStatoAbbonamento.setPlaceholder("Cerca per Stato");
+        filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
+        filterStatoAbbonamento.addSelectionListener(e ->onChange());
 
 
     }
@@ -131,7 +153,12 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         if (filterCassa.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      
         }
-        
+        if (filterStatoAbbonamento.getValue() != null) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getStatoAbbonamento() == filterStatoAbbonamento.getValue()).collect(Collectors.toList());      
+        }
+        if (!StringUtils.isEmpty(searchCampo)) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getCampo().toLowerCase().contains(searchCampo.toLowerCase())).collect(Collectors.toList());                  
+        }
         return abbonamenti;
     }
 
