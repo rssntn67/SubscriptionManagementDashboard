@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -203,6 +204,10 @@ public class Smd {
             spedAnno = getAnnoCorrente();
             invioSpedizione = InvioSpedizione.AdpSede;
         }
+        if (ec.getDestinatario().getAreaSpedizione() != AreaSpedizione.Italia) {
+            invioSpedizione = InvioSpedizione.AdpSede;            
+        }
+
         Spedizione spedizione = new Spedizione();
         spedizione.setMesePubblicazione(mesePubblicazione);
         spedizione.setAnnoPubblicazione(annoPubblicazione);
@@ -320,43 +325,17 @@ public class Smd {
 
     public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {
         double costo=0.0;
-        double spesePostali = 0.0;
         switch (ec.getTipoEstrattoConto()) {
         case Ordinario:
             costo = ec.getPubblicazione().getAbbonamento().doubleValue() * ec.getNumero().doubleValue();
-            if (!ec.isAbbonamentoAnnuale() || ec.getNumeroSpedizioniConSpesePostali() > 0) {
+            if (!ec.isAbbonamentoAnnuale()) {
               
                 costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
                      * ec.getNumero().doubleValue()
                      * Double.valueOf(ec.getSpedizioni().size());
             }
-            SpesaSpedizione ss = ec.getPubblicazione().getSpesaSpedizioneBy(ec.getAbbonamento().getIntestatario().getAreaSpedizione(),ec.getNumero());
-            switch (ec.getAbbonamento().getIntestatario().getAreaSpedizione()) {
-            case Italia:
-                if (ec.getNumeroSpedizioniConSpesePostali() == 0) {
-                    break;
-                }
-                if (ss == null ) {
-                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area Italia numero:" + ec.getNumero());                    
-                }
-                spesePostali = ss.getSpeseSpedizione().doubleValue()
-                        * ec.getNumeroSpedizioniConSpesePostali();
-                break;
-            case EuropaBacinoMediterraneo:
-                if (ss == null ) {
-                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area EuropaBacinoMediterraneo numero:" + ec.getNumero());                    
-                }
-                spesePostali = ss.getSpeseSpedizione().doubleValue()
-                        * ec.getSpedizioni().size();
-
-            case AmericaAfricaAsia:
-                if (ss == null ) {
-                    throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area AmericaAsiaAfrica numero:" + ec.getNumero());                    
-                }
-                spesePostali = ss.getSpeseSpedizione().doubleValue()
-                        * ec.getSpedizioni().size();
-            default:
-                break;
+            if (ec.getDestinatario().getAreaSpedizione() != AreaSpedizione.Italia || ec.getNumeroSpedizioniConSpesePostali() >0) {
+                calcolaSpesePostali(ec);
             }
             break;
 
@@ -397,10 +376,37 @@ public class Smd {
             break;
 
         }          
-        ec.setSpesePostali(BigDecimal.valueOf(spesePostali));
         ec.setImporto(BigDecimal.valueOf(costo));
     }
 
+    public static void calcolaSpesePostali(EstrattoConto ec) throws UnsupportedOperationException {
+        double spesePostali = 0.0;
+        
+        SpesaSpedizione ss = ec.getPubblicazione().getSpesaSpedizioneBy(ec.getAbbonamento().getIntestatario().getAreaSpedizione(),ec.getNumero());
+        if (ss == null ) {
+            throw new UnsupportedOperationException("Aggiungere le Spese di Spedizione per Area Italia numero:" + ec.getNumero());                    
+        }
+        switch (ec.getDestinatario().getAreaSpedizione()) {
+        case Italia:
+            spesePostali = ss.getSpeseSpedizione().doubleValue()
+                    * ec.getNumeroSpedizioniConSpesePostali();
+            break;
+        case EuropaBacinoMediterraneo:
+            spesePostali = ss.getSpeseSpedizione().doubleValue()
+                    * ec.getSpedizioni().size();
+            break;
+
+        case AmericaAfricaAsia:
+            spesePostali = ss.getSpeseSpedizione().doubleValue()
+                    * ec.getSpedizioni().size();
+            break;
+        default:
+            break;
+        }
+        log.info("calcolaSpesePostali: " + ec.toString() + "valore="+spesePostali);
+
+        ec.setSpesePostali(BigDecimal.valueOf(spesePostali));
+    }
 
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estratticonto) {
         StatoStorico pagamentoRegolare = StatoStorico.VALIDO;

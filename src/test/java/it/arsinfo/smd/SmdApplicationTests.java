@@ -690,6 +690,10 @@ public class SmdApplicationTests {
     
     @Test 
     public void testAbbonamentoCRUD() {
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
@@ -702,7 +706,8 @@ public class SmdApplicationTests {
         ec.setAbbonamento(abb);
         ec.setDestinatario(tizio);
         ec.setPubblicazione(messaggio);
-        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.GIUGNO, Smd.getAnnoProssimo());
+        assertEquals(messaggio.getCostoUnitario().doubleValue()*ec.getNumero()*ec.getSpedizioni().size(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         ec.getSpedizioni().forEach(sped -> spedizioneDao.save(sped));
@@ -710,14 +715,27 @@ public class SmdApplicationTests {
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findByAbbonamento(abb).size());
-        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findAll().size());
-        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findByEstrattoConto(ec).size());
+        assertEquals(ec.getSpedizioni().size(), spedizioneDao.findAll().size());
+        assertEquals(ec.getSpedizioni().size(), spedizioneDao.findByEstrattoConto(ec).size());
                 
         assertEquals(0, spedizioneDao.findByMesePubblicazioneAndAnnoPubblicazione(Mese.AGOSTO, Smd.getAnnoCorrente()).size());
         
         abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         estrattoContoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
+        
+        estrattoContoDao.delete(ec);
+        assertEquals(0, estrattoContoDao.findAll().size());
+        assertEquals(0, spedizioneDao.findAll().size());
+        abbonamentoDao.delete(abb);
+        assertEquals(0, abbonamentoDao.findAll().size());
+        anagraficaDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+
+        
     }
 }
