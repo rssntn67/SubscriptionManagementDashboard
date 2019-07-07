@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +37,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
             
-    @OneToMany(cascade = { CascadeType.ALL })
+    @OneToMany(mappedBy="incasso", orphanRemoval=true, fetch=FetchType.EAGER)
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
