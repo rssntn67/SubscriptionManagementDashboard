@@ -61,7 +61,7 @@ public abstract class SmdEditor<T extends SmdEntity>
             onChange();
         } catch (Exception e) {
             log.warn("delete failed for :" + smdObj.toString() +". Error log: " + e.getMessage());
-            Notification.show("Non è possibile cancellare questo recordo è utilizzato da altri elementi.",
+            Notification.show("Non è possibile cancellare questo record è utilizzato da altri elementi.",
                               Notification.Type.ERROR_MESSAGE);
         }
     }
@@ -73,7 +73,7 @@ public abstract class SmdEditor<T extends SmdEntity>
             onChange();
         } catch (Exception e) {
             log.warn("save failed for :" + smdObj.toString() +". Error log: " + e.getMessage());
-            Notification.show("Non è possibile cancellare questo recordo è utilizzato da altri elementi.",
+            Notification.show("Non è possibile salvare questo record: ",
                               Notification.Type.ERROR_MESSAGE);
         }
     }

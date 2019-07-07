@@ -1,6 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
@@ -38,7 +40,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Selezionare ccp",
             EnumSet.allOf(Ccp.class));
 
-
+    List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
     public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
@@ -100,7 +102,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled(persisted && abbonamento.getVersamento() == null);
+        getDelete().setEnabled((persisted && abbonamento.getVersamento() == null) || abbonamento.getCampagna() == null );
         getSave().setEnabled(!persisted || abbonamento.getCampagna() == null);
         getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null);
         intestatario.setReadOnly(persisted);
@@ -124,5 +126,24 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             intestatario.focus();
         }
         
+    }
+
+    public void add(EstrattoConto estrattoConto) {
+        if (estrattiConto.contains(estrattoConto)) {
+            estrattiConto.remove(estrattoConto);
+        }
+        estrattiConto.add(estrattoConto);
+    }
+    
+    public boolean remove(EstrattoConto estrattoconto) {
+        return estrattiConto.remove(estrattoconto);
+    }
+    
+    public List<EstrattoConto> getEstrattiConto() {
+        return estrattiConto;
+    }
+
+    public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
+        this.estrattiConto = estrattiConto;
     }
 }

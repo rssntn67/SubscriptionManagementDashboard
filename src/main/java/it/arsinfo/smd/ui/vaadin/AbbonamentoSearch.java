@@ -13,6 +13,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -25,6 +26,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
+    private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>();
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento
     = new ComboBox<StatoAbbonamento>();
@@ -39,8 +41,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         TextField filterCampo = new TextField();
 
 
-        setComponents(new HorizontalLayout(filterAnagrafica,filterStatoAbbonamento),
-                      new HorizontalLayout(filterCampo,filterCampagna,filterAnno,filterCassa));
+        setComponents(new HorizontalLayout(filterAnagrafica,filterStatoAbbonamento,filterAnno),
+                      new HorizontalLayout(filterCampo,filterCampagna,filterCassa,filterCcp));
 
         filterCampo.setPlaceholder("Cerca per V Campo");
         filterCampo.setValueChangeMode(ValueChangeMode.EAGER);
@@ -96,6 +98,11 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
         filterStatoAbbonamento.addSelectionListener(e ->onChange());
 
+        filterCcp.setPlaceholder("Cerca per Cc");
+        filterCcp.setItems(EnumSet.allOf(Ccp.class));
+        filterCcp.setItemCaptionGenerator(Ccp::getCcp);
+        filterCcp.addSelectionListener(e ->onChange());
+
 
     }
 
@@ -150,6 +157,9 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     }
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
+        if (filterCcp.getValue() != null) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getCcp() == filterCcp.getValue()).collect(Collectors.toList());      
+        }
         if (filterCassa.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      
         }
