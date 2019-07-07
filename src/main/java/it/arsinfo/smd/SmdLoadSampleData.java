@@ -97,133 +97,72 @@ public class SmdLoadSampleData implements Runnable {
     private Anagrafica micheleSantoro;
     private Anagrafica pasqualinaSantoro;
 
-    public static Storico getStoricoBy(
-            Anagrafica intestatario, 
-            Anagrafica destinatario, 
-            Pubblicazione pubblicazione, 
-            int numero, 
-            Cassa cassa,
-            TipoEstrattoConto omaggio,
-            Invio invio,
-            InvioSpedizione invioSpedizione
-        ) {
-        Storico storico = new Storico(); 
-        storico.setIntestatario(intestatario);
-        storico.setDestinatario(destinatario);
-        storico.setPubblicazione(pubblicazione);
-        storico.setNumero(numero);
-        storico.setTipoEstrattoConto(omaggio);
-        storico.setCassa(cassa);
-        storico.setInvio(invio);
-        storico.setInvioSpedizione(invioSpedizione);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
-        storico.getNote().add(nota);
-        return storico;
+    public static Incasso getIncassoTelematici() {
+        String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
+        Set<String> versamenti1= new HashSet<>();
+        versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
+        return Smd.generaIncasso(versamenti1, riepilogo1); 
+        
     }
-
-    public static Anagrafica getAnagraficaBy(String nome, String cognome) {
-        Anagrafica anagrafica = new Anagrafica();
-        anagrafica.setNome(nome);
-        anagrafica.setCognome(cognome);
-        return anagrafica;
-    }
-
-    public static Abbonamento getAbbonamentoBy(Anagrafica intestatario) {
-        Abbonamento abbonamento = new Abbonamento();
-        abbonamento.setIntestatario(intestatario);
-        return abbonamento;
-    }
-
-    public static List<EstrattoConto> getEstrattiConto(Anno anno, 
-            Mese inizio,
-            Mese fine,
-            Abbonamento abb, Table<Pubblicazione,Anagrafica,Integer> estrattiConto) {
-        return estrattiConto.cellSet()
-        .stream().map( ect -> {
-            EstrattoConto ec = new EstrattoConto();
-            ec.setAbbonamento(abb);
-            ec.setPubblicazione(ect.getRowKey());
-            ec.setDestinatario(ect.getColumnKey());
-            ec.setNumero(ect.getValue());
-            Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
-            return ec;
-        }).collect(Collectors.toList());        
-    }
-    
-    public static Abbonamento getAbbonamentoBy(
-            Anagrafica intestatario, 
-            Anno anno, 
-            Cassa cassa
-            ) {
  
-        final Abbonamento abb = new Abbonamento();
-        abb.setAnno(anno);
-        abb.setCassa(cassa);
-        abb.setIntestatario(intestatario);
-        abb.setCampo(Smd.generaVCampo(anno));
-        return abb;   
+    public static Incasso getIncassoVenezia() {
+        String riepilogo2="3000063470009171006              999000000090000000367000000000700000003020000000002000000006500                                                                                                        \n";
+        Set<String> versamenti2= new HashSet<>();
+        versamenti2.add("0865737400000020000634700091710056740000001500074046022171006000000018000854368DIN                                                                                                                      \n");
+        versamenti2.add("0865298400000030000634700091710056740000001800076241052171006000000018000263519DIN                                                                                                                      \n");
+        versamenti2.add("0863439100000040000634700091710056740000003000023013042171006000000018000254017DIN                                                                                                                      \n");
+        versamenti2.add("0854922500000050000634700091710046740000003700023367052171006000000018000761469DIN                                                                                                                      \n");
+        versamenti2.add("0863439000000060000634700091710056740000004800023013042171006000000018000253916DIN                                                                                                                      \n");
+        versamenti2.add("0865570900000070000634700091710056740000007000023247042171006000000018000800386DIN                                                                                                                      \n");
+        versamenti2.add("0863569900000080000634700091710056740000008400074264032171006000000018000508854DIN                                                                                                                      \n");
+        versamenti2.add("0856588699999990000634700091710041230000001500038124062171006727703812406007375DIN                                                                                                                      \n");
+        versamenti2.add("0858313299999990000634700091710041230000005000098101062171006727709810106010156DIN                                                                                                                      \n");
+
+        return Smd.generaIncasso(versamenti2, riepilogo2);
+    
     }
 
-    public static EstrattoConto addEC(Abbonamento abb, Pubblicazione pubblicazione,
-            Anagrafica destinatario, Integer numero, BigDecimal importo) {
-        EstrattoConto ec = new EstrattoConto();
-        ec.setAbbonamento(abb);
-        ec.setDestinatario(destinatario);
-        ec.setPubblicazione(pubblicazione);
-        ec.setNumero(numero);
-        ec.setImporto(importo);
-        for (Mese mese: pubblicazione.getMesiPubblicazione()) {
-                Spedizione spedizione = Smd.creaSpedizione(ec,mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
-                ec.addSpedizione(spedizione);
-        }
-        return ec;
-    }
+    public static Incasso getIncassoFirenze() {
+        String riepilogo3="5000063470009171006              999000000060000000201000000000500000001810000000001000000002000                                                                                                        \n";
+        Set<String> versamenti3= new HashSet<>();
+        versamenti3.add("0854174400000090000634700091710046740000001000055379072171006000000018000686968DIN                                                                                                                      \n");
+        versamenti3.add("0860359800000100000634700091710056740000001500055239072171006000000018000198318DIN                                                                                                                      \n");
+        versamenti3.add("0858363300000110000634700091710056740000001500055826052171006000000018000201449DIN                                                                                                                      \n");
+        versamenti3.add("0860441300000120000634700091710056740000003300055820042171006000000018000633491DIN                                                                                                                      \n");
+        versamenti3.add("0860565700000130000634700091710056740000010800055917062171006000000018000196500DIN                                                                                                                      \n");
+        versamenti3.add("0855941199999990000634700091710041230000002000055681052171006727705568105003308DIN                                                                                                                      \n");
 
-    public SmdLoadSampleData(
-            AnagraficaDao anagraficaDao, 
-            StoricoDao storicoDao,
-            NotaDao notaDao,
-            PubblicazioneDao pubblicazioneDao, 
-            SpesaSpedizioneDao spesaSpedizioneDao, 
-            AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao estrattoContoDao,
-            SpedizioneDao spedizioneDao,
-            CampagnaDao campagnaDao, 
-            IncassoDao incassoDao, 
-            VersamentoDao versamentoDao,
-            OperazioneDao operazioneDao,
-            UserInfoDao userInfoDao,
-            PasswordEncoder passwordEncoder,
-            boolean loadPubblicazioniAdp,
-            boolean loadSampleAnagrafica,
-            boolean loadSampleStorico,
-            boolean createDemoUser,
-            boolean createNormalUser,
-            boolean loadSampleData
-    ) {
-        this.anagraficaDao=anagraficaDao;
-        this.storicoDao=storicoDao;
-        this.notaDao=notaDao;
-        this.pubblicazioneDao=pubblicazioneDao;
-        this.spesaSpedizioneDao=spesaSpedizioneDao;
-        this.abbonamentoDao=abbonamentoDao;
-        this.estrattoContoDao=estrattoContoDao;
-        this.spedizioneDao=spedizioneDao;
-        this.campagnaDao=campagnaDao;
-        this.incassoDao=incassoDao;
-        this.versamentoDao=versamentoDao;
-        this.operazioneDao=operazioneDao;
-        this.userInfoDao=userInfoDao;
-        this.passwordEncoder=passwordEncoder;
-        this.loadPubblicazioniAdp=loadPubblicazioniAdp;
-        this.loadSampleAnagrafica=loadSampleAnagrafica;
-        this.loadSampleStorico=loadSampleStorico;
-        this.createDemoUser=createDemoUser;
-        this.createNormalUser=createNormalUser;
-        this.loadSampleData=loadSampleData;
+        return Smd.generaIncasso(versamenti3, riepilogo3);
+    }
+    public static Incasso getIncassoBari() {
+        
+        String riepilogo4="7000063470009171006              999000000070000000447500000000400000001750000000003000000027250                                                                                                        \n";
+        Set<String> versamenti4= new HashSet<>();
+        versamenti4.add("0873460200000140000634700091710056740000001200053057032171006000000018000106227DIN                                                                                                                      \n");
+        versamenti4.add("0874263500000150000634700091710056740000003600009019032171006000000018000077317DIN                                                                                                                      \n");
+        versamenti4.add("0875677100000160000634700091710056740000006000029079022171006000000018000125029DIN                                                                                                                      \n");
+        versamenti4.add("0871026300000170000634700091710046740000006700040366032171006000000018000065383DIN                                                                                                                      \n");
+        versamenti4.add("0862740599999990000634700091710044510000000750002066172171006727700206617006437DIN                                                                                                                      \n");
+        versamenti4.add("0857504199999990000634700091710034510000004000040016062171006727604001606035576DIN                                                                                                                      \n");
+        versamenti4.add("0866089199999990000634700091710044510000022500018160052171006727701816005010892DIN                                                                                                                      \n");
+        
+        return Smd.generaIncasso(versamenti4, riepilogo4);
     }
     
+    public static Incasso getIncassoByImportoAndCampo(BigDecimal importo,String campo) {
+        Incasso incasso5 = new Incasso();
+        incasso5.setCassa(Cassa.Contrassegno);
+        incasso5.setCcp(Ccp.DUE);
+        
+        Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
+        versamentoIncasso5.setCampo(campo);
+        versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
+        versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
+        incasso5.addVersamento(versamentoIncasso5);
+        Smd.calcoloImportoIncasso(incasso5);
+        return incasso5;
+    }
+
     public static Pubblicazione getMessaggio() {
         Pubblicazione p = new Pubblicazione("Messaggio",
                                                     TipoPubblicazione.MENSILE);
@@ -657,6 +596,134 @@ public class SmdLoadSampleData implements Runnable {
         ps.setTelefono("+39081400023");
         return ps;
     }
+
+    public static Storico getStoricoBy(
+            Anagrafica intestatario, 
+            Anagrafica destinatario, 
+            Pubblicazione pubblicazione, 
+            int numero, 
+            Cassa cassa,
+            TipoEstrattoConto omaggio,
+            Invio invio,
+            InvioSpedizione invioSpedizione
+        ) {
+        Storico storico = new Storico(); 
+        storico.setIntestatario(intestatario);
+        storico.setDestinatario(destinatario);
+        storico.setPubblicazione(pubblicazione);
+        storico.setNumero(numero);
+        storico.setTipoEstrattoConto(omaggio);
+        storico.setCassa(cassa);
+        storico.setInvio(invio);
+        storico.setInvioSpedizione(invioSpedizione);
+        Nota nota= new Nota(storico);
+        nota.setDescription("Creato storico");
+        storico.getNote().add(nota);
+        return storico;
+    }
+
+    public static Anagrafica getAnagraficaBy(String nome, String cognome) {
+        Anagrafica anagrafica = new Anagrafica();
+        anagrafica.setNome(nome);
+        anagrafica.setCognome(cognome);
+        return anagrafica;
+    }
+
+    public static Abbonamento getAbbonamentoBy(Anagrafica intestatario) {
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setIntestatario(intestatario);
+        return abbonamento;
+    }
+
+    public static List<EstrattoConto> getEstrattiConto(Anno anno, 
+            Mese inizio,
+            Mese fine,
+            Abbonamento abb, Table<Pubblicazione,Anagrafica,Integer> estrattiConto) {
+        return estrattiConto.cellSet()
+        .stream().map( ect -> {
+            EstrattoConto ec = new EstrattoConto();
+            ec.setAbbonamento(abb);
+            ec.setPubblicazione(ect.getRowKey());
+            ec.setDestinatario(ect.getColumnKey());
+            ec.setNumero(ect.getValue());
+            Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
+            return ec;
+        }).collect(Collectors.toList());        
+    }
+    
+    public static Abbonamento getAbbonamentoBy(
+            Anagrafica intestatario, 
+            Anno anno, 
+            Cassa cassa
+            ) {
+ 
+        final Abbonamento abb = new Abbonamento();
+        abb.setAnno(anno);
+        abb.setCassa(cassa);
+        abb.setIntestatario(intestatario);
+        abb.setCampo(Smd.generaVCampo(anno));
+        return abb;   
+    }
+
+    public static EstrattoConto addEC(Abbonamento abb, Pubblicazione pubblicazione,
+        Anagrafica destinatario, Integer numero, BigDecimal importo) {
+        EstrattoConto ec = new EstrattoConto();
+        ec.setAbbonamento(abb);
+        ec.setDestinatario(destinatario);
+        ec.setPubblicazione(pubblicazione);
+        ec.setNumero(numero);
+        ec.setImporto(importo);
+        for (Mese mese: pubblicazione.getMesiPubblicazione()) {
+                Spedizione spedizione = Smd.creaSpedizione(ec,mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
+                ec.addSpedizione(spedizione);
+        }
+        return ec;
+    }
+
+    public SmdLoadSampleData(
+            AnagraficaDao anagraficaDao, 
+            StoricoDao storicoDao,
+            NotaDao notaDao,
+            PubblicazioneDao pubblicazioneDao, 
+            SpesaSpedizioneDao spesaSpedizioneDao, 
+            AbbonamentoDao abbonamentoDao,
+            EstrattoContoDao estrattoContoDao,
+            SpedizioneDao spedizioneDao,
+            CampagnaDao campagnaDao, 
+            IncassoDao incassoDao, 
+            VersamentoDao versamentoDao,
+            OperazioneDao operazioneDao,
+            UserInfoDao userInfoDao,
+            PasswordEncoder passwordEncoder,
+            boolean loadPubblicazioniAdp,
+            boolean loadSampleAnagrafica,
+            boolean loadSampleStorico,
+            boolean createDemoUser,
+            boolean createNormalUser,
+            boolean loadSampleData
+    ) {
+        this.anagraficaDao=anagraficaDao;
+        this.storicoDao=storicoDao;
+        this.notaDao=notaDao;
+        this.pubblicazioneDao=pubblicazioneDao;
+        this.spesaSpedizioneDao=spesaSpedizioneDao;
+        this.abbonamentoDao=abbonamentoDao;
+        this.estrattoContoDao=estrattoContoDao;
+        this.spedizioneDao=spedizioneDao;
+        this.campagnaDao=campagnaDao;
+        this.incassoDao=incassoDao;
+        this.versamentoDao=versamentoDao;
+        this.operazioneDao=operazioneDao;
+        this.userInfoDao=userInfoDao;
+        this.passwordEncoder=passwordEncoder;
+        this.loadPubblicazioniAdp=loadPubblicazioniAdp;
+        this.loadSampleAnagrafica=loadSampleAnagrafica;
+        this.loadSampleStorico=loadSampleStorico;
+        this.createDemoUser=createDemoUser;
+        this.createNormalUser=createNormalUser;
+        this.loadSampleData=loadSampleData;
+    }
+    
     
     private void saveAbbonamentoMs() {
         Table<Pubblicazione, Anagrafica, Integer> spedizioni = HashBasedTable.create();
@@ -704,182 +771,130 @@ public class SmdLoadSampleData implements Runnable {
                             );
         List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, spedizioni);
         abbonamentoDao.save(abb);
-        estrattiConto.stream().forEach(ec -> estrattoContoDao.save(ec));
+        estrattiConto
+        .stream()
+        .forEach(ec -> {
+            estrattoContoDao.save(ec);
+            ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+        });
 
     }
+    public void saveAbbonamento(Abbonamento abb, EstrattoConto...contos) {
+        abbonamentoDao.save(abb);
+        for (EstrattoConto ec: contos) {
+            estrattoContoDao.save(ec);
+            ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+        }
+        
+    }
     
-    public List<Abbonamento> getAbbonamentiIncassi() {
-        List<Abbonamento> abbonamenti = new ArrayList<>();
-        Abbonamento telematici001 = SmdLoadSampleData.getAbbonamentoBy(antonioRusso);
+    public void saveAbbonamentiIncassi() {
+        Abbonamento telematici001 = getAbbonamentoBy(antonioRusso);
         telematici001.setCampo("000000018000792609");
         telematici001.setAnno(Anno.ANNO2017);
-        addEC(telematici001, messaggio,antonioRusso,1,new BigDecimal(15));
-        abbonamenti.add(telematici001);
+        EstrattoConto ec001t001 = addEC(telematici001, messaggio,antonioRusso,1,new BigDecimal(15));
+        saveAbbonamento(telematici001, ec001t001);
         
-        Abbonamento venezia002 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia002 = getAbbonamentoBy(micheleSantoro);
         venezia002.setCampo("000000018000854368");
         venezia002.setAnno(Anno.ANNO2017);
-        addEC(venezia002, messaggio,micheleSantoro,1,new BigDecimal(15));
-        abbonamenti.add(venezia002);
-
-        Abbonamento venezia003 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        EstrattoConto ec001v002 = addEC(venezia002, messaggio,micheleSantoro,1,new BigDecimal(15));
+        saveAbbonamento(venezia002, ec001v002);
+        
+        Abbonamento venezia003 = getAbbonamentoBy(micheleSantoro);
         venezia003.setCampo("000000018000263519");
         venezia003.setAnno(Anno.ANNO2017);
-        addEC(venezia003, lodare,micheleSantoro,1,new BigDecimal(18));
-        abbonamenti.add(venezia003);
+        EstrattoConto ec001v003 = addEC(venezia003, lodare,micheleSantoro,1,new BigDecimal(18));
+        saveAbbonamento(venezia003, ec001v003);
 
         Abbonamento venezia004 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia004.setCampo("000000018000254017");
         venezia004.setAnno(Anno.ANNO2017);
-        addEC(venezia004, messaggio,micheleSantoro,2,new BigDecimal(30));
-        abbonamenti.add(venezia004);
+        EstrattoConto ec001v004 = addEC(venezia004, messaggio,micheleSantoro,2,new BigDecimal(30));
+        saveAbbonamento(venezia004, ec001v004);
 
         Abbonamento venezia005 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia005.setCampo("000000018000761469");
         venezia005.setAnno(Anno.ANNO2017);
-        addEC(venezia005, messaggio,micheleSantoro,1,new BigDecimal(15));
-        addEC(venezia005, lodare,micheleSantoro,1,new BigDecimal(16));
-        addEC(venezia005, blocchetti,micheleSantoro,1,new BigDecimal(6));
-        abbonamenti.add(venezia005);
+        EstrattoConto ec001v005 = addEC(venezia005, messaggio,micheleSantoro,1,new BigDecimal(15));
+        EstrattoConto ec002v005 = addEC(venezia005, lodare,micheleSantoro,1,new BigDecimal(16));
+        EstrattoConto ec003v005 = addEC(venezia005, blocchetti,micheleSantoro,1,new BigDecimal(6));
+        saveAbbonamento(venezia003, ec001v005,ec002v005,ec003v005);
 
         Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia006.setCampo("000000018000253916");
         venezia006.setAnno(Anno.ANNO2017);
-        addEC(venezia006, blocchetti,micheleSantoro,8,new BigDecimal(48));
-        abbonamenti.add(venezia006);
+        EstrattoConto ec001v006 = addEC(venezia006, blocchetti,micheleSantoro,8,new BigDecimal(48));
+        saveAbbonamento(venezia006, ec001v006);
 
         Abbonamento venezia007 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia007.setCampo("000000018000800386");
         venezia007.setAnno(Anno.ANNO2017);
-        addEC(venezia007, blocchetti,micheleSantoro,12,new BigDecimal(70));
-        abbonamenti.add(venezia007);
+        EstrattoConto ec001v007 = addEC(venezia007, blocchetti,micheleSantoro,12,new BigDecimal(70));
+        saveAbbonamento(venezia007, ec001v007);
         
         Abbonamento venezia008 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia008.setCampo("000000018000508854");
         venezia008.setAnno(Anno.ANNO2017);
-        addEC(venezia008, blocchetti,micheleSantoro,15,new BigDecimal(84));
-        abbonamenti.add(venezia008);
+        EstrattoConto ec001v008 = addEC(venezia008, blocchetti,micheleSantoro,15,new BigDecimal(84));
+        saveAbbonamento(venezia008, ec001v008);
 
         Abbonamento firenze009 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze009.setCampo("000000018000686968");
         firenze009.setAnno(Anno.ANNO2017);
-        addEC(firenze009, estratti,davidePalma,1,new BigDecimal(10));
-        abbonamenti.add(firenze009);
+        EstrattoConto ec001f009 = addEC(firenze009, estratti,davidePalma,1,new BigDecimal(10));
+        saveAbbonamento(firenze009, ec001f009);
         
         Abbonamento firenze010 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze010.setCampo("000000018000198318");
         firenze010.setAnno(Anno.ANNO2017);
-        addEC(firenze010, lodare,davidePalma,1,new BigDecimal(15));
-        abbonamenti.add(firenze010);
+        EstrattoConto ec001f010 = addEC(firenze010, lodare,davidePalma,1,new BigDecimal(15));
+        saveAbbonamento(firenze010, ec001f010);
 
         Abbonamento firenze011 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze011.setCampo("000000018000201449");
         firenze011.setAnno(Anno.ANNO2017);
-        addEC(firenze011, lodare,davidePalma,1,new BigDecimal(15));
-        abbonamenti.add(firenze011);
+        EstrattoConto ec001f011 = addEC(firenze011, lodare,davidePalma,1,new BigDecimal(15));
+        saveAbbonamento(firenze011, ec001f011);
 
         Abbonamento firenze012 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCampo("000000018000633491");
-        addEC(firenze012, lodare,davidePalma,2,new BigDecimal(33));
-        abbonamenti.add(firenze012);
+        EstrattoConto ec001f012 = addEC(firenze012, lodare,davidePalma,2,new BigDecimal(33));
+        saveAbbonamento(firenze012, ec001f012);
         
         Abbonamento firenze013 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCampo("000000018000196500");
-        addEC(firenze013, blocchetti,davidePalma,18,new BigDecimal(108));
-        abbonamenti.add(firenze013);
+        EstrattoConto ec001f013 = addEC(firenze013, blocchetti,davidePalma,18,new BigDecimal(108));
+        saveAbbonamento(firenze013, ec001f013);
         
         Abbonamento bari014 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari014.setAnno(Anno.ANNO2017);
         bari014.setCampo("000000018000106227");
-        addEC(bari014, blocchetti,matteoParo,2,new BigDecimal(12));
-        abbonamenti.add(bari014);
+        EstrattoConto ec001b014 = addEC(bari014, blocchetti,matteoParo,2,new BigDecimal(12));
+        saveAbbonamento(bari014, ec001b014);
 
         Abbonamento bari015 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari015.setAnno(Anno.ANNO2017);
         bari015.setCampo("000000018000077317");
-        addEC(bari015, blocchetti,matteoParo,6,new BigDecimal(36));
-        abbonamenti.add(bari015);
+        EstrattoConto ec001b015 = addEC(bari015, blocchetti,matteoParo,6,new BigDecimal(36));
+        saveAbbonamento(bari015, ec001b015);
 
         Abbonamento bari016 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari016.setAnno(Anno.ANNO2017);
         bari016.setCampo("000000018000125029");
-        addEC(bari016, messaggio,matteoParo,4,new BigDecimal(60));
-        abbonamenti.add(bari016);
+        EstrattoConto ec001b016 = addEC(bari016, messaggio,matteoParo,4,new BigDecimal(60));
+        saveAbbonamento(bari016, ec001b016);
 
         Abbonamento bari017 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari017.setAnno(Anno.ANNO2017);
         bari017.setCampo("000000018000065383");
-        addEC(bari017, estratti,matteoParo,12,new BigDecimal(67));
-        abbonamenti.add(bari017);
-        return abbonamenti;
+        EstrattoConto ec001b017 = addEC(bari017, estratti,matteoParo,12,new BigDecimal(67));
+        saveAbbonamento(bari017, ec001b017);
+
     }
     
-    public static List<Incasso> getIncassi() {
-        List<Incasso> incassi = new ArrayList<>();
-        String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
-        Set<String> versamenti1= new HashSet<>();
-        versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
-        Incasso incasso1 = Smd.generaIncasso(versamenti1, riepilogo1); 
-        incassi.add(incasso1);
-        
-        String riepilogo2="3000063470009171006              999000000090000000367000000000700000003020000000002000000006500                                                                                                        \n";
-        Set<String> versamenti2= new HashSet<>();
-        versamenti2.add("0865737400000020000634700091710056740000001500074046022171006000000018000854368DIN                                                                                                                      \n");
-        versamenti2.add("0865298400000030000634700091710056740000001800076241052171006000000018000263519DIN                                                                                                                      \n");
-        versamenti2.add("0863439100000040000634700091710056740000003000023013042171006000000018000254017DIN                                                                                                                      \n");
-        versamenti2.add("0854922500000050000634700091710046740000003700023367052171006000000018000761469DIN                                                                                                                      \n");
-        versamenti2.add("0863439000000060000634700091710056740000004800023013042171006000000018000253916DIN                                                                                                                      \n");
-        versamenti2.add("0865570900000070000634700091710056740000007000023247042171006000000018000800386DIN                                                                                                                      \n");
-        versamenti2.add("0863569900000080000634700091710056740000008400074264032171006000000018000508854DIN                                                                                                                      \n");
-        versamenti2.add("0856588699999990000634700091710041230000001500038124062171006727703812406007375DIN                                                                                                                      \n");
-        versamenti2.add("0858313299999990000634700091710041230000005000098101062171006727709810106010156DIN                                                                                                                      \n");
-
-        Incasso incasso2 = Smd.generaIncasso(versamenti2, riepilogo2);
-        incassi.add(incasso2);
-        
-        String riepilogo3="5000063470009171006              999000000060000000201000000000500000001810000000001000000002000                                                                                                        \n";
-        Set<String> versamenti3= new HashSet<>();
-        versamenti3.add("0854174400000090000634700091710046740000001000055379072171006000000018000686968DIN                                                                                                                      \n");
-        versamenti3.add("0860359800000100000634700091710056740000001500055239072171006000000018000198318DIN                                                                                                                      \n");
-        versamenti3.add("0858363300000110000634700091710056740000001500055826052171006000000018000201449DIN                                                                                                                      \n");
-        versamenti3.add("0860441300000120000634700091710056740000003300055820042171006000000018000633491DIN                                                                                                                      \n");
-        versamenti3.add("0860565700000130000634700091710056740000010800055917062171006000000018000196500DIN                                                                                                                      \n");
-        versamenti3.add("0855941199999990000634700091710041230000002000055681052171006727705568105003308DIN                                                                                                                      \n");
-
-        Incasso incasso3 = Smd.generaIncasso(versamenti3, riepilogo3);
-        incassi.add(incasso3);
-        
-        String riepilogo4="7000063470009171006              999000000070000000447500000000400000001750000000003000000027250                                                                                                        \n";
-        Set<String> versamenti4= new HashSet<>();
-        versamenti4.add("0873460200000140000634700091710056740000001200053057032171006000000018000106227DIN                                                                                                                      \n");
-        versamenti4.add("0874263500000150000634700091710056740000003600009019032171006000000018000077317DIN                                                                                                                      \n");
-        versamenti4.add("0875677100000160000634700091710056740000006000029079022171006000000018000125029DIN                                                                                                                      \n");
-        versamenti4.add("0871026300000170000634700091710046740000006700040366032171006000000018000065383DIN                                                                                                                      \n");
-        versamenti4.add("0862740599999990000634700091710044510000000750002066172171006727700206617006437DIN                                                                                                                      \n");
-        versamenti4.add("0857504199999990000634700091710034510000004000040016062171006727604001606035576DIN                                                                                                                      \n");
-        versamenti4.add("0866089199999990000634700091710044510000022500018160052171006727701816005010892DIN                                                                                                                      \n");
-        
-        Incasso incasso4=Smd.generaIncasso(versamenti4, riepilogo4);
-        incassi.add(incasso4);
-
-        return incassi;
-    }
-    
-    public static Incasso getIncasso5(BigDecimal importo,String campo) {
-        Incasso incasso5 = new Incasso();
-        incasso5.setCassa(Cassa.Contrassegno);
-        incasso5.setCcp(Ccp.DUE);
-        
-        Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
-        versamentoIncasso5.setCampo(campo);
-        versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
-        versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
-        incasso5.addVersamento(versamentoIncasso5);
-        Smd.calcoloImportoIncasso(incasso5);
-        return incasso5;
-    }
 
     private void loadPubblicazioniAdp() {
         messaggio = getMessaggio();
@@ -980,9 +995,17 @@ public class SmdLoadSampleData implements Runnable {
         saveAbbonamentoDp();
         saveAbbonamentoMs();
         saveAbbonamentoGp();
-
+        saveAbbonamentiIncassi();
+        
+        incassoDao.save(getIncassoTelematici());
+        incassoDao.save(getIncassoVenezia());
+        incassoDao.save(getIncassoFirenze());
+        incassoDao.save(getIncassoBari());
+        
+        
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
-        Incasso incasso = getIncasso5(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
+        Incasso incasso = getIncassoByImportoAndCampo(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
+        //Incassa abbonamentoDp
         incassoDao.save(incasso);
         incasso.getVersamenti().stream().forEach(v-> {
             versamentoDao.save(
@@ -991,11 +1014,7 @@ public class SmdLoadSampleData implements Runnable {
         incassoDao.save(incasso);
         abbonamentoDao.save(abbonamentoDp);
         
-        getAbbonamentiIncassi()
-            .stream().forEach(a->abbonamentoDao.save(a));        
-        getIncassi()
-            .stream().forEach(c -> incassoDao.save(c));
-
+        
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.ANNO2018);
         
