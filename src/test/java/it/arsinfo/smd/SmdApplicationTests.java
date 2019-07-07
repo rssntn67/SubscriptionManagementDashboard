@@ -38,6 +38,7 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -734,8 +735,20 @@ public class SmdApplicationTests {
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size());        
         assertEquals(0, pubblicazioneDao.findAll().size());
-        assertEquals(0, anagraficaDao.findAll().size());
-
+        assertEquals(0, anagraficaDao.findAll().size());        
+    }
+    
+    @Test 
+    public void testVersamentoCRUD() {
+        assertEquals(0, incassoDao.findAll().size());
+        Incasso incasso = SmdLoadSampleData.getIncassoTelematici();
+        incassoDao.save(incasso);
+        
+        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+                
         
     }
 }

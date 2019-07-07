@@ -770,16 +770,10 @@ public class SmdLoadSampleData implements Runnable {
                             Cassa.Ccp
                             );
         List<EstrattoConto> estrattiConto = getEstrattiConto(Smd.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, spedizioni);
-        abbonamentoDao.save(abb);
-        estrattiConto
-        .stream()
-        .forEach(ec -> {
-            estrattoContoDao.save(ec);
-            ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
-        });
+        save(abb,estrattiConto.toArray(new EstrattoConto[estrattiConto.size()]));
 
     }
-    public void saveAbbonamento(Abbonamento abb, EstrattoConto...contos) {
+    private void save(Abbonamento abb, EstrattoConto...contos) {
         abbonamentoDao.save(abb);
         for (EstrattoConto ec: contos) {
             estrattoContoDao.save(ec);
@@ -793,25 +787,25 @@ public class SmdLoadSampleData implements Runnable {
         telematici001.setCampo("000000018000792609");
         telematici001.setAnno(Anno.ANNO2017);
         EstrattoConto ec001t001 = addEC(telematici001, messaggio,antonioRusso,1,new BigDecimal(15));
-        saveAbbonamento(telematici001, ec001t001);
+        save(telematici001, ec001t001);
         
         Abbonamento venezia002 = getAbbonamentoBy(micheleSantoro);
         venezia002.setCampo("000000018000854368");
         venezia002.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v002 = addEC(venezia002, messaggio,micheleSantoro,1,new BigDecimal(15));
-        saveAbbonamento(venezia002, ec001v002);
+        save(venezia002, ec001v002);
         
         Abbonamento venezia003 = getAbbonamentoBy(micheleSantoro);
         venezia003.setCampo("000000018000263519");
         venezia003.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v003 = addEC(venezia003, lodare,micheleSantoro,1,new BigDecimal(18));
-        saveAbbonamento(venezia003, ec001v003);
+        save(venezia003, ec001v003);
 
         Abbonamento venezia004 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia004.setCampo("000000018000254017");
         venezia004.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v004 = addEC(venezia004, messaggio,micheleSantoro,2,new BigDecimal(30));
-        saveAbbonamento(venezia004, ec001v004);
+        save(venezia004, ec001v004);
 
         Abbonamento venezia005 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia005.setCampo("000000018000761469");
@@ -819,79 +813,79 @@ public class SmdLoadSampleData implements Runnable {
         EstrattoConto ec001v005 = addEC(venezia005, messaggio,micheleSantoro,1,new BigDecimal(15));
         EstrattoConto ec002v005 = addEC(venezia005, lodare,micheleSantoro,1,new BigDecimal(16));
         EstrattoConto ec003v005 = addEC(venezia005, blocchetti,micheleSantoro,1,new BigDecimal(6));
-        saveAbbonamento(venezia003, ec001v005,ec002v005,ec003v005);
+        save(venezia003, ec001v005,ec002v005,ec003v005);
 
         Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia006.setCampo("000000018000253916");
         venezia006.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v006 = addEC(venezia006, blocchetti,micheleSantoro,8,new BigDecimal(48));
-        saveAbbonamento(venezia006, ec001v006);
+        save(venezia006, ec001v006);
 
         Abbonamento venezia007 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia007.setCampo("000000018000800386");
         venezia007.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v007 = addEC(venezia007, blocchetti,micheleSantoro,12,new BigDecimal(70));
-        saveAbbonamento(venezia007, ec001v007);
+        save(venezia007, ec001v007);
         
         Abbonamento venezia008 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
         venezia008.setCampo("000000018000508854");
         venezia008.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v008 = addEC(venezia008, blocchetti,micheleSantoro,15,new BigDecimal(84));
-        saveAbbonamento(venezia008, ec001v008);
+        save(venezia008, ec001v008);
 
         Abbonamento firenze009 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze009.setCampo("000000018000686968");
         firenze009.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f009 = addEC(firenze009, estratti,davidePalma,1,new BigDecimal(10));
-        saveAbbonamento(firenze009, ec001f009);
+        save(firenze009, ec001f009);
         
         Abbonamento firenze010 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze010.setCampo("000000018000198318");
         firenze010.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f010 = addEC(firenze010, lodare,davidePalma,1,new BigDecimal(15));
-        saveAbbonamento(firenze010, ec001f010);
+        save(firenze010, ec001f010);
 
         Abbonamento firenze011 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze011.setCampo("000000018000201449");
         firenze011.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f011 = addEC(firenze011, lodare,davidePalma,1,new BigDecimal(15));
-        saveAbbonamento(firenze011, ec001f011);
+        save(firenze011, ec001f011);
 
         Abbonamento firenze012 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCampo("000000018000633491");
         EstrattoConto ec001f012 = addEC(firenze012, lodare,davidePalma,2,new BigDecimal(33));
-        saveAbbonamento(firenze012, ec001f012);
+        save(firenze012, ec001f012);
         
         Abbonamento firenze013 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
         firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCampo("000000018000196500");
         EstrattoConto ec001f013 = addEC(firenze013, blocchetti,davidePalma,18,new BigDecimal(108));
-        saveAbbonamento(firenze013, ec001f013);
+        save(firenze013, ec001f013);
         
         Abbonamento bari014 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari014.setAnno(Anno.ANNO2017);
         bari014.setCampo("000000018000106227");
         EstrattoConto ec001b014 = addEC(bari014, blocchetti,matteoParo,2,new BigDecimal(12));
-        saveAbbonamento(bari014, ec001b014);
+        save(bari014, ec001b014);
 
         Abbonamento bari015 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari015.setAnno(Anno.ANNO2017);
         bari015.setCampo("000000018000077317");
         EstrattoConto ec001b015 = addEC(bari015, blocchetti,matteoParo,6,new BigDecimal(36));
-        saveAbbonamento(bari015, ec001b015);
+        save(bari015, ec001b015);
 
         Abbonamento bari016 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari016.setAnno(Anno.ANNO2017);
         bari016.setCampo("000000018000125029");
         EstrattoConto ec001b016 = addEC(bari016, messaggio,matteoParo,4,new BigDecimal(60));
-        saveAbbonamento(bari016, ec001b016);
+        save(bari016, ec001b016);
 
         Abbonamento bari017 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
         bari017.setAnno(Anno.ANNO2017);
         bari017.setCampo("000000018000065383");
         EstrattoConto ec001b017 = addEC(bari017, estratti,matteoParo,12,new BigDecimal(67));
-        saveAbbonamento(bari017, ec001b017);
+        save(bari017, ec001b017);
 
     }
     
@@ -990,17 +984,26 @@ public class SmdLoadSampleData implements Runnable {
         });
     }
 
+    private void save(Incasso incasso) {
+        incassoDao.save(incasso);
+        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+    }
+    
+    private void saveIncassi() {
+        save(getIncassoTelematici());
+        save(getIncassoVenezia());
+        save(getIncassoFirenze());
+        save(getIncassoBari());        
+    }
+    
     private void loadSampleData() {
         
         saveAbbonamentoDp();
         saveAbbonamentoMs();
         saveAbbonamentoGp();
         saveAbbonamentiIncassi();
-        
-        incassoDao.save(getIncassoTelematici());
-        incassoDao.save(getIncassoVenezia());
-        incassoDao.save(getIncassoFirenze());
-        incassoDao.save(getIncassoBari());
+
+        saveIncassi();
         
         
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
