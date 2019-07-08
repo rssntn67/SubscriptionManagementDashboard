@@ -148,7 +148,13 @@ public class Smd {
         return ec;
     }
     
-    
+    public static void rimuoviEC(Abbonamento abb, EstrattoConto ec) {
+        abb.setTotale(abb.getTotale().subtract(ec.getTotale()));
+        ec.getSpedizioni().stream().filter(s -> s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA).forEach(s -> s.setStatoSpedizione(StatoSpedizione.SOSPESA));
+        calcoloImportoEC(ec);
+        abb.setTotale(abb.getTotale().add(ec.getTotale()));        
+    }
+
 
     public static void generaEC(
             Abbonamento abb,
@@ -334,7 +340,7 @@ public class Smd {
               
                 costo = ec.getPubblicazione().getCostoUnitario().doubleValue()
                      * ec.getNumero().doubleValue()
-                     * Double.valueOf(ec.getSpedizioni().size());
+                     * Double.valueOf(ec.getNumeroSpedizioniAttive());
             }
             if (ec.getDestinatario().getAreaSpedizione() != AreaSpedizione.Italia || ec.getNumeroSpedizioniConSpesePostali() >0) {
                 calcolaSpesePostali(ec);

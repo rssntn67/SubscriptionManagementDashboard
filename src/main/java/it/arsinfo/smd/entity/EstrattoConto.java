@@ -22,6 +22,7 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
@@ -170,6 +171,9 @@ public class EstrattoConto implements SmdEntity {
         EnumSet<Mese> mesiPubblicazione = EnumSet.noneOf(Mese.class);
         EnumSet<Anno> anniPubblicazione = EnumSet.noneOf(Anno.class);
         for (Spedizione spedizione:spedizioni) {
+            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
+                continue;
+            }
             mesiPubblicazione.add(spedizione.getMesePubblicazione());
             anniPubblicazione.add(spedizione.getAnnoPubblicazione());
             if (anniPubblicazione.size() > 1) {
@@ -185,9 +189,28 @@ public class EstrattoConto implements SmdEntity {
         return true;
     }
     
+    public boolean isEmpty() {
+        return getNumeroSpedizioniAttive() == 0;
+    }
+    
+    public int getNumeroSpedizioniAttive() {
+        int i = 0;
+        for (Spedizione spedizione :spedizioni) {
+            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
+                continue;
+            }
+            i++;
+        }            
+        return i;
+        
+    }
+    
     public int getNumeroSpedizioniConSpesePostali() {
         int i = 0;
         for (Spedizione spedizione :spedizioni) {
+            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
+                continue;
+            }
             if (Smd.spedizionePosticipata(spedizione, pubblicazione.getAnticipoSpedizione())) {
                 i++;
             }
