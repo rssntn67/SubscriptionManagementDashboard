@@ -760,6 +760,79 @@ public class SmdApplicationTests {
     
     @Test
     public void testAbbonamentoAggiungiEstrattoConto() {
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findAll().size());
+        Anagrafica tizio = SmdLoadSampleData.getGP();
+        anagraficaDao.save(tizio);
+        
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Pubblicazione lodare = SmdLoadSampleData.getLodare();
+        Pubblicazione blocchetti = SmdLoadSampleData.getLodare();
+        pubblicazioneDao.save(messaggio);
+        pubblicazioneDao.save(lodare);
+        pubblicazioneDao.save(blocchetti);
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setAbbonamento(abb);
+        ec1.setDestinatario(tizio);
+        ec1.setPubblicazione(messaggio);
+        Smd.generaEC(abb, ec1, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.GIUGNO, Smd.getAnnoProssimo());
+        assertEquals(ec1.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
+        EstrattoConto ec2 = new EstrattoConto();
+        ec2.setAbbonamento(abb);
+        ec2.setDestinatario(tizio);
+        ec2.setPubblicazione(lodare);
+        Smd.generaEC(abb, ec2, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec1);
+        ec1.getSpedizioni().forEach(sped -> spedizioneDao.save(sped));
+        estrattoContoDao.save(ec2);
+        ec2.getSpedizioni().forEach(sped -> spedizioneDao.save(sped));
+        
+        EstrattoConto ec3 = new EstrattoConto();
+        ec3.setAbbonamento(abb);
+        ec3.setDestinatario(tizio);
+        ec3.setPubblicazione(blocchetti);
+        Smd.generaEC(abb, ec3, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue()+ec3.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
+
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec3);        
+        ec3.getSpedizioni().forEach(sped -> spedizioneDao.save(sped));
+
+
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(3, pubblicazioneDao.findAll().size());
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(3, estrattoContoDao.findAll().size());
+        assertEquals(ec1.getSpedizioni().size()
+                     +ec2.getSpedizioni().size()
+                     +ec2.getSpedizioni().size(), spedizioneDao.findAll().size());
+        
+        //Get the database version
+        abb = abbonamentoDao.findAll().iterator().next();
+        assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue()+ec3.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
+
+        BigDecimal ecsum = BigDecimal.ZERO;
+        for (EstrattoConto ec: estrattoContoDao.findAll()) {
+            assertEquals(abb.getId(), ec.getAbbonamento().getId());
+            ecsum=ecsum.add(ec.getImporto());
+            ecsum=ecsum.add(ec.getSpesePostali());
+        }
+        assertEquals(abb.getTotale().doubleValue(), ecsum.doubleValue(),0);
+        
+        spedizioneDao.deleteAll();
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        anagraficaDao.deleteAll();
         
     }
 
