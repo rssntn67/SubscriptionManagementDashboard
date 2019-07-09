@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -1085,6 +1084,66 @@ public class SmdApplicationTests {
 
     @Test
     public void testAbbonamentoAggiornaEstrattoConto() {
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());        
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findAll().size());
+        Anagrafica tizio = SmdLoadSampleData.getGP();
+        anagraficaDao.save(tizio);
+        
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        pubblicazioneDao.save(messaggio);
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setAbbonamento(abb);
+        ec1.setDestinatario(tizio);
+        ec1.setPubblicazione(messaggio);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(Smd.getAnnoProssimo());
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec1, InvioSpedizione.Spedizioniere);
+        assertTrue(ec1.isAbbonamentoAnnuale());
+        assertEquals(ec1.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec1);
+        ec1.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+        
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(1, estrattoContoDao.findAll().size());
+        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findAll().size());
+  
+        spedizioneDao.findAll().forEach(s -> {
+            assertEquals(1, s.getNumero().intValue());
+            assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
+            assertEquals(ec1.getId(), s.getEstrattoConto().getId());
+        });
+        
+        log.info("Costo abbonamento: " + abb.getTotale());
+        assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
+        ec1.setNumero(10);
+        Smd.aggiornaEC(abb, ec1, InvioSpedizione.Spedizioniere);
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec1);
+        ec1.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+
+        spedizioneDao.findAll().forEach(s -> {
+            assertEquals(10, s.getNumero().intValue());
+            assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
+            assertEquals(ec1.getId(), s.getEstrattoConto().getId());
+        });
+
+        assertEquals(messaggio.getAbbonamento().multiply(new BigDecimal(10)).doubleValue(), abb.getTotale().doubleValue(),0);
+        
+        
+        spedizioneDao.deleteAll();
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        anagraficaDao.deleteAll();
+        
         
     }
 

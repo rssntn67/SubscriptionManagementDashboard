@@ -151,11 +151,93 @@ public class Smd {
         creaEC(abb, ec, storico.getInvioSpedizione());
         return ec;
     }
-    
+
+    public static void aggiornaEC(Abbonamento abb, EstrattoConto ec, InvioSpedizione invioSpedizione)
+        throws UnsupportedOperationException
+    {
+        if (ec.getNumero() <= 0) {
+            throw new UnsupportedOperationException("Non si possono generare estratti conto con quantita <=0");
+        }
+        abb.setTotale(abb.getTotale().subtract(ec.getTotale()));
+        
+        log.info("aggiornaEC: intestatario: "+ abb.getIntestatario().getCaption());
+        log.info("aggiornaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
+        log.info("aggiornaEC: destinatario: "+ ec.getDestinatario().getCaption());
+        log.info("aggiornaEC: pubbli.: "+ ec.getPubblicazione().getNome());
+        log.info("aggiornaEC: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
+        log.info("aggiornaEC: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
+        log.info("aggiornaEC: meseFine: "+ ec.getMeseFine().getNomeBreve());
+        log.info("aggiornaEC: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
+        log.info("aggiornaEC: quantità: "+ ec.getNumero());
+        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(ec);
+            for (Anno anno: mappaPubblicazioni.keySet()) {
+                mappaPubblicazioni.get(anno).stream().forEach(mese -> {
+                    final List<Spedizione> opere = new ArrayList<>();
+                    final List<Spedizione> inviate = new ArrayList<>();
+                    ec.getSpedizioni()
+                    .stream().filter(
+                     s -> s.getMesePubblicazione() == mese 
+                     && s.getAnnoPubblicazione() == anno)
+                    .forEach(s -> {
+                        switch (s.getStatoSpedizione()) {
+                        case PROGRAMMATA:
+                            opere.add(s);
+                            break;
+                        case INVIATA:
+                            inviate.add(s);
+                            break;
+                        case SOSPESA:
+                            opere.add(s);
+                            break;
+                        default:
+                            opere.add(s);
+                            break;
+                                
+                        }
+                        
+                    });
+                    if (inviate.size() > 1) {
+                        throw new UnsupportedOperationException("Solo un spedizione inviata per mese pubblicazione");
+                    }
+                    if (opere.size() > 1) {
+                        throw new UnsupportedOperationException("Solo un spedizione sospesa o programmata per mese pubblicazione");
+                    }
+                    
+                    int numeroInviati = 0;
+                    for (Spedizione s: inviate) {
+                        numeroInviati+=s.getNumero();
+                    }
+                    Spedizione opera = null;
+                    if (opere.size() == 1) {
+                        opera = opere.iterator().next();
+                    }
+                    
+                    if (numeroInviati >= ec.getNumero()) {
+                        if (opera != null) {
+                            opera.setNumero(0);
+                        }
+                    } else if (opera != null ){
+                        opera.setNumero(ec.getNumero()-numeroInviati);
+                        opera.setInvioSpedizione(invioSpedizione);
+                    } else {
+                        opera = creaSpedizione(ec, ec.getNumero()-numeroInviati, mese, anno, invioSpedizione);
+                        opera.setEstrattoConto(ec);
+                        ec.addSpedizione(opera);
+                    }
+                     
+                });
+            }
+            if (ec.getSpedizioni().isEmpty()) {
+                throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
+            }
+            calcoloImportoEC(abb.getIntestatario().getAreaSpedizione(),ec);
+            abb.setTotale(abb.getTotale().add(ec.getTotale()));
+    }
+
     public static void rimuoviEC(Abbonamento abb, EstrattoConto ec) {
         abb.setTotale(abb.getTotale().subtract(ec.getTotale()));
         ec.getSpedizioni().stream()
-        .filter(s -> s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA)
+        .filter(s -> s.getStatoSpedizione() != StatoSpedizione.INVIATA)
         .forEach(s -> s.setStatoSpedizione(StatoSpedizione.SOSPESA));
         calcoloImportoEC(abb.getIntestatario().getAreaSpedizione(),ec);
         abb.setTotale(abb.getTotale().add(ec.getTotale()));        
