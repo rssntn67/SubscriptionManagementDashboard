@@ -710,7 +710,11 @@ public class SmdApplicationTests {
         ec.setAbbonamento(abb);
         ec.setDestinatario(tizio);
         ec.setPubblicazione(messaggio);
-        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.GIUGNO, Smd.getAnnoProssimo());
+        ec.setMeseFine(Mese.GENNAIO);
+        ec.setAnnoInizio(Smd.getAnnoProssimo());
+        ec.setMeseFine(Mese.GIUGNO);
+        ec.setAnnoFine(Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec, InvioSpedizione.Spedizioniere);
         assertEquals(messaggio.getCostoUnitario().doubleValue()*ec.getNumero()*ec.getSpedizioni().size(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
@@ -780,13 +784,17 @@ public class SmdApplicationTests {
         ec1.setAbbonamento(abb);
         ec1.setDestinatario(tizio);
         ec1.setPubblicazione(messaggio);
-        Smd.generaEC(abb, ec1, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.GIUGNO, Smd.getAnnoProssimo());
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(Smd.getAnnoProssimo());
+        ec1.setMeseFine(Mese.GIUGNO);
+        ec1.setAnnoFine(Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec1, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setDestinatario(tizio);
         ec2.setPubblicazione(lodare);
-        Smd.generaEC(abb, ec2, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec2, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
@@ -798,7 +806,7 @@ public class SmdApplicationTests {
         ec3.setAbbonamento(abb);
         ec3.setDestinatario(tizio);
         ec3.setPubblicazione(blocchetti);
-        Smd.generaEC(abb, ec3, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec3, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue()+ec3.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
 
         abbonamentoDao.save(abb);
@@ -858,19 +866,23 @@ public class SmdApplicationTests {
         ec1.setAbbonamento(abb);
         ec1.setDestinatario(tizio);
         ec1.setPubblicazione(messaggio);
-        Smd.generaEC(abb, ec1, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.GIUGNO, Smd.getAnnoProssimo());
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(Smd.getAnnoProssimo());
+        ec1.setMeseFine(Mese.GIUGNO);
+        ec1.setAnnoFine(Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec1, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setDestinatario(tizio);
         ec2.setPubblicazione(lodare);
-        Smd.generaEC(abb, ec2, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec2, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
         EstrattoConto ec3 = new EstrattoConto();
         ec3.setAbbonamento(abb);
         ec3.setDestinatario(tizio);
         ec3.setPubblicazione(blocchetti);
-        Smd.generaEC(abb, ec3, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.DICEMBRE, Smd.getAnnoProssimo());
+        Smd.creaEC(abb, ec3, InvioSpedizione.Spedizioniere);
         assertEquals(ec1.getTotale().doubleValue()+ec2.getTotale().doubleValue()+ec3.getTotale().doubleValue(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
@@ -891,7 +903,7 @@ public class SmdApplicationTests {
                      +ec3.getSpedizioni().size(), spedizioneDao.findAll().size());
         
         Smd.rimuoviEC(abb,ec2);
-        assertEquals(0, ec2.getNumeroSpedizioniAttive());
+        assertEquals(0, ec2.getNumeroSpediti());
         assertEquals(0, ec2.getTotale().doubleValue(),0);
         estrattoContoDao.delete(ec2);
         abbonamentoDao.save(abb);
@@ -960,7 +972,12 @@ public class SmdApplicationTests {
         ec.setPubblicazione(b);
         ec.setNumero(2);
         ec.setAbbonamento(abb);
-        Smd.generaEC(abb, ec, InvioSpedizione.Spedizioniere, Mese.GENNAIO, Smd.getAnnoProssimo(), Mese.SETTEMBRE, Smd.getAnnoProssimo());
+        ec.setMeseInizio(Mese.GENNAIO);
+        ec.setAnnoInizio(Smd.getAnnoProssimo());
+        ec.setMeseFine(Mese.SETTEMBRE);
+        ec.setAnnoFine(Smd.getAnnoProssimo());
+
+        Smd.creaEC(abb, ec, InvioSpedizione.Spedizioniere);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));

@@ -124,6 +124,16 @@ public class EstrattoContoEditor
         getBinder().forField(tipoEstrattoconto)
         .asRequired().bind(EstrattoConto::getTipoEstrattoConto,EstrattoConto::setTipoEstrattoConto);
 
+        getBinder().forField(meseInizio)
+        .asRequired().bind(EstrattoConto::getMeseInizio,EstrattoConto::setMeseInizio);
+        getBinder().forField(meseFine)
+        .asRequired().bind(EstrattoConto::getMeseFine,EstrattoConto::setMeseFine);
+        
+        getBinder().forField(annoInizio)
+        .asRequired().bind(EstrattoConto::getAnnoInizio,EstrattoConto::setAnnoInizio);
+
+        getBinder().forField(annoFine)
+        .asRequired().bind(EstrattoConto::getAnnoFine,EstrattoConto::setAnnoFine);
 
     }
 
@@ -144,22 +154,6 @@ public class EstrattoContoEditor
         meseFine.setVisible(!persisted);
         getDelete().setEnabled(!persisted);
         destinatario.focus();        
-    }
-
-    public Anno getAnnoInizio() {
-        return annoInizio.getOptionalValue().get();
-    }
-    
-    public Anno getAnnoFine() {
-        return annoFine.getOptionalValue().get();
-    }
-    
-    public Mese getMeseInizio() {
-        return meseInizio.getOptionalValue().get();
-    }
-    
-    public Mese getMeseFine() {
-        return meseFine.getOptionalValue().get();
     }
 
     public InvioSpedizione getInvioSpedizione() {

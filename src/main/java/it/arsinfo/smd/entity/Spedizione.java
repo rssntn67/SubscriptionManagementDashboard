@@ -43,6 +43,8 @@ public class Spedizione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Anno annoPubblicazione;
 
+    private Integer numero;
+    
     public Spedizione() {
     }
 
@@ -131,9 +133,8 @@ public class Spedizione implements SmdEntity {
         return estrattoConto.getPubblicazione().getNome();
     }
     
-    @Transient
     public Integer getNumero() {
-        return estrattoConto.getNumero();
+        return numero;
     }
     
     @Transient
@@ -169,6 +170,10 @@ public class Spedizione implements SmdEntity {
     @Transient
     public Paese getPaese() {
         return estrattoConto.getPaese();
+    }
+
+    public void setNumero(Integer numero) {
+        this.numero = numero;
     }
 
 

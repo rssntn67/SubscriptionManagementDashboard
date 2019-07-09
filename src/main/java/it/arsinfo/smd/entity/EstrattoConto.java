@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -53,6 +54,10 @@ public class EstrattoConto implements SmdEntity {
     @OneToMany(mappedBy="estrattoConto",orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Spedizione> spedizioni = new ArrayList<>();
 
+    private Mese meseInizio=Mese.GENNAIO;
+    private Anno annoInizio=Smd.getAnnoProssimo();
+    private Mese meseFine = Mese.DICEMBRE;
+    private Anno annoFine = Smd.getAnnoProssimo();
     private Integer numero = 1;
     
     private BigDecimal importo = BigDecimal.ZERO;
@@ -190,32 +195,29 @@ public class EstrattoConto implements SmdEntity {
     }
     
     public boolean isEmpty() {
-        return getNumeroSpedizioniAttive() == 0;
+        return getNumeroSpediti() == 0;
     }
     
-    public int getNumeroSpedizioniAttive() {
+    public int getNumeroSpediti() {
         int i = 0;
         for (Spedizione spedizione :spedizioni) {
             if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
                 continue;
             }
-            i++;
+            i=i+spedizione.getNumero();
         }            
         return i;
         
     }
     
-    public int getNumeroSpedizioniConSpesePostali() {
-        int i = 0;
-        for (Spedizione spedizione :spedizioni) {
-            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
-                continue;
-            }
-            if (Smd.spedizionePosticipata(spedizione, pubblicazione.getAnticipoSpedizione())) {
-                i++;
-            }
-        }            
-        return i;
+    public List<Spedizione> getSpedizioniPosticipate() {
+        return 
+            spedizioni.stream()
+            .filter(
+            spedizione -> 
+        Smd.spedizionePosticipata(
+          spedizione, pubblicazione.getAnticipoSpedizione())
+        ).collect(Collectors.toList());
     }
 
     @Transient
@@ -296,5 +298,37 @@ public class EstrattoConto implements SmdEntity {
 
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
+    }
+
+    public Mese getMeseInizio() {
+        return meseInizio;
+    }
+
+    public void setMeseInizio(Mese meseInizio) {
+        this.meseInizio = meseInizio;
+    }
+
+    public Anno getAnnoInizio() {
+        return annoInizio;
+    }
+
+    public void setAnnoInizio(Anno annoInizio) {
+        this.annoInizio = annoInizio;
+    }
+
+    public Mese getMeseFine() {
+        return meseFine;
+    }
+
+    public void setMeseFine(Mese meseFine) {
+        this.meseFine = meseFine;
+    }
+
+    public Anno getAnnoFine() {
+        return annoFine;
+    }
+
+    public void setAnnoFine(Anno annoFine) {
+        this.annoFine = annoFine;
     }
 }

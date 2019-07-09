@@ -2,7 +2,6 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +34,6 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
-import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -221,28 +219,28 @@ public class SmdLoadSampleData implements Runnable {
         sS1.setPubblicazione(p);
         sS1.setNumero(1);
         sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
-        sS1.setSpeseSpedizione(new BigDecimal(3.90));
+        sS1.setSpeseSpedizione(new BigDecimal(3.909));
         p.addSpesaSpedizione(sS1);
 
         SpesaSpedizione sS2 = new SpesaSpedizione();
         sS2.setPubblicazione(p);
         sS2.setNumero(2);
         sS2.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
-        sS2.setSpeseSpedizione(new BigDecimal(5.70));
+        sS2.setSpeseSpedizione(new BigDecimal(5.727));
         p.addSpesaSpedizione(sS2);
         
         SpesaSpedizione sS3 = new SpesaSpedizione();
         sS3.setPubblicazione(p);
         sS3.setNumero(1);
         sS3.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
-        sS3.setSpeseSpedizione(new BigDecimal(4.80));
+        sS3.setSpeseSpedizione(new BigDecimal(4.818));
         p.addSpesaSpedizione(sS3);
 
         SpesaSpedizione sS4 = new SpesaSpedizione();
         sS4.setPubblicazione(p);
         sS4.setNumero(2);
         sS4.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
-        sS4.setSpeseSpedizione(new BigDecimal(8.60));
+        sS4.setSpeseSpedizione(new BigDecimal(8.636));
         p.addSpesaSpedizione(sS4);
             
         
@@ -289,7 +287,7 @@ public class SmdLoadSampleData implements Runnable {
         sS2.setPubblicazione(p);
         sS2.setNumero(1);
         sS2.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
-        sS2.setSpeseSpedizione(new BigDecimal(5.70));
+        sS2.setSpeseSpedizione(new BigDecimal(5.75));
         p.addSpesaSpedizione(sS2);
 
         SpesaSpedizione sS3 = new SpesaSpedizione();
@@ -380,7 +378,7 @@ public class SmdLoadSampleData implements Runnable {
             sS1.setPubblicazione(p);
             sS1.setNumero(i);
             sS1.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
-            sS1.setSpeseSpedizione(new BigDecimal(5.70));
+            sS1.setSpeseSpedizione(new BigDecimal(5.75));
             p.addSpesaSpedizione(sS1);
         }
 
@@ -425,7 +423,7 @@ public class SmdLoadSampleData implements Runnable {
             sS1.setPubblicazione(p);
             sS1.setNumero(i);
             sS1.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
-            sS1.setSpeseSpedizione(new BigDecimal(8.60));
+            sS1.setSpeseSpedizione(new BigDecimal(8.75));
             p.addSpesaSpedizione(sS1);
         }
 
@@ -646,7 +644,11 @@ public class SmdLoadSampleData implements Runnable {
             ec.setPubblicazione(ect.getRowKey());
             ec.setDestinatario(ect.getColumnKey());
             ec.setNumero(ect.getValue());
-            Smd.generaEC(abb,ec, InvioSpedizione.Spedizioniere, inizio, anno, fine, anno);
+            ec.setMeseInizio(inizio);
+            ec.setAnnoInizio(anno);
+            ec.setMeseFine(fine);
+            ec.setAnnoFine(anno);
+            Smd.creaEC(abb,ec, InvioSpedizione.Spedizioniere);
             return ec;
         }).collect(Collectors.toList());        
     }
@@ -674,7 +676,7 @@ public class SmdLoadSampleData implements Runnable {
         ec.setNumero(numero);
         ec.setImporto(importo);
         for (Mese mese: pubblicazione.getMesiPubblicazione()) {
-                Spedizione spedizione = Smd.creaSpedizione(ec,mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
+                Spedizione spedizione = Smd.creaSpedizione(ec,ec.getNumero(),mese, abb.getAnno(), InvioSpedizione.Spedizioniere);
                 ec.addSpedizione(spedizione);
         }
         return ec;

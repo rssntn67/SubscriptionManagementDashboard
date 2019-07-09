@@ -134,8 +134,8 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    Smd.generaEC(editor.get(),
-                         get(),getInvioSpedizione(),getMeseInizio(),getAnnoInizio(),getMeseFine(),getAnnoFine());
+                    Smd.creaEC(editor.get(),
+                         get(),getInvioSpedizione());
                 } catch (UnsupportedOperationException e) {
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                     return;
