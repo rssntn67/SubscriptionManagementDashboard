@@ -328,7 +328,7 @@ public class SmdLoadSampleData implements Runnable {
 
         p.setMar(true);
         p.setSet(true);
-        p.setAnticipoSpedizione(4);
+        p.setAnticipoSpedizione(3);
         
         SpesaSpedizione sS = new SpesaSpedizione();
         sS.setPubblicazione(p);

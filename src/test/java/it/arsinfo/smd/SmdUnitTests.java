@@ -408,5 +408,17 @@ public class SmdUnitTests {
         }
         
     }
+    
+    @Test
+    public void testSpedizionePosticipata() {
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Spedizione spedizione = new Spedizione();
+        spedizione.setAnnoPubblicazione(Smd.getAnnoCorrente());
+        spedizione.setMesePubblicazione(Mese.APRILE);
+        spedizione.setAnnoSpedizione(Smd.getAnnoCorrente());
+        spedizione.setMeseSpedizione(Mese.getByPosizione(Mese.APRILE.getPosizione()-messaggio.getAnticipoSpedizione()));
+        assertEquals(Mese.GENNAIO, spedizione.getMeseSpedizione());
+        assertTrue(!Smd.spedizionePosticipata(spedizione, messaggio.getAnticipoSpedizione()));
+    }
 
 }

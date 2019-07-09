@@ -154,7 +154,9 @@ public class Smd {
     
     public static void rimuoviEC(Abbonamento abb, EstrattoConto ec) {
         abb.setTotale(abb.getTotale().subtract(ec.getTotale()));
-        ec.getSpedizioni().stream().filter(s -> s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA).forEach(s -> s.setStatoSpedizione(StatoSpedizione.SOSPESA));
+        ec.getSpedizioni().stream()
+        .filter(s -> s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA)
+        .forEach(s -> s.setStatoSpedizione(StatoSpedizione.SOSPESA));
         calcoloImportoEC(abb.getIntestatario().getAreaSpedizione(),ec);
         abb.setTotale(abb.getTotale().add(ec.getTotale()));        
     }
@@ -209,7 +211,7 @@ public class Smd {
             spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()-anticipoSpedizione);
             spedAnno = annoPubblicazione;
         }
-        if (spedAnno.getAnno() < getAnnoCorrente().getAnno() || (spedAnno == getAnnoCorrente() && spedMese.getPosizione() <= getMeseCorrente().getPosizione())) {
+        if (spedAnno.getAnno() < getAnnoCorrente().getAnno() || (spedAnno == getAnnoCorrente() && spedMese.getPosizione() < getMeseCorrente().getPosizione())) {
             spedMese = getMeseCorrente();
             spedAnno = getAnnoCorrente();
             invioSpedizione = InvioSpedizione.AdpSede;

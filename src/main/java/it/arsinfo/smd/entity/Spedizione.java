@@ -67,7 +67,7 @@ public class Spedizione implements SmdEntity {
                              estrattoConto.getPubblicazione().getNome(),
                              mesePubblicazione, 
                              annoPubblicazione, 
-                             estrattoConto.getNumero(), 
+                             numero, 
                              estrattoConto.getIntestazione(), 
                              statoSpedizione);
     }
