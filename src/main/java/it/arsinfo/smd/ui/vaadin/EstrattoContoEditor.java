@@ -148,11 +148,8 @@ public class EstrattoContoEditor
         spesePostali.setVisible(persisted);
 
         invioSpedizione.setVisible(!persisted);
-        annoInizio.setVisible(!persisted);
-        annoFine.setVisible(!persisted);
-        meseInizio.setVisible(!persisted);
-        meseFine.setVisible(!persisted);
-        getDelete().setEnabled(!persisted);
+        getDelete().setEnabled(obj.getStorico() != null);
+        getSave().setEnabled(obj.getStorico() != null);
         destinatario.focus();        
     }
 
