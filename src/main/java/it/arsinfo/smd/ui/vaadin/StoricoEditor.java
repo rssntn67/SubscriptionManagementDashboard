@@ -3,9 +3,6 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
@@ -22,6 +19,7 @@ import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -48,8 +46,6 @@ public class StoricoEditor
     private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
     private final TextField nota = new TextField("Aggiungi Nota");
-
-    private static final Logger log = LoggerFactory.getLogger(StoricoEditor.class);
 
     public StoricoEditor(
             StoricoDao storicoDao,
@@ -100,24 +96,23 @@ public class StoricoEditor
         sec.addComponentsAndExpand(nota);
         setComponents(getActions(),update.getButton(),pri,hhh,sec);
         
+        //FIXME a lot of use cases
         update.setChangeHandler(() -> {
-            save();
-            for (Abbonamento abb:abbonamentoDao.findByIntestatario(get().getIntestatario())) {
-                log.info(abb.toString());
-                if ( abb.getAnno() == Smd.getAnnoProssimo()
-                          && abb.getCampagna() != null)
-                abbonamentoDao.delete(abb);
-            }
-            /* FIXME
-            abbonamentoDao.findByIntestatario(get().getIntestatario())
-            .stream()
-            .filter(a -> a.getAnno() == Smd.getAnnoProssimo()
-                          && a.getCampagna() != null)
-            .forEach(abb -> {
-                abbonamentoDao.save(Smd.aggiornaAbbonamento(abb, pubblicazioni, storicoDao.findByIntestatario(get().getIntestatario())));
+            List<EstrattoConto> ecs = estrattoContoDao.findByStorico(get());
+            ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Smd.getAnnoProssimo()).forEach( ec ->{
+                ec.setNumero(get().getNumero());
+                ec.setDestinatario(get().getDestinatario());
+                ec.setInvio(get().getInvio());
+                ec.setTipoEstrattoConto(get().getTipoEstrattoConto());
+                ec.setPubblicazione(get().getPubblicazione());
+                Abbonamento abb = ec.getAbbonamento();
+                Smd.aggiornaEC(abb, ec, get().getInvioSpedizione());
+                abbonamentoDao.save(abb);
+                estrattoContoDao.save(ec);
+                ec.getSpedizioni().stream().forEach(s ->spedizioneDao.save(s));
             });
-            */
-
+            save();
+ 
         });
  
         getBinder()
