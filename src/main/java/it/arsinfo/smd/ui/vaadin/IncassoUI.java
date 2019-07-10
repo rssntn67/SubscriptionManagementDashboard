@@ -37,8 +37,8 @@ public class IncassoUI extends IncassoAbstractUI {
         IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
         IncassoUpload upload = new IncassoUpload("Incasso da Poste");
         IncassoSearch search = new IncassoSearch(incassoDao);
-        SmdButton incassa = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
-        SmdButton incassaSingolo = new SmdButton("Incassa con V campo",VaadinIcons.AUTOMATION);
+        SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
+        SmdButton incassaSingolo = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("Incassi");
 
         IncassoEditor editor = new IncassoEditor(incassoDao) {
@@ -54,6 +54,7 @@ public class IncassoUI extends IncassoAbstractUI {
                 }
 
                 super.save();
+                get().getVersamenti().forEach(v -> versamentoDao.save(v));
             }
         };
         VersamentoAdd versAdd = new VersamentoAdd("Aggiungi Versamento");
