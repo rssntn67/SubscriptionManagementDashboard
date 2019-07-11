@@ -287,7 +287,7 @@ public class SmdApplicationTests {
 
         SpesaSpedizione s1p = new SpesaSpedizione();
         s1p.setPubblicazione(p);
-        s1p.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
+        s1p.setArea(AreaSpedizione.EuropaBacinoMediterraneo);
         s1p.setNumero(1);
         s1p.setSpeseSpedizione(new BigDecimal("4.45"));
         p.addSpesaSpedizione(s1p);
@@ -299,7 +299,7 @@ public class SmdApplicationTests {
 
         SpesaSpedizione s2p = new SpesaSpedizione();
         s2p.setPubblicazione(p);
-        s2p.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        s2p.setArea(AreaSpedizione.AmericaAfricaAsia);
         s2p.setNumero(1);
         s2p.setSpeseSpedizione(new BigDecimal("7.45"));
         p.addSpesaSpedizione(s2p);
@@ -322,7 +322,7 @@ public class SmdApplicationTests {
         
         SpesaSpedizione sp1 = new SpesaSpedizione();
         sp1.setPubblicazione(p1);
-        sp1.setAreaSpedizione(AreaSpedizione.Italia);
+        sp1.setArea(AreaSpedizione.Italia);
         sp1.setNumero(1);
         sp1.setSpeseSpedizione(new BigDecimal("1.50"));
         p1.addSpesaSpedizione(sp1);

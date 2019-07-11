@@ -1,23 +1,18 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 
@@ -35,12 +30,11 @@ public class Pubblicazione implements SmdEntity {
     private String autore;
 
     private String editore;
+    
+    private int grammi=100;
 
     private boolean active = true;
     
-    @OneToMany(mappedBy="pubblicazione", orphanRemoval=true, fetch=FetchType.EAGER)
-    private List<SpesaSpedizione> speseSpedizione = new ArrayList<>();
-
     private BigDecimal costoUnitario=BigDecimal.ZERO;
     private BigDecimal abbonamento=BigDecimal.ZERO;
     private BigDecimal abbonamentoWeb=BigDecimal.ZERO;
@@ -60,7 +54,7 @@ public class Pubblicazione implements SmdEntity {
     private boolean nov = false;
     private boolean dic = false;
 
-    private int anticipoSpedizione=3;
+    private int anticipoSpedizione=2;
     
     @Enumerated(EnumType.STRING)
     private Anno anno=Smd.getAnnoCorrente();
@@ -363,33 +357,12 @@ public class Pubblicazione implements SmdEntity {
         this.anticipoSpedizione = anticipoSpedizione;
     }
 
-    public List<SpesaSpedizione> getSpeseSpedizione() {
-        return speseSpedizione;
+    public int getGrammi() {
+        return grammi;
     }
 
-    public void setSpeseSpedizione(List<SpesaSpedizione> speseSpedizione) {
-        this.speseSpedizione = speseSpedizione;
-    }
-
-    public void addSpesaSpedizione(SpesaSpedizione spesaSpedizione) {
-        if (speseSpedizione.contains(spesaSpedizione)) {
-            speseSpedizione.remove(spesaSpedizione);
-        }
-        speseSpedizione.add(spesaSpedizione);
-    }
-
-    public boolean deleteSpesaSpedizione(SpesaSpedizione spesaSpedizione) {
-        return speseSpedizione.remove(spesaSpedizione);
-    }
-    
-    @Transient
-    public SpesaSpedizione getSpesaSpedizioneBy(AreaSpedizione areaSpedizione, Integer i) {
-        for (SpesaSpedizione ssitem: speseSpedizione) {
-            if (ssitem.getAreaSpedizione() == areaSpedizione && ssitem.getNumero() == i) {
-                return ssitem;
-            }
-        }
-        return null;
+    public void setGrammi(int grammi) {
+        this.grammi = grammi;
     }
 
 }

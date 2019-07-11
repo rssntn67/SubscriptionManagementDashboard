@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -28,6 +30,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 
 @RunWith(SpringRunner.class)
@@ -44,34 +47,18 @@ public class SmdUnitTests {
         return creaEC(abb,Mese.GENNAIO, anno, Mese.DICEMBRE, anno, p, tipo, numero);
     }
     
-    private static EstrattoConto creaECConArea(AreaSpedizione area, Pubblicazione p, TipoEstrattoConto tipo, int numero) {
-        Anno anno = Smd.getAnnoProssimo();
-        Mese mese = Smd.getMeseCorrente();
-        if (mese.getPosizione()+p.getAnticipoSpedizione() > 12) {
-            anno=Anno.getAnnoSuccessivo(anno);
-        }
-        Abbonamento abb = new Abbonamento();
-        Anagrafica intestatario = new Anagrafica();
-        intestatario.setNome("Tizio");
-        intestatario.setCognome("Sempronis");
-        intestatario.setAreaSpedizione(area);
-        abb.setIntestatario(intestatario);
-        return creaEC(abb,Mese.GENNAIO, anno, Mese.DICEMBRE, anno, p, tipo, numero);
-    }
-
     private static EstrattoConto creaEC(Abbonamento abb, Mese inizio, Anno ai, Mese fine, Anno af, Pubblicazione p, TipoEstrattoConto tipo, int numero) {
         EstrattoConto ec =  new EstrattoConto();
         ec.setAbbonamento(abb);
         ec.setNumero(numero);
         ec.setPubblicazione(p);
         ec.setTipoEstrattoConto(tipo);
-        ec.setDestinatario(abb.getIntestatario());
         ec.setMeseInizio(inizio);
         ec.setAnnoInizio(ai);
         ec.setMeseFine(fine);
         ec.setAnnoFine(af);
+        Smd.creaEC(abb,ec);
 
-        Smd.creaEC(abb,ec,InvioSpedizione.Spedizioniere);
         return ec;
     }
     @Test
@@ -155,270 +142,118 @@ public class SmdUnitTests {
         
     }
     
-    private void verificaImportoAbbonamentoAnnuale(EstrattoConto ec, Pubblicazione p, int numero) {
+    private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, EstrattoConto ec) {
+        assertEquals(0.0,abb.getSpese().doubleValue(),0);
+        assertEquals(true, ec.isAbbonamentoAnnuale());
+        assertEquals(abb, ec.getAbbonamento());
         switch (ec.getTipoEstrattoConto()) {
         case OmaggioCuriaDiocesiana:
-            assertEquals(0.0,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
+            assertEquals(0.0,abb.getImporto().doubleValue(),0);
            break;
         case OmaggioGesuiti:
             assertEquals(0.0,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
                        break;
         case OmaggioCuriaGeneralizia:
             assertEquals(0.0,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case OmaggioDirettoreAdp:
             assertEquals(0.0,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case OmaggioEditore:
             assertEquals(0.0,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case Ordinario:
-            assertEquals(p.getAbbonamento().multiply(new BigDecimal(numero)).doubleValue()
+            assertEquals(ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case Sostenitore:
-            assertEquals(p.getAbbonamentoSostenitore().multiply(new BigDecimal(numero)).doubleValue()
+            assertEquals(ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case Scontato:
-            assertEquals(p.getAbbonamentoConSconto().multiply(new BigDecimal(numero)).doubleValue()
+            assertEquals(ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         case Web:
-            assertEquals(p.getAbbonamentoWeb().multiply(new BigDecimal(numero)).doubleValue()
+            assertEquals(ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
-            assertEquals(0.0,ec.getSpesePostali().doubleValue(),0);
             break;
         default:
             break;
         }
-        
-        ec.getSpedizioni().stream().forEach(s -> assertEquals(s.getInvioSpedizione(),InvioSpedizione.Spedizioniere));
+                
 
     }
     
     @Test
     public void testCreaSpedizioneMessaggio() {
+        List<SpesaSpedizione> spese = SmdLoadSampleData.getSpeseSpedizione();
+        Abbonamento abb = new Abbonamento();
+        abb.setIntestatario(new Anagrafica());
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        assertEquals(3, messaggio.getAnticipoSpedizione());
+        assertEquals(2, messaggio.getAnticipoSpedizione());
         EstrattoConto ec = new EstrattoConto();
         ec.setPubblicazione(messaggio);
         ec.setNumero(10);
-        ec.setDestinatario(new Anagrafica());
         Anno anno = Smd.getAnnoProssimo();
         anno = Anno.getAnnoSuccessivo(anno);
-        Spedizione s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.GENNAIO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.GENNAIO));
-        assertEquals(Mese.GENNAIO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.OTTOBRE, s1.getMeseSpedizione());
-        assertEquals(Anno.getAnnoPrecedente(anno), s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.FEBBRAIO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.FEBBRAIO));
-        assertEquals(Mese.FEBBRAIO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.NOVEMBRE, s1.getMeseSpedizione());
-        assertEquals(Anno.getAnnoPrecedente(anno), s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
+        ec.setMeseFine(Mese.GENNAIO);
+        ec.setMeseFine(Mese.MARZO);
+        List<SpedizioneItem> items = Smd.creaEC(abb, ec);
         
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.MARZO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.MARZO));
-        assertEquals(Mese.MARZO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.DICEMBRE, s1.getMeseSpedizione());
-        assertEquals(Anno.getAnnoPrecedente(anno), s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-        
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.APRILE, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.APRILE));
-        assertEquals(Mese.APRILE, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.GENNAIO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.MAGGIO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.MAGGIO));
-        assertEquals(Mese.MAGGIO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.FEBBRAIO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.GIUGNO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.GIUGNO));
-        assertEquals(Mese.GIUGNO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.MARZO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.LUGLIO, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.LUGLIO));
-        assertEquals(Mese.LUGLIO, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.APRILE, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        try {
-            assertTrue(!messaggio.getMesiPubblicazione().contains(Mese.AGOSTO));
-            s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.AGOSTO, anno, InvioSpedizione.Spedizioniere);
-        } catch (UnsupportedOperationException e) {
-            assertEquals("cannot create spedizione for month pubblicazione: SpedizioniereAGOSTOANNO2021", e.getMessage());
+        assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
+        assertEquals(messaggio.getAbbonamento().multiply(new BigDecimal(10)).doubleValue(), ec.getImporto().doubleValue(),0);
+        assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
+        assertEquals(BigDecimal.ZERO, abb.getSpese());
+        assertEquals(abb, ec.getAbbonamento());
+        assertEquals(messaggio.getMesiPubblicazione().size()*10, ec.getNumeroTotaleRiviste().intValue());
+        assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
+        EnumSet<Mese> mesiPubb = EnumSet.noneOf(Mese.class);
+        for (SpedizioneItem item: items) {
+            assertEquals(anno, item.getAnnoPubblicazione());
+            assertEquals(ec, item.getEstrattoConto());
+            assertEquals(10, item.getNumero().intValue());
+            mesiPubb.add(item.getMesePubblicazione());
+           
+            log.info(item.toString());
         }
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.SETTEMBRE, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.SETTEMBRE));
-        assertEquals(Mese.SETTEMBRE, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.GIUGNO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
+        List<Spedizione> spedizioni = Smd.creaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), spese);
         
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.OTTOBRE, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.OTTOBRE));
-        assertEquals(Mese.OTTOBRE, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.LUGLIO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
+        for (Spedizione spedizione: spedizioni) {
+            assertEquals(abb, spedizione.getAbbonamento());
+        }
         
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.NOVEMBRE, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.NOVEMBRE));
-        assertEquals(Mese.NOVEMBRE, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.AGOSTO, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-        s1 = Smd.creaSpedizione(ec,ec.getNumero(),Mese.DICEMBRE, anno, InvioSpedizione.Spedizioniere);
-        assertTrue(messaggio.getMesiPubblicazione().contains(Mese.DICEMBRE));
-        assertEquals(Mese.DICEMBRE, s1.getMesePubblicazione());
-        assertEquals(anno, s1.getAnnoPubblicazione());
-        assertEquals(Mese.SETTEMBRE, s1.getMeseSpedizione());
-        assertEquals(anno, s1.getAnnoSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(s1, messaggio.getAnticipoSpedizione()));
-
-
-
     }
 
     @Test
-    public void testCalcolaCostoAbbonamentoStd() {
+    public void testImportoAbbonamentoStd() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Anagrafica ar = SmdLoadSampleData.getAR();
         Abbonamento abb = new Abbonamento();
         abb.setIntestatario(ar);
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             EstrattoConto ec = creaECItalia(abb,messaggio, tpec, 10); 
-            assertTrue(ec.isAbbonamentoAnnuale());
-            assertEquals(11, ec.getSpedizioni().size());
-            log.info(ec.toString());
-            for (Spedizione s : ec.getSpedizioni()) {
-                assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
-                log.info(s.toString());
-            }
-            assertEquals(0, ec.getSpedizioniPosticipate().size());
-            verificaImportoAbbonamentoAnnuale(ec,messaggio,10);
+            verificaImportoAbbonamentoAnnuale(abb,ec);
         });
-
-        Pubblicazione lodare = SmdLoadSampleData.getLodare();
-        EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
-            EstrattoConto ec = creaECItalia(abb,lodare, tpec, 10); 
-            assertTrue(ec.isAbbonamentoAnnuale());
-            assertEquals(12, ec.getSpedizioni().size());
-            assertEquals(0, ec.getSpedizioniPosticipate().size());
-            verificaImportoAbbonamentoAnnuale(ec,lodare,10);
-        });
-
-        Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
-        EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
-            EstrattoConto ec = creaECItalia(abb,blocchetti, tpec, 45); 
-            assertTrue(ec.isAbbonamentoAnnuale());
-            assertEquals(2, ec.getSpedizioni().size());
-            assertEquals(0, ec.getSpedizioniPosticipate().size());
-            verificaImportoAbbonamentoAnnuale(ec,blocchetti,45);
-        });
-
-        Pubblicazione estratti = SmdLoadSampleData.getEstratti();
-        EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
-            EstrattoConto ec = creaECItalia( abb,estratti, tpec, 11); 
-            assertTrue(ec.isAbbonamentoAnnuale());
-            assertEquals(1, ec.getSpedizioni().size());
-            assertEquals(0, ec.getSpedizioniPosticipate().size());
-            verificaImportoAbbonamentoAnnuale(ec,estratti,11);
-        });
-
     }
 
     @Test
-    public void testCalcolaCostoAbbonamentoEstero() {
-        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        
-        EstrattoConto ec = creaECConArea(AreaSpedizione.AmericaAfricaAsia, messaggio, TipoEstrattoConto.Ordinario, 1); 
-        assertTrue(ec.isAbbonamentoAnnuale());
-        assertEquals(11, ec.getSpedizioni().size());
-        log.info(ec.toString());
-        for (Spedizione s : ec.getSpedizioni()) {
-            assertEquals(InvioSpedizione.AdpSede, s.getInvioSpedizione());
-            log.info(s.toString());
+    public void testCostiAbbonamentoEsteroStd() {
+        Pubblicazione p = SmdLoadSampleData.getMessaggio();
+        Anno anno = Smd.getAnnoProssimo();
+        Mese mese = Smd.getMeseCorrente();
+        if (mese.getPosizione()+p.getAnticipoSpedizione() > 12) {
+            anno=Anno.getAnnoSuccessivo(anno);
         }
-        assertEquals(0, ec.getSpedizioniPosticipate().size());
-        assertEquals(messaggio.getAbbonamento().doubleValue(), ec.getImporto().doubleValue(),0);
-        SpesaSpedizione ss = messaggio.getSpesaSpedizioneBy(AreaSpedizione.AmericaAfricaAsia, 1);
-        assertEquals(ss.getSpeseSpedizione().doubleValue()*ec.getSpedizioni().size(), ec.getSpesePostali().doubleValue(),0.001);
-    }
-
-    @Test
-    public void testCalcolaImporti() {
-        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        Anagrafica ar = SmdLoadSampleData.getAR();
         Abbonamento abb = new Abbonamento();
-        abb.setIntestatario(ar);
-        EstrattoConto ec = creaEC(abb,Mese.GENNAIO, Smd.getAnnoPassato(), Mese.MARZO, Smd.getAnnoPassato(),messaggio, TipoEstrattoConto.Ordinario, 1);
-        assertTrue(!ec.isAbbonamentoAnnuale());
-        assertEquals(3, ec.getSpedizioni().size());
-        assertEquals(3, ec.getSpedizioniPosticipate().size());
-        assertEquals(messaggio.getCostoUnitario().doubleValue()*3, ec.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getSpesaSpedizioneBy(AreaSpedizione.Italia, 1).getSpeseSpedizione().doubleValue()*ec.getSpedizioni().size(), ec.getSpesePostali().doubleValue(),0);
-        ec.getSpedizioni().stream().forEach(s -> assertEquals(s.getInvioSpedizione(),InvioSpedizione.AdpSede));
-        try {
-            creaEC(abb,Mese.MARZO, Anno.ANNO2019, Mese.GENNAIO, Anno.ANNO2019, messaggio, TipoEstrattoConto.Scontato, 1);
-            assertTrue(false);
-        } catch (UnsupportedOperationException e) {
-            assertEquals("data inizio maggiore di data fine", e.getMessage());
-        }
+        Anagrafica intestatario = new Anagrafica();
+        intestatario.setNome("Tizio");
+        intestatario.setCognome("Sempronis");
+        intestatario.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
+        abb.setIntestatario(intestatario);
+        EstrattoConto ec = new EstrattoConto();
         
-        try {
-            creaEC(abb,Mese.AGOSTO, Anno.ANNO2019, Mese.AGOSTO, Anno.ANNO2019, messaggio, TipoEstrattoConto.Scontato, 1);
-            assertTrue(false);
-        } catch (UnsupportedOperationException e) {
-            assertEquals("Nessuna spedizione per estratto conto", e.getMessage());
-        }
-        
+        assertTrue(ec.isAbbonamentoAnnuale());
     }
     
-    @Test
-    public void testSpedizionePosticipata() {
-        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        Spedizione spedizione = new Spedizione();
-        spedizione.setAnnoPubblicazione(Smd.getAnnoCorrente());
-        spedizione.setMesePubblicazione(Mese.APRILE);
-        spedizione.setAnnoSpedizione(Smd.getAnnoCorrente());
-        spedizione.setMeseSpedizione(Mese.getByPosizione(Mese.APRILE.getPosizione()-messaggio.getAnticipoSpedizione()));
-        assertEquals(Mese.GENNAIO, spedizione.getMeseSpedizione());
-        assertTrue(!Smd.spedizionePosticipata(spedizione, messaggio.getAnticipoSpedizione()));
-    }
-
 }

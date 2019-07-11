@@ -1,10 +1,8 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,16 +12,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
-import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 
 @Entity
@@ -40,32 +33,36 @@ public class EstrattoConto implements SmdEntity {
     private Pubblicazione pubblicazione;
 
     @ManyToOne
-    private Anagrafica destinatario;
-
-    @ManyToOne
     private Storico storico;
 
     @Enumerated(EnumType.STRING)
-    private Invio invio = Invio.Destinatario;
-
-    @Enumerated(EnumType.STRING)
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
-
-    @OneToMany(mappedBy="estrattoConto",orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<Spedizione> spedizioni = new ArrayList<>();
 
     private Mese meseInizio=Mese.GENNAIO;
     private Anno annoInizio=Smd.getAnnoProssimo();
     private Mese meseFine = Mese.DICEMBRE;
     private Anno annoFine = Smd.getAnnoProssimo();
     private Integer numero = 1;
+    private Integer numeroTotaleRiviste = 0;
     
     private BigDecimal importo = BigDecimal.ZERO;
-    private BigDecimal spesePostali = BigDecimal.ZERO;
 
     public EstrattoConto() {
     }
 
+    public boolean isAbbonamentoAnnuale() {
+        if (annoInizio != annoFine) {
+            return false;
+        }
+        if (meseInizio != Mese.GENNAIO) {
+            return false;
+        }
+        if (meseFine != Mese.DICEMBRE) {
+            return false;
+        }
+        return true;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -92,14 +89,6 @@ public class EstrattoConto implements SmdEntity {
 
     public void setStorico(Storico storico) {
         this.storico = storico;
-    }
-
-    public Invio getInvio() {
-        return invio;
-    }
-
-    public void setInvio(Invio invio) {
-        this.invio = invio;
     }
 
     public Integer getNumero() {
@@ -136,170 +125,7 @@ public class EstrattoConto implements SmdEntity {
     public void setImporto(BigDecimal importo) {
         this.importo = importo;
     }
-
-    public BigDecimal getSpesePostali() {
-        return spesePostali;
-    }
-
-    public void setSpesePostali(BigDecimal spesePostali) {
-        this.spesePostali = spesePostali;
-    }
     
-    @Transient
-    public BigDecimal getTotale() {
-        return importo.add(spesePostali);
-    }
-
-    public List<Spedizione> getSpedizioni() {
-        return spedizioni;
-    }
-
-    public void setSpedizioni(List<Spedizione> spedizioni) {
-        this.spedizioni = spedizioni;
-    }
-    
-    public void addSpedizione(Spedizione spedizione) {
-        if (spedizioni.contains(spedizione)) {
-            spedizioni.remove(spedizione);
-        }
-        spedizioni.add(spedizione);
-    }
-
-    public boolean deleteSpedizione(Spedizione spedizione) {
-        return spedizioni.remove(spedizione);
-    }
-
-    public boolean isAbbonamentoAnnuale() {
-        if (spedizioni.size() != pubblicazione.getMesiPubblicazione().size()) {
-            return false;
-        }
-        EnumSet<Mese> mesiPubblicazione = EnumSet.noneOf(Mese.class);
-        EnumSet<Anno> anniPubblicazione = EnumSet.noneOf(Anno.class);
-        for (Spedizione spedizione:spedizioni) {
-            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
-                continue;
-            }
-            mesiPubblicazione.add(spedizione.getMesePubblicazione());
-            anniPubblicazione.add(spedizione.getAnnoPubblicazione());
-            if (anniPubblicazione.size() > 1) {
-                return false;
-            }
-        }
-        for (Mese mese: pubblicazione.getMesiPubblicazione() ) {
-            if (mesiPubblicazione.contains(mese)) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-    
-    public boolean isEmpty() {
-        return getNumeroSpediti() == 0;
-    }
-    
-    public int getNumeroSpediti() {
-        int i = 0;
-        for (Spedizione spedizione :spedizioni) {
-            if (spedizione.getStatoSpedizione() == StatoSpedizione.SOSPESA) {
-                continue;
-            }
-            i=i+spedizione.getNumero();
-        }            
-        return i;
-        
-    }
-    
-    public List<Spedizione> getSpedizioniPosticipate() {
-        return 
-            spedizioni.stream()
-            .filter(
-            spedizione -> 
-        Smd.spedizionePosticipata(
-          spedizione, pubblicazione.getAnticipoSpedizione())
-        ).collect(Collectors.toList());
-    }
-
-    @Transient
-    public String getIntestazione() {
-        return destinatario.getCaption();
-    }
-
-    @Transient
-    public String getSottoIntestazione() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return "";
-            } 
-            return "c/o" + destinatario.getCo().getCaption();
-        }
-        return "c/o " + 
-        getAbbonamento().getIntestatario().getCaption();
-    }
-    
-    @Transient
-    public String getIndirizzo() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getIndirizzo();
-            }
-            return destinatario.getCo().getIndirizzo();            
-        }
-        return getAbbonamento().getIndirizzo();
-    }
-
-    @Transient
-    public String getCap() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getCap();
-            }
-            return destinatario.getCo().getCap();        
-        }
-        return getAbbonamento().getCap();
-    }
-
-    @Transient
-    public String getCitta() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getCitta();
-            }
-            return destinatario.getCo().getCitta();        
-        }
-        return getAbbonamento().getCitta();
-    }
-
-    @Transient
-    public Provincia getProvincia() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getProvincia();
-            }
-            return destinatario.getCo().getProvincia();        
-        }
-        return getAbbonamento().getProvincia();
-
-    }
-    @Transient
-    public Paese getPaese() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getPaese();
-            }
-            return destinatario.getCo().getPaese();        
-        }
-        return getAbbonamento().getPaese();        
-    }
-
-    public Anagrafica getDestinatario() {
-        return destinatario;
-    }
-
-    public void setDestinatario(Anagrafica destinatario) {
-        this.destinatario = destinatario;
-    }
-
     public Mese getMeseInizio() {
         return meseInizio;
     }
@@ -330,5 +156,13 @@ public class EstrattoConto implements SmdEntity {
 
     public void setAnnoFine(Anno annoFine) {
         this.annoFine = annoFine;
+    }
+
+    public Integer getNumeroTotaleRiviste() {
+        return numeroTotaleRiviste;
+    }
+
+    public void setNumeroTotaleRiviste(Integer numeroTotaleRiviste) {
+        this.numeroTotaleRiviste = numeroTotaleRiviste;
     }
 }

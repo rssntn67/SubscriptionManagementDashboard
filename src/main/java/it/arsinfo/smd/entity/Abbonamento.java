@@ -42,8 +42,10 @@ public class Abbonamento implements SmdEntity {
     @OneToOne
     private Versamento versamento;
 
-    private BigDecimal totale=BigDecimal.ZERO;
-    
+    private BigDecimal importo=BigDecimal.ZERO;
+
+    private BigDecimal spese=BigDecimal.ZERO;
+
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
     private String campo;
@@ -242,11 +244,23 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return totale;
+        return importo.add(spese);
     }
 
-    public void setTotale(BigDecimal totale) {
-        this.totale = totale;
+    public BigDecimal getImporto() {
+        return importo;
+    }
+
+    public void setImporto(BigDecimal importo) {
+        this.importo = importo;
+    }
+
+    public BigDecimal getSpese() {
+        return spese;
+    }
+
+    public void setSpese(BigDecimal spese) {
+        this.spese = spese;
     }
 
 

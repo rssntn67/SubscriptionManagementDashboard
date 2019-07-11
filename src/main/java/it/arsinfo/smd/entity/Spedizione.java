@@ -1,5 +1,10 @@
 package it.arsinfo.smd.entity;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,9 +13,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
@@ -24,9 +32,15 @@ public class Spedizione implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private EstrattoConto estrattoConto;
+    @ManyToOne(fetch=FetchType.LAZY)
+    private Abbonamento abbonamento;
+
+    @ManyToOne
+    private Anagrafica destinatario;
     
+    @Enumerated(EnumType.STRING)
+    private Invio invio = Invio.Destinatario;
+
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
@@ -35,16 +49,18 @@ public class Spedizione implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private Mese meseSpedizione;
+
     @Enumerated(EnumType.STRING)
     private Anno annoSpedizione;
     
-    @Enumerated(EnumType.STRING)
-    private Mese mesePubblicazione;
-    @Enumerated(EnumType.STRING)
-    private Anno annoPubblicazione;
-
-    private Integer numero;
+    private Integer pesoStimato=0;
     
+    private BigDecimal spesePostali = BigDecimal.ZERO;
+
+    @OneToMany(mappedBy="spedizione", orphanRemoval=true, fetch=FetchType.EAGER)
+    List<SpedizioneItem> spedizioneItems = new ArrayList<SpedizioneItem>();
+
+
     public Spedizione() {
     }
 
@@ -60,24 +76,13 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, %s %s, %s %s %s, num. %d, %s, %s ]", 
+        return String.format("Spedizione[id=%d, %s %s, peso gr. %d , %s, %s ]", 
                              id,
                              meseSpedizione,
                              annoSpedizione,
-                             estrattoConto.getPubblicazione().getNome(),
-                             mesePubblicazione, 
-                             annoPubblicazione, 
-                             numero, 
-                             estrattoConto.getIntestazione(), 
+                             pesoStimato, 
+                             destinatario.getCaption(), 
                              statoSpedizione);
-    }
-
-    public EstrattoConto getEstrattoConto() {
-        return estrattoConto;
-    }
-
-    public void setEstrattoConto(EstrattoConto estrattoConto) {
-        this.estrattoConto = estrattoConto;
     }
 
     public Mese getMeseSpedizione() {
@@ -96,22 +101,6 @@ public class Spedizione implements SmdEntity {
         this.annoSpedizione = annoSpedizione;
     }
 
-    public Mese getMesePubblicazione() {
-        return mesePubblicazione;
-    }
-
-    public void setMesePubblicazione(Mese mesePubblicazione) {
-        this.mesePubblicazione = mesePubblicazione;
-    }
-
-    public Anno getAnnoPubblicazione() {
-        return annoPubblicazione;
-    }
-
-    public void setAnnoPubblicazione(Anno annoPubblicazione) {
-        this.annoPubblicazione = annoPubblicazione;
-    }
-
     public InvioSpedizione getInvioSpedizione() {
         return invioSpedizione;
     }
@@ -128,52 +117,189 @@ public class Spedizione implements SmdEntity {
         this.statoSpedizione = statoSpedizione;
     }
 
-    @Transient
-    public String getPubblicazione() {
-        return estrattoConto.getPubblicazione().getNome();
-    }
-    
-    public Integer getNumero() {
-        return numero;
-    }
     
     @Transient
     public String getIntestazione() {
-        return estrattoConto.getIntestazione();
+        return destinatario.getCaption();
     }
-    
+
     @Transient
     public String getSottoIntestazione() {
-        return estrattoConto.getSottoIntestazione();
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return "";
+            } 
+            return "c/o" + destinatario.getCo().getCaption();
+        }
+        return "c/o " + 
+        getAbbonamento().getIntestatario().getCaption();
     }
     
     @Transient
     public String getIndirizzo() {
-        return estrattoConto.getIndirizzo();
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return destinatario.getIndirizzo();
+            }
+            return destinatario.getCo().getIndirizzo();            
+        }
+        return getAbbonamento().getIndirizzo();
     }
 
     @Transient
     public String getCap() {
-        return estrattoConto.getCap();
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return destinatario.getCap();
+            }
+            return destinatario.getCo().getCap();        
+        }
+        return getAbbonamento().getCap();
     }
 
     @Transient
     public String getCitta() {
-        return estrattoConto.getCitta();
-    }
-    
-    @Transient
-    public Provincia getProvincia() {
-        return estrattoConto.getProvincia();
-    }
-    
-    @Transient
-    public Paese getPaese() {
-        return estrattoConto.getPaese();
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return destinatario.getCitta();
+            }
+            return destinatario.getCo().getCitta();        
+        }
+        return getAbbonamento().getCitta();
     }
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
+    @Transient
+    public Provincia getProvincia() {
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return destinatario.getProvincia();
+            }
+            return destinatario.getCo().getProvincia();        
+        }
+        return getAbbonamento().getProvincia();
+
+    }
+    @Transient
+    public Paese getPaese() {
+        if (invio == Invio.Destinatario) {
+            if (destinatario.getCo() == null) {
+                return destinatario.getPaese();
+            }
+            return destinatario.getCo().getPaese();        
+        }
+        return getAbbonamento().getPaese();        
+    }
+
+    public Anagrafica getDestinatario() {
+        return destinatario;
+    }
+
+    public void setDestinatario(Anagrafica destinatario) {
+        this.destinatario = destinatario;
+    }
+
+    public Abbonamento getAbbonamento() {
+        return abbonamento;
+    }
+
+    public void setAbbonamento(Abbonamento abbonamento) {
+        this.abbonamento = abbonamento;
+    }
+
+    public Invio getInvio() {
+        return invio;
+    }
+
+    public void setInvio(Invio invio) {
+        this.invio = invio;
+    }
+
+    public Integer getPesoStimato() {
+        return pesoStimato;
+    }
+
+    public void setPesoStimato(Integer pesoStimato) {
+        this.pesoStimato = pesoStimato;
+    }
+    
+    public List<SpedizioneItem> getSpedizioniPosticipate() {
+        return 
+            spedizioneItems.stream()
+            .filter(
+            item -> 
+        Smd.spedizionePosticipata(
+          this, item)
+        ).collect(Collectors.toList());
+    }
+    
+
+    public BigDecimal getSpesePostali() {
+        return spesePostali;
+    }
+
+    public void setSpesePostali(BigDecimal spesePostali) {
+        this.spesePostali = spesePostali;
+    }
+
+    public List<SpedizioneItem> getSpedizioneItems() {
+        return spedizioneItems;
+    }
+
+    public void setSpedizioneItems(List<SpedizioneItem> spedizioneItems) {
+        this.spedizioneItems = spedizioneItems;
+    }
+
+    public void addSpedizioneItem(SpedizioneItem item) {
+        if (spedizioneItems.contains(item)) {
+            spedizioneItems.remove(item);
+        }
+        spedizioneItems.add(item);
+    }
+    
+    public boolean deleteSpedizioneItem(SpedizioneItem item) {
+        return spedizioneItems.remove(item);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((annoSpedizione == null) ? 0 : annoSpedizione.hashCode());
+        result = prime * result
+                + ((destinatario == null) ? 0 : destinatario.hashCode());
+        result = prime * result + ((invio == null) ? 0 : invio.hashCode());
+        result = prime * result
+                + ((invioSpedizione == null) ? 0
+                                             : invioSpedizione.hashCode());
+        result = prime * result
+                + ((meseSpedizione == null) ? 0 : meseSpedizione.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Spedizione other = (Spedizione) obj;
+        if (annoSpedizione != other.annoSpedizione)
+            return false;
+        if (destinatario == null) {
+            if (other.destinatario != null)
+                return false;
+        } else if (!destinatario.equals(other.destinatario))
+            return false;
+        if (invio != other.invio)
+            return false;
+        if (invioSpedizione != other.invioSpedizione)
+            return false;
+        if (meseSpedizione != other.meseSpedizione)
+            return false;
+        return true;
     }
 
 

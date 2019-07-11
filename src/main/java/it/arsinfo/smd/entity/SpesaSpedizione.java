@@ -5,29 +5,29 @@ import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.RangeSpeseSpedizione;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"range" , "area"})})
 public class SpesaSpedizione implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private BigDecimal speseSpedizione=BigDecimal.ZERO;
-
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Pubblicazione pubblicazione;
-    private Integer numero=1;
+    private BigDecimal spese=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private AreaSpedizione areaSpedizione=AreaSpedizione.Italia;
+    private RangeSpeseSpedizione range = RangeSpeseSpedizione.Base;
+    @Enumerated(EnumType.STRING)
+    private AreaSpedizione area=AreaSpedizione.Italia;
 
     public Long getId() {
         return id;
@@ -38,40 +38,32 @@ public class SpesaSpedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("SpesaSpedizione[id=%d,%d '%s' '%.2f' Eur - %s]",
-                             id, numero, pubblicazione.getNome(),speseSpedizione,areaSpedizione);
+        return String.format("SpesaSpedizione[id=%d,%s '%.2f' Eur - %s]",
+                             id, range,spese,area);
     }
 
-    public BigDecimal getSpeseSpedizione() {
-        return speseSpedizione;
+    public BigDecimal getSpese() {
+        return spese;
     }
 
-    public void setSpeseSpedizione(BigDecimal speseSpedizione) {
-        this.speseSpedizione = speseSpedizione;
+    public void setSpese(BigDecimal speseSpedizione) {
+        this.spese = speseSpedizione;
     }
 
-    public Pubblicazione getPubblicazione() {
-        return pubblicazione;
+    public AreaSpedizione getArea() {
+        return area;
     }
 
-    public void setPubblicazione(Pubblicazione pubblicazione) {
-        this.pubblicazione = pubblicazione;
+    public void setArea(AreaSpedizione areaSpedizione) {
+        this.area = areaSpedizione;
     }
 
-    public Integer getNumero() {
-        return numero;
+    public RangeSpeseSpedizione getRange() {
+        return range;
     }
 
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
-    public AreaSpedizione getAreaSpedizione() {
-        return areaSpedizione;
-    }
-
-    public void setAreaSpedizione(AreaSpedizione areaSpedizione) {
-        this.areaSpedizione = areaSpedizione;
+    public void setRange(RangeSpeseSpedizione range) {
+        this.range = range;
     }
 
 }

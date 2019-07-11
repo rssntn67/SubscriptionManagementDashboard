@@ -101,15 +101,15 @@ public class StoricoEditor
             List<EstrattoConto> ecs = estrattoContoDao.findByStorico(get());
             ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Smd.getAnnoProssimo()).forEach( ec ->{
                 ec.setNumero(get().getNumero());
-                ec.setDestinatario(get().getDestinatario());
-                ec.setInvio(get().getInvio());
+//                ec.setDestinatario(get().getDestinatario());
+//                ec.setInvio(get().getInvio());
                 ec.setTipoEstrattoConto(get().getTipoEstrattoConto());
                 ec.setPubblicazione(get().getPubblicazione());
                 Abbonamento abb = ec.getAbbonamento();
                 Smd.aggiornaEC(abb, ec, get().getInvioSpedizione());
                 abbonamentoDao.save(abb);
                 estrattoContoDao.save(ec);
-                ec.getSpedizioni().stream().forEach(s ->spedizioneDao.save(s));
+//                ec.getSpedizioni().stream().forEach(s ->spedizioneDao.save(s));
             });
             save();
  

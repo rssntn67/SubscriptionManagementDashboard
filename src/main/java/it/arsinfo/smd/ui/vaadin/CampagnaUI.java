@@ -133,7 +133,7 @@ public class CampagnaUI extends SmdUI {
                     abbonamentoDao.save(abb);
                     ecs.stream().forEach( ec -> {
                         estrattoContoDao.save(ec);
-                        ec.getSpedizioni().stream().forEach(sped -> spedizioneDao.save(sped));
+                        //FIXME ec.getSpedizioni().stream().forEach(sped -> spedizioneDao.save(sped));
                     });
                 }
             }

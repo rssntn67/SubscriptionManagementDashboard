@@ -109,7 +109,7 @@ public class AbbonamentoUI extends SmdUI {
                     log.info("save:" + get().toString());
                     getEstrattiConto().stream().forEach(ec -> {
                         estrattoContoDao.save(ec);
-                        ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+//FIXME                        ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
                     });
                     getEstrattiConto().clear();
                     onChange();
@@ -125,17 +125,19 @@ public class AbbonamentoUI extends SmdUI {
         EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
+                /*
                 if (get().getDestinatario() == null) {
                     Notification.show("Selezionare il Destinatario",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
+                */
                 if (get().getPubblicazione() == null) {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
                 try {
-                    Smd.creaEC(editor.get(),
-                         get(),getInvioSpedizione());
+              //FIXME      Smd.creaEC(editor.get(),
+              //           get(),getInvioSpedizione());
                 } catch (UnsupportedOperationException e) {
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                     return;
@@ -210,7 +212,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
             hideMenu();
             estrattoContoEditor.edit(estrattoContoAdd.generate());
-            estrattoContoEditor.setDestinatario(editor.get().getIntestatario());
+//FIXME            estrattoContoEditor.setDestinatario(editor.get().getIntestatario());
             editor.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });

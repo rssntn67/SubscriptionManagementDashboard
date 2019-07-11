@@ -41,6 +41,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_ANAGRAFICA = "/anagrafica";
     public final static String URL_STORICO = "/storico";
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
+    public final static String URL_SPESESPEDIZIONE = "/spesespedizione";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_ESTRATTO_CONTO = "/estrattoconto";
     public final static String URL_SPEDIZIONI = "/spedizioni";
@@ -89,6 +90,14 @@ public abstract class SmdUI extends UI {
             }
         });
 
+        menu.addItem("Spese Spedizione",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_SPESESPEDIZIONE);
+            }
+        });
+
         MenuItem campagne = menu.addItem("Gestione Campagne",null);
         
         campagne.addItem("Campagna",new MenuBar.Command() {
@@ -121,6 +130,7 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(URL_ABBONAMENTI);
             }
         } );
+
         abbonamenti.addItem("Estratti Conto",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -229,7 +239,11 @@ public abstract class SmdUI extends UI {
     public Link getPubblicazioneLink() {
         return new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI));    
     }
-    
+
+    public Link getSpeseSpedizioneLink() {
+        return new Link("Spese Spedizione",new ExternalResource(URL_PUBBLICAZIONI));    
+    }
+
     public Link[] getCampagnaLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link("Campagna",   new ExternalResource(URL_CAMPAGNA)));

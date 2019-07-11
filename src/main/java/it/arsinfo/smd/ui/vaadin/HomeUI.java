@@ -37,6 +37,9 @@ public class HomeUI extends SmdUI {
         right.addComponent(new Label("Gestione Pubblicazioni:"));
         right.addComponents(new HorizontalLayout(getPubblicazioneLink()));
         right.addComponent(new Label(""));
+        right.addComponent(new Label("Gestione Spese:"));
+        right.addComponents(new HorizontalLayout(getSpeseSpedizioneLink()));
+        right.addComponent(new Label(""));
         right.addComponent(new Label("Gestione Campagne:"));
         right.addComponents(new HorizontalLayout(getCampagnaLinks()));
         right.addComponent(new Label(""));
