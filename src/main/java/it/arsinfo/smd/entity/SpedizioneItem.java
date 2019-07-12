@@ -82,4 +82,15 @@ public class SpedizioneItem implements SmdEntity {
         this.estrattoConto = estrattoConto;
     }
         
+    @Override
+    public String toString() {
+        return String.format("SpedizioneItem[id=%d, %s %s %s, %d ]", 
+                             id,
+                             estrattoConto.getPubblicazione().getNome(),
+                             mesePubblicazione,
+                             annoPubblicazione,
+                             numero
+                             );
+    }
+
  }

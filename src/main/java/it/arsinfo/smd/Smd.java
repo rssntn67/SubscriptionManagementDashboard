@@ -224,6 +224,7 @@ public class Smd {
         ec.setAbbonamento(abb);
         log.info("creaEC: intestatario: "+ abb.getIntestatario().getCaption());
         log.info("creaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
+        log.info("creaEC: tipo: "+ ec.getTipoEstrattoConto());
         log.info("creaEC: pubbli.: "+ ec.getPubblicazione().getNome());
         log.info("creaEC: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
         log.info("creaEC: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
@@ -443,6 +444,7 @@ public class Smd {
             if (!ec.isAbbonamentoAnnuale()) {
                 costo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
             }
+            break;
 
         case Web:
             if (!ec.isAbbonamentoAnnuale()) {

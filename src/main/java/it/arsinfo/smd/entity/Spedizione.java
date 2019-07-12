@@ -81,7 +81,7 @@ public class Spedizione implements SmdEntity {
                              meseSpedizione,
                              annoSpedizione,
                              pesoStimato, 
-                             destinatario.getCaption(), 
+                             destinatario.getId(), 
                              statoSpedizione);
     }
 
