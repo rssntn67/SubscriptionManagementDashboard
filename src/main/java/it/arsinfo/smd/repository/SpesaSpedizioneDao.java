@@ -9,5 +9,6 @@ import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 
 public interface SpesaSpedizioneDao extends JpaRepository<SpesaSpedizione, Long> {
-    List<SpesaSpedizione> findByAreaSpedizioneAndRange(AreaSpedizione area,RangeSpeseSpedizione range);    
+    SpesaSpedizione findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione area,RangeSpeseSpedizione range);
+    List<SpesaSpedizione> findByAreaSpedizione(AreaSpedizione areaSpedizione);    
 }

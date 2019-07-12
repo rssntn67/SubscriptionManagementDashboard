@@ -6,19 +6,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 
 public interface SpedizioneItemDao extends JpaRepository<SpedizioneItem, Long> {
 
-    List<SpedizioneItem> findByAbbonamento(Abbonamento abbonamento);
+    List<SpedizioneItem> findBySpedizione(Spedizione spedizione);
     List<SpedizioneItem> findByAnnoPubblicazione(Anno anno);
     List<SpedizioneItem> findByMesePubblicazione(Mese mese);
-    List<SpedizioneItem> findByMesePubblicazioneAndAnnoPubblicazione(Mese mese,
-            Anno anno);
     List<SpedizioneItem> findByNumero(Integer numero);
-    List<SpedizioneItem> findByPubblicazione(Pubblicazione pubblicazione);
-    List<SpedizioneItem> findByPubblicazioneAndNumero(Pubblicazione pubblicazione, Integer numero);
+    List<SpedizioneItem> findByEstrattoConto(EstrattoConto ec);
 
 }

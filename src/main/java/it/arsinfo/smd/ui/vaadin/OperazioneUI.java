@@ -198,7 +198,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.Spedizioniere,op.getMese(),op.getAnno()));
+//                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.Spedizioniere,op.getMese(),op.getAnno()));
             });
             return button;
         });
@@ -210,7 +210,7 @@ public class OperazioneUI extends SmdUI {
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
-                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.AdpSede,op.getMese(),op.getAnno()));
+//                spedGrid.populate(Smd.listaSpedizioni(estrattoContoDao.findAll(), InvioSpedizione.AdpSede,op.getMese(),op.getAnno()));
             });
             return button;
         });

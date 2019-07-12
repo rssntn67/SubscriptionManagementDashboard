@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -106,7 +107,8 @@ public class StoricoEditor
                 ec.setTipoEstrattoConto(get().getTipoEstrattoConto());
                 ec.setPubblicazione(get().getPubblicazione());
                 Abbonamento abb = ec.getAbbonamento();
-                Smd.aggiornaEC(abb, ec, get().getInvioSpedizione());
+                //FIXME
+                Smd.aggiornaEC(abb, ec, new ArrayList<>());
                 abbonamentoDao.save(abb);
                 estrattoContoDao.save(ec);
 //                ec.getSpedizioni().stream().forEach(s ->spedizioneDao.save(s));

@@ -152,7 +152,7 @@ public class Smd {
         ec.setAnnoInizio(abb.getAnno());
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(abb.getAnno());
-        creaEC(abb, ec);
+        generaECItems(abb, ec);
         return ec;
     }
 
@@ -216,11 +216,12 @@ public class Smd {
         abb.setImporto(abb.getImporto().add(ec.getImporto()));        
     }
 
-    public static List<SpedizioneItem> creaEC(
+    public static List<SpedizioneItem> generaECItems(
             Abbonamento abb,
             EstrattoConto ec
             ) throws UnsupportedOperationException {
         
+        ec.setAbbonamento(abb);
         log.info("creaEC: intestatario: "+ abb.getIntestatario().getCaption());
         log.info("creaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
         log.info("creaEC: pubbli.: "+ ec.getPubblicazione().getNome());
@@ -251,7 +252,7 @@ public class Smd {
     
     }
     
-    public static List<Spedizione> creaSpedizioni(Abbonamento abb, 
+    public static List<Spedizione> generaSpedizioni(Abbonamento abb, 
                     List<SpedizioneItem> items, 
                     Invio invio, 
                     InvioSpedizione invioSpedizione, Anagrafica destinatario, List<SpesaSpedizione> spese) {

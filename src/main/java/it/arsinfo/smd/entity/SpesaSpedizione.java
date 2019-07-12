@@ -15,7 +15,7 @@ import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"range" , "area"})})
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"rangeSpeseSpedizione" , "areaSpedizione"})})
 public class SpesaSpedizione implements SmdEntity {
 
     @Id
@@ -25,9 +25,9 @@ public class SpesaSpedizione implements SmdEntity {
     private BigDecimal spese=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    private RangeSpeseSpedizione range = RangeSpeseSpedizione.Base;
+    private RangeSpeseSpedizione rangeSpeseSpedizione = RangeSpeseSpedizione.Base;
     @Enumerated(EnumType.STRING)
-    private AreaSpedizione area=AreaSpedizione.Italia;
+    private AreaSpedizione areaSpedizione=AreaSpedizione.Italia;
 
     public Long getId() {
         return id;
@@ -39,7 +39,7 @@ public class SpesaSpedizione implements SmdEntity {
     @Override
     public String toString() {
         return String.format("SpesaSpedizione[id=%d,%s '%.2f' Eur - %s]",
-                             id, range,spese,area);
+                             id, rangeSpeseSpedizione,spese,areaSpedizione);
     }
 
     public BigDecimal getSpese() {
@@ -51,19 +51,19 @@ public class SpesaSpedizione implements SmdEntity {
     }
 
     public AreaSpedizione getArea() {
-        return area;
+        return areaSpedizione;
     }
 
     public void setArea(AreaSpedizione areaSpedizione) {
-        this.area = areaSpedizione;
+        this.areaSpedizione = areaSpedizione;
     }
 
     public RangeSpeseSpedizione getRange() {
-        return range;
+        return rangeSpeseSpedizione;
     }
 
     public void setRange(RangeSpeseSpedizione range) {
-        this.range = range;
+        this.rangeSpeseSpedizione = range;
     }
 
 }

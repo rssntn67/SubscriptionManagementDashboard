@@ -21,7 +21,7 @@ public class OperazioneGenera extends SmdChangeHandler {
         indietro.addClickListener(click -> onChange());
         genera = new Button(caption,icon);
         genera.addClickListener(click -> {
-        Smd.generaOperazioni(pubblicazioni, abbonamentoDao.findAll()).forEach(op -> operazioneDao.save(op));
+//        Smd.generaOperazioni(pubblicazioni, abbonamentoDao.findAll()).forEach(op -> operazioneDao.save(op));
         onChange();
         });
         

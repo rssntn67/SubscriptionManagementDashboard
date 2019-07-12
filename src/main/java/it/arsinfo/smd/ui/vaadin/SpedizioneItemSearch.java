@@ -75,13 +75,14 @@ public class SpedizioneItemSearch extends SmdSearch<SpedizioneItem> {
             }
         }
         if ( StringUtils.isEmpty(numero) ) {
-            return filterAll(((SpedizioneItemDao) getRepo()).findByPubblicazione(pubblicazione));
+            //return filterAll(((SpedizioneItemDao) getRepo()).findByPubblicazione(pubblicazione));
         }
         if (pubblicazione == null) {
             return filterAll(((SpedizioneItemDao) getRepo()).findByNumero(Integer.parseInt(numero)));
         }
-        return filterAll(((SpedizioneItemDao) getRepo()).findByPubblicazioneAndNumero(pubblicazione, Integer.parseInt(numero)));
-    }
+        //return filterAll(((SpedizioneItemDao) getRepo()).findByPubblicazioneAndNumero(pubblicazione, Integer.parseInt(numero)));
+        return filterAll(findAll());            
+           }
 
     private List<SpedizioneItem> filterAll(List<SpedizioneItem> spedizioni) {
         if (filterAnno.getValue() != null) {

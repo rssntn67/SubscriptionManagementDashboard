@@ -57,7 +57,7 @@ public class SmdUnitTests {
         ec.setAnnoInizio(ai);
         ec.setMeseFine(fine);
         ec.setAnnoFine(af);
-        Smd.creaEC(abb,ec);
+        Smd.generaECItems(abb,ec);
 
         return ec;
     }
@@ -199,7 +199,7 @@ public class SmdUnitTests {
         anno = Anno.getAnnoSuccessivo(anno);
         ec.setMeseFine(Mese.GENNAIO);
         ec.setMeseFine(Mese.MARZO);
-        List<SpedizioneItem> items = Smd.creaEC(abb, ec);
+        List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
         
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
         assertEquals(messaggio.getAbbonamento().multiply(new BigDecimal(10)).doubleValue(), ec.getImporto().doubleValue(),0);
@@ -217,7 +217,7 @@ public class SmdUnitTests {
            
             log.info(item.toString());
         }
-        List<Spedizione> spedizioni = Smd.creaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), spese);
+        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), spese);
         
         for (Spedizione spedizione: spedizioni) {
             assertEquals(abb, spedizione.getAbbonamento());
