@@ -17,6 +17,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;

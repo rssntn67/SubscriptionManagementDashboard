@@ -11,7 +11,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.entity.SmdEntity;
+import it.arsinfo.smd.SmdEntity;
 
 public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {

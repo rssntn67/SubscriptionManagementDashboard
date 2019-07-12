@@ -1,8 +1,6 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
-import java.util.EnumSet;
-import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;

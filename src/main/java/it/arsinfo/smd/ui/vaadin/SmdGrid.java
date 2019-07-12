@@ -13,7 +13,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.entity.SmdEntity;
+import it.arsinfo.smd.SmdEntity;
 
 public abstract class SmdGrid<T extends SmdEntity>
         extends SmdChangeHandler {
