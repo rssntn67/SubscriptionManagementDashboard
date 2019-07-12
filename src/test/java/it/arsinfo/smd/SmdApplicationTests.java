@@ -3,6 +3,7 @@ package it.arsinfo.smd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +38,6 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -136,6 +137,7 @@ public class SmdApplicationTests {
         assertNotNull(operazioneDao);
         assertNotNull(userInfoDao);
         assertNotNull(spedizioneDao);
+        assertNotNull(spedizioneItemDao);
         assertNotNull(spesaSpedizioneDao);
 
         assertNotNull(securityConfig);
@@ -279,13 +281,32 @@ public class SmdApplicationTests {
             spesaSpedizioneDao.save(ss);
             log.info(ss.toString());
         }
-//        assertEquals(1, 
-//                     spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Base).size());
         assertEquals(5,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo).size());
         assertEquals(5,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.AmericaAfricaAsia).size());
-        assertEquals(8,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.Italia).size());
-        assertEquals(18,spesaSpedizioneDao.findAll().size());
+        assertEquals(9,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.Italia).size());
+        assertEquals(19,spesaSpedizioneDao.findAll().size());
+
+        SpesaSpedizione spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
+        assertNotNull(spedizioneItaliaDa1a2Kg);
         
+        SpesaSpedizione duplicato=new SpesaSpedizione();
+        duplicato.setArea(AreaSpedizione.Italia);
+        duplicato.setRange(RangeSpeseSpedizione.Da1KgA2Kg);
+        duplicato.setSpese(new BigDecimal(10.88));
+        
+        try {
+            spesaSpedizioneDao.save(duplicato);
+            assertTrue(false);
+        } catch (DataIntegrityViolationException e) {
+            log.info(e.getMessage());
+        }
+        
+        spesaSpedizioneDao.delete(spedizioneItaliaDa1a2Kg);
+        spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
+        assertNull(spedizioneItaliaDa1a2Kg);
+        assertEquals(18, spesaSpedizioneDao.findAll().size());
+        spesaSpedizioneDao.save(duplicato);
+        assertEquals(19, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.deleteAll();
         assertEquals(0, spesaSpedizioneDao.findAll().size());
 
@@ -392,14 +413,14 @@ public class SmdApplicationTests {
         assertEquals(TipoPubblicazione.ANNUALE, estratti.getTipo());
         EnumSet<Mese> pubs = estratti.getMesiPubblicazione();
         assertEquals(1, pubs.size());
-        assertEquals(Mese.LUGLIO, pubs.iterator().next());
-        assertFalse(estratti.isGen());
+        assertEquals(Mese.GENNAIO, pubs.iterator().next());
+        assertTrue(estratti.isGen());
         assertFalse(estratti.isFeb());
         assertFalse(estratti.isMar());
         assertFalse(estratti.isApr());
         assertFalse(estratti.isMag());
         assertFalse(estratti.isGiu());
-        assertTrue(estratti.isLug());
+        assertFalse(estratti.isLug());
         assertFalse(estratti.isAgo());
         assertFalse(estratti.isSet());
         assertFalse(estratti.isOtt());
@@ -481,23 +502,23 @@ public class SmdApplicationTests {
         //you should be not able to create a storico 
         // without intestatario,destinatario and pubblicazione
         assertEquals(0, storicoDao.findAll().size());
-        Storico storico = new Storico();
+        Storico storico0 = new Storico();
         
         try {
-            storicoDao.save(storico);
+            storicoDao.save(storico0);
             assertTrue(false);
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
             log.info(e.getMessage());
         }
         
-        Anagrafica antonioRusso = SmdLoadSampleData.getAR();
-        anagraficaDao.save(antonioRusso);
+        Anagrafica tizio = SmdLoadSampleData.getAR();
+        anagraficaDao.save(tizio);
         
-        storico.setDestinatario(antonioRusso);
+        storico0.setDestinatario(tizio);
 
         try {
-            storicoDao.save(storico);
+            storicoDao.save(storico0);
             assertTrue(false);
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
@@ -507,10 +528,10 @@ public class SmdApplicationTests {
         Anagrafica matteoParo = SmdLoadSampleData.getMP();
         anagraficaDao.save(matteoParo);
         
-        storico.setIntestatario(matteoParo);
+        storico0.setIntestatario(matteoParo);
 
         try {
-            storicoDao.save(storico);
+            storicoDao.save(storico0);
             assertTrue(false);
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
@@ -520,12 +541,12 @@ public class SmdApplicationTests {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         pubblicazioneDao.save(messaggio);
         
-        storico.setPubblicazione(messaggio);
-        storicoDao.save(storico);
+        storico0.setPubblicazione(messaggio);
+        storicoDao.save(storico0);
         assertEquals(1, storicoDao.findAll().size());
         
         //seems not updating id from...
-        storico = storicoDao.findAll().iterator().next();
+        storico0 = storicoDao.findAll().iterator().next();
 
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         pubblicazioneDao.save(lodare);
@@ -544,7 +565,7 @@ public class SmdApplicationTests {
         
 
         Nota nota = new Nota();
-        nota.setStorico(storico);
+        nota.setStorico(storico0);
         nota.setDescription("Test Nota");
         notaDao.save(nota);
         assertEquals(1, notaDao.findAll().size());
@@ -555,10 +576,10 @@ public class SmdApplicationTests {
         notaDao.save(nota1);
         assertEquals(2, notaDao.findAll().size());
         
-        storico.setStatoStorico(StatoStorico.SOSPESO);
-        storicoDao.save(storico);
+        storico0.setStatoStorico(StatoStorico.SOSPESO);
+        storicoDao.save(storico0);
         Nota nota2 = new Nota();
-        nota2.setStorico(storico);
+        nota2.setStorico(storico0);
         nota2.setDescription("Aggiornato Stato a SOSPESO data......");
         notaDao.save(nota2);
         assertEquals(3, notaDao.findAll().size());
@@ -581,28 +602,28 @@ public class SmdApplicationTests {
         assertEquals(1, storicoDao.findByTipoEstrattoConto(TipoEstrattoConto.OmaggioGesuiti).size());
         assertEquals(0, storicoDao.findByTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp).size());
 
-        assertEquals(1, storicoDao.findByDestinatario(antonioRusso).size());
+        assertEquals(1, storicoDao.findByDestinatario(tizio).size());
         assertEquals(1, storicoDao.findByDestinatario(matteoParo).size());
 
         assertEquals(2, storicoDao.findByIntestatario(matteoParo).size());
-        assertEquals(0, storicoDao.findByIntestatario(antonioRusso).size());
+        assertEquals(0, storicoDao.findByIntestatario(tizio).size());
 
         assertEquals(1, storicoDao.findByPubblicazione(lodare).size());
         assertEquals(1, storicoDao.findByPubblicazione(messaggio).size());
         
-        assertEquals(1, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, antonioRusso, messaggio).size());
-        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, antonioRusso, lodare).size());
+        assertEquals(1, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, tizio, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, tizio, lodare).size());
         assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, matteoParo, messaggio).size());
         assertEquals(1, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(matteoParo, matteoParo, lodare).size());
 
-        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, matteoParo, messaggio).size());
-        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, matteoParo, lodare).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(tizio, matteoParo, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(tizio, matteoParo, lodare).size());
 
-        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, antonioRusso, messaggio).size());
-        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(antonioRusso, antonioRusso, lodare).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(tizio, tizio, messaggio).size());
+        assertEquals(0, storicoDao.findByIntestatarioAndDestinatarioAndPubblicazione(tizio, tizio, lodare).size());
         
         assertEquals(1, notaDao.findByStorico(storico1).size());
-        assertEquals(2, notaDao.findByStorico(storico).size());
+        assertEquals(2, notaDao.findByStorico(storico0).size());
         
         assertEquals(1, notaDao.findByDescriptionContainingIgnoreCase("sospeso").size());
 
@@ -613,7 +634,7 @@ public class SmdApplicationTests {
         assertEquals(2, notaDao.findAll().size());
         assertEquals(2, storicoDao.findAll().size());
         
-        storicoDao.delete(storico);
+        storicoDao.delete(storico0);
         assertEquals(1, notaDao.findAll().size());
         assertEquals(1, storicoDao.findAll().size());
         

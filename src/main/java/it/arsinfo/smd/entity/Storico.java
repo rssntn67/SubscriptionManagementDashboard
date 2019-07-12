@@ -130,7 +130,7 @@ public class Storico implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, , '%d %s' a '%s', ->'%s', %s %s, %s, %s]",
+        return String.format("Storico[id=%d, '%d %s' %s -> %s, %s %s, %s, %s]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
