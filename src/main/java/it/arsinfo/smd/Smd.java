@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -207,13 +208,50 @@ public class Smd {
             abb.setImporto(abb.getTotale().add(ec.getImporto()));
     }
 
-    public static void rimuoviEC(Abbonamento abb, EstrattoConto ec, List<Spedizione> spedizione) {
+    public static List<SpedizioneItem> rimuoviEC(
+            Abbonamento abb, 
+            EstrattoConto ec, 
+            List<Spedizione> spedizioni,
+            List<SpesaSpedizione> spese) 
+    {
         abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
-        spedizione.stream()
-        .filter(s -> s.getStatoSpedizione() != StatoSpedizione.INVIATA)
-        .forEach(s -> s.setStatoSpedizione(StatoSpedizione.SOSPESA));
+        final List<SpedizioneItem> inviati = new ArrayList<>(); 
+        final List<SpedizioneItem> rimossi = new ArrayList<>(); 
+        for (Spedizione sped:spedizioni) {
+            sped.getSpedizioneItems()
+            .stream()
+            .filter(item -> item.getEstrattoConto() == ec)
+            .forEach(item -> {
+                switch (sped.getStatoSpedizione()) {
+                case INVIATA:
+                    inviati.add(item);
+                    break;
+                case PROGRAMMATA:
+                    rimossi.add(item);
+                    break;
+                case SOSPESA:
+                    rimossi.add(item);
+                    break;    
+                default:
+                    break;
+                }
+            });
+        }
+        
+        for (SpedizioneItem rimosso:rimossi) {
+            rimosso.getSpedizione().deleteSpedizioneItem(rimosso);
+        }
+        
+        calcolaPesoSpesePostali(abb, spedizioni, spese);
+        int numeroinviato=0;
+        for (SpedizioneItem inviata:inviati) {
+            numeroinviato+=inviata.getNumero();
+        }
+        ec.setNumero(0);
+        ec.setNumeroTotaleRiviste(numeroinviato);
         calcoloImportoEC(ec);
-        abb.setImporto(abb.getImporto().add(ec.getImporto()));        
+        abb.setImporto(abb.getImporto().add(ec.getImporto())); 
+        return rimossi;
     }
 
     public static List<SpedizioneItem> generaECItems(
@@ -250,8 +288,8 @@ public class Smd {
       calcoloImportoEC(ec);
       abb.setImporto(abb.getImporto().add(ec.getImporto()));
       return items;
-    
     }
+
     public static Map<String,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
         final Map<String,Spedizione> spedMap = new HashMap<>();
         for (Spedizione spedizione:spedizioni) {
@@ -264,8 +302,13 @@ public class Smd {
     public static List<Spedizione> generaSpedizioni(Abbonamento abb, 
                     List<SpedizioneItem> items, 
                     Invio invio, 
-                    InvioSpedizione invioSpedizione, Anagrafica destinatario, List<Spedizione> spedizioni,List<SpesaSpedizione> spese) {
-            final Map<String,Spedizione> spedMap = new HashMap<>();
+                    InvioSpedizione invioSpedizione, 
+                    Anagrafica destinatario, 
+                    List<Spedizione> spedizioni,
+                    List<SpesaSpedizione> spese) 
+    {
+            
+        final Map<String,Spedizione> spedMap = getSpedizioneMap(spedizioni);
             Mese spedMese;
             Anno spedAnno;
     
@@ -303,14 +346,24 @@ public class Smd {
             sped.addSpedizioneItem(item);
         }
 
-        for (Spedizione sped: spedMap.values()) {
+        calcolaPesoSpesePostali( abb, spedMap.values(), spese);                
+        return spedMap.values().stream().collect(Collectors.toList());
+    }
+
+    private static void calcolaPesoSpesePostali(Abbonamento abb, Collection<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
+        for (Spedizione sped: spedizioni) {
             int pesoStimato=0;
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
                 pesoStimato+=item.getNumero()*item.getEstrattoConto().getPubblicazione().getGrammi();
             }
             sped.setPesoStimato(pesoStimato);
-            SpesaSpedizione spesa = getSpesaSpedizione(spese, destinatario.getAreaSpedizione(), RangeSpeseSpedizione.getByPeso(pesoStimato));
-            switch (destinatario.getAreaSpedizione()) {
+            SpesaSpedizione spesa = 
+                    getSpesaSpedizione(
+                               spese, 
+                               sped.getDestinatario().getAreaSpedizione(), 
+                               RangeSpeseSpedizione.getByPeso(pesoStimato)
+                               );
+            switch (sped.getDestinatario().getAreaSpedizione()) {
             case Italia:
                 if( !sped.getSpedizioniPosticipate().isEmpty()) {
                     calcolaSpesePostali(abb, sped, spesa);
@@ -327,10 +380,8 @@ public class Smd {
                 break;
             }
         }
-                
-        return spedMap.values().stream().collect(Collectors.toList());
+        
     }
-
     public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) {
         return ss.stream().filter( s-> s.getArea() == area && s.getRange() == range).collect(Collectors.toList()).iterator().next();
     }
@@ -451,7 +502,7 @@ public class Smd {
         switch (ec.getTipoEstrattoConto()) {
         case Ordinario:
             costo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
-            if (!ec.isAbbonamentoAnnuale()) {
+            if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
                 costo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
             }
             break;
