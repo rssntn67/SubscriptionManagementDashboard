@@ -25,10 +25,10 @@ public class EstrattoConto implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
     private Abbonamento abbonamento;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
 
     @ManyToOne
@@ -113,8 +113,8 @@ public class EstrattoConto implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %d' %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getId(), tipoEstrattoConto);
+        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoEstrattoConto);
     }
         
     public BigDecimal getImporto() {

@@ -49,10 +49,10 @@ public class Spedizione implements SmdEntity {
     private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
     @Enumerated(EnumType.STRING)
-    private Mese meseSpedizione;
+    private Mese meseSpedizione=Smd.getMeseCorrente();
 
     @Enumerated(EnumType.STRING)
-    private Anno annoSpedizione;
+    private Anno annoSpedizione=Smd.getAnnoCorrente();
     
     private Integer pesoStimato=0;
     
@@ -77,7 +77,7 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, %s %s, peso gr. %d , %s, %s ]", 
+        return String.format("Spedizione[id=%d, %s %s, peso gr. %d , dest. %s, %s ]", 
                              id,
                              meseSpedizione,
                              annoSpedizione,

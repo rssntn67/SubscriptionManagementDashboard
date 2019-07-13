@@ -538,7 +538,7 @@ public class SmdLoadSampleData implements Runnable {
         final List<Spedizione> spedizioni = new ArrayList<>();
         table.cellSet().stream().forEach(te -> 
             spedizioni.addAll(
-          Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, te.getColumnKey(), spese)
+          Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, te.getColumnKey(), new ArrayList<>(), spese)
                     )
             );
         return spedizioni;
@@ -1009,6 +1009,7 @@ public class SmdLoadSampleData implements Runnable {
                                              storico.getInvio(), 
                                              storico.getInvioSpedizione(), 
                                              storico.getDestinatario(), 
+                                             new ArrayList<>(),
                                              spesaSpedizioneDao.findByAreaSpedizione(
                                                          storico.getDestinatario().getAreaSpedizione()));
                 abbonamentoDao.save(abb);

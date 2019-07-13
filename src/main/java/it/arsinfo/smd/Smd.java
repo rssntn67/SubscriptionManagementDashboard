@@ -252,11 +252,19 @@ public class Smd {
       return items;
     
     }
+    public static Map<String,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
+        final Map<String,Spedizione> spedMap = new HashMap<>();
+        for (Spedizione spedizione:spedizioni) {
+            spedMap.put(spedizione.getMeseSpedizione().getCode()+spedizione.getAnnoSpedizione().getAnnoAsString()+spedizione.getInvioSpedizione(), spedizione);
+        }
+        return spedMap;
+        
+    }
     
     public static List<Spedizione> generaSpedizioni(Abbonamento abb, 
                     List<SpedizioneItem> items, 
                     Invio invio, 
-                    InvioSpedizione invioSpedizione, Anagrafica destinatario, List<SpesaSpedizione> spese) {
+                    InvioSpedizione invioSpedizione, Anagrafica destinatario, List<Spedizione> spedizioni,List<SpesaSpedizione> spese) {
             final Map<String,Spedizione> spedMap = new HashMap<>();
             Mese spedMese;
             Anno spedAnno;
@@ -290,7 +298,9 @@ public class Smd {
                 spedizione.setInvio(invio);
                 spedMap.put(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione, spedizione);
             }
-            spedMap.get(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione).addSpedizioneItem(item);
+            Spedizione sped = spedMap.get(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione);
+            item.setSpedizione(sped);
+            sped.addSpedizioneItem(item);
         }
 
         for (Spedizione sped: spedMap.values()) {

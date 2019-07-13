@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -23,15 +24,15 @@ public class SpedizioneItem implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Spedizione spedizione;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private EstrattoConto estrattoConto;
     
     @Enumerated(EnumType.STRING)
-    private Mese mesePubblicazione;
+    private Mese mesePubblicazione=Smd.getMeseCorrente();
     @Enumerated(EnumType.STRING)
-    private Anno annoPubblicazione;
+    private Anno annoPubblicazione=Smd.getAnnoCorrente();
     
-    Integer numero;
+    Integer numero=1;
 
     public SpedizioneItem() {
     }
@@ -85,7 +86,7 @@ public class SpedizioneItem implements SmdEntity {
         
     @Override
     public String toString() {
-        return String.format("SpedizioneItem[id=%d, %s %s %s, %d ]", 
+        return String.format("SpedizioneItem[id=%d, %s %s %s, num. %d ]", 
                              id,
                              estrattoConto.getPubblicazione().getNome(),
                              mesePubblicazione,

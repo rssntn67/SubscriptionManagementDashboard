@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
@@ -215,7 +216,7 @@ public class SmdUnitTests {
             log.info(item.toString());
         }
         
-        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), spese);
+        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), new ArrayList<Spedizione>(),spese);
         assertEquals(3, spedizioni.size());
         for (Spedizione spedizione: spedizioni) {
             assertEquals(abb, spedizione.getAbbonamento());
@@ -255,7 +256,7 @@ public class SmdUnitTests {
             assertEquals(10, item.getNumero().intValue());           
             log.info(item.toString());
         }
-        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), spese);
+        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, new Anagrafica(), new ArrayList<Spedizione>(),spese);
         assertEquals(1, spedizioni.size());
         Spedizione spedizione = spedizioni.iterator().next();
         log.info(spedizione.toString());
