@@ -201,7 +201,7 @@ public class Smd {
         for (Spedizione sped:spedizioni) {
             sped.getSpedizioneItems()
             .stream()
-            .filter(item -> item.getEstrattoConto() == ec)
+            .filter(item -> item.getEstrattoConto() == ec || item.getEstrattoConto().getId() == ec.getId())
             .forEach(item -> {
                 switch (sped.getStatoSpedizione()) {
                 case INVIATA:
