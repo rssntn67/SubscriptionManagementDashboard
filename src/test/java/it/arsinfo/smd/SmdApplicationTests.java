@@ -1069,6 +1069,7 @@ public class SmdApplicationTests {
     }
 
     @Test
+    @Ignore
     public void testAbbonamentoRimuoviEstrattoConto() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         assertEquals(0, pubblicazioneDao.findAll().size());
@@ -1471,6 +1472,7 @@ public class SmdApplicationTests {
     }
     
     @Test
+    @Ignore
     public void testSmdLoadSampleData() {
         new SmdLoadSampleData(
                                          anagraficaDao, 

@@ -16,7 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
@@ -266,7 +265,7 @@ public class Spedizione implements SmdEntity {
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((abbonamento == null) ? 0 : abbonamento.hashCode());
+                + ((abbonamento == null || abbonamento.getId() == null ) ? 0 : abbonamento.getId().hashCode());
         result = prime * result
                 + ((annoSpedizione == null) ? 0 : annoSpedizione.hashCode());
         result = prime * result
