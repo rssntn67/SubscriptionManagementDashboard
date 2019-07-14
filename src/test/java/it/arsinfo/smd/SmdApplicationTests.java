@@ -1374,16 +1374,19 @@ public class SmdApplicationTests {
     }
 
     @Test
+    @Ignore
     public void testAggiornaStatoAbbonamento() {
         
     }
 
     @Test
+    @Ignore
     public void testCampagnaCRUD() {
         
     }
 
     @Test
+    @Ignore    
     public void testAggiornaCampagna() {
         
     }
