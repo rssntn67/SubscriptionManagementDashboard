@@ -1,5 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -77,6 +79,7 @@ public class Anagrafica implements SmdEntity {
     private boolean elencoMarisaBisi; 
     private boolean promotoreRegionale; 
     
+    private String codeLineBase;
     public Anagrafica() {
     }
 
@@ -118,8 +121,8 @@ public class Anagrafica implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Anagrafica[id=%d, Nome='%s', Cognome='%s', Diocesi='%s']",
-                             id, nome, cognome, diocesi);
+        return String.format("Anagrafica[id=%d, %s %s %s %s]",
+                             id, nome, cognome, diocesi.getDetails(),codeLineBase);
     }
 
     public String getCap() {
@@ -346,7 +349,8 @@ public class Anagrafica implements SmdEntity {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result
+                + ((codeLineBase == null) ? 0 : codeLineBase.hashCode());
         return result;
     }
 
@@ -359,11 +363,23 @@ public class Anagrafica implements SmdEntity {
         if (getClass() != obj.getClass())
             return false;
         Anagrafica other = (Anagrafica) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (codeLineBase == null) {
+            if (other.codeLineBase != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!codeLineBase.equals(other.codeLineBase))
             return false;
         return true;
+    }
+
+    public String getCodeLineBase() {
+        return codeLineBase;
+    }
+
+    public void setCodeLineBase(String codeLineBase) {
+        this.codeLineBase = codeLineBase;
+    }
+    
+    public static String generaCodeLineBase() {
+        return String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
     }
 }

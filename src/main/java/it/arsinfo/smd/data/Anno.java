@@ -1,5 +1,8 @@
 package it.arsinfo.smd.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public enum Anno {
         ANNO2016(2016),
         ANNO2017(2017),
@@ -44,4 +47,15 @@ public enum Anno {
 	public void setAnno(int anno) {
 		this.anno = anno;
 	}
+    public static Anno getAnnoProssimo() {
+        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
+        return valueOf("ANNO"+annoProssimo);
+    }
+    public static Anno getAnnoPassato() {
+        Integer annoScorso = getAnnoCorrente().getAnno()-1;
+        return valueOf("ANNO"+annoScorso);
+    }
+    public static Anno getAnnoCorrente() {
+        return valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
+    }
 }

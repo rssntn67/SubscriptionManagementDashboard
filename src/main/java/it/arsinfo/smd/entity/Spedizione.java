@@ -49,10 +49,10 @@ public class Spedizione implements SmdEntity {
     private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
     @Enumerated(EnumType.STRING)
-    private Mese meseSpedizione=Smd.getMeseCorrente();
+    private Mese meseSpedizione=Mese.getMeseCorrente();
 
     @Enumerated(EnumType.STRING)
-    private Anno annoSpedizione=Smd.getAnnoCorrente();
+    private Anno annoSpedizione=Anno.getAnnoCorrente();
     
     private Integer pesoStimato=0;
     
@@ -77,13 +77,15 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, %s %s, peso gr. %d , dest. %s, %s ]", 
+        return String.format("Spedizione[id=%d, %s %s, peso gr. %d , dest. %s, %s %s %s]", 
                              id,
                              meseSpedizione,
                              annoSpedizione,
                              pesoStimato, 
                              destinatario.getId(), 
-                             statoSpedizione);
+                             statoSpedizione,
+                             invioSpedizione,
+                             invio);
     }
 
     public Mese getMeseSpedizione() {
@@ -227,9 +229,7 @@ public class Spedizione implements SmdEntity {
         return 
             spedizioneItems.stream()
             .filter(
-            item -> 
-        Smd.spedizionePosticipata(
-          this, item)
+            item -> item.isPosticipata()
         ).collect(Collectors.toList());
     }
     
@@ -266,6 +266,8 @@ public class Spedizione implements SmdEntity {
         final int prime = 31;
         int result = 1;
         result = prime * result
+                + ((abbonamento == null) ? 0 : abbonamento.hashCode());
+        result = prime * result
                 + ((annoSpedizione == null) ? 0 : annoSpedizione.hashCode());
         result = prime * result
                 + ((destinatario == null) ? 0 : destinatario.hashCode());
@@ -275,6 +277,9 @@ public class Spedizione implements SmdEntity {
                                              : invioSpedizione.hashCode());
         result = prime * result
                 + ((meseSpedizione == null) ? 0 : meseSpedizione.hashCode());
+        result = prime * result
+                + ((statoSpedizione == null) ? 0
+                                             : statoSpedizione.hashCode());
         return result;
     }
 
@@ -287,6 +292,11 @@ public class Spedizione implements SmdEntity {
         if (getClass() != obj.getClass())
             return false;
         Spedizione other = (Spedizione) obj;
+        if (abbonamento == null) {
+            if (other.abbonamento != null)
+                return false;
+        } else if (!abbonamento.equals(other.abbonamento))
+            return false;
         if (annoSpedizione != other.annoSpedizione)
             return false;
         if (destinatario == null) {
@@ -299,6 +309,8 @@ public class Spedizione implements SmdEntity {
         if (invioSpedizione != other.invioSpedizione)
             return false;
         if (meseSpedizione != other.meseSpedizione)
+            return false;
+        if (statoSpedizione != other.statoSpedizione)
             return false;
         return true;
     }

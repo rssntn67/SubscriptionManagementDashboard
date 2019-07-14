@@ -13,6 +13,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -100,7 +101,7 @@ public class StoricoEditor
         //FIXME a lot of use cases
         update.setChangeHandler(() -> {
             List<EstrattoConto> ecs = estrattoContoDao.findByStorico(get());
-            ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Smd.getAnnoProssimo()).forEach( ec ->{
+            ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo()).forEach( ec ->{
                 ec.setNumero(get().getNumero());
 //                ec.setDestinatario(get().getDestinatario());
 //                ec.setInvio(get().getInvio());

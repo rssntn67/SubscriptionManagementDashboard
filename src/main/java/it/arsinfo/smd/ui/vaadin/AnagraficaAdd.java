@@ -13,6 +13,7 @@ public class AnagraficaAdd extends SmdAdd<Anagrafica> {
         Anagrafica anagrafica = new Anagrafica();
         anagrafica.setNome("Nome");
         anagrafica.setCognome("Cognome o Ragione Sociale");
+        anagrafica.setCodeLineBase(Anagrafica.generaCodeLineBase());
         return anagrafica;
     }
 

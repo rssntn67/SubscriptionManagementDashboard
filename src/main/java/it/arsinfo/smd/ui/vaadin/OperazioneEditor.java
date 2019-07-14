@@ -9,7 +9,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
@@ -98,8 +97,8 @@ public class OperazioneEditor
 
     @Override
     public void focus(boolean persisted, Operazione op) {
-        boolean chiuso = (op.getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()
-                || (op.getAnno() == Smd.getAnnoCorrente() && op.getMese().getPosizione() < Smd.getMeseCorrente().getPosizione()));
+        boolean chiuso = (op.getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()
+                || (op.getAnno() == Anno.getAnnoCorrente() && op.getMese().getPosizione() < Mese.getMeseCorrente().getPosizione()));
         definitivoSped.setReadOnly(chiuso);
         definitivoSede.setReadOnly(chiuso);
         getSave().setEnabled(!chiuso);

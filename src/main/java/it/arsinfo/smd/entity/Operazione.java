@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -33,10 +32,10 @@ public class Operazione implements SmdEntity {
     
     
     @Enumerated(EnumType.STRING)
-    private Anno anno = Smd.getAnnoCorrente();
+    private Anno anno = Anno.getAnnoCorrente();
 
     @Enumerated(EnumType.STRING)
-    private Mese mese = Smd.getMeseCorrente();
+    private Mese mese = Mese.getMeseCorrente();
 
     private Integer definitivoSped = 0;
     private Integer definitivoSede = 0;

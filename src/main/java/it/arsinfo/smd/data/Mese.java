@@ -1,5 +1,8 @@
 package it.arsinfo.smd.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public enum Mese {
 	GENNAIO("Gen.",1, "01"),
 	FEBBRAIO("Feb.",2, "02"),
@@ -78,4 +81,8 @@ public enum Mese {
 	public void setCode(String code) {
 		this.code = code;
 	}
+
+    public static Mese getMeseCorrente() {
+        return getByCode(new SimpleDateFormat("MM").format(new Date()));        
+    }
 }

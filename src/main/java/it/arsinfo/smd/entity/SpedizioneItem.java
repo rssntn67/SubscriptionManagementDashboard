@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -28,9 +27,11 @@ public class SpedizioneItem implements SmdEntity {
     private EstrattoConto estrattoConto;
     
     @Enumerated(EnumType.STRING)
-    private Mese mesePubblicazione=Smd.getMeseCorrente();
+    private Mese mesePubblicazione=Mese.getMeseCorrente();
     @Enumerated(EnumType.STRING)
-    private Anno annoPubblicazione=Smd.getAnnoCorrente();
+    private Anno annoPubblicazione=Anno.getAnnoCorrente();
+    
+    private boolean posticipata = false;
     
     Integer numero=1;
 
@@ -86,13 +87,24 @@ public class SpedizioneItem implements SmdEntity {
         
     @Override
     public String toString() {
-        return String.format("SpedizioneItem[id=%d, %s %s %s, num. %d ]", 
+        return String.format("SpedizioneItem[id=%d, %s %s %s, num. %d, post %b ]", 
                              id,
                              estrattoConto.getPubblicazione().getNome(),
                              mesePubblicazione,
                              annoPubblicazione,
-                             numero
+                             numero, 
+                             posticipata
                              );
+    }
+
+
+    public boolean isPosticipata() {
+        return posticipata;
+    }
+
+
+    public void setPosticipata(boolean posticipata) {
+        this.posticipata = posticipata;
     }
 
  }

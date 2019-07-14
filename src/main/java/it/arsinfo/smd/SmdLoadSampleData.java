@@ -525,6 +525,7 @@ public class SmdLoadSampleData implements Runnable {
         Anagrafica anagrafica = new Anagrafica();
         anagrafica.setNome(nome);
         anagrafica.setCognome(cognome);
+        anagrafica.setCodeLineBase(Anagrafica.generaCodeLineBase());
         return anagrafica;
     }
 
@@ -573,7 +574,7 @@ public class SmdLoadSampleData implements Runnable {
         abb.setAnno(anno);
         abb.setCassa(cassa);
         abb.setIntestatario(intestatario);
-        abb.setCampo(Smd.generaVCampo(anno));
+        abb.setCampo(Abbonamento.generaCodeLine(anno,intestatario));
         return abb;   
     }
 
@@ -647,10 +648,10 @@ public class SmdLoadSampleData implements Runnable {
                   
         Abbonamento abb =  getAbbonamentoBy(
                 micheleSantoro, 
-                Smd.getAnnoCorrente(), 
+                Anno.getAnnoCorrente(), 
                 Cassa.Ccp
                 );
-        save(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
+        save(Anno.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
 
     }
         
@@ -664,10 +665,10 @@ public class SmdLoadSampleData implements Runnable {
         table.put(estratti,matteoParo, 1);
         Abbonamento abb = getAbbonamentoBy(
                             gabrielePizzo, 
-                            Smd.getAnnoCorrente(), 
+                            Anno.getAnnoCorrente(), 
                             Cassa.Ccp 
                             );
-        save(Smd.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, table);
+        save(Anno.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, table);
     }
     
     private  void saveAbbonamentoDp() {
@@ -675,10 +676,10 @@ public class SmdLoadSampleData implements Runnable {
         table.put(blocchetti, davidePalma, 1);
         Abbonamento abb = getAbbonamentoBy(
                             davidePalma, 
-                            Smd.getAnnoCorrente(), 
+                            Anno.getAnnoCorrente(), 
                             Cassa.Ccp
                             );        
-        save(Smd.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, table);
+        save(Anno.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, table);
     }
     
     private void save(Anno anno, Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {

@@ -16,7 +16,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
@@ -36,7 +35,7 @@ public class Abbonamento implements SmdEntity {
     @ManyToOne(fetch=FetchType.EAGER)
     private Anagrafica intestatario;
     @Enumerated(EnumType.STRING)
-    private Anno anno = Smd.getAnnoCorrente();
+    private Anno anno = Anno.getAnnoCorrente();
 
     @ManyToOne
     private Campagna campagna;
@@ -267,6 +266,60 @@ public class Abbonamento implements SmdEntity {
 
     public void setSpese(BigDecimal spese) {
         this.spese = spese;
+    }
+
+    public static boolean checkCampo(String campo) {
+        if (campo == null || campo.length() != 18) {
+            return false;
+            
+        }
+        
+        String codice = campo.substring(0, 16);
+        
+        Long valorecodice = (Long.parseLong(codice) % 93);
+        Integer codicecontrollo = Integer.parseInt(campo.substring(16,18));
+        return codicecontrollo.intValue() == valorecodice.intValue();
+    }
+
+    /*
+     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
+     * riservati al correntista che intende utilizzare tale campo 2 caratteri
+     * numerici di controcodice pari al resto della divisione dei primi 16
+     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
+     * controcodice: 00 - 92)
+     */
+    public static String generaCodeLine(Anno anno, Anagrafica anagrafica) {
+        // primi 2 caratteri anno
+        String campo = anno.getAnnoAsString().substring(2, 4);
+        // 3-16
+        campo += anagrafica.getCodeLineBase();
+        campo += String.format("%02d", Long.parseLong(campo) % 93);
+        return campo;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((campo == null) ? 0 : campo.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Abbonamento other = (Abbonamento) obj;
+        if (campo == null) {
+            if (other.campo != null)
+                return false;
+        } else if (!campo.equals(other.campo))
+            return false;
+        return true;
     }
 
 

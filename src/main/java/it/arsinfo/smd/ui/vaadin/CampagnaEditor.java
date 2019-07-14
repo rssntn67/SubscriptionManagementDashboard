@@ -6,7 +6,6 @@ import com.vaadin.data.Binder;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
@@ -42,7 +41,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         anno.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
-        getDelete().setEnabled(!persisted || (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Smd.getAnnoCorrente().getAnno())
+        getDelete().setEnabled(!persisted || (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno())
                 );
         anno.focus();
 

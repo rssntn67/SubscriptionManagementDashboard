@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
@@ -27,7 +26,7 @@ public class Campagna implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private Anno anno = Smd.getAnnoProssimo();
+    private Anno anno = Anno.getAnnoProssimo();
 
     @Enumerated(EnumType.STRING)
     private StatoCampagna statoCampagna=StatoCampagna.Generata;

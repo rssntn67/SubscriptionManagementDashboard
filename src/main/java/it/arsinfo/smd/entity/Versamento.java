@@ -161,7 +161,7 @@ public class Versamento implements SmdEntity {
     }    
     @Transient
     public boolean isCampovalido() {
-        return Smd.checkCampo(campo);
+        return Abbonamento.checkCampo(campo);
     }
     public String getProgressivo() {
         return progressivo;

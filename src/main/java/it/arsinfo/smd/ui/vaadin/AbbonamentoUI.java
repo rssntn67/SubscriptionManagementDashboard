@@ -12,7 +12,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -93,7 +93,7 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()) {
+                if (get().getId() == null && get().getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -102,7 +102,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null) {
-                    get().setCampo(Smd.generaVCampo(get().getAnno()));
+                    get().setCampo(Abbonamento.generaCodeLine(get().getAnno(),get().getIntestatario()));
                 }
                 try {
                     abbonamentoDao.save(get());

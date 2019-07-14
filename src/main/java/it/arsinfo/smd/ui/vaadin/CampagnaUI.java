@@ -14,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -75,13 +76,13 @@ public class CampagnaUI extends SmdUI {
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {
-                if (get().getAnno() == Smd.getAnnoCorrente()) {
+                if (get().getAnno() == Anno.getAnnoCorrente()) {
                     Notification.show("Non è possibile cancellare campagna dell'anno corrente",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
 
                 }
-                if (get().getAnno() == Smd.getAnnoPassato()) {
+                if (get().getAnno() == Anno.getAnnoPassato()) {
                     Notification.show("Non è possibile cancellare campagna dell'anno passato",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
@@ -108,7 +109,7 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                if (get().getAnno().getAnno() <= Smd.getAnnoCorrente().getAnno()) {
+                if (get().getAnno().getAnno() <= Anno.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere almeno anno successivo",
                                       Notification.Type.ERROR_MESSAGE);
                     return;

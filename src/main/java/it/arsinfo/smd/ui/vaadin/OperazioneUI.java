@@ -12,6 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -80,7 +81,7 @@ public class OperazioneUI extends SmdUI {
             bss.getButton().setEnabled(false);
             pb.setVisible(true);
             new Thread(() -> {
-                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
                 List<Storico> storici = storicoDao.findAll();
                 float delta = 1.0f/storici.size();
                 pb.setValue(0.0f);
@@ -114,7 +115,7 @@ public class OperazioneUI extends SmdUI {
             gss.getButton().setEnabled(false);
             pb.setVisible(true);
             new Thread(() -> {
-                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Smd.getAnnoCorrente());
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
                 List<Storico> storici = storicoDao.findAll();
                 List<EstrattoConto> aggiornamenti = Smd.generaEstrattoConto(estrattoContoDao.findAll());
                 if (aggiornamenti.isEmpty() && storici.isEmpty()) {

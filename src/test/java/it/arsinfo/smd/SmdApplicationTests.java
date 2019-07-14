@@ -399,7 +399,7 @@ public class SmdApplicationTests {
             nameToIdMap.put(pubblicazione.getNome(), pubblicazione.getId());
             assertEquals("AAVV", pubblicazione.getAutore());
             assertEquals("ADP", pubblicazione.getEditore());
-            assertEquals(Smd.getAnnoCorrente(), pubblicazione.getAnno());
+            assertEquals(Anno.getAnnoCorrente(), pubblicazione.getAnno());
             assertTrue(pubblicazione.isActive());
             log.info(pubblicazione.toString());
         }
@@ -688,7 +688,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         abb.setSpese(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));
         
@@ -723,7 +723,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         abb.setSpese(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -777,7 +777,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         abb.setSpese(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -821,7 +821,7 @@ public class SmdApplicationTests {
         Pubblicazione lodare =SmdLoadSampleData.getLodare();
         pubblicazioneDao.save(lodare);
 
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         abb.setSpese(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -890,7 +890,7 @@ public class SmdApplicationTests {
         assertEquals(0, spedizioneDao.findAll().size());
         assertEquals(0, spedizioneItemDao.findAll().size());
         
-        Anno anno = Anno.getAnnoSuccessivo(Smd.getAnnoProssimo());
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         for (SpesaSpedizione ss : SmdLoadSampleData.getSpeseSpedizione()) {
             spesaSpedizioneDao.save(ss);
         }
@@ -902,7 +902,7 @@ public class SmdApplicationTests {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         pubblicazioneDao.save(messaggio);
 
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
 
         EstrattoConto ec = new EstrattoConto();
         ec.setAbbonamento(abb);
@@ -967,7 +967,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testAbbonamentoAggiungiEstrattoConto() {
-        Anno anno = Anno.getAnnoSuccessivo(Smd.getAnnoProssimo());
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
@@ -977,7 +977,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
@@ -1070,7 +1070,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testAbbonamentoRimuoviEstrattoConto() {
-        Anno anno = Anno.getAnnoSuccessivo(Smd.getAnnoProssimo());
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
@@ -1086,7 +1086,7 @@ public class SmdApplicationTests {
         pubblicazioneDao.save(lodare);
         pubblicazioneDao.save(blocchetti);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
         EstrattoConto ec1 = new EstrattoConto();
         ec1.setAbbonamento(abb);
@@ -1139,7 +1139,17 @@ public class SmdApplicationTests {
         assertEquals(7, spedizioneDao.findAll().size());
         assertEquals(14, spedizioneItemDao.findAll().size());
         
-        Smd.rimuoviEC(abb,ec2, spedizioneDao.findByAbbonamento(abb),SmdLoadSampleData.getSpeseSpedizione());
+        Smd.rimuoviEC(abb,ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione())
+        .stream()
+        .forEach(item -> {
+            item = spedizioneItemDao.findById(item.getId()).get();
+            log.info("delete: " + item.toString());
+            spedizioneItemDao.delete(item);}
+        );
+        spedizioni.stream().forEach(sped -> {
+            spedizioneDao.save(sped);
+            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+        });
         assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
         assertEquals(0, ec2.getImporto().doubleValue(),0);
         estrattoContoDao.delete(ec2);
@@ -1147,41 +1157,36 @@ public class SmdApplicationTests {
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(2, estrattoContoDao.findAll().size());
         
-        abb = abbonamentoDao.findAll().iterator().next();
-        BigDecimal ecsum = BigDecimal.ZERO;
-        for (EstrattoConto ec: estrattoContoDao.findAll()) {
-            assertEquals(abb.getId(), ec.getAbbonamento().getId());
-            ecsum=ecsum.add(ec.getImporto());
-        }
-        assertEquals(abb.getTotale().doubleValue(), ecsum.doubleValue(),0);
 
-        Smd.rimuoviEC(abb,ec1, spedizioneDao.findByAbbonamento(abb),SmdLoadSampleData.getSpeseSpedizione());
-//        assertEquals(0, ec1.getNumeroSpediti());
-//        assertEquals(0, ec1.getTotale().doubleValue(),0);
+        spedizioni = spedizioneDao.findByAbbonamento(abb);
+        Smd.rimuoviEC(abb,ec1, spedizioneDao.findByAbbonamento(abb),SmdLoadSampleData.getSpeseSpedizione()).stream().forEach(item -> spedizioneItemDao.delete(item));
+        spedizioni.stream().forEach(sped -> {
+            spedizioneDao.save(sped);
+            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+        });
+        assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
+        assertEquals(0, ec1.getImporto().doubleValue(),0);
         estrattoContoDao.delete(ec1);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findAll().size());
         
-        abb = abbonamentoDao.findAll().iterator().next();
-        ecsum = BigDecimal.ZERO;
-        for (EstrattoConto ec: estrattoContoDao.findAll()) {
-            assertEquals(abb.getId(), ec.getAbbonamento().getId());
-            ecsum=ecsum.add(ec.getImporto());
-        }
-        assertEquals(abb.getTotale().doubleValue(), ecsum.doubleValue(),0);
 
-        Smd.rimuoviEC(abb,ec3, spedizioneDao.findByAbbonamento(abb),SmdLoadSampleData.getSpeseSpedizione());
-//        assertEquals(0, ec3.getNumeroSpediti());
-//        assertEquals(0, ec3.getTotale().doubleValue(),0);
+        spedizioni = spedizioneDao.findByAbbonamento(abb);
+        Smd.rimuoviEC(abb,ec3, spedizioneDao.findByAbbonamento(abb),SmdLoadSampleData.getSpeseSpedizione()).stream().forEach(item -> spedizioneItemDao.delete(item));
+        spedizioni.stream().forEach(sped -> {
+            spedizioneDao.save(sped);
+            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+        });
+        assertEquals(0, ec3.getNumeroTotaleRiviste().intValue());
+        assertEquals(0, ec3.getImporto().doubleValue(),0);
         estrattoContoDao.delete(ec3);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(0, estrattoContoDao.findAll().size());
+        assertEquals(0, estrattoContoDao.findAll().size());
         assertEquals(0, spedizioneDao.findAll().size());
         
-        abb = abbonamentoDao.findAll().iterator().next();
-        ecsum = BigDecimal.ZERO;
         assertEquals(abb.getTotale().doubleValue(), 0,0);
         
         abbonamentoDao.delete(abb);
@@ -1203,7 +1208,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         pubblicazioneDao.save(messaggio);
@@ -1211,9 +1216,9 @@ public class SmdApplicationTests {
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
-        ec1.setAnnoInizio(Smd.getAnnoCorrente());
+        ec1.setAnnoInizio(Anno.getAnnoCorrente());
         ec1.setMeseFine(Mese.DICEMBRE);
-        ec1.setAnnoFine(Smd.getAnnoCorrente());
+        ec1.setAnnoFine(Anno.getAnnoCorrente());
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
@@ -1318,7 +1323,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Smd.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         pubblicazioneDao.save(messaggio);
@@ -1326,9 +1331,9 @@ public class SmdApplicationTests {
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
-        ec1.setAnnoInizio(Smd.getAnnoProssimo());
+        ec1.setAnnoInizio(Anno.getAnnoProssimo());
         ec1.setMeseFine(Mese.DICEMBRE);
-        ec1.setAnnoFine(Smd.getAnnoProssimo());
+        ec1.setAnnoFine(Anno.getAnnoProssimo());
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
@@ -1410,7 +1415,7 @@ public class SmdApplicationTests {
 
         Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(
                             davidePalma, 
-                            Smd.getAnnoCorrente(), 
+                            Anno.getAnnoCorrente(), 
                             Cassa.Ccp
                             );
         
@@ -1419,9 +1424,9 @@ public class SmdApplicationTests {
         ec.setNumero(2);
         ec.setAbbonamento(abb);
         ec.setMeseInizio(Mese.GENNAIO);
-        ec.setAnnoInizio(Smd.getAnnoProssimo());
+        ec.setAnnoInizio(Anno.getAnnoProssimo());
         ec.setMeseFine(Mese.SETTEMBRE);
-        ec.setAnnoFine(Smd.getAnnoProssimo());
+        ec.setAnnoFine(Anno.getAnnoProssimo());
 
         Smd.generaECItems(abb, ec);
         abbonamentoDao.save(abb);

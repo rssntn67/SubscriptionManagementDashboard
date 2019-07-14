@@ -10,7 +10,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -54,10 +53,10 @@ public class EstrattoContoEditor
 
         annoInizio.setEmptySelectionAllowed(false);
         annoInizio.setItemCaptionGenerator(Anno::getAnnoAsString);
-        annoInizio.setSelectedItem(Smd.getAnnoCorrente());
+        annoInizio.setSelectedItem(Anno.getAnnoCorrente());
         annoFine.setEmptySelectionAllowed(false);
         annoFine.setItemCaptionGenerator(Anno::getAnnoAsString);
-        annoFine.setSelectedItem(Smd.getAnnoCorrente());
+        annoFine.setSelectedItem(Anno.getAnnoCorrente());
         meseInizio.setEmptySelectionAllowed(false);
         meseInizio.setItemCaptionGenerator(Mese::getNomeBreve);
         meseInizio.setSelectedItem(Mese.GENNAIO);

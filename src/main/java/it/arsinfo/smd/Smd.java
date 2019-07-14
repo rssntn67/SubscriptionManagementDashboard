@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -65,6 +64,15 @@ public class Smd {
             return new BCryptPasswordEncoder();
     }
     
+    public static Map<Integer,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
+        final Map<Integer,Spedizione> spedMap = new HashMap<>();
+        for (Spedizione spedizione:spedizioni) {
+            spedMap.put(spedizione.hashCode(), spedizione);
+        }
+        return spedMap;
+        
+    }
+
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
@@ -75,36 +83,9 @@ public class Smd {
         }
         return "no";
     }
-
     
-    public static Anno getAnnoCorrente() {
-        return Anno.valueOf("ANNO"+new SimpleDateFormat("yyyy").format(new Date()));        
-    }
-    public static Anno getAnnoPassato() {
-        Integer annoScorso = getAnnoCorrente().getAnno()-1;
-        return Anno.valueOf("ANNO"+annoScorso);
-    }
-    public static Anno getAnnoProssimo() {
-        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
-        return Anno.valueOf("ANNO"+annoProssimo);
-    }
-    public static Mese getMeseCorrente() {
-        return Mese.getByCode(new SimpleDateFormat("MM").format(new Date()));        
-    }
     public static String getProgressivoVersamento(int i) {
         return String.format("%09d",i);
-    }
-
-    public static boolean spedizionePosticipata(Spedizione spedizione, SpedizioneItem item) {
-        int anticipoSpedizione=item.getEstrattoConto().getPubblicazione().getAnticipoSpedizione();
-        if (item.getAnnoPubblicazione() == spedizione.getAnnoSpedizione()) {
-            return !(item.getMesePubblicazione().getPosizione() - spedizione.getMeseSpedizione().getPosizione() == anticipoSpedizione);
-        }
-        
-        if (item.getAnnoPubblicazione().getAnno() > spedizione.getAnnoSpedizione().getAnno()) {
-            return !(12 - spedizione.getMeseSpedizione().getPosizione() + item.getMesePubblicazione().getPosizione() == anticipoSpedizione);
-        }
-        return true;
     }
     
     public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(EstrattoConto ec) throws UnsupportedOperationException {
@@ -239,6 +220,7 @@ public class Smd {
         }
         
         for (SpedizioneItem rimosso:rimossi) {
+            log.info("rimuoviEC: rimosso" + rimosso);
             rimosso.getSpedizione().deleteSpedizioneItem(rimosso);
         }
         
@@ -290,63 +272,67 @@ public class Smd {
       return items;
     }
 
-    public static Map<String,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
-        final Map<String,Spedizione> spedMap = new HashMap<>();
-        for (Spedizione spedizione:spedizioni) {
-            spedMap.put(spedizione.getMeseSpedizione().getCode()+spedizione.getAnnoSpedizione().getAnnoAsString()+spedizione.getInvioSpedizione(), spedizione);
-        }
-        return spedMap;
-        
-    }
-    
-    public static List<Spedizione> generaSpedizioni(Abbonamento abb, 
-                    List<SpedizioneItem> items, 
-                    Invio invio, 
-                    InvioSpedizione invioSpedizione, 
-                    Anagrafica destinatario, 
-                    List<Spedizione> spedizioni,
-                    List<SpesaSpedizione> spese) 
-    {
-            
-        final Map<String,Spedizione> spedMap = getSpedizioneMap(spedizioni);
-            Mese spedMese;
-            Anno spedAnno;
-    
-            for (SpedizioneItem item : items) {
-                Mese mesePubblicazione = item.getMesePubblicazione();
-                Anno annoPubblicazione = item.getAnnoPubblicazione();
-                int anticipoSpedizione = item.getEstrattoConto().getPubblicazione().getAnticipoSpedizione();
-            if (mesePubblicazione.getPosizione()-anticipoSpedizione <= 0) {
-                spedMese = Mese.getByPosizione(12+mesePubblicazione.getPosizione()-anticipoSpedizione);
+    public static List<Spedizione> generaSpedizioni(Abbonamento abb,
+            List<SpedizioneItem> items, Invio invio,
+            InvioSpedizione invioSpedizione, Anagrafica destinatario,
+            List<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
+
+        log.info("geneneraSpedizioni: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
+        final Map<Integer, Spedizione> spedMap = Smd.getSpedizioneMap(spedizioni);
+        Mese spedMese;
+        Anno spedAnno;
+
+        for (SpedizioneItem item : items) {
+            log.info("geneneraSpedizioni: item" + item);
+            InvioSpedizione isped = invioSpedizione;
+            Mese mesePubblicazione = item.getMesePubblicazione();
+            Anno annoPubblicazione = item.getAnnoPubblicazione();
+            boolean posticipata=false;
+            int anticipoSpedizione = item.getEstrattoConto().getPubblicazione().getAnticipoSpedizione();
+            if (mesePubblicazione.getPosizione() - anticipoSpedizione <= 0) {
+                spedMese = Mese.getByPosizione(12
+                        + mesePubblicazione.getPosizione()
+                        - anticipoSpedizione);
                 spedAnno = Anno.getAnnoPrecedente(annoPubblicazione);
             } else {
-                spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()-anticipoSpedizione);
+                spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()
+                        - anticipoSpedizione);
                 spedAnno = annoPubblicazione;
             }
-            if (spedAnno.getAnno() < getAnnoCorrente().getAnno() || (spedAnno == getAnnoCorrente() && spedMese.getPosizione() < getMeseCorrente().getPosizione())) {
-                spedMese = getMeseCorrente();
-                spedAnno = getAnnoCorrente();
-                invioSpedizione = InvioSpedizione.AdpSede;
+            log.info("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+
+            if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
+                    || (spedAnno == Anno.getAnnoCorrente()
+                            && spedMese.getPosizione() <= Mese.getMeseCorrente().getPosizione())) {
+                spedMese = Mese.getMeseCorrente();
+                spedAnno = Anno.getAnnoCorrente();
+                isped = InvioSpedizione.AdpSede;
+                posticipata=true;
+                log.info("geneneraSpedizioni: spedizione anticipata");
+
             }
             if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
-                invioSpedizione = InvioSpedizione.AdpSede;            
+                isped = InvioSpedizione.AdpSede;
+                log.info("geneneraSpedizioni: spedizione estero");
             }
-            if (!spedMap.containsKey(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione)) {
-                Spedizione spedizione = new Spedizione();
-                spedizione.setMeseSpedizione(spedMese);
-                spedizione.setAnnoSpedizione(spedAnno);
-                spedizione.setInvioSpedizione(invioSpedizione);
-                spedizione.setAbbonamento(abb);
-                spedizione.setDestinatario(destinatario);
-                spedizione.setInvio(invio);
-                spedMap.put(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione, spedizione);
+            log.info("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+            Spedizione spedizione = new Spedizione();
+            spedizione.setMeseSpedizione(spedMese);
+            spedizione.setAnnoSpedizione(spedAnno);
+            spedizione.setInvioSpedizione(isped);
+            spedizione.setAbbonamento(abb);
+            spedizione.setDestinatario(destinatario);
+            spedizione.setInvio(invio);
+            if (!spedMap.containsKey(spedizione.hashCode())) {
+                spedMap.put(spedizione.hashCode(), spedizione);
             }
-            Spedizione sped = spedMap.get(spedMese.getCode()+spedAnno.getAnnoAsString()+invioSpedizione);
+            Spedizione sped = spedMap.get(spedizione.hashCode());
+            item.setPosticipata(posticipata);
             item.setSpedizione(sped);
             sped.addSpedizioneItem(item);
         }
 
-        calcolaPesoSpesePostali( abb, spedMap.values(), spese);                
+        calcolaPesoSpesePostali(abb, spedMap.values(), spese);
         return spedMap.values().stream().collect(Collectors.toList());
     }
 
@@ -365,7 +351,8 @@ public class Smd {
                                );
             switch (sped.getDestinatario().getAreaSpedizione()) {
             case Italia:
-                if( !sped.getSpedizioniPosticipate().isEmpty()) {
+                if( sped.getInvioSpedizione() == InvioSpedizione.AdpSede 
+                    && !sped.getSpedizioniPosticipate().isEmpty()) {
                     calcolaSpesePostali(abb, sped, spesa);
                 }
                 break;
@@ -465,7 +452,7 @@ public class Smd {
                 abbonamento.setCampagna(campagna);
                 abbonamento.setAnno(campagna.getAnno());
                 abbonamento.setCassa(cassa);
-                abbonamento.setCampo(generaVCampo(abbonamento.getAnno()));
+                abbonamento.setCampo(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
                 abbonamenti.add(abbonamento);
             }
@@ -476,7 +463,7 @@ public class Smd {
     }
     
     public static Abbonamento aggiornaAbbonamento(Abbonamento abbonamento,List<Pubblicazione> pubblicazioni, List<Storico> storici) {
-        if (abbonamento.getAnno() != Smd.getAnnoProssimo()) {
+        if (abbonamento.getAnno() != Anno.getAnnoProssimo()) {
             return abbonamento;
         }
         final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
@@ -578,7 +565,7 @@ public class Smd {
         for (Abbonamento abb: abbonamenti) {
             if (abb.getIntestatario().getId() != storico.getIntestatario().getId() 
                     || abb.getCampagna() == null
-                    || abb.getAnno().getAnno() != getAnnoCorrente().getAnno()) {
+                    || abb.getAnno().getAnno() != Anno.getAnnoCorrente().getAnno()) {
                 continue;
             }
             for (EstrattoConto sped: estrattiConto) {
@@ -599,35 +586,6 @@ public class Smd {
         return StatoStorico.SOSPESO;
     }
         
-    /*
-     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
-     * riservati al correntista che intende utilizzare tale campo 2 caratteri
-     * numerici di controcodice pari al resto della divisione dei primi 16
-     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
-     * controcodice: 00 - 92)
-     */
-    public static String generaVCampo(Anno anno) {
-        // primi 2 caratteri anno
-        String campo = anno.getAnnoAsString().substring(2, 4);
-        // 3-16
-        campo += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
-        campo += String.format("%02d", Long.parseLong(campo) % 93);
-        return campo;
-    }
-
-    public static boolean checkCampo(String campo) {
-        if (campo == null || campo.length() != 18) {
-            return false;
-            
-        }
-        
-        String codice = campo.substring(0, 16);
-        
-        Long valorecodice = (Long.parseLong(codice) % 93);
-        Integer codicecontrollo = Integer.parseInt(campo.substring(16,18));
-        return codicecontrollo.intValue() == valorecodice.intValue();
-    }
-
     public static Date getStandardDate(LocalDate localDate) {
         return getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
     }
@@ -649,8 +607,8 @@ public class Smd {
             List<Pubblicazione> pubblicazioni, 
             List<SpedizioneItem> items
         ) {
-        Anno anno = getAnnoCorrente();
-        Mese mese = getMeseCorrente();
+        Anno anno = Anno.getAnnoCorrente();
+        Mese mese = Mese.getMeseCorrente();
         List<Operazione> operazioni = new ArrayList<>();
         pubblicazioni.stream().forEach(p -> {
             Operazione operazione = generaOperazione(p, items,mese,anno);

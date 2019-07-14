@@ -58,7 +58,7 @@ public class Pubblicazione implements SmdEntity {
     private int anticipoSpedizione=2;
     
     @Enumerated(EnumType.STRING)
-    private Anno anno=Smd.getAnnoCorrente();
+    private Anno anno=Anno.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
     private TipoPubblicazione tipo=TipoPubblicazione.UNICO;
 
