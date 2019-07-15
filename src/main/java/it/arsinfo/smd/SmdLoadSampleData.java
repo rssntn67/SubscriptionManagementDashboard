@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,6 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -168,23 +166,23 @@ public class SmdLoadSampleData implements Runnable {
     public static List<SpesaSpedizione> getSpeseSpedizione() {
         List<SpesaSpedizione> sss = new ArrayList<>();
 
+        SpesaSpedizione ss1 = new SpesaSpedizione();
+        ss1.setRange(RangeSpeseSpedizione.Base);
+        ss1.setArea(AreaSpedizione.Italia);
+        ss1.setSpese(new BigDecimal("2.00"));
+        sss.add(ss1);
+
         SpesaSpedizione ss2 = new SpesaSpedizione();
-        ss2.setRange(RangeSpeseSpedizione.Base);
+        ss2.setRange(RangeSpeseSpedizione.Da100grA200gr);
         ss2.setArea(AreaSpedizione.Italia);
-        ss2.setSpese(new BigDecimal("2.00"));
+        ss2.setSpese(new BigDecimal("3.00"));
         sss.add(ss2);
 
         SpesaSpedizione ss3 = new SpesaSpedizione();
-        ss3.setRange(RangeSpeseSpedizione.Da100grA200gr);
+        ss3.setRange(RangeSpeseSpedizione.Da200grA350gr);
         ss3.setArea(AreaSpedizione.Italia);
         ss3.setSpese(new BigDecimal("3.00"));
         sss.add(ss3);
-
-        SpesaSpedizione ss3bis = new SpesaSpedizione();
-        ss3bis.setRange(RangeSpeseSpedizione.Da200grA350gr);
-        ss3bis.setArea(AreaSpedizione.Italia);
-        ss3bis.setSpese(new BigDecimal("3.00"));
-        sss.add(ss3bis);
 
         SpesaSpedizione ss4 = new SpesaSpedizione();
         ss4.setRange(RangeSpeseSpedizione.Da350grA1Kg);
@@ -534,36 +532,7 @@ public class SmdLoadSampleData implements Runnable {
         abbonamento.setIntestatario(intestatario);
         return abbonamento;
     }
-
-    public static List<Spedizione> getSpedizioni(List<SpedizioneItem> items, Abbonamento abb, Table<Pubblicazione,Anagrafica,Integer> table, List<SpesaSpedizione> spese) {
-        final List<Spedizione> spedizioni = new ArrayList<>();
-        table.cellSet().stream().forEach(te -> 
-            spedizioni.addAll(
-          Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, te.getColumnKey(), new ArrayList<>(), spese)
-                    )
-            );
-        return spedizioni;
-    }
     
-    public static List<EstrattoConto> getEstrattiConto(Anno anno, 
-            Mese inizio,
-            Mese fine,
-            Abbonamento abb, 
-            Table<Pubblicazione,Anagrafica,Integer> table) {
-        return table.cellSet()
-        .stream().map( ect -> {
-            EstrattoConto ec = new EstrattoConto();
-            ec.setAbbonamento(abb);
-            ec.setPubblicazione(ect.getRowKey());
-            ec.setNumero(ect.getValue());
-            ec.setMeseInizio(inizio);
-            ec.setAnnoInizio(anno);
-            ec.setMeseFine(fine);
-            ec.setAnnoFine(anno);
-            return ec;
-        }).collect(Collectors.toList());        
-    }
-
     public static Abbonamento getAbbonamentoBy(
             Anagrafica intestatario, 
             Anno anno, 
@@ -651,7 +620,7 @@ public class SmdLoadSampleData implements Runnable {
                 Anno.getAnnoCorrente(), 
                 Cassa.Ccp
                 );
-        save(Anno.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
+        genera(Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
 
     }
         
@@ -668,7 +637,7 @@ public class SmdLoadSampleData implements Runnable {
                             Anno.getAnnoCorrente(), 
                             Cassa.Ccp 
                             );
-        save(Anno.getAnnoCorrente(), Mese.GENNAIO, Mese.DICEMBRE, abb, table);
+        genera(Mese.GENNAIO, Mese.DICEMBRE, abb, table);
     }
     
     private  void saveAbbonamentoDp() {
@@ -679,30 +648,45 @@ public class SmdLoadSampleData implements Runnable {
                             Anno.getAnnoCorrente(), 
                             Cassa.Ccp
                             );        
-        save(Anno.getAnnoCorrente(), Mese.MAGGIO, Mese.DICEMBRE, abb, table);
+        genera(Mese.MAGGIO, Mese.DICEMBRE, abb, table);
     }
     
-    private void save(Anno anno, Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {
-        List<EstrattoConto> estratticonto=getEstrattiConto(anno, inizio, fine, abb, table);
-        List<SpedizioneItem> items = new ArrayList<>();
-        for (EstrattoConto ec: estratticonto) {
-            items.addAll(Smd.generaECItems(abb, ec));
-        }
-        final List<Spedizione> spedizioni = getSpedizioni(items, abb, table, spesaSpedizioneDao.findAll());
-        save(abb, estratticonto, spedizioni);
-    }
-
-    private void save(Abbonamento abb, List<EstrattoConto> estrattiConto, List<Spedizione> spedizioni) {
-        abbonamentoDao.save(abb);
-        for (EstrattoConto ec: estrattiConto) {
+    private void genera(Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        final List<Spedizione> spedizioni = new ArrayList<>();        
+        table.cellSet()
+        .stream().forEach( ect -> {
+            EstrattoConto ec = new EstrattoConto();
+            ec.setAbbonamento(abb);
+            ec.setPubblicazione(ect.getRowKey());
+            ec.setNumero(ect.getValue());
+            ec.setMeseInizio(inizio);
+            ec.setAnnoInizio(anno);
+            ec.setMeseFine(fine);
+            ec.setAnnoFine(anno);
+            List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+            abbonamentoDao.save(abb);
             estrattoContoDao.save(ec);
-        }
-        for (Spedizione sped:spedizioni) {
-            spedizioneDao.save(sped);
-            for (SpedizioneItem item: sped.getSpedizioneItems()) {
-                spedizioneItemDao.save(item);
-            }
-        }        
+            spedizioni.addAll(
+                  Smd.generaSpedizioni(
+                           abb, 
+                           items, 
+                           Invio.Destinatario, 
+                           InvioSpedizione.Spedizioniere, 
+                           ect.getColumnKey(), 
+                           spedizioni, 
+                           getSpeseSpedizione()
+                       )
+                  );
+            for (Spedizione sped:spedizioni) {
+                spedizioneDao.save(sped);
+                for (SpedizioneItem item: sped.getSpedizioneItems()) {
+                    spedizioneItemDao.save(item);
+                }
+            }        
+
+            
+        });        
     }
 
     private void save(Abbonamento abb, EstrattoConto...contos) {
@@ -929,6 +913,7 @@ public class SmdLoadSampleData implements Runnable {
     private void loadSampleData() {
         
         saveAbbonamentoDp();
+        
         saveAbbonamentoMs();
         saveAbbonamentoGp();
         saveAbbonamentiIncassi();
@@ -939,13 +924,7 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
         Incasso incasso = getIncassoByImportoAndCampo(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
         incassoDao.save(incasso);
-        
-        
-        Campagna campagna = new Campagna();
-        campagna.setAnno(Anno.ANNO2018);
-        
-        loadCampagna(Anno.ANNO2018);
-        loadCampagna(Anno.ANNO2019);
+                
         //FIXME
         /*
         pubblicazioneDao.findAll().stream().forEach(p -> 
@@ -984,48 +963,7 @@ public class SmdLoadSampleData implements Runnable {
         
    
     }   
-    
-    private void loadCampagna(Anno anno) {
-        Campagna campagna = new Campagna();
-        campagna.setAnno(anno);
-        List<Abbonamento> abbonamenti = 
-            Smd.generaAbbonamentiCampagna(
-                                      campagna, 
-                                      anagraficaDao.findAll(), 
-                                      storicoDao.findAll(),
-                                      pubblicazioneDao.findAll()
-          );
         
-        campagnaDao.save(campagna);
-        for (Abbonamento abb:abbonamenti) {
-            for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
-                EstrattoConto ec = Smd.generaECDaStorico(abb,storico);
-                List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
-                if (items.isEmpty()) {
-                    continue;
-                }
-                List<Spedizione> spedizioni = 
-                        Smd.generaSpedizioni(abb, 
-                                             items, 
-                                             storico.getInvio(), 
-                                             storico.getInvioSpedizione(), 
-                                             storico.getDestinatario(), 
-                                             new ArrayList<>(),
-                                             spesaSpedizioneDao.findByAreaSpedizione(
-                                                         storico.getDestinatario().getAreaSpedizione()));
-                abbonamentoDao.save(abb);
-                estrattoContoDao.save(ec);
-                spedizioni.stream().forEach(sped ->  {
-                    spedizioneDao.save(sped);
-                    sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));;
-                });
-            }
-            
-            
-        }
-
-    }
-    
     private void createDemoUser() {
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
         userInfoDao.save(adp);

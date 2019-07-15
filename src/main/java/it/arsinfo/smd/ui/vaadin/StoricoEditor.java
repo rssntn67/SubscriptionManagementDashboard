@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -23,6 +22,8 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
@@ -55,7 +56,8 @@ public class StoricoEditor
             EstrattoContoDao estrattoContoDao,
             SpedizioneDao spedizioneDao,
             List<Pubblicazione> pubblicazioni, 
-            List<Anagrafica> anagrafiche) {
+            List<Anagrafica> anagrafiche,
+            List<SpesaSpedizione> spese) {
 
         super(storicoDao, new Binder<>(Storico.class) );
         SmdButton update = new SmdButton("Salva ed Aggiorna Campagna", VaadinIcons.ARCHIVES);
@@ -103,16 +105,13 @@ public class StoricoEditor
             List<EstrattoConto> ecs = estrattoContoDao.findByStorico(get());
             ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo()).forEach( ec ->{
                 ec.setNumero(get().getNumero());
-//                ec.setDestinatario(get().getDestinatario());
-//                ec.setInvio(get().getInvio());
                 ec.setTipoEstrattoConto(get().getTipoEstrattoConto());
                 ec.setPubblicazione(get().getPubblicazione());
                 Abbonamento abb = ec.getAbbonamento();
-                //FIXME
-                Smd.aggiornaEC(abb, ec, new ArrayList<>());
+                List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abb);
+                Smd.aggiornaEC(abb, ec, spedizioni,spese);
                 abbonamentoDao.save(abb);
                 estrattoContoDao.save(ec);
-//                ec.getSpedizioni().stream().forEach(s ->spedizioneDao.save(s));
             });
             save();
  

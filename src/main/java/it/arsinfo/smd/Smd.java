@@ -138,14 +138,11 @@ public class Smd {
         return ec;
     }
 
-    public static void aggiornaEC(Abbonamento abb, EstrattoConto ec, List<SpedizioneItem> spedizioniItems)
-        throws UnsupportedOperationException
-    {
-        if (ec.getNumero() <= 0) {
-            throw new UnsupportedOperationException("Non si possono generare estratti conto con quantita <=0");
-        }
-        abb.setImporto(abb.getTotale().subtract(ec.getImporto()));
-        
+    public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
+            EstrattoConto ec, 
+            List<Spedizione> spedizioni,
+            List<SpesaSpedizione> spese)
+    {        
         log.info("aggiornaEC: intestatario: "+ abb.getIntestatario().getCaption());
         log.info("aggiornaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
         log.info("aggiornaEC: pubbli.: "+ ec.getPubblicazione().getNome());
@@ -154,39 +151,33 @@ public class Smd {
         log.info("aggiornaEC: meseFine: "+ ec.getMeseFine().getNomeBreve());
         log.info("aggiornaEC: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
         log.info("aggiornaEC: quantità: "+ ec.getNumero());
-        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = getAnnoMeseMap(ec);
-            for (Anno anno: mappaPubblicazioni.keySet()) {
-                mappaPubblicazioni.get(anno).stream().forEach(mese -> {
-                    final List<Spedizione> opere = new ArrayList<>();
-                    final List<Spedizione> inviate = new ArrayList<>();
-                    spedizioniItems
+        abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
+        List<SpedizioneItem> ecUpdatedItems = generaECItems(abb, ec);
+        abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
+        
+        final List<SpedizioneItem> inviati = new ArrayList<>(); 
+        final List<SpedizioneItem> rimossi = new ArrayList<>();
+        for (Spedizione sped: spedizioni) {
+            sped.getSpedizioneItems()
+            .stream()
+            .filter(item -> item.getEstrattoConto() == ec || item.getEstrattoConto().getId() == ec.getId())
+            .forEach(item -> {
+                ecUpdatedItems
                     .stream().filter(
-                     si -> si.getMesePubblicazione() == mese 
-                     && si.getAnnoPubblicazione() == anno)
+                     si -> si.getMesePubblicazione() == item.getMesePubblicazione() 
+                     && si.getAnnoPubblicazione() == item.getAnnoPubblicazione())
                     .forEach(si -> {
                         Spedizione s = si.getSpedizione();
-                        switch (s.getStatoSpedizione()) {
-                        case PROGRAMMATA:
-                            opere.add(s);
-                            break;
-                        case INVIATA:
-                            inviate.add(s);
-                            break;
-                        case SOSPESA:
-                            opere.add(s);
-                            break;
-                        default:
-                            opere.add(s);
-                            break;
-                                
-                        }
-                        
+        
+                    });  
                     });
                      
-                });
             }
+            calcolaPesoESpesePostali(abb, spedizioni, spese);
+
             calcoloImportoEC(ec);
             abb.setImporto(abb.getTotale().add(ec.getImporto()));
+            return rimossi;
     }
 
     public static List<SpedizioneItem> rimuoviEC(
@@ -201,7 +192,13 @@ public class Smd {
         for (Spedizione sped:spedizioni) {
             sped.getSpedizioneItems()
             .stream()
-            .filter(item -> item.getEstrattoConto() == ec || item.getEstrattoConto().getId() == ec.getId())
+            .filter(item -> 
+                item.getEstrattoConto() == ec 
+                || 
+                (ec.getId() != null && item.getEstrattoConto().getId() != null &&
+                    item.getEstrattoConto().getId() == ec.getId()
+                    )
+                )
             .forEach(item -> {
                 switch (sped.getStatoSpedizione()) {
                 case INVIATA:
@@ -224,13 +221,13 @@ public class Smd {
             rimosso.getSpedizione().deleteSpedizioneItem(rimosso);
         }
         
-        calcolaPesoSpesePostali(abb, spedizioni, spese);
         int numeroinviato=0;
         for (SpedizioneItem inviata:inviati) {
             numeroinviato+=inviata.getNumero();
         }
         ec.setNumero(0);
         ec.setNumeroTotaleRiviste(numeroinviato);
+        calcolaPesoESpesePostali(abb, spedizioni, spese);
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto())); 
         return rimossi;
@@ -260,6 +257,7 @@ public class Smd {
                 item.setAnnoPubblicazione(anno);
                 item.setMesePubblicazione(mese);
                 item.setNumero(ec.getNumero());
+                item.setPubblicazione(ec.getPubblicazione());
                 items.add(item);
             });
         }
@@ -332,15 +330,15 @@ public class Smd {
             sped.addSpedizioneItem(item);
         }
 
-        calcolaPesoSpesePostali(abb, spedMap.values(), spese);
+        calcolaPesoESpesePostali(abb, spedMap.values(), spese);
         return spedMap.values().stream().collect(Collectors.toList());
     }
 
-    private static void calcolaPesoSpesePostali(Abbonamento abb, Collection<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
+    private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
         for (Spedizione sped: spedizioni) {
             int pesoStimato=0;
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
-                pesoStimato+=item.getNumero()*item.getEstrattoConto().getPubblicazione().getGrammi();
+                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
             }
             sped.setPesoStimato(pesoStimato);
             SpesaSpedizione spesa = 

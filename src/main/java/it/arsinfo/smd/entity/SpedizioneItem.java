@@ -24,6 +24,9 @@ public class SpedizioneItem implements SmdEntity {
     private Spedizione spedizione;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Pubblicazione pubblicazione;
+
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
     private EstrattoConto estrattoConto;
     
     @Enumerated(EnumType.STRING)
@@ -89,7 +92,7 @@ public class SpedizioneItem implements SmdEntity {
     public String toString() {
         return String.format("SpedizioneItem[id=%d, %s %s %s, num. %d, post %b ]", 
                              id,
-                             estrattoConto.getPubblicazione().getNome(),
+                             pubblicazione.getNome(),
                              mesePubblicazione,
                              annoPubblicazione,
                              numero, 
@@ -105,6 +108,16 @@ public class SpedizioneItem implements SmdEntity {
 
     public void setPosticipata(boolean posticipata) {
         this.posticipata = posticipata;
+    }
+
+
+    public Pubblicazione getPubblicazione() {
+        return pubblicazione;
+    }
+
+
+    public void setPubblicazione(Pubblicazione pubblicazione) {
+        this.pubblicazione = pubblicazione;
     }
 
  }

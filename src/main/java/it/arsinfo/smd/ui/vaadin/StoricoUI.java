@@ -20,6 +20,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_STORICO)
@@ -53,6 +54,9 @@ public class StoricoUI extends SmdUI {
     @Autowired
     SpedizioneDao spedizioneDao;
 
+    @Autowired
+    SpesaSpedizioneDao spesaSpedizioneDao;
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Storico");
@@ -69,7 +73,8 @@ public class StoricoUI extends SmdUI {
                                   estrattoContoDao,
                                   spedizioneDao,
                                   pubblicazioni, 
-                                  anagrafica) {
+                                  anagrafica,
+                                  spesaSpedizioneDao.findAll()) {
             @Override
             public void save() {
                 if (getIntestatario().isEmpty()) {
