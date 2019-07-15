@@ -58,6 +58,9 @@ public class EstrattoConto implements SmdEntity {
         if (meseFine != Mese.DICEMBRE) {
             return false;
         }
+        if (numeroTotaleRiviste != numero*pubblicazione.getMesiPubblicazione().size()) {
+            return false;
+        }
         return true;
     }
     
