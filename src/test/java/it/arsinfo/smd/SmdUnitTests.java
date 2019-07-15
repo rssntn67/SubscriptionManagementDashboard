@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -285,7 +286,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void rimuoviECConSpedizioniInviate() {
+    public void testRimuoviECConSpedizioniInviate() {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
@@ -367,13 +368,46 @@ public class SmdUnitTests {
                 assertTrue(false);
             }
         }
+        for (Spedizione sped:spedizioni) {
+            if (sped.getMeseSpedizione() == meseA) {
+                sped.setStatoSpedizione(StatoSpedizione.INVIATA);
+            }
+        }
         
+        List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb, ec1, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
+        assertEquals(1, deletedItems.size());
 
+        BigDecimal ss = BigDecimal.ZERO;
+        for (Spedizione sped:spedizioni) {
+            log.info(sped.toString());
+            if (sped.getMeseSpedizione() == meseA) {
+                ss = sped.getSpesePostali();
+                assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
+                assertEquals((numeroRiviste-1)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(numeroRiviste-1, sped.getSpedizioneItems().size());            
+            } else if (sped.getMeseSpedizione() == meseB ) {
+                assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
+                assertEquals(0, sped.getPesoStimato().intValue());
+                assertEquals(0, sped.getSpedizioneItems().size());
+            } else { 
+                assertTrue(false);
+            }
+            sped.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
+        }
+        
+        log.info(ec1.toString());
+        log.info(abb.toString());
+        assertEquals(0, ec1.getNumero().intValue());
+        assertEquals(numeroRiviste-1, ec1.getNumeroTotaleRiviste().intValue());
+        assertEquals(ss.doubleValue(), abb.getSpese().doubleValue(),0);
+        assertEquals(ec1.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRiviste-1), ec1.getImporto().doubleValue(),0);
+        
 
     }
     
     @Test
-    public void rimuoviEC() {
+    public void testRimuoviEC() {
         
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
        
@@ -595,7 +629,8 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void aggiornaEC() {
+    @Ignore
+    public void testAggiornaEC() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdLoadSampleData.getGP();

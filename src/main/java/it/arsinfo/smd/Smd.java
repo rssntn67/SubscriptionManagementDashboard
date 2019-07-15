@@ -187,6 +187,7 @@ public class Smd {
             List<SpesaSpedizione> spese) 
     {
         abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
+        abb.setSpese(BigDecimal.ZERO);
         final List<SpedizioneItem> inviati = new ArrayList<>(); 
         final List<SpedizioneItem> rimossi = new ArrayList<>(); 
         for (Spedizione sped:spedizioni) {
