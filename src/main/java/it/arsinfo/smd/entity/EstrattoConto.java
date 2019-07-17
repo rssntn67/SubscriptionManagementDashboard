@@ -1,6 +1,9 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -165,5 +168,40 @@ public class EstrattoConto implements SmdEntity {
 
     public void setNumeroTotaleRiviste(Integer numeroTotaleRiviste) {
         this.numeroTotaleRiviste = numeroTotaleRiviste;
+    }
+
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(EstrattoConto ec) throws UnsupportedOperationException {
+        if (ec.getAnnoInizio().getAnno() > ec.getAnnoFine().getAnno()) {
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
+        }
+        if (ec.getAnnoInizio() == ec.getAnnoFine() && ec.getMeseInizio().getPosizione() > ec.getMeseFine().getPosizione()) {
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
+        }
+        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
+        Anno anno = ec.getAnnoInizio();
+        while (anno.getAnno() <= ec.getAnnoFine().getAnno()) {
+            EnumSet<Mese> mesiin = EnumSet.noneOf(Mese.class);
+            for (Mese mese: ec.getPubblicazione().getMesiPubblicazione()) {
+                if (anno == ec.getAnnoInizio() && anno == ec.getAnnoFine()) {
+                    if (mese.getPosizione() >= ec.getMeseInizio().getPosizione() && mese.getPosizione() <= ec.getMeseFine().getPosizione()) {
+                        mesiin.add(mese);
+                    }
+                } else if (anno == ec.getAnnoInizio() ) {
+                    if (mese.getPosizione() >= ec.getMeseFine().getPosizione()) {
+                        mesiin.add(mese);
+                    }
+                } else if (anno == ec.getAnnoFine()) {
+                    if (mese.getPosizione() <= ec.getMeseFine().getPosizione()) {
+                        mesiin.add(mese);
+                    }
+                } else {
+                    mesiin.add(mese);
+                }
+            }
+            map.put(anno, mesiin);
+            anno=Anno.getAnnoSuccessivo(anno);
+        }
+        
+        return map;
     }
 }

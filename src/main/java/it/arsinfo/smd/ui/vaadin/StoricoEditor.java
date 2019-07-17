@@ -109,7 +109,7 @@ public class StoricoEditor
                 ec.setPubblicazione(get().getPubblicazione());
                 Abbonamento abb = ec.getAbbonamento();
                 List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abb);
-                Smd.aggiornaEC(abb, ec, spedizioni,spese);
+                Smd.aggiornaEC(abb, ec, spedizioni,invio.getValue(), invioSpedizione.getValue(), destinatario.getValue(),spese);
                 abbonamentoDao.save(abb);
                 estrattoContoDao.save(ec);
             });

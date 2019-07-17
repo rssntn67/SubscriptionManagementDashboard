@@ -58,7 +58,7 @@ public class SmdUnitTests {
         ec.setAnnoInizio(anno);
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
-        Smd.generaECItems(abb,ec);
+        Smd.generaECItemsECalcola(abb,ec);
 
         return ec;
     }
@@ -204,7 +204,7 @@ public class SmdUnitTests {
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
         
         assertEquals(3, items.size());
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
@@ -253,7 +253,7 @@ public class SmdUnitTests {
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
         
         assertEquals(3, items.size());
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
@@ -330,7 +330,7 @@ public class SmdUnitTests {
         ec1.setMeseFine(meseD);
         ec1.setAnnoFine(annof);
         
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
 
         List<Spedizione> spedizioni = 
                 Smd.generaSpedizioni(
@@ -440,9 +440,9 @@ public class SmdUnitTests {
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);
 
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
-        items.addAll(Smd.generaECItems(abb, ec2));
-        items.addAll(Smd.generaECItems(abb, ec3));
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
+        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
+        items.addAll(Smd.generaECItemsECalcola(abb, ec3));
 
         List<Spedizione> spedizioni = 
                 Smd.generaSpedizioni(
@@ -647,7 +647,7 @@ public class SmdUnitTests {
         ec1.setMeseFine(Mese.SETTEMBRE);
         ec1.setAnnoFine(anno);
         
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
         assertEquals(8, items.size());
 
         List<Spedizione> spedizioni = 
@@ -666,7 +666,7 @@ public class SmdUnitTests {
         ec1.setMeseInizio(Mese.MARZO);
         ec1.setMeseFine(Mese.AGOSTO);
         
-        Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
+        Smd.aggiornaEC(abb, ec1, spedizioni,Invio.Destinatario, InvioSpedizione.Spedizioniere,tizio,SmdLoadSampleData.getSpeseSpedizione());
         
     }
 
@@ -690,7 +690,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.DICEMBRE);
         
         
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
         assertEquals(p.getMesiPubblicazione().size(), items.size());
         assertTrue(ec.isAbbonamentoAnnuale());
         

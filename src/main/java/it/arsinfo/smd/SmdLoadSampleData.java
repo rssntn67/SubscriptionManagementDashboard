@@ -664,7 +664,7 @@ public class SmdLoadSampleData implements Runnable {
             ec.setAnnoInizio(anno);
             ec.setMeseFine(fine);
             ec.setAnnoFine(anno);
-            List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+            List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
             abbonamentoDao.save(abb);
             estrattoContoDao.save(ec);
             spedizioni.addAll(

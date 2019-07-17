@@ -930,7 +930,7 @@ public class SmdApplicationTests {
         ec.setAnnoInizio(anno);
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
         assertTrue(ec.isAbbonamentoAnnuale());
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
@@ -1018,8 +1018,8 @@ public class SmdApplicationTests {
         ec2.setAnnoInizio(anno);
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
-        items.addAll(Smd.generaECItems(abb, ec2));
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
+        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
@@ -1045,7 +1045,7 @@ public class SmdApplicationTests {
         ec3.setAnnoInizio(anno);
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);        
-        List<SpedizioneItem> blocchettitems = Smd.generaECItems(abb, ec3);
+        List<SpedizioneItem> blocchettitems = Smd.generaECItemsECalcola(abb, ec3);
         assertEquals(blocchetti.getMesiPubblicazione().size(), blocchettitems.size());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec3);
@@ -1129,9 +1129,9 @@ public class SmdApplicationTests {
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);
 
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
-        items.addAll(Smd.generaECItems(abb, ec2));
-        items.addAll(Smd.generaECItems(abb, ec3));
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
+        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
+        items.addAll(Smd.generaECItemsECalcola(abb, ec3));
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
@@ -1307,7 +1307,7 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoCorrente());
         
-        List<SpedizioneItem> items = Smd.generaECItems(abb, ec1);
+        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
@@ -1496,7 +1496,7 @@ public class SmdApplicationTests {
         ec.setMeseFine(Mese.SETTEMBRE);
         ec.setAnnoFine(Anno.getAnnoProssimo());
 
-        Smd.generaECItems(abb, ec);
+        Smd.generaECItemsECalcola(abb, ec);
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         
@@ -1606,7 +1606,7 @@ public class SmdApplicationTests {
         for (Abbonamento abb:abbonamenti) {
             for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
                 EstrattoConto ec = Smd.generaECDaStorico(abb,storico);
-                List<SpedizioneItem> items = Smd.generaECItems(abb, ec);
+                List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
                 if (items.isEmpty()) {
                     continue;
                 }

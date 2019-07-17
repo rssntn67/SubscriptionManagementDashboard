@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
@@ -120,4 +121,17 @@ public class SpedizioneItem implements SmdEntity {
         this.pubblicazione = pubblicazione;
     }
 
+    @Transient
+    public boolean stessaPubblicazione(SpedizioneItem item) {
+        if (item.getMesePubblicazione() != mesePubblicazione) {
+            return false;
+        }
+        if (item.getAnnoPubblicazione() != annoPubblicazione) {
+            return false;
+        }
+        if (pubblicazione.getId() != null && item.getPubblicazione().getId() != null) {
+            return pubblicazione.getId() == item.getPubblicazione().getId();
+        }
+        return pubblicazione == item.getPubblicazione();
+    }
  }

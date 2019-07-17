@@ -2,7 +2,9 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
@@ -35,7 +37,7 @@ public class Spedizione implements SmdEntity {
     @ManyToOne(fetch=FetchType.LAZY)
     private Abbonamento abbonamento;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.EAGER)
     private Anagrafica destinatario;
     
     @Enumerated(EnumType.STRING)
@@ -312,6 +314,15 @@ public class Spedizione implements SmdEntity {
         if (statoSpedizione != other.statoSpedizione)
             return false;
         return true;
+    }
+
+    public static Map<Integer,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
+        final Map<Integer,Spedizione> spedMap = new HashMap<>();
+        for (Spedizione spedizione:spedizioni) {
+            spedMap.put(spedizione.hashCode(), spedizione);
+        }
+        return spedMap;
+        
     }
 
 

@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -193,7 +192,7 @@ public class Pubblicazione implements SmdEntity {
 
     @Transient
     public String getDecodeAttivo() {
-        return Smd.decodeForGrid(active);
+        return SmdEntity.decodeForGrid(active);
     }
     
     @Transient
