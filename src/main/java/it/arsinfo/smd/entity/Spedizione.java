@@ -278,9 +278,6 @@ public class Spedizione implements SmdEntity {
                                              : invioSpedizione.hashCode());
         result = prime * result
                 + ((meseSpedizione == null) ? 0 : meseSpedizione.hashCode());
-        result = prime * result
-                + ((statoSpedizione == null) ? 0
-                                             : statoSpedizione.hashCode());
         return result;
     }
 
@@ -310,8 +307,6 @@ public class Spedizione implements SmdEntity {
         if (invioSpedizione != other.invioSpedizione)
             return false;
         if (meseSpedizione != other.meseSpedizione)
-            return false;
-        if (statoSpedizione != other.statoSpedizione)
             return false;
         return true;
     }

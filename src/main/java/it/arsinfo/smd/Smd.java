@@ -79,16 +79,15 @@ public class Smd {
         ec.setAnnoInizio(abb.getAnno());
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(abb.getAnno());
-        generaECItemsECalcola(abb, ec);
+        ec.setInvio(storico.getInvio());
+        ec.setInvioSpedizione(storico.getInvioSpedizione());
+        ec.setDestinatario(storico.getDestinatario());
         return ec;
     }
 
     public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
             EstrattoConto ec,
             List<Spedizione> spedizioni,
-            Invio invio,
-            InvioSpedizione invioSpedizione,
-            Anagrafica destinatario,
             List<SpesaSpedizione> spese)
     throws UnsupportedOperationException {        
         log.info("aggiornaEC: intestatario: "+ abb.getIntestatario().getCaption());
@@ -108,13 +107,6 @@ public class Smd {
             .filter(item -> item.getEstrattoConto() == ec || 
                (item.getEstrattoConto().getId() != null && ec.getId() != null && item.getEstrattoConto().getId() == ec.getId()))
             .forEach(item -> {
-                if (item.getSpedizione().getInvio() != invio) {
-                    throw new UnsupportedOperationException("Aggiona EC non consente di modificare Invio");
-                }
-                if (!item.isPosticipata() && item.getSpedizione().getInvioSpedizione() != invioSpedizione ) {
-                    throw new UnsupportedOperationException("Aggiona EC non consente di modificare InvioSpedizione");
-                }
-                if (!item.getSpedizione().getDestinatario().getCodeLineBase().equals(destinatario.getCodeLineBase()) )
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
                           ec.getPubblicazione().getId() == item.getPubblicazione().getId()) ) {
@@ -188,7 +180,7 @@ public class Smd {
             }
         }
         
-        spedizioni = generaSpedizioni(abb, addItems, invio, invioSpedizione, destinatario, spedizioni, spese);
+//FIXME        spedizioni = generaSpedizioni(abb,  ec, spedizioni, spese);
         
         calcolaPesoESpesePostali(abb, spedizioni, spese);
 
@@ -278,26 +270,21 @@ public class Smd {
       return items; 
     }
     
-    public static List<SpedizioneItem> generaECItemsECalcola(
-            Abbonamento abb,
-            EstrattoConto ec
-            ) throws UnsupportedOperationException {
-        
-        log.info("creaEC: intestatario: "+ abb.getIntestatario().getCaption());
-        log.info("creaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
+    public static List<Spedizione> generaSpedizioni(Abbonamento abb,
+            EstrattoConto ec, 
+            List<Spedizione> spedizioni, 
+            List<SpesaSpedizione> spese) throws UnsupportedOperationException {
+
+        log.info("generaSpedizioni: intestatario: "+ abb.getIntestatario().getCaption());
+        log.info("generaSpedizioni: area: "+ abb.getIntestatario().getAreaSpedizione());
         ec.setAbbonamento(abb);
         List<SpedizioneItem> items = generaECItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        return items;
-    }
-
-    public static List<Spedizione> generaSpedizioni(Abbonamento abb,
-            List<SpedizioneItem> items, Invio invio,
-            InvioSpedizione invioSpedizione, Anagrafica destinatario,
-            List<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
-
+        Anagrafica destinatario = ec.getDestinatario();
+        Invio invio = ec.getInvio();
+        InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
         log.info("geneneraSpedizioni: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
         final Map<Integer, Spedizione> spedMap = Spedizione.getSpedizioneMap(spedizioni);
         Mese spedMese;
@@ -415,6 +402,7 @@ public class Smd {
                 }).collect(Collectors.toList());
     }
     
+    //FIXME
     public static List<EstrattoConto> 
         generaEstrattoContoAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
         throws UnsupportedOperationException {
@@ -483,7 +471,7 @@ public class Smd {
         return abbonamenti;
 
     }
-    
+    //FIXME
     public static Abbonamento aggiornaAbbonamento(Abbonamento abbonamento,List<Pubblicazione> pubblicazioni, List<Storico> storici) {
         if (abbonamento.getAnno() != Anno.getAnnoProssimo()) {
             return abbonamento;

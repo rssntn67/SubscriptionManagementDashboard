@@ -17,6 +17,8 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 
@@ -47,6 +49,15 @@ public class EstrattoConto implements SmdEntity {
     private Integer numeroTotaleRiviste = 0;
     
     private BigDecimal importo = BigDecimal.ZERO;
+
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Anagrafica destinatario;
+    
+    @Enumerated(EnumType.STRING)
+    private Invio invio = Invio.Destinatario;
+
+    @Enumerated(EnumType.STRING)
+    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
     public EstrattoConto() {
     }
@@ -203,5 +214,29 @@ public class EstrattoConto implements SmdEntity {
         }
         
         return map;
+    }
+
+    public Anagrafica getDestinatario() {
+        return destinatario;
+    }
+
+    public void setDestinatario(Anagrafica destinatario) {
+        this.destinatario = destinatario;
+    }
+
+    public Invio getInvio() {
+        return invio;
+    }
+
+    public void setInvio(Invio invio) {
+        this.invio = invio;
+    }
+
+    public InvioSpedizione getInvioSpedizione() {
+        return invioSpedizione;
+    }
+
+    public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
+        this.invioSpedizione = invioSpedizione;
     }
 }

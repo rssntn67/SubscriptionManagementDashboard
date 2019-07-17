@@ -761,6 +761,7 @@ public class SmdApplicationTests {
         pubblicazioneDao.save(lodare);
 
         ec.setPubblicazione(lodare);
+        ec.setDestinatario(tizio);
         estrattoContoDao.save(ec);
         
         assertEquals(1, abbonamentoDao.findAll().size());
@@ -856,6 +857,7 @@ public class SmdApplicationTests {
         EstrattoConto ec = new EstrattoConto();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(lodare);
+        ec.setDestinatario(tizio);
         estrattoContoDao.save(ec);
         assertEquals(1, estrattoContoDao.findAll().size());
 
@@ -930,8 +932,16 @@ public class SmdApplicationTests {
         ec.setAnnoInizio(anno);
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
+        ec.setDestinatario(tizio);
+        List<Spedizione> spedizioni 
+            = Smd.generaSpedizioni(abb, 
+                               ec,
+                               new ArrayList<>(),
+                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+        
         assertTrue(ec.isAbbonamentoAnnuale());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec).forEach(item -> items.add(item)));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
         for (SpedizioneItem item: items) {
@@ -942,14 +952,6 @@ public class SmdApplicationTests {
         }
         assertEquals(mesi, messaggio.getMesiPubblicazione());
         assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
-        List<Spedizione> spedizioni 
-        = Smd.generaSpedizioni(abb, 
-                               items, 
-                               Invio.Destinatario, 
-                               InvioSpedizione.Spedizioniere,
-                               tizio, 
-                               new ArrayList<>(),
-                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         spedizioni.stream().forEach(sped -> {
@@ -1011,6 +1013,7 @@ public class SmdApplicationTests {
         ec1.setAnnoInizio(anno);
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
@@ -1018,20 +1021,19 @@ public class SmdApplicationTests {
         ec2.setAnnoInizio(anno);
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
-        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
+        ec2.setDestinatario(tizio);
+        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, ec1, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
+        spedizioni = Smd.generaSpedizioni(abb, ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
-        assertEquals(2, estrattoContoDao.findAll().size());
-        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, items, Invio.Destinatario, InvioSpedizione.Spedizioniere, tizio, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped);
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
-
-        assertEquals(6, spedizioneDao.findAll().size());
-        assertEquals(12, spedizioneItemDao.findAll().size());
+       assertEquals(2, estrattoContoDao.findAll().size());
+       assertEquals(6, spedizioneDao.findAll().size());
+       assertEquals(12, spedizioneItemDao.findAll().size());
 
         abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         estrattoContoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
@@ -1044,18 +1046,15 @@ public class SmdApplicationTests {
         ec3.setMeseInizio(Mese.GENNAIO);
         ec3.setAnnoInizio(anno);
         ec3.setMeseFine(Mese.DICEMBRE);
-        ec3.setAnnoFine(anno);        
-        List<SpedizioneItem> blocchettitems = Smd.generaECItemsECalcola(abb, ec3);
-        assertEquals(blocchetti.getMesiPubblicazione().size(), blocchettitems.size());
+        ec3.setAnnoFine(anno);     
+        ec3.setDestinatario(tizio);
+        spedizioni = spedizioneDao.findByAbbonamento(abb);
+        spedizioni = Smd.generaSpedizioni(abb,
+                                          ec3,
+                                          spedizioni,
+                                          SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec3);
-        spedizioni = Smd.generaSpedizioni(abb, 
-                                          blocchettitems, 
-                                          Invio.Destinatario, 
-                                          InvioSpedizione.Spedizioniere, 
-                                          tizio, 
-                                          spedizioneDao.findByAbbonamento(abb),
-                                          SmdLoadSampleData.getSpeseSpedizione());
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped);
             sped.getSpedizioneItems().stream().forEach(item -> {
@@ -1114,6 +1113,7 @@ public class SmdApplicationTests {
         ec1.setAnnoInizio(anno);
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
@@ -1121,6 +1121,7 @@ public class SmdApplicationTests {
         ec2.setAnnoInizio(anno);
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
+        ec2.setDestinatario(tizio);
         EstrattoConto ec3 = new EstrattoConto();
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
@@ -1128,25 +1129,33 @@ public class SmdApplicationTests {
         ec3.setAnnoInizio(anno);
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);
+        ec3.setDestinatario(tizio);
 
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
-        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
-        items.addAll(Smd.generaECItemsECalcola(abb, ec3));
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(
+                     abb,
+                     ec1,
+                     new ArrayList<Spedizione>(),
+                     SmdLoadSampleData.getSpeseSpedizione());
+        spedizioni = 
+                Smd.generaSpedizioni(
+                     abb,
+                     ec2,
+                    spedizioni,
+                     SmdLoadSampleData.getSpeseSpedizione());        
+
+        spedizioni = 
+                Smd.generaSpedizioni(
+                     abb,
+                     ec3,
+                    spedizioni,
+                     SmdLoadSampleData.getSpeseSpedizione());        
+
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
         estrattoContoDao.save(ec3);        
 
-        List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
-                     abb, 
-                     items, 
-                     Invio.Destinatario, 
-                     InvioSpedizione.Spedizioniere, 
-                     tizio, 
-                     new ArrayList<Spedizione>(),
-                     SmdLoadSampleData.getSpeseSpedizione());
-        
         spedizioni.stream().forEach( sped -> {
             spedizioneDao.save(sped);
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
@@ -1306,22 +1315,19 @@ public class SmdApplicationTests {
         ec1.setAnnoInizio(Anno.getAnnoCorrente());
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoCorrente());
+        ec1.setDestinatario(tizio);
         
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
-        assertTrue(ec1.isAbbonamentoAnnuale());
-        abbonamentoDao.save(abb);
-        estrattoContoDao.save(ec1);
 
         List<Spedizione> spedizioni = Smd.generaSpedizioni(
-                                           abb, 
-                                           items, 
-                                           Invio.Destinatario, 
-                                           InvioSpedizione.Spedizioniere, 
-                                           tizio, 
+                                           abb,
+                                           ec1,
                                            new ArrayList<>(), 
                                            SmdLoadSampleData.getSpeseSpedizione()
                                            );
+        assertTrue(ec1.isAbbonamentoAnnuale());
         
+        abbonamentoDao.save(abb);
+        estrattoContoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped);
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
@@ -1495,8 +1501,9 @@ public class SmdApplicationTests {
         ec.setAnnoInizio(Anno.getAnnoProssimo());
         ec.setMeseFine(Mese.SETTEMBRE);
         ec.setAnnoFine(Anno.getAnnoProssimo());
+        ec.setDestinatario(davidePalma);
 
-        Smd.generaECItemsECalcola(abb, ec);
+        Smd.generaSpedizioni(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         
@@ -1604,19 +1611,13 @@ public class SmdApplicationTests {
         
         campagnaDao.save(campagna);
         for (Abbonamento abb:abbonamenti) {
+            List<Spedizione> spedizioni = new ArrayList<>();
             for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
                 EstrattoConto ec = Smd.generaECDaStorico(abb,storico);
-                List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
-                if (items.isEmpty()) {
-                    continue;
-                }
-                List<Spedizione> spedizioni = 
+                spedizioni = 
                         Smd.generaSpedizioni(abb, 
-                                             items, 
-                                             storico.getInvio(), 
-                                             storico.getInvioSpedizione(), 
-                                             storico.getDestinatario(), 
-                                             new ArrayList<>(),
+                                             ec, 
+                                             spedizioni,
                                              spesaSpedizioneDao.findByAreaSpedizione(
                                                          storico.getDestinatario().getAreaSpedizione()));
                 abbonamentoDao.save(abb);

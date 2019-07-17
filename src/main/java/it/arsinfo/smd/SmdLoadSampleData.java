@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.google.common.collect.Table.Cell;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
@@ -653,9 +654,8 @@ public class SmdLoadSampleData implements Runnable {
     
     private void genera(Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        final List<Spedizione> spedizioni = new ArrayList<>();        
-        table.cellSet()
-        .stream().forEach( ect -> {
+        List<Spedizione> spedizioni = new ArrayList<>();        
+        for (Cell<Pubblicazione, Anagrafica, Integer> ect: table.cellSet()) {
             EstrattoConto ec = new EstrattoConto();
             ec.setAbbonamento(abb);
             ec.setPubblicazione(ect.getRowKey());
@@ -664,20 +664,17 @@ public class SmdLoadSampleData implements Runnable {
             ec.setAnnoInizio(anno);
             ec.setMeseFine(fine);
             ec.setAnnoFine(anno);
-            List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
-            abbonamentoDao.save(abb);
-            estrattoContoDao.save(ec);
-            spedizioni.addAll(
+            ec.setDestinatario(ect.getColumnKey());
+            spedizioni =
                   Smd.generaSpedizioni(
                            abb, 
-                           items, 
-                           Invio.Destinatario, 
-                           InvioSpedizione.Spedizioniere, 
-                           ect.getColumnKey(), 
+                           ec,
                            spedizioni, 
                            getSpeseSpedizione()
-                       )
+                       
                   );
+            abbonamentoDao.save(abb);
+            estrattoContoDao.save(ec);
             for (Spedizione sped:spedizioni) {
                 spedizioneDao.save(sped);
                 for (SpedizioneItem item: sped.getSpedizioneItems()) {
@@ -686,7 +683,7 @@ public class SmdLoadSampleData implements Runnable {
             }        
 
             
-        });        
+        }        
     }
 
     private void save(Abbonamento abb, EstrattoConto...contos) {

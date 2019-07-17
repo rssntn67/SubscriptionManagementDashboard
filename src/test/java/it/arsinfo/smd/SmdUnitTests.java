@@ -58,7 +58,8 @@ public class SmdUnitTests {
         ec.setAnnoInizio(anno);
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
-        Smd.generaECItemsECalcola(abb,ec);
+        ec.setDestinatario(abb.getIntestatario());
+        Smd.generaSpedizioni(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
 
         return ec;
     }
@@ -204,7 +205,17 @@ public class SmdUnitTests {
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
+        ec.setDestinatario(SmdLoadSampleData.getAnagraficaBy("AAAA", "BBBBB"));
+        ec.setInvio(Invio.Destinatario);
+        ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(
+                         abb, 
+                         ec,
+                         new ArrayList<Spedizione>(),spese);
+        
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         assertEquals(3, items.size());
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
@@ -221,14 +232,6 @@ public class SmdUnitTests {
             log.info(item.toString());
         }
         
-        List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
-                         abb, 
-                         items, 
-                         Invio.Destinatario, 
-                         InvioSpedizione.Spedizioniere, 
-                         SmdLoadSampleData.getAnagraficaBy("Tizio", "Tizio"),
-                         new ArrayList<Spedizione>(),spese);
         assertEquals(3, spedizioni.size());
         for (Spedizione spedizione: spedizioni) {
             assertEquals(abb, spedizione.getAbbonamento());
@@ -252,14 +255,23 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.MARZO);
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
+        ec.setDestinatario(SmdLoadSampleData.getAnagraficaBy("k", "h"));
+        ec.setInvio(Invio.Destinatario);
+        ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(abb, 
+                                     ec,
+                                     new ArrayList<Spedizione>(),
+                                     spese);
         
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
+
         assertEquals(3, items.size());
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
         assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
         assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
-        assertEquals(BigDecimal.ZERO, abb.getSpese());
         assertEquals(abb, ec.getAbbonamento());
         assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
         for (SpedizioneItem item: items) {
@@ -268,20 +280,17 @@ public class SmdUnitTests {
             assertEquals(10, item.getNumero().intValue());           
             log.info(item.toString());
         }
-        List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(abb, 
-                                     items, 
-                                     Invio.Destinatario, 
-                                     InvioSpedizione.Spedizioniere, 
-                                     SmdLoadSampleData.getAnagraficaBy("k", "h"),
-                                     new ArrayList<Spedizione>(),
-                                     spese);
         assertEquals(1, spedizioni.size());
         Spedizione spedizione = spedizioni.iterator().next();
         log.info(spedizione.toString());
+        assertEquals(spedizione.getSpesePostali().doubleValue(), abb.getSpese().doubleValue(),0);
         assertEquals(Mese.getMeseCorrente(), spedizione.getMeseSpedizione());
         assertEquals(Anno.getAnnoCorrente(), spedizione.getAnnoSpedizione());
         assertEquals(ec.getNumeroTotaleRiviste()*messaggio.getGrammi(), spedizione.getPesoStimato().intValue());
+        
+        SpesaSpedizione ss = Smd.getSpesaSpedizione(spese, AreaSpedizione.Italia, RangeSpeseSpedizione.getByPeso(spedizione.getPesoStimato()));
+        assertEquals(ss.getSpese().doubleValue(), spedizione.getSpesePostali().doubleValue(),0);
+       
         assertEquals(items.size(), spedizione.getSpedizioneItems().size());
     }
 
@@ -329,18 +338,14 @@ public class SmdUnitTests {
         ec1.setAnnoInizio(annoi);
         ec1.setMeseFine(meseD);
         ec1.setAnnoFine(annof);
-        
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
+        ec1.setDestinatario(tizio);
+        ec1.setInvio(Invio.Destinatario);
+        ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
 
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
-                     abb, 
-                     items, 
-                     Invio.Destinatario, 
-                     InvioSpedizione.Spedizioniere, 
-                     tizio, 
-                     new ArrayList<Spedizione>(),
-                     SmdLoadSampleData.getSpeseSpedizione());
+                Smd.generaSpedizioni(abb,ec1,new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         log.info(abb.toString());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
@@ -425,6 +430,7 @@ public class SmdUnitTests {
         ec1.setAnnoInizio(anno);
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
@@ -432,6 +438,7 @@ public class SmdUnitTests {
         ec2.setAnnoInizio(anno);
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
+        ec2.setDestinatario(tizio);
         EstrattoConto ec3 = new EstrattoConto();
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
@@ -439,20 +446,29 @@ public class SmdUnitTests {
         ec3.setAnnoInizio(anno);
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);
-
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
-        items.addAll(Smd.generaECItemsECalcola(abb, ec2));
-        items.addAll(Smd.generaECItemsECalcola(abb, ec3));
+        ec3.setDestinatario(tizio);
 
         List<Spedizione> spedizioni = 
                 Smd.generaSpedizioni(
                      abb, 
-                     items, 
-                     Invio.Destinatario, 
-                     InvioSpedizione.Spedizioniere, 
-                     tizio, 
+                     ec1,
                      new ArrayList<Spedizione>(),
+                     SmdLoadSampleData.getSpeseSpedizione());        
+        
+        spedizioni = 
+                Smd.generaSpedizioni(
+                     abb, 
+                     ec2,
+                     spedizioni,
                      SmdLoadSampleData.getSpeseSpedizione());
+       
+       spedizioni = 
+               Smd.generaSpedizioni(
+                    abb, 
+                    ec3,
+                    spedizioni,
+                    SmdLoadSampleData.getSpeseSpedizione());
+
         
         spedizioni.stream().forEach(sped -> {
             assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
@@ -493,13 +509,24 @@ public class SmdUnitTests {
             }
         });
 
+        final List<SpedizioneItem> ec1items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec1).forEach(item -> ec1items.add(item)));
+
+        final List<SpedizioneItem> ec2items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec2).forEach(item -> ec2items.add(item)));
+        
+        final List<SpedizioneItem> ec3items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec3).forEach(item -> ec3items.add(item)));
+
         log.info(abb.toString());
         assertEquals(BigDecimal.ZERO, abb.getSpese());
         assertEquals(6*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
         assertEquals(6*lodare.getCostoUnitario().doubleValue(), ec2.getImporto().doubleValue(),0);
         assertEquals(blocchetti.getAbbonamento().doubleValue(), ec3.getImporto().doubleValue(),0);
         assertEquals(7, spedizioni.size());
-        assertEquals(14, items.size());
+        assertEquals(6, ec1items.size());
+        assertEquals(6, ec2items.size());
+        assertEquals(2, ec3items.size());
         
         //FIRST operation Delete ec2 lodare
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abb,ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
@@ -646,19 +673,17 @@ public class SmdUnitTests {
         ec1.setAnnoInizio(anno);
         ec1.setMeseFine(Mese.SETTEMBRE);
         ec1.setAnnoFine(anno);
-        
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec1);
-        assertEquals(8, items.size());
-
+        ec1.setDestinatario(tizio);
         List<Spedizione> spedizioni = 
                 Smd.generaSpedizioni(
                      abb, 
-                     items, 
-                     Invio.Destinatario, 
-                     InvioSpedizione.Spedizioniere, 
-                     tizio, 
-                     new ArrayList<Spedizione>(),
+                     ec1,
+                     new ArrayList<>(),
                      SmdLoadSampleData.getSpeseSpedizione());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec1).forEach(item -> items.add(item)));
+        assertEquals(8, items.size());
+
         
         assertEquals(8, spedizioni.size());
         
@@ -666,7 +691,7 @@ public class SmdUnitTests {
         ec1.setMeseInizio(Mese.MARZO);
         ec1.setMeseFine(Mese.AGOSTO);
         
-        Smd.aggiornaEC(abb, ec1, spedizioni,Invio.Destinatario, InvioSpedizione.Spedizioniere,tizio,SmdLoadSampleData.getSpeseSpedizione());
+        Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         
     }
 
@@ -688,23 +713,23 @@ public class SmdUnitTests {
         ec.setAnnoFine(anno);
         ec.setMeseInizio(Mese.GENNAIO);
         ec.setMeseFine(Mese.DICEMBRE);
-        
-        
-        List<SpedizioneItem> items = Smd.generaECItemsECalcola(abb, ec);
+        ec.setDestinatario(intestatario);
+
+        List<SpesaSpedizione> spese = SmdLoadSampleData.getSpeseSpedizione();
+
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(abb, 
+                                     ec,
+                                     new ArrayList<>(), 
+                                     spese
+                                     );
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec).forEach(item -> items.add(item)));
+
         assertEquals(p.getMesiPubblicazione().size(), items.size());
         assertTrue(ec.isAbbonamentoAnnuale());
         
         assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
-        List<SpesaSpedizione> spese = SmdLoadSampleData.getSpeseSpedizione();
-        List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(abb, 
-                                     items, 
-                                     Invio.Destinatario, 
-                                     InvioSpedizione.Spedizioniere, 
-                                     intestatario, 
-                                     new ArrayList<>(), 
-                                     spese
-                                     );
         assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
         
         SpesaSpedizione spesa = 
