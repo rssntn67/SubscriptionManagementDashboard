@@ -101,7 +101,9 @@ public class Smd {
         
         final List<SpedizioneItem> oldItems = new ArrayList<>();
         
-        for (Spedizione sped: spedizioni) {
+        spedizioni
+        .stream()
+        .forEach(sped -> {
             sped.getSpedizioneItems()
             .stream()
             .filter(item -> item.getEstrattoConto() == ec || 
@@ -115,13 +117,34 @@ public class Smd {
                     throw new UnsupportedOperationException("Aggiona EC non consente di modificare la pubblicazione");
                 }
             });
-        }
+        });
 
         abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
+        
+        
         List<SpedizioneItem> items = generaECItems(ec);
         final List<SpedizioneItem> invItems = new ArrayList<>(); 
         final List<SpedizioneItem> rimItems = new ArrayList<>();
         final List<SpedizioneItem> addItems = new ArrayList<>();
+        for (SpedizioneItem oldItem: oldItems) {
+            log.info("aggiornaEC parsing old: " + oldItem);
+            switch (oldItem.getSpedizione().getStatoSpedizione()) {
+            case INVIATA:
+                invItems.add(oldItem);
+                break;
+            case PROGRAMMATA:
+                oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
+                rimItems.add(oldItem);
+                break;
+            case SOSPESA:
+                oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
+                rimItems.add(oldItem);
+                break;                        
+            default:
+                break;
+            }
+        }
+
         for (SpedizioneItem item: items) {
             log.info("aggiornaEC parsing new: " + item);
             boolean found = false;
@@ -180,13 +203,19 @@ public class Smd {
             }
         }
         
-//FIXME        spedizioni = generaSpedizioni(abb,  ec, spedizioni, spese);
+        spedizioni = generaSpedizioni(abb,  ec, spedizioni, spese);
         
         calcolaPesoESpesePostali(abb, spedizioni, spese);
 
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
         return rimItems;
+    }
+
+    private static boolean checkSpedizioneEstrattoConto(Spedizione sped,
+            EstrattoConto ec) {
+        // TODO Auto-generated method stub
+        return true;
     }
 
     public static List<SpedizioneItem> rimuoviEC(
@@ -269,6 +298,63 @@ public class Smd {
       }
       return items; 
     }
+
+    public static void aggiungiItemSpedizione(Abbonamento abb, EstrattoConto ec,Map<Integer,Spedizione> spedMap, SpedizioneItem item) {
+        Anagrafica destinatario = ec.getDestinatario();
+        Invio invio = ec.getInvio();
+        InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
+        log.info("aggiungiItemSpedizione: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
+        log.info("aggiungiItemSpedizione: item" + item);
+        InvioSpedizione isped = invioSpedizione;
+        Mese mesePubblicazione = item.getMesePubblicazione();
+        Anno annoPubblicazione = item.getAnnoPubblicazione();
+        boolean posticipata=false;
+        int anticipoSpedizione = ec.getPubblicazione().getAnticipoSpedizione();
+        Mese spedMese;
+        Anno spedAnno;
+
+        if (mesePubblicazione.getPosizione() - anticipoSpedizione <= 0) {
+            spedMese = Mese.getByPosizione(12
+                    + mesePubblicazione.getPosizione()
+                    - anticipoSpedizione);
+            spedAnno = Anno.getAnnoPrecedente(annoPubblicazione);
+        } else {
+            spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()
+                    - anticipoSpedizione);
+            spedAnno = annoPubblicazione;
+        }
+        log.info("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+
+        if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
+                || (spedAnno == Anno.getAnnoCorrente()
+                        && spedMese.getPosizione() <= Mese.getMeseCorrente().getPosizione())) {
+            spedMese = Mese.getMeseCorrente();
+            spedAnno = Anno.getAnnoCorrente();
+            isped = InvioSpedizione.AdpSede;
+            posticipata=true;
+            log.info("geneneraSpedizioni: spedizione anticipata");
+
+        }
+        if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
+            isped = InvioSpedizione.AdpSede;
+            log.info("geneneraSpedizioni: spedizione estero");
+        }
+        log.info("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+        Spedizione spedizione = new Spedizione();
+        spedizione.setMeseSpedizione(spedMese);
+        spedizione.setAnnoSpedizione(spedAnno);
+        spedizione.setInvioSpedizione(isped);
+        spedizione.setAbbonamento(abb);
+        spedizione.setDestinatario(destinatario);
+        spedizione.setInvio(invio);
+        if (!spedMap.containsKey(spedizione.hashCode())) {
+            spedMap.put(spedizione.hashCode(), spedizione);
+        }
+        Spedizione sped = spedMap.get(spedizione.hashCode());
+        item.setPosticipata(posticipata);
+        item.setSpedizione(sped);
+        sped.addSpedizioneItem(item);        
+    }
     
     public static List<Spedizione> generaSpedizioni(Abbonamento abb,
             EstrattoConto ec, 
@@ -282,64 +368,11 @@ public class Smd {
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        Anagrafica destinatario = ec.getDestinatario();
-        Invio invio = ec.getInvio();
-        InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        log.info("geneneraSpedizioni: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
         final Map<Integer, Spedizione> spedMap = Spedizione.getSpedizioneMap(spedizioni);
-        Mese spedMese;
-        Anno spedAnno;
 
         for (SpedizioneItem item : items) {
-            log.info("geneneraSpedizioni: item" + item);
-            InvioSpedizione isped = invioSpedizione;
-            Mese mesePubblicazione = item.getMesePubblicazione();
-            Anno annoPubblicazione = item.getAnnoPubblicazione();
-            boolean posticipata=false;
-            int anticipoSpedizione = item.getEstrattoConto().getPubblicazione().getAnticipoSpedizione();
-            if (mesePubblicazione.getPosizione() - anticipoSpedizione <= 0) {
-                spedMese = Mese.getByPosizione(12
-                        + mesePubblicazione.getPosizione()
-                        - anticipoSpedizione);
-                spedAnno = Anno.getAnnoPrecedente(annoPubblicazione);
-            } else {
-                spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()
-                        - anticipoSpedizione);
-                spedAnno = annoPubblicazione;
-            }
-            log.info("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
-
-            if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
-                    || (spedAnno == Anno.getAnnoCorrente()
-                            && spedMese.getPosizione() <= Mese.getMeseCorrente().getPosizione())) {
-                spedMese = Mese.getMeseCorrente();
-                spedAnno = Anno.getAnnoCorrente();
-                isped = InvioSpedizione.AdpSede;
-                posticipata=true;
-                log.info("geneneraSpedizioni: spedizione anticipata");
-
-            }
-            if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
-                isped = InvioSpedizione.AdpSede;
-                log.info("geneneraSpedizioni: spedizione estero");
-            }
-            log.info("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
-            Spedizione spedizione = new Spedizione();
-            spedizione.setMeseSpedizione(spedMese);
-            spedizione.setAnnoSpedizione(spedAnno);
-            spedizione.setInvioSpedizione(isped);
-            spedizione.setAbbonamento(abb);
-            spedizione.setDestinatario(destinatario);
-            spedizione.setInvio(invio);
-            if (!spedMap.containsKey(spedizione.hashCode())) {
-                spedMap.put(spedizione.hashCode(), spedizione);
-            }
-            Spedizione sped = spedMap.get(spedizione.hashCode());
-            item.setPosticipata(posticipata);
-            item.setSpedizione(sped);
-            sped.addSpedizioneItem(item);
+            aggiungiItemSpedizione(abb, ec, spedMap, item);
         }
-
         calcolaPesoESpesePostali(abb, spedMap.values(), spese);
         return spedMap.values().stream().collect(Collectors.toList());
     }
@@ -350,30 +383,25 @@ public class Smd {
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
                 pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
             }
-            sped.setPesoStimato(pesoStimato);
-            SpesaSpedizione spesa = 
-                    getSpesaSpedizione(
-                               spese, 
-                               sped.getDestinatario().getAreaSpedizione(), 
-                               RangeSpeseSpedizione.getByPeso(pesoStimato)
-                               );
+            sped.setPesoStimato(pesoStimato);            
             switch (sped.getDestinatario().getAreaSpedizione()) {
             case Italia:
                 if( sped.getInvioSpedizione() == InvioSpedizione.AdpSede 
                     && !sped.getSpedizioniPosticipate().isEmpty()) {
-                    calcolaSpesePostali(abb, sped, spesa);
+                    calcolaSpesePostali(sped, spese);
                 }
                 break;
             case EuropaBacinoMediterraneo:
-                calcolaSpesePostali(abb, sped, spesa);
+                calcolaSpesePostali(sped, spese);
                 break;
 
             case AmericaAfricaAsia:
-                calcolaSpesePostali(abb, sped, spesa);
+                calcolaSpesePostali(sped, spese);
                 break;
             default:
                 break;
             }
+            abb.setSpese(abb.getSpese().add(sped.getSpesePostali()));
         }
         
     }
@@ -382,9 +410,14 @@ public class Smd {
         return ss.stream().filter( s-> s.getArea() == area && s.getRange() == range).collect(Collectors.toList()).iterator().next();
     }
     
-    public static void calcolaSpesePostali(Abbonamento abb, Spedizione sped, SpesaSpedizione spesa) throws UnsupportedOperationException {
+    public static void calcolaSpesePostali(Spedizione sped, List<SpesaSpedizione> spese) throws UnsupportedOperationException {
+        SpesaSpedizione spesa = 
+                getSpesaSpedizione(
+                           spese, 
+                           sped.getDestinatario().getAreaSpedizione(), 
+                           RangeSpeseSpedizione.getByPeso(sped.getPesoStimato())
+                           );
         sped.setSpesePostali(spesa.getSpese());
-        abb.setSpese(abb.getSpese().add(sped.getSpesePostali()));
     }
 
     
