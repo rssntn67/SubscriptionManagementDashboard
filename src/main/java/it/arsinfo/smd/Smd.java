@@ -61,8 +61,9 @@ public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
-    static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
+    private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
 
+    public static final BigDecimal contrassegno=new BigDecimal(4.50);
     @Bean
     public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
@@ -89,7 +90,10 @@ public class Smd {
             EstrattoConto ec,
             List<Spedizione> spedizioni,
             List<SpesaSpedizione> spese)
-    throws UnsupportedOperationException {        
+    throws UnsupportedOperationException {      
+        if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
+            throw new UnsupportedOperationException("Aggiona EC non consentita per Abbonamenti Annullati");
+        }
         log.info("aggiornaEC: intestatario: "+ abb.getIntestatario().getCaption());
         log.info("aggiornaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
         log.info("aggiornaEC: pubbli.: "+ ec.getPubblicazione().getNome());
@@ -122,15 +126,16 @@ public class Smd {
         abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
         
         
-        List<SpedizioneItem> items = generaECItems(ec);
         final List<SpedizioneItem> invItems = new ArrayList<>(); 
         final List<SpedizioneItem> rimItems = new ArrayList<>();
-        final List<SpedizioneItem> addItems = new ArrayList<>();
+        
+        int numeroTotaleRiviste=0;
         for (SpedizioneItem oldItem: oldItems) {
             log.info("aggiornaEC parsing old: " + oldItem);
             switch (oldItem.getSpedizione().getStatoSpedizione()) {
             case INVIATA:
                 invItems.add(oldItem);
+                numeroTotaleRiviste+=oldItem.getNumero();
                 break;
             case PROGRAMMATA:
                 oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
@@ -145,77 +150,62 @@ public class Smd {
             }
         }
 
-        for (SpedizioneItem item: items) {
-            log.info("aggiornaEC parsing new: " + item);
-            boolean found = false;
-            for (SpedizioneItem oldItem: oldItems) {
-                if (oldItem.stessaPubblicazione(item)) {
-                    found = true;
-                    log.info("aggiornaEC found old: " + oldItem);
-                    switch (oldItem.getSpedizione().getStatoSpedizione()) {
-                    case INVIATA:
-                        invItems.add(oldItem);
-                        if (oldItem.getNumero() < item.getNumero()) {
-                            item.setNumero(item.getNumero() - oldItem.getNumero());
-                            addItems.add(item);
-                        }
-                        break;
-                    case PROGRAMMATA:
-                        oldItem.setNumero(item.getNumero());
-                        break;
-                    case SOSPESA:
-                        oldItem.setNumero(item.getNumero());
-                        break;                        
-                    default:
-                        break;
+        List<SpedizioneItem> items = generaECItems(ec);
+        for (SpedizioneItem invItem: invItems) {
+            log.info("aggiornaEC parsing old inviata: " + invItems);
+            for (SpedizioneItem item: items) {
+                if (invItem.stessaPubblicazione(item)) {
+                    log.info("aggiornaEC found new: " + invItem);
+                    if (invItem.getNumero() < item.getNumero()) {
+                        item.setNumero(item.getNumero() - invItem.getNumero());
+                    } else {
+                        item.setNumero(0);
                     }
                 }
             }
-            if (!found) {
-                addItems.add(item);
-            }
         }
-        
-        for (SpedizioneItem oldItem: oldItems) {
-            log.info("aggiornaEC parsing old: " + oldItem);
-            boolean found = false;
-            for (SpedizioneItem item: items) {
-                if (oldItem.stessaPubblicazione(item)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                switch (oldItem.getSpedizione().getStatoSpedizione()) {
-                case INVIATA:
-                    break;
-                case PROGRAMMATA:
-                    oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
-                    rimItems.add(oldItem);
-                    break;
-                case SOSPESA:
-                    oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
-                    rimItems.add(oldItem);
-                    break;                        
-                default:
-                    break;
-                }
-            }
-        }
-        
-        spedizioni = generaSpedizioni(abb,  ec, spedizioni, spese);
-        
-        calcolaPesoESpesePostali(abb, spedizioni, spese);
 
+        Map<Integer, Spedizione> spedMap = Spedizione.getSpedizioneMap(spedizioni);
+        for (SpedizioneItem item: items) {
+            if (item.getNumero() == 0) {
+                continue;
+            }
+            numeroTotaleRiviste+=item.getNumero();
+            aggiungiItemSpedizione(abb, ec, spedMap, item);
+        }
+        ec.setNumeroTotaleRiviste(numeroTotaleRiviste);
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        return rimItems;
-    }
 
-    private static boolean checkSpedizioneEstrattoConto(Spedizione sped,
-            EstrattoConto ec) {
-        // TODO Auto-generated method stub
-        return true;
+        spedizioni = spedMap.values().stream().collect(Collectors.toList());
+                
+        calcolaPesoESpesePostali(abb, spedizioni, spese);
+
+        //Updated status
+        spedizioni.stream()
+        .filter(sped -> sped.getStatoSpedizione() != StatoSpedizione.INVIATA)
+        .forEach(sped -> {
+            switch (abb.getStatoAbbonamento()) {
+            case Nuovo:
+                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                break;
+            case Proposto:
+                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                break;
+            case Validato:
+                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                break;
+            case InviatoEC:
+                sped.setStatoSpedizione(StatoSpedizione.SOSPESA);
+                break;
+            case Annullato:
+                break;
+
+            default:
+                break;
+            }
+        });
+        return rimItems;
     }
 
     public static List<SpedizioneItem> rimuoviEC(
@@ -378,6 +368,7 @@ public class Smd {
     }
 
     private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
+        abb.setSpese(BigDecimal.ZERO);
         for (Spedizione sped: spedizioni) {
             int pesoStimato=0;
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
@@ -402,6 +393,9 @@ public class Smd {
                 break;
             }
             abb.setSpese(abb.getSpese().add(sped.getSpesePostali()));
+            if (abb.getCassa() == Cassa.Contrassegno) {
+                abb.setSpese(abb.getSpese().add(contrassegno));                
+            }
         }
         
     }
@@ -435,7 +429,6 @@ public class Smd {
                 }).collect(Collectors.toList());
     }
     
-    //FIXME
     public static List<EstrattoConto> 
         generaEstrattoContoAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
         throws UnsupportedOperationException {
@@ -457,7 +450,6 @@ public class Smd {
             abbonamento.getCassa() == storico.getCassa()
                 ).forEach(storico ->
             generaECDaStorico(abbonamento, storico));
-//        }
         return ecs;
     }
     
@@ -503,28 +495,6 @@ public class Smd {
         });        
         return abbonamenti;
 
-    }
-    //FIXME
-    public static Abbonamento aggiornaAbbonamento(Abbonamento abbonamento,List<Pubblicazione> pubblicazioni, List<Storico> storici) {
-        if (abbonamento.getAnno() != Anno.getAnnoProssimo()) {
-            return abbonamento;
-        }
-        final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
-        pubblicazioni.stream()
-        .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
-        .forEach(p -> {
-            campagnapubblicazioniIds.put(p.getId(),p);            
-        });
-        storici
-        .stream()
-        .filter( 
-             s -> abbonamento.getCassa() == s.getCassa() && campagnapubblicazioniIds.containsKey(s.getPubblicazione().getId()) && s.attivo())
-        .forEach(storico-> {
-            generaECDaStorico(abbonamento, storico);
-        });
-        
-        return abbonamento;
-        
     }
 
     public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {
