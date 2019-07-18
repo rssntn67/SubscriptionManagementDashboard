@@ -655,45 +655,6 @@ public class SmdUnitTests {
         });
     }
     
-    @Test
-    @Ignore
-    public void testAggiornaEC() {
-        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        
-        Anagrafica tizio = SmdLoadSampleData.getGP();
-        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        Pubblicazione lodare = SmdLoadSampleData.getLodare();
-        
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
-        
-        EstrattoConto ec1 = new EstrattoConto();
-        ec1.setAbbonamento(abb);
-        ec1.setPubblicazione(messaggio);
-        ec1.setMeseInizio(Mese.GENNAIO);
-        ec1.setAnnoInizio(anno);
-        ec1.setMeseFine(Mese.SETTEMBRE);
-        ec1.setAnnoFine(anno);
-        ec1.setDestinatario(tizio);
-        List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
-                     abb, 
-                     ec1,
-                     new ArrayList<>(),
-                     SmdLoadSampleData.getSpeseSpedizione());
-        final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec1).forEach(item -> items.add(item)));
-        assertEquals(8, items.size());
-
-        
-        assertEquals(8, spedizioni.size());
-        
-        ec1.setPubblicazione(lodare);
-        ec1.setMeseInizio(Mese.MARZO);
-        ec1.setMeseFine(Mese.AGOSTO);
-        
-        Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
-        
-    }
 
     @Test
     public void testCostiAbbonamentoEsteroStd() {
@@ -747,5 +708,79 @@ public class SmdUnitTests {
         assertEquals(spesa.getSpese().doubleValue()*p.getMesiPubblicazione().size(), abb.getSpese().doubleValue(),0);
         log.info(abb.toString());
     }
+    
+    @Test
+    public void testAggiornaEC() {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        
+        Anagrafica tizio = SmdLoadSampleData.getGP();
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Pubblicazione lodare = SmdLoadSampleData.getLodare();
+        
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(messaggio);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.SETTEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(15);
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdLoadSampleData.getSpeseSpedizione());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> {
+            log.info(sped.toString());
+            sped.getSpedizioneItems().stream().forEach(item -> {
+                log.info(item.toString());
+                items.add(item); 
+                assertEquals(15, item.getNumero().intValue());
+            });
+        });
+        assertEquals(8, items.size());
+        assertEquals(8, spedizioni.size());
+        log.info(ec1.toString());
+        log.info(abb.toString());
+        
+        ec1.setPubblicazione(lodare);
+        ec1.setMeseInizio(Mese.MARZO);
+        ec1.setMeseFine(Mese.AGOSTO);
+        try {
+            Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
+            assertTrue(false);
+        } catch (UnsupportedOperationException e) {
+            log.info(e.getMessage());
+        }
+        ec1.setPubblicazione(messaggio);
+        ec1.setNumero(10);
+        
+        List<SpedizioneItem> rimItems = Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
+        
+        rimItems.stream().forEach(item -> log.info("deleted:" + item.toString()));
+        assertEquals(8, rimItems.size());
+        
+        items.clear();
+        spedizioni.stream().forEach(sped -> {
+            log.info(sped.toString());
+            sped.getSpedizioneItems().stream().forEach(item -> {
+                items.add(item);
+                log.info(item.toString());
+                assertEquals(10, item.getNumero().intValue());
+            });
+        });
+        assertEquals(5, items.size());
+        assertEquals(8, spedizioni.size());
+        
+        log.info(ec1.toString());
+        log.info(abb.toString());
+        
+    }
+
     
 }
