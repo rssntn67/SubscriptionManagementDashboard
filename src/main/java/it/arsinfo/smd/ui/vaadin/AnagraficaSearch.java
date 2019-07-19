@@ -13,20 +13,14 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
-import it.arsinfo.smd.data.Invio;
-import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.StoricoDao;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
