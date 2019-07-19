@@ -77,7 +77,18 @@ public abstract class SmdEditor<T extends SmdEntity>
                               Notification.Type.ERROR_MESSAGE);
         }
     }
-    
+
+    public void saveWithNoCallOnChange() {
+        try {
+            repositoryDao.save(smdObj);
+            log.info("save:" + smdObj.toString());
+        } catch (Exception e) {
+            log.warn("save failed for :" + smdObj.toString() +". Error log: " + e.getMessage());
+            Notification.show("Non è possibile salvare questo record: ",
+                              Notification.Type.ERROR_MESSAGE);
+        }
+    }
+
     public final void edit(T c) {
         if (c == null) {
             setVisible(false);

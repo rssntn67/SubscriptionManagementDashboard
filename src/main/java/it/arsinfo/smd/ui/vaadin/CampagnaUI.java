@@ -21,6 +21,8 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -29,6 +31,8 @@ import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpedizioneItemDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_CAMPAGNA)
@@ -63,6 +67,12 @@ public class CampagnaUI extends SmdUI {
     
     @Autowired
     SpedizioneDao spedizioneDao;
+
+    @Autowired
+    SpedizioneItemDao spedizioneItemDao;
+
+    @Autowired
+    SpesaSpedizioneDao spesaSpedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -122,21 +132,31 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                super.save();
+                List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
+                super.saveWithNoCallOnChange();
+
                 for (Abbonamento abb:abbonamentiCampagna) {
                     List<EstrattoConto> ecs = new ArrayList<>();
+                    List<Spedizione> spedizioni = new ArrayList<>();
                     for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
-                        ecs.add(Smd.generaECDaStorico(abb, storico));
+                       EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
+                       spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, spese);
+                       ecs.add(ec);
                     }
                     if (ecs.isEmpty()) {
                         continue;
                     }
+
                     abbonamentoDao.save(abb);
                     ecs.stream().forEach( ec -> {
                         estrattoContoDao.save(ec);
-                        //FIXME ec.getSpedizioni().stream().forEach(sped -> spedizioneDao.save(sped));
+                    });
+                    spedizioni.stream().forEach(sped -> {
+                        spedizioneDao.save(sped);
+                        sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
                     });
                 }
+                onChange();
             }
 
         };
