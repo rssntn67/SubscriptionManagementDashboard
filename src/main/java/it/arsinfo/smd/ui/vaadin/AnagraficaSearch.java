@@ -32,6 +32,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private Diocesi searchDiocesi;
     private String searchCognome;
+    private String searchCap;
+    private String searchCitta;
 
     private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Cerca per Paese",
             EnumSet.allOf(Paese.class));
@@ -63,34 +65,29 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Cerca Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Cerca Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Cerca Prom. Reg.");
-    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Cerca per Omaggio", EnumSet.allOf(TipoEstrattoConto.class));
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cerca per Cassa", EnumSet.allOf(Cassa.class));
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Cerca per Invio", EnumSet.allOf(Invio.class));
-    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Cerca per Stato", EnumSet.allOf(StatoStorico.class));
 
-    private final StoricoDao storicoDao;
-    public AnagraficaSearch(AnagraficaDao anagraficaDao, StoricoDao storicoDao) {
+    public AnagraficaSearch(AnagraficaDao anagraficaDao) {
         super(anagraficaDao);
-        this.storicoDao = storicoDao;
         TextField filterCognome = new TextField("Cerca per Cognome");
+        TextField filterCap = new TextField("Cerca per CAP");
+        TextField filterCitta = new TextField("Cerca per Città");
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Cerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
         setComponents(new HorizontalLayout(filterDiocesi, 
                                            filterCognome,
                                            filterProvincia,
+                                           filterCitta,
+                                           filterCap,
+                                           filterPaese,
+                                           filterAreaSpedizione
+                                           ),
+                      new HorizontalLayout(filterTitolo,
                                            filterCentroDiocesano,
                                            filterRegioneVescovi,
                                            filterRegioneDirettoreDiocesano,
                                            filterRegionePresidenteDiocesano
                                            ),
-                      new HorizontalLayout(filterTitolo,
-                                           filterPaese,
-                                           filterAreaSpedizione,
-                                           filterTipoEstrattoConto,
-                                           filterCassa,
-                                           filterStatoStorico,
-                                           filterInvio),
                       new HorizontalLayout(filterDirettoreDiocesiano,
                                            filterPresidenteDiocesano,
                                            filterDirettoreZonaMilano,
@@ -122,7 +119,22 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             searchCognome = e.getValue();
             onChange();
         });
+
+        filterCap.setPlaceholder("Inserisci CAP");
+        filterCap.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCap.addValueChangeListener(e -> {
+            searchCap = e.getValue();
+            onChange();
+        });
         
+        filterCitta.setPlaceholder("Inserisci Città");
+        filterCitta.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCitta.addValueChangeListener(e -> {
+            searchCitta = e.getValue();
+            onChange();
+        });
+
+
         filterTitolo.setPlaceholder("Seleziona Titolo");
         filterTitolo.addSelectionListener(e -> onChange());
         filterCentroDiocesano.setPlaceholder("Seleziona Centro");
@@ -153,76 +165,138 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         filterElencoMarisaBisi.addValueChangeListener(e -> onChange());
         filterPromotoreRegionale.addValueChangeListener(e -> onChange());
 
-        filterTipoEstrattoConto.setPlaceholder("Seleziona Omaggio");
-        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
-        filterCassa.setPlaceholder("Seleziona Cassa");
-        filterCassa.addSelectionListener(e ->onChange());
-        filterInvio.setPlaceholder("Seleziona Invio");
-        filterInvio.addSelectionListener(e ->onChange());
-        filterStatoStorico.setPlaceholder("Seleziona Stato");
-        filterStatoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
-        filterStatoStorico.addSelectionListener(e ->onChange());
-
     }
 
     @Override
     public List<Anagrafica> find() {
-        if (StringUtils.isEmpty(searchCognome) && searchDiocesi == null) {
+        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap) && searchDiocesi == null) {
             return filterAll(findAll());
         }
-        if (searchDiocesi == null) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome));
-        }
-        if (StringUtils.isEmpty(searchCognome)) {
+        
+        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo()).findByDiocesi(searchDiocesi));
         }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome));
+        }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCap)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCittaContainingIgnoreCase(searchCitta));
+        }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap));
+        }
 
-        return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome).stream().filter(tizio -> tizio.getDiocesi().equals(searchDiocesi)).collect(Collectors.toList()));
+        if (StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCognomeContainingIgnoreCase(searchCognome)
+                             .stream()
+                             .filter(tizio -> tizio.getDiocesi().equals(searchDiocesi))
+                             .collect(Collectors.toList()));
+        }
+
+        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCap)) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCittaContainingIgnoreCase(searchCitta)
+                             .stream()
+                             .filter(tizio -> tizio.getDiocesi().equals(searchDiocesi))
+                             .collect(Collectors.toList()));
+        }
+        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta)) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCapContainingIgnoreCase(searchCap)
+                             .stream()
+                             .filter(tizio -> tizio.getDiocesi().equals(searchDiocesi))
+                             .collect(Collectors.toList()));
+        }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCitta)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome)
+                             .stream()
+                             .filter(tizio -> 
+                                    tizio.getCap() != null 
+                                 && tizio.getCap().toLowerCase().contains(searchCap.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCittaContainingIgnoreCase(searchCitta)
+                             .stream()
+                             .filter(tizio -> 
+                                    tizio.getCap() != null 
+                                 && tizio.getCap().toLowerCase().contains(searchCap.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+        if (searchDiocesi == null && StringUtils.isEmpty(searchCitta)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap)
+                             .stream()
+                             .filter(tizio -> 
+                                    tizio.getCognome() != null 
+                                 && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+
+        if (StringUtils.isEmpty(searchCap)) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCognomeContainingIgnoreCase(searchCognome)
+                             .stream()
+                             .filter(tizio -> 
+                                    tizio.getDiocesi().equals(searchDiocesi) 
+                                 && tizio.getCitta() != null && tizio.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+        if (StringUtils.isEmpty(searchCognome)) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCittaContainingIgnoreCase(searchCitta)
+                             .stream()
+                             .filter(tizio -> 
+                                tizio.getDiocesi().equals(searchDiocesi) 
+                             && tizio.getCap() != null 
+                             && tizio.getCap().toLowerCase().contains(searchCap.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+        if (StringUtils.isEmpty(searchCitta)) {
+            return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap)
+                             .stream()
+                             .filter(tizio ->
+                                    tizio.getDiocesi().equals(searchDiocesi) 
+                                 && tizio.getCognome() != null 
+                                 && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+        if (searchDiocesi == null) {
+            return filterAll(((AnagraficaDao) getRepo())
+                             .findByCapContainingIgnoreCase(searchCap)
+                             .stream()
+                             .filter(tizio -> 
+                                tizio.getCitta() != null 
+                             && tizio.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
+                             && tizio.getCognome() != null 
+                             && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                             )
+                             .collect(Collectors.toList()));
+        }
+
+        return filterAll(((AnagraficaDao) getRepo()).findByDiocesi(searchDiocesi)
+                         .stream()
+                         .filter(
+                                 tizio -> 
+                            tizio.getDiocesi().equals(searchDiocesi) 
+                         && tizio.getCitta() != null 
+                         && tizio.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
+                         && tizio.getCognome() != null 
+                         && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                         && tizio.getCap() != null 
+                         && tizio.getCap().toLowerCase().contains(searchCap.toLowerCase())
+                         )
+                         .collect(Collectors.toList()));
+
     }
 
     private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {
-
-        if (filterTipoEstrattoConto.getValue() != null) {
-            anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storicoDao.findByTipoEstrattoConto(filterTipoEstrattoConto.getValue())) {
-                    if (storicoA.getIntestatario().getId() == a.getId()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
-
-        if (filterCassa.getValue() != null) {
-            anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storicoDao.findByCassa(filterCassa.getValue())) {
-                    if (storicoA.getIntestatario().getId() == a.getId()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
-        if (filterInvio.getValue() != null) {
-            anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storicoDao.findByInvio(filterInvio.getValue())) {
-                    if (storicoA.getIntestatario().getId() == a.getId()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
-        if (filterStatoStorico.getValue() != null) {
-            anagrafiche=anagrafiche.stream().filter(a -> {
-                for (Storico storicoA: storicoDao.findByStatoStorico(filterStatoStorico.getValue())) {
-                    if (storicoA.getIntestatario().getId() == a.getId()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
 
         if (filterPaese.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterPaese.getValue() == a.getPaese()).collect(Collectors.toList());

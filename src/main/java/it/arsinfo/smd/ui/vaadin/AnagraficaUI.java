@@ -1,27 +1,15 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.CampagnaDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
-import it.arsinfo.smd.repository.NotaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
-import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_ANAGRAFICA)
-@Title("Anagrafica Clienti ADP")
+@Title("Anagrafica ADP")
 public class AnagraficaUI extends SmdUI {
 
     /**
@@ -31,27 +19,12 @@ public class AnagraficaUI extends SmdUI {
 
     @Autowired
     AnagraficaDao anagraficaDao;
-    @Autowired
-    PubblicazioneDao pubblicazioneDao;
-    @Autowired
-    StoricoDao storicoDao;
-    @Autowired
-    AbbonamentoDao abbonamentoDao;
-    @Autowired
-    NotaDao notaDao;
-    @Autowired
-    CampagnaDao campagnaDao;
-    @Autowired
-    EstrattoContoDao estrattoContoDao;
-    
-    @Autowired
-    SpedizioneDao spedizioneDao;
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Anagrafica");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
-        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao,storicoDao);
+        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
         
@@ -101,13 +74,4 @@ public class AnagraficaUI extends SmdUI {
 
     }
     
-    public List<Storico> findByCustomer(Anagrafica customer) {
-        List<Storico> list = storicoDao.findByIntestatario(customer);
-        list.addAll(storicoDao.findByDestinatario(customer)
-                    .stream()
-                    .filter(ap -> customer.getId() != ap.getIntestatario().getId())
-                    .collect(Collectors.toList()));
-        return list;
-    }
-
 }
