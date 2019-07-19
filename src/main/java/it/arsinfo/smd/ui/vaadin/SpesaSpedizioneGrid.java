@@ -8,9 +8,7 @@ public class SpesaSpedizioneGrid extends SmdGrid<SpesaSpedizione> {
 
     public SpesaSpedizioneGrid(String gridname) {
         super(new Grid<>(SpesaSpedizione.class),gridname);
-        setColumns("numero","pubblicazione.nome","areaSpedizione","speseSpedizione");
-        setColumnCaption("pubblicazione.nome","Pubblicazione");
-        setColumnCaption("numero","Quan.tà");
+        setColumns("range","area","spese");
     }
 
 }

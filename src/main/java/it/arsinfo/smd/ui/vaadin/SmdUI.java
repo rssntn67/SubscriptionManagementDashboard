@@ -241,7 +241,7 @@ public abstract class SmdUI extends UI {
     }
 
     public Link getSpeseSpedizioneLink() {
-        return new Link("Spese Spedizione",new ExternalResource(URL_PUBBLICAZIONI));    
+        return new Link("Spese Spedizione",new ExternalResource(URL_SPESESPEDIZIONE));    
     }
 
     public Link[] getCampagnaLinks() {

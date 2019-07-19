@@ -247,7 +247,7 @@ public class SmdLoadSampleData implements Runnable {
         sss.add(ss13);
 
         SpesaSpedizione ss14 = new SpesaSpedizione();
-        ss14.setRange(RangeSpeseSpedizione.Da10KgA20Kg);;
+        ss14.setRange(RangeSpeseSpedizione.Da1KgA2Kg);;
         ss14.setArea(AreaSpedizione.EuropaBacinoMediterraneo);
         ss14.setSpese(new BigDecimal("13.50"));
         sss.add(ss14);

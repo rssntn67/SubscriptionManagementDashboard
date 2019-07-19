@@ -57,6 +57,7 @@ public class SpesaSpedizioneUI extends SmdUI {
             add.setVisible(true);
             setHeader("Spese Spedizione");
             editor.setVisible(false);
+            grid.populate(spesaSpedizioneDao.findAll());
         });
 
         grid.populate(spesaSpedizioneDao.findAll());
