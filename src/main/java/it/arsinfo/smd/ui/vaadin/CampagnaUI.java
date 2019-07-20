@@ -134,6 +134,7 @@ public class CampagnaUI extends SmdUI {
                 }
                 List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
                 super.saveWithNoCallOnChange();
+                get().getCampagnaItems().stream().forEach(ci -> campagnaItemDao.save(ci));
 
                 for (Abbonamento abb:abbonamentiCampagna) {
                     List<EstrattoConto> ecs = new ArrayList<>();
