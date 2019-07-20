@@ -83,6 +83,8 @@ import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
 public class SmdApplicationTests {
 
     @Autowired
+    private SmdService smdService;
+    @Autowired
     private AnagraficaDao anagraficaDao;
     @Autowired
     private StoricoDao storicoDao;
@@ -159,6 +161,9 @@ public class SmdApplicationTests {
         assertNotNull(spedizioneDao);
         assertNotNull(spedizioneItemDao);
         assertNotNull(spesaSpedizioneDao);
+
+        assertNotNull(smdService);
+        assertTrue(smdService instanceof SmdServiceImpl);
 
         assertNotNull(securityConfig);
         assertNotNull(userDetailsService);
