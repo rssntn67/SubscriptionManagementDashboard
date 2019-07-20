@@ -47,6 +47,8 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -1448,20 +1450,47 @@ public class SmdApplicationTests {
     }
 
     @Test
-    @Ignore
-    public void testAggiornaStatoAbbonamento() {
-        
-    }
-
-    @Test
-    @Ignore
     public void testCampagnaCRUD() {
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
+        pubblicazioneDao.save(messaggio);
+        pubblicazioneDao.save(blocchetti);
+        assertEquals(2, pubblicazioneDao.findAll().size());
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.getAnnoProssimo());
+        CampagnaItem itemMessaggio = new CampagnaItem();
+        itemMessaggio.setCampagna(campagna);
+        itemMessaggio.setPubblicazione(messaggio);
+        campagna.addCampagnaItem(itemMessaggio);
+        CampagnaItem itemBlocchetti = new CampagnaItem();
+        itemBlocchetti.setCampagna(campagna);
+        itemBlocchetti.setPubblicazione(blocchetti);
+        campagna.addCampagnaItem(itemBlocchetti);
+        campagnaDao.save(campagna);
+        campagna.getCampagnaItems().forEach( item -> campagnaItemDao.save(item));
         
-    }
-
-    @Test
-    @Ignore    
-    public void testAggiornaCampagna() {
+        List<Campagna> campagne = campagnaDao.findByAnno(campagna.getAnno());
+        assertEquals(1, campagne.size());
+        campagna = campagne.iterator().next();
+        assertEquals(2, campagna.getCampagnaItems().size());
+        assertEquals(2, campagnaItemDao.findByCampagna(campagna).size());
+        assertEquals(1, campagnaItemDao.findByPubblicazione(blocchetti).size());
+        assertEquals(1, campagnaItemDao.findByPubblicazione(messaggio).size());
+        
+        campagnaItemDao.findAll().forEach(item -> campagnaItemDao.delete(item));
+        campagnaDao.deleteById(campagna.getId());
+        assertEquals(0, campagnaItemDao.findAll().size());
+       assertEquals(0, campagnaItemDao.findByCampagna(campagna).size());
+        assertEquals(0, campagnaItemDao.findByPubblicazione(blocchetti).size());
+        assertEquals(0, campagnaItemDao.findByPubblicazione(messaggio).size());
+        assertEquals(0, campagnaDao.findAll().size());
+        
+        pubblicazioneDao.deleteAll();
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        
+        
+        
+        
         
     }
 
