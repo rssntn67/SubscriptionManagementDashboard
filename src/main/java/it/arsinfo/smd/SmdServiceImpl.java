@@ -91,7 +91,7 @@ public class SmdServiceImpl implements SmdService {
     public void deleteCampagnaAbbonamenti(Campagna campagna) {
         abbonamentoDao.findByCampagna(campagna).stream().forEach(abb -> deleteAbbonamento(abb));
         campagna.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
-        campagnaDao.delete(campagna);
+        campagnaDao.deleteById(campagna.getId());
         
     }
 
@@ -102,7 +102,6 @@ public class SmdServiceImpl implements SmdService {
         .forEach(sped -> 
             {
                 sped.getSpedizioneItems().forEach(item -> {
-                    sped.deleteSpedizioneItem(item);
                     spedizioneItemDao.deleteById(item.getId());
                 });
                 spedizioneDao.deleteById(sped.getId());
