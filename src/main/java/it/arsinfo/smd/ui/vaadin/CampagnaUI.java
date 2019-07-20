@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,26 +13,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
-import it.arsinfo.smd.repository.SpedizioneItemDao;
-import it.arsinfo.smd.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.repository.StoricoDao;
 
 @SpringUI(path = SmdUI.URL_CAMPAGNA)
 @Title("Campagna Abbonamenti ADP")
@@ -45,34 +34,19 @@ public class CampagnaUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    CampagnaDao campagnaDao;
+    private CampagnaDao campagnaDao;
 
     @Autowired
-    CampagnaItemDao campagnaItemDao;
+    private CampagnaItemDao campagnaItemDao;
 
     @Autowired
-    AnagraficaDao anagraficaDao;
+    private PubblicazioneDao pubblicazioneDao;
 
     @Autowired
-    StoricoDao storicoDao;
-
-    @Autowired
-    PubblicazioneDao pubblicazioneDao;
-
-    @Autowired
-    AbbonamentoDao abbonamentoDao;
+    private SmdService smdService;
     
     @Autowired
-    EstrattoContoDao estrattoContoDao;
-    
-    @Autowired
-    SpedizioneDao spedizioneDao;
-
-    @Autowired
-    SpedizioneItemDao spedizioneItemDao;
-
-    @Autowired
-    SpesaSpedizioneDao spesaSpedizioneDao;
+    private AbbonamentoDao abbonamentoDao; 
 
     @Override
     protected void init(VaadinRequest request) {
@@ -86,6 +60,11 @@ public class CampagnaUI extends SmdUI {
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {
+                if (get().getStatoCampagna() == StatoCampagna.Inviata) {
+                    Notification.show("Non è possibile cancellare campagna che è stata inviata",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 if (get().getAnno() == Anno.getAnnoCorrente()) {
                     Notification.show("Non è possibile cancellare campagna dell'anno corrente",
                                       Notification.Type.ERROR_MESSAGE);
@@ -97,7 +76,8 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                super.delete();
+                smdService.deleteCampagnaAbbonamenti(get());
+                onChange();
             }
 
             @Override
@@ -124,39 +104,7 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                List<Abbonamento> abbonamentiCampagna = Smd.generaAbbonamentiCampagna(get(), anagraficaDao.findAll(),
-                                   storicoDao.findAll(),
-                                   attivi);
-                if (abbonamentiCampagna.isEmpty()) {
-                    Notification.show("Non ci sono abbonamenti per la Campagna",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
-                super.saveWithNoCallOnChange();
-                get().getCampagnaItems().stream().forEach(ci -> campagnaItemDao.save(ci));
-
-                for (Abbonamento abb:abbonamentiCampagna) {
-                    List<EstrattoConto> ecs = new ArrayList<>();
-                    List<Spedizione> spedizioni = new ArrayList<>();
-                    for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
-                       EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
-                       spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, spese);
-                       ecs.add(ec);
-                    }
-                    if (ecs.isEmpty()) {
-                        continue;
-                    }
-
-                    abbonamentoDao.save(abb);
-                    ecs.stream().forEach( ec -> {
-                        estrattoContoDao.save(ec);
-                    });
-                    spedizioni.stream().forEach(sped -> {
-                        spedizioneDao.save(sped);
-                        sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
-                    });
-                }
+                smdService.generaCampagnaAbbonamenti(get(), attivi);
                 onChange();
             }
 

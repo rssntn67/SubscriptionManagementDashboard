@@ -817,9 +817,10 @@ public class SmdUnitTests {
         }
         List<Abbonamento> abbonamenti = Smd.generaAbbonamentiCampagna(campagna, anagrafiche, storici, pubblicazioni);
         for (Abbonamento abb: abbonamenti) {
+            log.info(abb.getIntestatario().toString());
             log.info(abb.toString());
         }
-        
+        assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<Spedizione> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {

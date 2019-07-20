@@ -454,7 +454,7 @@ public class Smd {
     }
     
     public static List<Abbonamento> generaAbbonamentiCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
-        final Map<Long,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
+        final Map<Integer,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
         pubblicazioni.stream()
         .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
         .forEach(p -> {
@@ -462,7 +462,7 @@ public class Smd {
             ci.setCampagna(campagna);
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
-            campagnapubblicazioniIds.put(p.getId(),p);            
+            campagnapubblicazioniIds.put(p.hashCode(),p);            
         });
 
         final List<Abbonamento> abbonamenti = new ArrayList<>();
@@ -471,9 +471,12 @@ public class Smd {
             storici.stream()
             .filter(
                 storico -> 
-                (storico.getIntestatario().getId() == a.getId() 
-                   && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().getId()) 
-                   && storico.attivo())
+                (storico.getIntestatario() == a 
+                    || ( storico.getIntestatario().getId() != null 
+                         && a.getId() != null 
+                         && storico.getIntestatario().getId() == a.getId())) 
+               && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().hashCode()) 
+               && storico.attivo()
             )
             .forEach(storico -> { 
                 if (!cassaStorico.containsKey(storico.getCassa())) {

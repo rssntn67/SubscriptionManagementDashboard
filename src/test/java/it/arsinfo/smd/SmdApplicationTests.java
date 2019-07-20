@@ -47,7 +47,6 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -1602,41 +1601,5 @@ public class SmdApplicationTests {
         incassoDao.deleteAll();
         pubblicazioneDao.deleteAll();        
     }
-    
-    private void loadCampagna(Anno anno) {
-        Campagna campagna = new Campagna();
-        campagna.setAnno(anno);
-        List<Abbonamento> abbonamenti = 
-            Smd.generaAbbonamentiCampagna(
-                                      campagna, 
-                                      anagraficaDao.findAll(), 
-                                      storicoDao.findAll(),
-                                      pubblicazioneDao.findAll()
-          );
         
-        campagnaDao.save(campagna);
-        for (Abbonamento abb:abbonamenti) {
-            List<Spedizione> spedizioni = new ArrayList<>();
-            for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
-                EstrattoConto ec = Smd.generaECDaStorico(abb,storico);
-                spedizioni = 
-                        Smd.generaSpedizioni(abb, 
-                                             ec, 
-                                             spedizioni,
-                                             spesaSpedizioneDao.findByAreaSpedizione(
-                                                         storico.getDestinatario().getAreaSpedizione()));
-                abbonamentoDao.save(abb);
-                estrattoContoDao.save(ec);
-                spedizioni.stream().forEach(sped ->  {
-                    spedizioneDao.save(sped);
-                    sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));;
-                });
-            }
-            
-            
-        }
-
-    }
-
-    
 }
