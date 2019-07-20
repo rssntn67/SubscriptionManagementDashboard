@@ -31,11 +31,14 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
+import it.arsinfo.smd.entity.Storico;
 
 @RunWith(SpringRunner.class)
 public class SmdUnitTests {
@@ -781,5 +784,52 @@ public class SmdUnitTests {
         
     }
 
+    @Test
+    public void testGeneraCampagna() {
+        List<Anagrafica> anagrafiche = new ArrayList<>();
+        Anagrafica antonioRusso = SmdLoadSampleData.getAR();
+        Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
+        anagrafiche.add(diocesiMilano);
+        anagrafiche.add(antonioRusso);
+        List<Pubblicazione> pubblicazioni = new ArrayList<>();
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Pubblicazione lodare =SmdLoadSampleData.getLodare();
+        Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
+        Pubblicazione estratti = SmdLoadSampleData.getEstratti();
+        pubblicazioni.add(messaggio);
+        pubblicazioni.add(lodare);
+        pubblicazioni.add(blocchetti);
+        pubblicazioni.add(estratti);
+        List<Storico> storici = new ArrayList<>();
+        
+        storici.add(SmdLoadSampleData.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdLoadSampleData.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdLoadSampleData.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdLoadSampleData.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.getAnnoProssimo());
+        for (Pubblicazione p : pubblicazioni) {
+            CampagnaItem ci = new CampagnaItem();
+            ci.setCampagna(campagna);
+            ci.setPubblicazione(p);
+            campagna.addCampagnaItem(ci);
+        }
+        List<Abbonamento> abbonamenti = Smd.generaAbbonamentiCampagna(campagna, anagrafiche, storici, pubblicazioni);
+        for (Abbonamento abb: abbonamenti) {
+            log.info(abb.toString());
+        }
+        
+        Abbonamento abb = abbonamenti.iterator().next();
+        List<Spedizione> spedizioni = new ArrayList<>();
+        for (Storico storico:storici) {
+            EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
+            spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
+            log.info(abb.toString());
+            log.info(ec.toString());
+        }        
+
+    }
     
+  
 }
