@@ -12,7 +12,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
@@ -114,6 +113,7 @@ public class CampagnaUI extends SmdUI {
                 } catch (Exception e) {
                     Notification.show("Non è possibile generare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
                 onChange();
             }
@@ -177,8 +177,13 @@ public class CampagnaUI extends SmdUI {
             Button button = new Button("Invia Proposta Abbonamento Ccp", VaadinIcons.ENVELOPES);
             button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Generata);
             button.addClickListener(click -> {
-                Smd.inviaPropostaAbbonamentoCampagna(campagna, abbonamentoDao.findByCampagna(campagna));
-                campagnaDao.save(campagna);
+                try {
+                    smdService.inviaCampagna(campagna);
+                } catch (Exception e) {
+                    Notification.show("Non è possibile inviare campagna:"+e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 setHeader("Campagna::Ccp");
                 add.setVisible(false);
                 search.setVisible(false);

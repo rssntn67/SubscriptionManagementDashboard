@@ -28,5 +28,7 @@ public interface SmdService {
     void cancellaECAbbonamento(Abbonamento abbonamento,EstrattoConto estrattoConto) throws Exception;
 
     void generaAbbonamento(Abbonamento abbonamento, List<EstrattoConto> estrattiConto) throws Exception;
+    
+    void inviaCampagna(Campagna campagna) throws Exception;
 
 }

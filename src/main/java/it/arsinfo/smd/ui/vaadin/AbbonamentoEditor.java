@@ -32,6 +32,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
             EnumSet.allOf(Anno.class));
 
+    private final TextField importo = new TextField("Importo");
+    private final TextField spese = new TextField("Spese");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
@@ -51,7 +53,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,campo,
                                                     ccp);
         
-        HorizontalLayout tri = new HorizontalLayout(totale,residuo);
+        HorizontalLayout tri = new HorizontalLayout(importo,spese,totale,residuo);
 
         setComponents(getActions(),pri, sec,tri);
         
@@ -67,7 +69,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         statoAbbonamento.setItemCaptionGenerator(StatoAbbonamento::getDescr);
         campagna.setReadOnly(true);
+        importo.setReadOnly(true);
         totale.setReadOnly(true);
+        spese.setReadOnly(true);
         residuo.setReadOnly(true);
         campo.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
@@ -87,6 +91,14 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
 
         getBinder()
+        .forField(importo)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("importo");
+        getBinder()
+        .forField(spese)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("spese");
+        getBinder()
             .forField(totale)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("totale");
@@ -102,7 +114,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled((persisted && abbonamento.getVersamento() == null) || abbonamento.getCampagna() == null );
+        getDelete().setEnabled(abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
         getSave().setEnabled(!persisted || abbonamento.getCampagna() == null);
         getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null);
         intestatario.setReadOnly(persisted);
@@ -113,7 +125,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         statoIncasso.setVisible(persisted);
         cassa.setReadOnly(persisted);
         campagna.setVisible(persisted);
-        statoAbbonamento.setReadOnly(persisted && abbonamento.getCampagna() != null);
+        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
         if (persisted && 
                 abbonamento.getTotale().doubleValue() == BigDecimal.ZERO.doubleValue()) {

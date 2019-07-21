@@ -308,4 +308,13 @@ public class SmdServiceImpl implements SmdService {
         cancellaECAbbonamento(abbonamento, estrattoConto);
         
     }
+
+    @Override
+    public void inviaCampagna(Campagna campagna) throws Exception {
+        for (Abbonamento abb: Smd.inviaPropostaAbbonamentoCampagna(campagna, abbonamentoDao.findByCampagna(campagna))) {
+            abbonamentoDao.save(abb);
+        }
+        campagnaDao.save(campagna);
+        
+    }
 }

@@ -43,6 +43,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
     public final static String URL_SPESESPEDIZIONE = "/spesespedizione";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
+    public final static String URL_EC = "/ec";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_INCASSI = "/incassi";
@@ -128,6 +129,14 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ABBONAMENTI);
+            }
+        } );
+
+        abbonamenti.addItem("Estratto Conto",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_EC);
             }
         } );
 
@@ -260,6 +269,7 @@ public abstract class SmdUI extends UI {
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link("Estratti Conto",  new ExternalResource(URL_EC)));
         links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         return links.toArray((new Link[links.size()]));
     }

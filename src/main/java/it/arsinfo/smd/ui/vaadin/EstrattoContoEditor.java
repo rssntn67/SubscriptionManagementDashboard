@@ -11,6 +11,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -22,6 +24,8 @@ public class EstrattoContoEditor
         extends SmdEditor<EstrattoConto> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
+    
+    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<TipoEstrattoConto> tipoEstrattoconto = new ComboBox<TipoEstrattoConto>("Tipo",
                                                                     EnumSet.allOf(TipoEstrattoConto.class));
     
@@ -39,6 +43,11 @@ public class EstrattoContoEditor
 
     private final TextField importo = new TextField("Importo");
 
+    private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
+            EnumSet.allOf(Invio.class));
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
+            EnumSet.allOf(InvioSpedizione.class));
+
     public EstrattoContoEditor(
             EstrattoContoDao anagraficaPubblicazioneDao,
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
@@ -48,6 +57,14 @@ public class EstrattoContoEditor
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        
+        destinatario.setEmptySelectionAllowed(false);
+        destinatario.setPlaceholder("Destinatario");
+        destinatario.setItems(anagrafica);
+        destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
+        
+        invio.setEmptySelectionAllowed(false);
+        invioSpedizione.setEmptySelectionAllowed(false);
 
         tipoEstrattoconto.setEmptySelectionAllowed(false);
 
@@ -65,8 +82,9 @@ public class EstrattoContoEditor
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
         setComponents(getActions(), 
-                      new HorizontalLayout(pubblicazione,meseInizio,annoInizio,meseFine,annoFine),
-                      new HorizontalLayout(tipoEstrattoconto, numero,importo)
+                      new HorizontalLayout(pubblicazione,destinatario,numero,importo),
+                      new HorizontalLayout(invio,invioSpedizione,tipoEstrattoconto),
+                      new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine)
                       );
  
         getBinder()
@@ -86,9 +104,21 @@ public class EstrattoContoEditor
             .asRequired()
             .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
             .bind(EstrattoConto::getPubblicazione,EstrattoConto::setPubblicazione);
-        
+
+        getBinder()
+        .forField(destinatario)
+        .asRequired()
+        .withValidator(p -> p != null, "Destinatario deve essere selezionat0")
+        .bind(EstrattoConto::getDestinatario,EstrattoConto::setDestinatario);
+
         getBinder().forField(tipoEstrattoconto)
         .asRequired().bind(EstrattoConto::getTipoEstrattoConto,EstrattoConto::setTipoEstrattoConto);
+
+        getBinder().forField(invio)
+        .asRequired().bind(EstrattoConto::getInvio,EstrattoConto::setInvio);
+
+        getBinder().forField(invioSpedizione)
+        .asRequired().bind(EstrattoConto::getInvioSpedizione,EstrattoConto::setInvioSpedizione);
 
         getBinder().forField(meseInizio)
         .asRequired().bind(EstrattoConto::getMeseInizio,EstrattoConto::setMeseInizio);
@@ -110,8 +140,8 @@ public class EstrattoContoEditor
         tipoEstrattoconto.setReadOnly(persisted);
         importo.setVisible(persisted);
 
-        getDelete().setEnabled(obj.getStorico() != null);
-        getSave().setEnabled(obj.getStorico() != null);
+        getDelete().setEnabled(obj.getStorico() == null);
+        getSave().setEnabled(obj.getStorico() == null);
         numero.focus();
     }
     
