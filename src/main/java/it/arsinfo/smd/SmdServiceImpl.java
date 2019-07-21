@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -128,12 +129,20 @@ public class SmdServiceImpl implements SmdService {
             abbonamento.setCampo(Abbonamento.generaCodeLine(abbonamento.getAnno(),storico.getIntestatario()));
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);   
         }
+        
         List<EstrattoConto> ecs = 
                 estrattoContoDao
                 .findByStorico(storico)
                 .stream()
-                .filter(ec -> ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo())
+                .filter(ec -> {
+                    Abbonamento abb = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+                    if (abb != null && abb.getCampagna() != null && abb.getAnno() == campagna.getAnno()) {
+                        return true;
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
+        
 
         if (ecs.size() > 1 ) {
             throw new Exception("Un solo Estratto Conto per storico ogni anno");
@@ -219,9 +228,11 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         estrattoContoDao.save(estrattoConto);
+
         if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty()) {
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
         }
+        
         abbonamentoDao.save(abbonamento);
 
     }

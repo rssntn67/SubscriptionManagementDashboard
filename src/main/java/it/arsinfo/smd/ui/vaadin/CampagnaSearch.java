@@ -42,7 +42,9 @@ public class CampagnaSearch extends SmdSearch<Campagna> {
         if (anno != null) {
             Campagna campagna = ((CampagnaDao) getRepo()).findByAnno(anno);
             List<Campagna> campagne = new ArrayList<>();
-            campagne.add(campagna);
+            if (campagna != null) {
+                campagne.add(campagna);
+            }
             return campagne;
         }
         return findAll();
