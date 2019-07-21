@@ -11,19 +11,21 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 
 @SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
@@ -34,7 +36,7 @@ public class AbbonamentoUI extends SmdUI {
      */
     private static final long serialVersionUID = 3429323584726379968L;
 
-    private static final Logger log = LoggerFactory.getLogger(SmdEditor.class);
+    private static final Logger log = LoggerFactory.getLogger(AbbonamentoUI.class);
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
@@ -52,7 +54,7 @@ public class AbbonamentoUI extends SmdUI {
     CampagnaDao campagnaDao;
 
     @Autowired
-    SpedizioneDao spedizioneDao;
+    SmdService smdService;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -79,11 +81,17 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getCampagna() != null) {
-                    Notification.show("Abbonamento associato a Campagna va gestioto da Campagne", Notification.Type.ERROR_MESSAGE);
+                    Notification.show("Abbonamento associato a Campagna va gestito da Storico", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                estrattoContoDao.findByAbbonamento(get()).forEach(ec -> estrattoContoDao.delete(ec));
-                super.delete();
+                try {
+                    smdService.deleteAbbonamento(get());
+                } catch (Exception e) {
+                    log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
+                    Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);
+                    return;                    
+                }
+                onChange();
 
             }
             
@@ -98,26 +106,35 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null && getEstrattiConto().size() == 0) {
-                    Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.WARNING_MESSAGE);
+                    Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
                 if (get().getId() == null) {
-                    get().setCampo(Abbonamento.generaCodeLine(get().getAnno(),get().getIntestatario()));
+                    get().setCampo(Abbonamento.generaCodeLine(get().getAnno()));
+                }
+                if (get().getId() != null && get().getStatoAbbonamento() == StatoAbbonamento.Annullato) {
+                    try {
+                        smdService.annullaAbbonamento(get());
+                        onChange();
+                    } catch (Exception e) {
+                        log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
+                        Notification.show("Non è possibile annullare abbonamento:" +e.getMessage(),
+                                          Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+                if (get().getId() != null ) {
+                    super.save();
+                    return;
                 }
                 try {
-                    abbonamentoDao.save(get());
-                    log.info("save:" + get().toString());
-                    getEstrattiConto().stream().forEach(ec -> {
-                        estrattoContoDao.save(ec);
-//FIXME                        ec.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
-                    });
-                    getEstrattiConto().clear();
-                    onChange();
+                    smdService.generaAbbonamento(get(), getEstrattiConto());
                 } catch (Exception e) {
                     log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
                     Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
                                       Notification.Type.ERROR_MESSAGE);
                 }
+                onChange();
             }
         };
 
@@ -125,32 +142,44 @@ public class AbbonamentoUI extends SmdUI {
         EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
             @Override
             public void save() {
-                /*
                 if (get().getDestinatario() == null) {
                     Notification.show("Selezionare il Destinatario",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                */
                 if (get().getPubblicazione() == null) {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                try {
-              //FIXME      Smd.creaEC(editor.get(),
-              //           get(),getInvioSpedizione());
-                } catch (UnsupportedOperationException e) {
-                    Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
+                if (get().getId() == null ) {
+                    get().setAbbonamento(editor.get());
+                    editor.addEstrattoConto(get());
+                    onChange();
                     return;
                 }
-                get().setAbbonamento(editor.get());
-                editor.add(get());
+                try {
+                    smdService.aggiornaECAbbonamento(editor.get(), get());
+                } catch (Exception e) {
+                    Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 onChange();
             };
             
             @Override 
             public void delete() {
-                editor.remove(get());
+                if (get().getId() == null ) {
+                    editor.remove(get());
+                    onChange();
+                    return;
+                }
+                try {
+                    smdService.cancellaECAbbonamento(editor.get(), get());
+                } catch (Exception e) {
+                    Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
                 onChange();
+                
             };
         };
 
@@ -212,7 +241,6 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
             hideMenu();
             estrattoContoEditor.edit(estrattoContoAdd.generate());
-//FIXME            estrattoContoEditor.setDestinatario(editor.get().getIntestatario());
             editor.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });

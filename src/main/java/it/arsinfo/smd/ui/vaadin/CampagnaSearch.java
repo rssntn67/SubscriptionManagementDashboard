@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -39,7 +40,10 @@ public class CampagnaSearch extends SmdSearch<Campagna> {
     @Override
     public List<Campagna> find() {
         if (anno != null) {
-            return ((CampagnaDao) getRepo()).findByAnno(anno);
+            Campagna campagna = ((CampagnaDao) getRepo()).findByAnno(anno);
+            List<Campagna> campagne = new ArrayList<>();
+            campagne.add(campagna);
+            return campagne;
         }
         return findAll();
     }

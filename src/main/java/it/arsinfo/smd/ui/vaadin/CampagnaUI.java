@@ -76,7 +76,12 @@ public class CampagnaUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                smdService.deleteCampagnaAbbonamenti(get());
+                try {
+                    smdService.deleteCampagnaAbbonamenti(get());
+                } catch (Exception e) {
+                    Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
                 onChange();
             }
 
@@ -84,27 +89,32 @@ public class CampagnaUI extends SmdUI {
             public void save() {
                 if (get().getId() != null) {
                     Notification.show("Impossibile Rigenerare Campagna",
-                                      Notification.Type.ERROR_MESSAGE);
+                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
                 if (get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare",
-                                      Notification.Type.ERROR_MESSAGE);
+                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                if (!campagnaDao.findByAnno(get().getAnno()).isEmpty()) {
+                if (campagnaDao.findByAnno(get().getAnno()) != null) {
                     Notification.show("E' stata già generata la Campagna per Anno "
                             + get().getAnno()
                             + ". Solo una Campagna per Anno",
-                                      Notification.Type.ERROR_MESSAGE);
+                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                if (get().getAnno().getAnno() <= Anno.getAnnoCorrente().getAnno()) {
+                if (get().getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()) {
                     Notification.show("Anno deve essere almeno anno successivo",
-                                      Notification.Type.ERROR_MESSAGE);
+                                      Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                smdService.generaCampagnaAbbonamenti(get(), attivi);
+                try {
+                    smdService.generaCampagnaAbbonamenti(get(), attivi);
+                } catch (Exception e) {
+                    Notification.show("Non è possibile generare campagna:"+e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
                 onChange();
             }
 

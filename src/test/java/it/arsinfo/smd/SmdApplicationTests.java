@@ -1492,9 +1492,8 @@ public class SmdApplicationTests {
         campagnaDao.save(campagna);
         campagna.getCampagnaItems().forEach( item -> campagnaItemDao.save(item));
         
-        List<Campagna> campagne = campagnaDao.findByAnno(campagna.getAnno());
-        assertEquals(1, campagne.size());
-        campagna = campagne.iterator().next();
+        campagna = campagnaDao.findByAnno(campagna.getAnno());
+        assertNotNull(campagna);
         assertEquals(2, campagna.getCampagnaItems().size());
         assertEquals(2, campagnaItemDao.findByCampagna(campagna).size());
         assertEquals(1, campagnaItemDao.findByPubblicazione(blocchetti).size());

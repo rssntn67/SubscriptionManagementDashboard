@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,9 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
@@ -26,6 +29,7 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"intestatario_id","campagna_id", "cassa"})})
 public class Abbonamento implements SmdEntity {
 
     @Id
@@ -34,11 +38,13 @@ public class Abbonamento implements SmdEntity {
 
     @ManyToOne(fetch=FetchType.EAGER)
     private Anagrafica intestatario;
+
     @Enumerated(EnumType.STRING)
     private Anno anno = Anno.getAnnoCorrente();
 
     @ManyToOne
     private Campagna campagna;
+    
     @OneToOne
     private Versamento versamento;
 
@@ -296,5 +302,15 @@ public class Abbonamento implements SmdEntity {
         campo += String.format("%02d", Long.parseLong(campo) % 93);
         return campo;
     }
+    
+    public static String generaCodeLine(Anno anno) {
+        // primi 2 caratteri anno
+        String campo = anno.getAnnoAsString().substring(2, 4);
+        // 3-16
+        campo += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
+        campo += String.format("%02d", Long.parseLong(campo) % 93);
+        return campo;
+    }
+
 
 }

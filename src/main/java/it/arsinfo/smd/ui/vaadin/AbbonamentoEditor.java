@@ -128,7 +128,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
     }
 
-    public void add(EstrattoConto estrattoConto) {
+    public void addEstrattoConto(EstrattoConto estrattoConto) {
         if (estrattiConto.contains(estrattoConto)) {
             estrattiConto.remove(estrattoConto);
         }

@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
@@ -87,6 +90,9 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void deleteAbbonamento(Abbonamento abbonamento) {
+        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
+            throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
+        }
         spedizioneDao
         .findByAbbonamento(abbonamento)
         .forEach(sped -> 
@@ -102,25 +108,65 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiornaAbbonamentoDaStorico(Storico storico) {
-        // TODO Auto-generated method stub
-        //first check stato, se annullato allora devi rimuovere EC
-        // secondo trova ec ed abbonamento -> ec ed abbonamento sono quelli aspettati?
-        // se diversi, allora bisogna rimuovere da uno ed aggiungere ad altro.
-        // se corrispondono allora bisogna fare aggiornamento EC.
-        List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
+    public void aggiornaAbbonamentoDaStorico(Storico storico) throws Exception {
+        if (storico.getStatoStorico() == StatoStorico.SOSPESO) {
+            rimuoviECDaStorico(storico);
+            return;
+        }
+        Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
+        if (campagna == null) {
+            return;
+        }
+        Abbonamento abbonamento = 
+                abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa());
+        if (abbonamento == null) {
+            abbonamento = new Abbonamento();
+            abbonamento.setIntestatario(storico.getIntestatario());
+            abbonamento.setCampagna(campagna);
+            abbonamento.setAnno(campagna.getAnno());
+            abbonamento.setCassa(storico.getCassa());
+            abbonamento.setCampo(Abbonamento.generaCodeLine(abbonamento.getAnno(),storico.getIntestatario()));
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);   
+        }
+        List<EstrattoConto> ecs = 
+                estrattoContoDao
+                .findByStorico(storico)
+                .stream()
+                .filter(ec -> ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo())
+                .collect(Collectors.toList());
 
-        List<EstrattoConto> ecs = estrattoContoDao.findByStorico(storico);
-        ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo()).forEach( ec ->{
-            ec.setNumero(storico.getNumero());
-            ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
-            ec.setPubblicazione(storico.getPubblicazione());
-            Abbonamento abb = ec.getAbbonamento();
-            List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abb);
-            Smd.aggiornaEC(abb, ec,spedizioni,spese);
-            abbonamentoDao.save(abb);
-            estrattoContoDao.save(ec);
-        });
+        if (ecs.size() > 1 ) {
+            throw new Exception("Un solo Estratto Conto per storico ogni anno");
+        }
+        
+        if (ecs.isEmpty()) {
+            genera(abbonamento, Smd.generaECDaStorico(abbonamento, storico));
+            return;
+        } 
+        EstrattoConto estrattoConto = ecs.iterator().next();                
+        
+        if (estrattoConto.getAbbonamento().getId() != abbonamento.getId()) {
+            Abbonamento oldabb = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
+            cancellaECAbbonamento(oldabb, estrattoConto);
+        }
+        
+        if (abbonamento.getId() == null) {
+            genera(abbonamento, Smd.generaECDaStorico(abbonamento, storico));
+        } else {
+            estrattoConto.setAbbonamento(abbonamento);
+            estrattoConto.setPubblicazione(storico.getPubblicazione());
+            estrattoConto.setNumero(storico.getNumero());
+            estrattoConto.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+            estrattoConto.setMeseInizio(Mese.GENNAIO);
+            estrattoConto.setAnnoInizio(abbonamento.getAnno());
+            estrattoConto.setMeseFine(Mese.DICEMBRE);
+            estrattoConto.setAnnoFine(abbonamento.getAnno());
+            estrattoConto.setInvio(storico.getInvio());
+            estrattoConto.setInvioSpedizione(storico.getInvioSpedizione());
+            estrattoConto.setDestinatario(storico.getDestinatario());
+            aggiornaECAbbonamento(abbonamento, estrattoConto);
+        }        
+
     }
 
     @Override
@@ -164,8 +210,18 @@ public class SmdServiceImpl implements SmdService {
             spedizioneDao.save(sped);
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
+        
         deleted.forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
+        
+        for (Spedizione sped:spedizioni) {
+            if (sped.getSpedizioneItems().isEmpty()) {
+                spedizioneDao.deleteById(sped.getId());
+            }
+        }
         estrattoContoDao.save(estrattoConto);
+        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty()) {
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+        }
         abbonamentoDao.save(abbonamento);
 
     }
@@ -196,11 +252,51 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        if (estrattoConto.getNumeroTotaleRiviste() == 0) { 
+        if (estrattoConto.getNumeroTotaleRiviste() == 0 && estrattoConto.getStorico() == null) { 
             estrattoContoDao.deleteById(estrattoConto.getId());
         } else {
             estrattoContoDao.save(estrattoConto);
         }
+        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty()) {
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+        }
         abbonamentoDao.save(abbonamento);
+    }
+
+    @Override
+    public void annullaAbbonamento(Abbonamento abbonamento) throws Exception {
+        abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+        estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> cancellaECAbbonamento(abbonamento, ec));        
+    }
+
+    @Override
+    public void rimuoviECDaStorico(Storico storico)
+            throws Exception {
+        if (storico.getStatoStorico() != StatoStorico.SOSPESO) {
+            return;
+        }
+        Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
+        if (campagna == null) {
+            return;
+        }        List<EstrattoConto> ecs = 
+                estrattoContoDao
+                .findByStorico(storico)
+                .stream()
+                .filter(ec -> ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo())
+                .collect(Collectors.toList());
+
+        if (ecs.size() > 1 ) {
+            throw new Exception("Un solo Estratto Conto per storico ogni anno");
+        }
+        
+        if (ecs.isEmpty()) {
+            return;
+        } 
+        EstrattoConto estrattoConto = ecs.iterator().next();
+        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
+        estrattoConto.setAbbonamento(abbonamento);
+        
+        cancellaECAbbonamento(abbonamento, estrattoConto);
+        
     }
 }
