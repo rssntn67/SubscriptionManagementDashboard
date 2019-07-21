@@ -143,7 +143,6 @@ public class SmdServiceImpl implements SmdService {
                 })
                 .collect(Collectors.toList());
         
-
         if (ecs.size() > 1 ) {
             throw new Exception("Un solo Estratto Conto per storico ogni anno");
         }
