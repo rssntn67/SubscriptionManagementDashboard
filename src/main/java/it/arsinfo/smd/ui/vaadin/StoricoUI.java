@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Title;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -46,16 +49,7 @@ public class StoricoUI extends SmdUI {
     NotaDao notaDao;
 
     @Autowired
-    AbbonamentoDao abbonamentoDao;
-    
-    @Autowired
-    EstrattoContoDao estrattoContoDao;
-    
-    @Autowired
-    SpedizioneDao spedizioneDao;
-
-    @Autowired
-    SpesaSpedizioneDao spesaSpedizioneDao;
+    SmdService smdService;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -66,15 +60,12 @@ public class StoricoUI extends SmdUI {
         StoricoAdd add = new StoricoAdd("Aggiungi Storico");
         StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
+        
         StoricoEditor editor = 
                 new StoricoEditor(
                                   storicoDao, 
-                                  abbonamentoDao,
-                                  estrattoContoDao,
-                                  spedizioneDao,
                                   pubblicazioni, 
-                                  anagrafica,
-                                  spesaSpedizioneDao.findAll()) {
+                                  anagrafica) {
             @Override
             public void save() {
                 if (getIntestatario().isEmpty()) {
@@ -89,13 +80,14 @@ public class StoricoUI extends SmdUI {
                     Notification.show("Pubblicazione deve essere valorizzata", Type.ERROR_MESSAGE);
                     return;
                 }
-                super.save();
+                super.saveWithNoCallOnChange();
                 if (!getNota().isEmpty()) {
                     Nota nota = new Nota(get());
                     nota.setDescription(getNota().getValue());
                     notaDao.save(nota);
                     getNota().clear();
                 }
+                onChange();
             }
         };
         
@@ -103,10 +95,14 @@ public class StoricoUI extends SmdUI {
         notaGrid.getGrid().setColumns("data","description");
         notaGrid.getGrid().setHeight("200px");
 
-        addSmdComponents(pb,add,editor,notaGrid,search, grid);
+        SmdButton update = new SmdButton("Salva ed Aggiorna Campagna", VaadinIcons.ARCHIVES);
+        update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+
+        addSmdComponents(pb,add,update,editor,notaGrid,search, grid);
         pb.setVisible(false);
         editor.setVisible(false);
         notaGrid.setVisible(false);
+        update.setVisible(false);
 
         pb.setChangeHandler(() ->{});
         
@@ -121,6 +117,7 @@ public class StoricoUI extends SmdUI {
             hideMenu();
             search.setVisible(false);
             editor.edit(grid.getSelected());
+            update.setVisible(true);
             notaGrid.populate(notaDao.findByStorico(grid.getSelected()));
             setHeader(grid.getSelected().getHeader());
             add.setVisible(false);
@@ -133,6 +130,7 @@ public class StoricoUI extends SmdUI {
             setHeader("Storico");
             editor.setVisible(false);
             notaGrid.setVisible(false);
+            update.setVisible(false);
             add.setVisible(true);
         });
 
@@ -143,6 +141,10 @@ public class StoricoUI extends SmdUI {
         });
 
         notaGrid.setChangeHandler(() -> {});
+
+        update.setChangeHandler(() -> {
+ 
+        });
 
         grid.populate(search.find());
 

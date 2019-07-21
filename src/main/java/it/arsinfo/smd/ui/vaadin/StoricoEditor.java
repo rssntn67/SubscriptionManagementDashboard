@@ -5,29 +5,18 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.Smd;
-import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
 public class StoricoEditor
@@ -52,16 +41,10 @@ public class StoricoEditor
 
     public StoricoEditor(
             StoricoDao storicoDao,
-            AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao estrattoContoDao,
-            SpedizioneDao spedizioneDao,
             List<Pubblicazione> pubblicazioni, 
-            List<Anagrafica> anagrafiche,
-            List<SpesaSpedizione> spese) {
+            List<Anagrafica> anagrafiche) {
 
         super(storicoDao, new Binder<>(Storico.class) );
-        SmdButton update = new SmdButton("Salva ed Aggiorna Campagna", VaadinIcons.ARCHIVES);
-        update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
@@ -98,25 +81,8 @@ public class StoricoEditor
 
         HorizontalLayout sec = new HorizontalLayout();
         sec.addComponentsAndExpand(nota);
-        setComponents(getActions(),update.getButton(),pri,hhh,sec);
-        
-        //FIXME a lot of use cases
-        update.setChangeHandler(() -> {
-            List<EstrattoConto> ecs = estrattoContoDao.findByStorico(get());
-            ecs.stream().filter(ec -> ec.getAbbonamento() != null && ec.getAbbonamento().getAnno() == Anno.getAnnoProssimo()).forEach( ec ->{
-                ec.setNumero(get().getNumero());
-                ec.setTipoEstrattoConto(get().getTipoEstrattoConto());
-                ec.setPubblicazione(get().getPubblicazione());
-                Abbonamento abb = ec.getAbbonamento();
-                List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abb);
-                Smd.aggiornaEC(abb, ec,spedizioni,spese);
-                abbonamentoDao.save(abb);
-                estrattoContoDao.save(ec);
-            });
-            save();
- 
-        });
- 
+        setComponents(getActions(),pri,hhh,sec);
+         
         getBinder()
             .forField(numero)
             .withValidator(str -> str != null, "Inserire un numero")

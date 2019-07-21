@@ -1390,7 +1390,6 @@ public class SmdApplicationTests {
     }
 
     @Test
-    @Ignore
     public void testAbbonamentoAggiornaEstrattoConto() {
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size());        
@@ -1411,35 +1410,59 @@ public class SmdApplicationTests {
         ec1.setAnnoInizio(Anno.getAnnoProssimo());
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoProssimo());
+        ec1.setDestinatario(tizio);
+        List<Spedizione> spedizioni = 
+                Smd.generaSpedizioni(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdLoadSampleData.getSpeseSpedizione());        
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
-        
+        spedizioni.stream().forEach(sped -> {
+            spedizioneDao.save(sped);
+            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+        });
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findAll().size());
         assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findAll().size());
+        assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneItemDao.findAll().size());
   
         spedizioneDao.findAll().forEach(s -> {
+            assertEquals(0, s.getSpesePostali().doubleValue(),0);
             assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
+            assertEquals(1, s.getSpedizioneItems().size());
+            SpedizioneItem item = s.getSpedizioneItems().iterator().next();
+            assertEquals(1, item.getNumero().intValue());
         });
         
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
         ec1.setNumero(10);
-  //      Smd.aggiornaEC(abb, ec1, InvioSpedizione.Spedizioniere);
+        List<SpedizioneItem> rimItems = Smd.aggiornaEC(abb, ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
+        
+        assertEquals(11, rimItems.size());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
-  //      ec1.getSpedizioni().stream().forEach(s -> spedizioneDao.save(s));
+        spedizioni.stream().forEach(sped -> {
+            spedizioneDao.save(sped);
+            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+        });
+        rimItems.forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
 
         spedizioneDao.findAll().forEach(s -> {
-            //assertEquals(10, s.getNumero().intValue());
+            assertEquals(0, s.getSpesePostali().doubleValue(),0);
             assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
-            //assertEquals(ec1.getId(), s.getEstrattoConto().getId());
+            assertEquals(1, s.getSpedizioneItems().size());
+            SpedizioneItem item = s.getSpedizioneItems().iterator().next();
+            assertEquals(10, item.getNumero().intValue());
         });
 
         assertEquals(messaggio.getAbbonamento().multiply(new BigDecimal(10)).doubleValue(), abb.getTotale().doubleValue(),0);
+        assertEquals(0, abb.getSpese().doubleValue(),0);
         
-        
+        spedizioneItemDao.deleteAll();
         spedizioneDao.deleteAll();
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
