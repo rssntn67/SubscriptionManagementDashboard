@@ -13,22 +13,21 @@ import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.StoricoDao;
 
-@SpringUI(path = SmdUI.URL_OPERAZIONI)
-@Title("Operazioni ADP")
+@SpringUI(path = SmdUI.URL_SPEDIZIONERE)
+@Title("Ordini Spedizioniere ADP")
 @Push
-public class OperazioneUI extends SmdUI {
+public class SpedizioniereUI extends SmdUI {
 
     /**
      * 
@@ -52,7 +51,7 @@ public class OperazioneUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Operazioni");
+        super.init(request,"Tipografia");
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdProgressBar pb = new SmdProgressBar();

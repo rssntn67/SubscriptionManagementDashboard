@@ -49,8 +49,8 @@ public class HomeUI extends SmdUI {
         right.addComponent(new Label("Gestione Incassi:"));
         right.addComponents(new HorizontalLayout(getIncassoLinks()));
         right.addComponent(new Label(""));
-        right.addComponent(new Label("Gestione Operazioni :"));
-        right.addComponents(new HorizontalLayout(getOperazioniLink()));
+        right.addComponent(new Label("Gestione ordini :"));
+        right.addComponents(new HorizontalLayout(getOrdiniLinks()));
         
         layout.addComponents(left,
                              right);

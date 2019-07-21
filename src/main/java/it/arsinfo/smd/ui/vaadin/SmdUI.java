@@ -43,12 +43,12 @@ public abstract class SmdUI extends UI {
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
     public final static String URL_SPESESPEDIZIONE = "/spesespedizione";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
-    public final static String URL_ESTRATTO_CONTO = "/estrattoconto";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_INCASSI = "/incassi";
     public final static String URL_VERSAMENTI = "/versamenti";
-    public final static String URL_OPERAZIONI = "/operazioni";
+    public final static String URL_TIPOGRAFIA = "/tipografo";
+    public final static String URL_SPEDIZIONERE = "/spedizioniere";
     public final static String URL_NOTE = "/note";
     public final static String URL_USER = "/user";
     public final static String URL_RESET = "/reset";
@@ -131,14 +131,6 @@ public abstract class SmdUI extends UI {
             }
         } );
 
-        abbonamenti.addItem("Estratti Conto",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_ESTRATTO_CONTO);
-            }
-        } );
-
         abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -163,11 +155,22 @@ public abstract class SmdUI extends UI {
             }
         } );
 
-        menu.addItem("Operazioni",new MenuBar.Command() {
+        MenuItem ordini = menu.addItem("Ordini",null);
+        ordini.addItem("Tipografo" ,new MenuBar.Command() {
+            
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_OPERAZIONI);
+                getUI().getPage().setLocation(URL_TIPOGRAFIA);
+            }
+        });
+
+        ordini.addItem("Spedizioniere" ,new MenuBar.Command() {
+            
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_SPEDIZIONERE);
             }
         });
 
@@ -231,9 +234,11 @@ public abstract class SmdUI extends UI {
         
     }
 
-    public Link getOperazioniLink() {
-        return new Link("Operazioni", new ExternalResource(URL_OPERAZIONI));
-        
+    public Link[] getOrdiniLinks() {
+        List<Link> links = new ArrayList<>();
+        links.add(new Link("Tipografo", new ExternalResource(URL_TIPOGRAFIA)));
+        links.add(new Link("Spedizioniere", new ExternalResource(URL_SPEDIZIONERE)));
+        return links.toArray(new Link[links.size()]);
     }
 
     public Link getPubblicazioneLink() {
@@ -255,7 +260,6 @@ public abstract class SmdUI extends UI {
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Estratti Conto",  new ExternalResource(URL_ESTRATTO_CONTO)));
         links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         return links.toArray((new Link[links.size()]));
     }

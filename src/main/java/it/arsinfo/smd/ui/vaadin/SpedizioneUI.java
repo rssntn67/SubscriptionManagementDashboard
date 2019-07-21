@@ -16,10 +16,10 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 
-@SpringUI(path = SmdUI.URL_ESTRATTO_CONTO)
-@Title("Estratto Conto")
+@SpringUI(path = SmdUI.URL_SPEDIZIONI)
+@Title("Spedizioni")
 @Push
-public class EstrattoContoUI extends SmdUI {
+public class SpedizioneUI extends SmdUI {
 
     /**
      * 
@@ -40,7 +40,7 @@ public class EstrattoContoUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Estratto Conto");
+        super.init(request, "Spedizioni");
         SmdProgressBar pb = new SmdProgressBar();
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
@@ -70,7 +70,7 @@ public class EstrattoContoUI extends SmdUI {
             grid.populate(search.find());
             showMenu();
             search.setVisible(true);
-            setHeader("Spedizione");
+            setHeader("Estratto Conto");
             editor.setVisible(false);
         });
 
