@@ -785,7 +785,57 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testGeneraCampagna() {
+    public void testGeneraCampagnaGP() {
+        List<Anagrafica> anagrafiche = new ArrayList<>();
+        Anagrafica gabrielePizzo = SmdLoadSampleData.getGP();
+        anagrafiche.add(gabrielePizzo);
+        List<Pubblicazione> pubblicazioni = new ArrayList<>();
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Pubblicazione lodare =SmdLoadSampleData.getLodare();
+        Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
+        Pubblicazione estratti = SmdLoadSampleData.getEstratti();
+        pubblicazioni.add(messaggio);
+        pubblicazioni.add(lodare);
+        pubblicazioni.add(blocchetti);
+        pubblicazioni.add(estratti);
+        List<Storico> storici = new ArrayList<>();
+        
+        storici.add(SmdLoadSampleData.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdLoadSampleData.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdLoadSampleData.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoEstrattoConto.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.getAnnoProssimo());
+        for (Pubblicazione p : pubblicazioni) {
+            CampagnaItem ci = new CampagnaItem();
+            ci.setCampagna(campagna);
+            ci.setPubblicazione(p);
+            campagna.addCampagnaItem(ci);
+        }
+        List<Abbonamento> abbonamenti = Smd.generaAbbonamentiCampagna(campagna, anagrafiche, storici, pubblicazioni);
+        for (Abbonamento abb: abbonamenti) {
+            log.info(abb.getIntestatario().toString());
+            log.info(abb.toString());
+        }
+        assertEquals(1, abbonamenti.size());
+        Abbonamento abb = abbonamenti.iterator().next();
+        List<Spedizione> spedizioni = new ArrayList<>();
+        for (Storico storico:storici) {
+            EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
+            spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
+            log.info(ec.toString());
+            log.info(abb.toString());
+        }                
+        assertEquals(12, spedizioni.size());
+        spedizioni.stream().forEach(sped -> log.info(sped.toString()));
+        assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
+        
+    }
+    
+
+    @Test
+    public void testGeneraCampagnaAR() {
         List<Anagrafica> anagrafiche = new ArrayList<>();
         Anagrafica antonioRusso = SmdLoadSampleData.getAR();
         Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
@@ -828,9 +878,15 @@ public class SmdUnitTests {
             spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
             log.info(abb.toString());
             log.info(ec.toString());
-        }        
+        }      
+        
+        assertEquals(12, spedizioni.size());
+        spedizioni.stream().forEach(sped -> log.info(sped.toString()));
+        assertEquals(0, abb.getImporto().doubleValue(),0);
+        assertEquals(0,abb.getSpese().doubleValue(),0);
+
 
     }
-    
+
   
 }

@@ -374,7 +374,7 @@ public class Smd {
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
                 pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
             }
-            sped.setPesoStimato(pesoStimato);            
+            sped.setPesoStimato(pesoStimato);
             switch (sped.getDestinatario().getAreaSpedizione()) {
             case Italia:
                 if( sped.getInvioSpedizione() == InvioSpedizione.AdpSede 
@@ -393,11 +393,11 @@ public class Smd {
                 break;
             }
             abb.setSpese(abb.getSpese().add(sped.getSpesePostali()));
-            if (abb.getCassa() == Cassa.Contrassegno) {
-                abb.setSpese(abb.getSpese().add(contrassegno));                
-            }
         }
-        
+        if (abb.getCassa() == Cassa.Contrassegno) {
+            abb.setSpese(abb.getSpese().add(contrassegno));                
+        }
+
     }
     
     public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) {
