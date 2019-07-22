@@ -1,7 +1,9 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.ComboBox;
@@ -12,8 +14,10 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
@@ -24,10 +28,15 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>("Stato Sped", EnumSet.allOf(StatoSpedizione.class));
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>("Invio Sped", EnumSet.allOf(InvioSpedizione.class));
-        
+            
+    private final Map<Long,Abbonamento> abbMap = new HashMap<>(); 
+
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
+            List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica) {
         super(spedizioneDao);
+        abbonamenti.forEach( abb -> abbMap.put(abb.getId(),abb));
+
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
 
 
@@ -90,7 +99,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         if (filterStatoSpedizione.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getStatoSpedizione() == filterStatoSpedizione.getValue()).collect(Collectors.toList());      
         }
-        
+        for (Spedizione spedizione: spedizioni) {
+            spedizione.setAbbonamento(abbMap.get(spedizione.getAbbonamento().getId()));
+        }
         return spedizioni;
     }
 

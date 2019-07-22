@@ -15,39 +15,63 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
 
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private String searchCampo;
+    private String searchCap;
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
     private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>();
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento
-    = new ComboBox<StatoAbbonamento>();
-    public AbbonamentoSearch(AbbonamentoDao abbonamentoDao,
-            List<Anagrafica> anagrafica, List<Campagna> campagne) {
+        = new ComboBox<StatoAbbonamento>();
+    
+    private Pubblicazione pubblicazione;
+    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo Estratto Conto", EnumSet.allOf(TipoEstrattoConto.class));
+    
+    private final EstrattoContoDao estrattoContoDao;
+
+    public AbbonamentoSearch(AbbonamentoDao abbonamentoDao, 
+            EstrattoContoDao estrattoContoDao,
+            List<Pubblicazione> pubblicazioni,
+            List<Anagrafica> anagrafica, 
+            List<Campagna> campagne) {
         super(abbonamentoDao);
 
+        this.estrattoContoDao=estrattoContoDao;
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
         ComboBox<Anno> filterAnno = new ComboBox<Anno>();
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
+        ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
         
-        TextField filterCampo = new TextField();
+        TextField filterCampo = new TextField("Cerca per Code Line");
+        TextField filterCap = new TextField("Cerca per CAP");
 
 
         setComponents(new HorizontalLayout(filterAnagrafica,filterStatoAbbonamento,filterAnno),
                       new HorizontalLayout(filterCampo,filterCampagna,filterCassa,filterCcp));
 
-        filterCampo.setPlaceholder("Cerca per V Campo");
+        filterCampo.setPlaceholder("Inserisci Code Line");
         filterCampo.setValueChangeMode(ValueChangeMode.EAGER);
         filterCampo.addValueChangeListener(e -> {
             searchCampo = e.getValue();
+            onChange();
+        });
+
+        filterCap.setPlaceholder("Inserisci CAP");
+        filterCap.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCap.addValueChangeListener(e -> {
+            searchCap = e.getValue();
             onChange();
         });
 
@@ -60,6 +84,19 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
                 campagna = null;
             } else {
                 campagna=e.getSelectedItem().get();
+            }
+            onChange();
+        });
+
+        filterPubblicazione.setEmptySelectionAllowed(true);
+        filterPubblicazione.setPlaceholder("Cerca per Pubblicazioni");
+        filterPubblicazione.setItems(pubblicazioni);
+        filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        filterPubblicazione.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                pubblicazione = null;
+            } else {
+                pubblicazione = e.getSelectedItem().get();
             }
             onChange();
         });
@@ -171,5 +208,24 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         }
         return abbonamenti;
     }
+    
+    public List<EstrattoConto> findEC() {
+        if (pubblicazione != null) {
+            return filterAllEC(estrattoContoDao.findByPubblicazione(pubblicazione));
+        }
+        return filterAllEC(estrattoContoDao.findAll());
+    }
+
+    private List<EstrattoConto> filterAllEC(List<EstrattoConto> estrattiConto) {
+        if (customer != null) {
+            estrattiConto = estrattiConto.stream().filter( s -> s.getDestinatario().getId() == customer.getId()).collect(Collectors.toList());
+        }
+        if (filterTipoEstrattoConto.getValue() != null) {
+            estrattiConto=estrattiConto.stream().filter(s -> s.getTipoEstrattoConto() == filterTipoEstrattoConto.getValue()).collect(Collectors.toList());      
+        }
+        
+        return estrattiConto;
+    }
+
 
 }

@@ -71,7 +71,7 @@ public class AbbonamentoUI extends SmdUI {
             add.setPrimoIntestatario(anagrafica.iterator().next());
         }
         EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,anagrafica,campagne);
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,estrattoContoDao,pubblicazioni,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
             @Override
@@ -238,7 +238,7 @@ public class AbbonamentoUI extends SmdUI {
         });
         
         estrattoContoAdd.setChangeHandler(() -> {
-            setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
+            setHeader(String.format("%s:Estratto Conto:Nuovo",editor.get().getHeader()));
             hideMenu();
             estrattoContoEditor.edit(estrattoContoAdd.generate());
             editor.setVisible(false);
@@ -247,7 +247,7 @@ public class AbbonamentoUI extends SmdUI {
         
         estrattoContoEditor.setChangeHandler(() -> {
             setHeader("Abbonamento:Nuovo");
-            estrattoContoAdd.setVisible(editor.get().getId() == null);
+            estrattoContoAdd.setVisible(estrattoContoEditor.get().getStorico() == null);
             estrattoContoEditor.setVisible(false);
             editor.edit(estrattoContoEditor.get().getAbbonamento());
             estrattoContoGrid.populate(editor.getEstrattiConto());
@@ -257,14 +257,12 @@ public class AbbonamentoUI extends SmdUI {
             if (estrattoContoGrid.getSelected() == null) {
                 return;
             }
-            if (editor.get().getId() == null) {
-                setHeader(estrattoContoGrid.getSelected().getHeader());
-                estrattoContoEditor.edit(estrattoContoGrid.getSelected());
-                add.setVisible(false);
-                search.setVisible(false);
-                editor.setVisible(false);
-                estrattoContoAdd.setVisible(false);
-            }
+            setHeader(estrattoContoGrid.getSelected().getHeader());
+            estrattoContoEditor.edit(estrattoContoGrid.getSelected());
+            add.setVisible(false);
+            search.setVisible(false);
+            editor.setVisible(false);
+            estrattoContoAdd.setVisible(false);
         });
 
         grid.populate(search.findAll());

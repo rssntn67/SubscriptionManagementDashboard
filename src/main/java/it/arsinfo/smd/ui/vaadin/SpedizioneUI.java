@@ -9,12 +9,11 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONI)
 @Title("Spedizioni")
@@ -27,30 +26,24 @@ public class SpedizioneUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    PubblicazioneDao pubblicazioneDao;
-
-    @Autowired
     AnagraficaDao anagraficaDao;
 
     @Autowired
-    EstrattoContoDao estrattoContoDao;
-
+    SpedizioneDao spedizioneDao;
+    
     @Autowired
     AbbonamentoDao abbonamentoDao;
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Spedizioni");
-        SmdProgressBar pb = new SmdProgressBar();
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
-        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
-        EstrattoContoSearch search = new EstrattoContoSearch(estrattoContoDao,anagrafica,pubblicazioni);
-        EstrattoContoGrid grid = new EstrattoContoGrid("Spedizioni");
-        EstrattoContoEditor editor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica);
-        addSmdComponents(pb,editor,search, grid);
-        pb.setVisible(false);
+        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
+        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica);
+        SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
+        SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
+        addSmdComponents(editor,search, grid);
         editor.setVisible(false);
-        pb.setChangeHandler(() ->{});
         
         search.setChangeHandler(()-> {
             grid.populate(search.find());

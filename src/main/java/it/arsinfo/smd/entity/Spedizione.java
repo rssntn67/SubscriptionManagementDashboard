@@ -136,8 +136,7 @@ public class Spedizione implements SmdEntity {
             } 
             return "c/o" + destinatario.getCo().getCaption();
         }
-        return "c/o " + 
-        getAbbonamento().getIntestatario().getCaption();
+        return getAbbonamento().getSottoIntestazione();
     }
     
     @Transient

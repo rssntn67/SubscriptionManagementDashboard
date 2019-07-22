@@ -39,10 +39,12 @@ public class EstrattoContoEditor
     private final ComboBox<Mese> meseFine = new ComboBox<Mese>("Mese Fine",
             EnumSet.allOf(Mese.class));
 
+    private final TextField numeroTotaleRiviste = new TextField("Numero Totale Riviste");
     private final TextField numero = new TextField("Quant.");
 
     private final TextField importo = new TextField("Importo");
 
+    
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
             EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
@@ -82,7 +84,7 @@ public class EstrattoContoEditor
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
         setComponents(getActions(), 
-                      new HorizontalLayout(pubblicazione,destinatario,numero,importo),
+                      new HorizontalLayout(pubblicazione,destinatario,importo,numero,numeroTotaleRiviste),
                       new HorizontalLayout(invio,invioSpedizione,tipoEstrattoconto),
                       new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine)
                       );
@@ -98,7 +100,13 @@ public class EstrattoContoEditor
             .withConverter(new StringToIntegerConverter(""))
             .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
             .bind(EstrattoConto::getNumero, EstrattoConto::setNumero);
-         
+
+        getBinder()
+        .forField(numeroTotaleRiviste)
+        .withConverter(new StringToIntegerConverter(""))
+        .withValidator(num -> num != null && num >= 0,"deve essere maggiore o uguale 0")
+        .bind(EstrattoConto::getNumeroTotaleRiviste, EstrattoConto::setNumeroTotaleRiviste);
+
         getBinder()
             .forField(pubblicazione)
             .asRequired()
@@ -130,14 +138,16 @@ public class EstrattoContoEditor
 
         getBinder().forField(annoFine)
         .asRequired().bind(EstrattoConto::getAnnoFine,EstrattoConto::setAnnoFine);
+        
+        importo.setReadOnly(true);
+        numeroTotaleRiviste.setReadOnly(true);
 
     }
 
     @Override
     public void focus(boolean persisted, EstrattoConto obj) {
         pubblicazione.setReadOnly(persisted);
-        numero.setReadOnly(persisted);
-        tipoEstrattoconto.setReadOnly(persisted);
+        numeroTotaleRiviste.setReadOnly(persisted);
         importo.setVisible(persisted);
 
         getDelete().setEnabled(obj.getStorico() == null);
