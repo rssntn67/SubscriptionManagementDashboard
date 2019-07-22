@@ -16,6 +16,7 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpedizioneItemDao;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONI)
 @Title("Spedizioni")
@@ -34,6 +35,9 @@ public class SpedizioneUI extends SmdUI {
     SpedizioneDao spedizioneDao;
     
     @Autowired
+    SpedizioneItemDao spedizioneItemDao;
+    
+    @Autowired
     AbbonamentoDao abbonamentoDao;
     
     @Autowired
@@ -49,8 +53,10 @@ public class SpedizioneUI extends SmdUI {
         SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica,pubblicazioni);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
-        addSmdComponents(editor,search, grid);
+        SpedizioneItemGrid itemgrid = new SpedizioneItemGrid("Items");
+        addSmdComponents(editor,itemgrid,search, grid);
         editor.setVisible(false);
+        itemgrid.setVisible(false);
         
         search.setChangeHandler(()-> {
             grid.populate(search.find());
@@ -61,6 +67,7 @@ public class SpedizioneUI extends SmdUI {
                 return;
             }
             editor.edit(grid.getSelected());
+            itemgrid.populate(spedizioneItemDao.findBySpedizione(editor.get()));
             setHeader(grid.getSelected().getHeader());
             hideMenu();
             search.setVisible(false);
@@ -72,8 +79,12 @@ public class SpedizioneUI extends SmdUI {
             search.setVisible(true);
             setHeader("Estratto Conto");
             editor.setVisible(false);
+            itemgrid.setVisible(false);
         });
 
+        itemgrid.setChangeHandler(() -> {
+            
+        });
         grid.populate(search.find());
 
     }
