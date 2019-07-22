@@ -2,6 +2,7 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -553,6 +555,7 @@ public class SmdLoadSampleData implements Runnable {
         EstrattoConto ec = new EstrattoConto();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(pubblicazione);
+        ec.setDestinatario(abb.getIntestatario());
         ec.setNumero(numero);
         ec.setImporto(importo);
         ec.setAnnoInizio(Anno.ANNO2017);
@@ -922,12 +925,10 @@ public class SmdLoadSampleData implements Runnable {
         Incasso incasso = getIncassoByImportoAndCampo(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
         incassoDao.save(incasso);
                 
-        //FIXME
-        /*
         pubblicazioneDao.findAll().stream().forEach(p -> 
             EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
                 EnumSet.allOf(Mese.class).stream().forEach(mese -> {
-                    Operazione op = Smd.generaOperazione(p, estrattoContoDao.findAll(), mese, anno);
+                    Operazione op = Smd.generaOperazione(p, spedizioneDao.findAll(), mese, anno);
                     if (op.getStimatoSped() > 0 ) {
                         operazioneDao.save(op);                               
                     }
@@ -937,7 +938,7 @@ public class SmdLoadSampleData implements Runnable {
 
         operazioneDao.findAll()
             .stream()
-            .filter(o -> o.getAnno().getAnno() < Smd.getAnnoCorrente().getAnno()
+            .filter(o -> o.getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()
                           && o.getDefinitivoSped() == -1 )
             .forEach(o -> {
                 o.setDefinitivoSped(o.getStimatoSped()+30);
@@ -945,9 +946,9 @@ public class SmdLoadSampleData implements Runnable {
                 operazioneDao.save(o);
                 log.info(o.toString());
             });
-        operazioneDao.findByAnno(Smd.getAnnoCorrente())
+        operazioneDao.findByAnno(Anno.getAnnoCorrente())
             .stream()
-            .filter(o -> o.getMese().getPosizione() < Smd.getMeseCorrente().getPosizione()
+            .filter(o -> o.getMese().getPosizione() < Mese.getMeseCorrente().getPosizione()
                     && o.getDefinitivoSped() == -1)
             .forEach(o -> {
                 o.setDefinitivoSped(o.getStimatoSped()+30);
@@ -956,7 +957,7 @@ public class SmdLoadSampleData implements Runnable {
                 log.info(o.toString());
             });
             
-            */
+            
         
    
     }   

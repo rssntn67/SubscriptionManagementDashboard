@@ -17,17 +17,17 @@ import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
-    private Anagrafica destinatario;
-    private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Anno", EnumSet.allOf(Anno.class));
-    private final ComboBox<Mese> filterMese = new ComboBox<Mese>("Mese", EnumSet.allOf(Mese.class));
-    private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>("Stato Sped", EnumSet.allOf(StatoSpedizione.class));
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
-    private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>("Invio Sped", EnumSet.allOf(InvioSpedizione.class));
+    private Anagrafica a;
+    
+    private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
+    private final ComboBox<Mese> filterMese = new ComboBox<Mese>();
+    private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>();
+    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
+    private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
     private final Map<Long,Abbonamento> abbMap = new HashMap<>(); 
 
@@ -43,44 +43,49 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         setComponents(new HorizontalLayout(filterDestinatario,filterAnno,filterMese,filterInvio,filterStatoSpedizione,filterInvioSpedizione));
 
         filterDestinatario.setEmptySelectionAllowed(true);
-        filterDestinatario.setPlaceholder("Cerca per Destinatario");
+        filterDestinatario.setPlaceholder("Cerca per Anagrafica");
         filterDestinatario.setItems(anagrafica);
         filterDestinatario.setItemCaptionGenerator(Anagrafica::getCaption);
         filterDestinatario.addSelectionListener(e -> {
             if (e.getValue() == null) {
-                destinatario = null;
+                a = null;
             } else {
-                destinatario = e.getSelectedItem().get();
+                a = e.getSelectedItem().get();
             }
             onChange();
         });
 
 
         filterAnno.setPlaceholder("Seleziona Anno");
+        filterAnno.setItems(EnumSet.allOf(Anno.class));
         filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
         filterAnno.addSelectionListener(e ->onChange());
 
         filterMese.setPlaceholder("Seleziona Mese");
+        filterMese.setItems(EnumSet.allOf(Mese.class));
         filterMese.setItemCaptionGenerator(Mese::getNomeBreve);
         filterMese.addSelectionListener(e ->onChange());
 
         filterInvioSpedizione.setPlaceholder("Seleziona Invio Sped");
+        filterInvioSpedizione.setItems(EnumSet.allOf(InvioSpedizione.class));
         filterInvioSpedizione.addSelectionListener(e ->onChange());
 
         filterInvio.setPlaceholder("Seleziona Invio");
+        filterInvio.setItems(EnumSet.allOf(Invio.class));
         filterInvio.addSelectionListener(e ->onChange());        
 
         filterStatoSpedizione.setPlaceholder("Seleziona Stato");
+        filterStatoSpedizione.setItems(EnumSet.allOf(StatoSpedizione.class));
         filterStatoSpedizione.addSelectionListener(e ->onChange());        
 
     }
 
     @Override
     public List<Spedizione> find() {
-        if (destinatario == null) {
+        if (a == null) {
             return filterAll(findAll());            
         }
-        return filterAll(((SpedizioneDao) getRepo()).findByDestinatario(destinatario));
+        return filterAll(((SpedizioneDao) getRepo()).findByDestinatario(a));
     }
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {

@@ -621,13 +621,13 @@ public class Smd {
 
     public static List<Operazione> generaOperazioni(
             List<Pubblicazione> pubblicazioni, 
-            List<SpedizioneItem> items
+            List<Spedizione> spedizioni
         ) {
         Anno anno = Anno.getAnnoCorrente();
         Mese mese = Mese.getMeseCorrente();
         List<Operazione> operazioni = new ArrayList<>();
         pubblicazioni.stream().forEach(p -> {
-            Operazione operazione = generaOperazione(p, items,mese,anno);
+            Operazione operazione = generaOperazione(p, spedizioni,mese,anno);
             if (operazione.getStimatoSede() != 0 || operazione.getStimatoSped() != 0) {
                     operazioni.add(operazione);
             }
@@ -638,31 +638,32 @@ public class Smd {
 
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
-            List<SpedizioneItem> items,Mese mese, Anno anno) {
+            List<Spedizione> spedizioni,Mese mese, Anno anno) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
-        items.stream()
-          .filter(item -> item.getEstrattoConto().getPubblicazione().getId() == pubblicazione.getId() 
-                  && item.getSpedizione().getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
-                  && item.getSpedizione().getMeseSpedizione() == mese 
-                  && item.getSpedizione().getAnnoSpedizione() == anno)
-                  .forEach( ec -> 
-                      {
-                          switch (ec.getSpedizione().getInvioSpedizione()) {
-                          case  Spedizioniere: 
-                              op.setStimatoSped(op.getStimatoSped()+ec.getNumero());
-                              break;
-                          case AdpSede:
-                              op.setStimatoSede(op.getStimatoSede()+ec.getNumero());
-                              break;
-                          default:
-                            break;
-                          }
+        spedizioni
+            .stream()
+            .filter( sped -> 
+                   sped.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
+                && sped.getAnnoSpedizione() == anno 
+                && sped.getMeseSpedizione() == mese) 
+            .forEach( sped -> 
+                  sped.getSpedizioneItems().forEach(item -> {
+                      switch (sped.getInvioSpedizione()) {
+                      case  Spedizioniere: 
+                          op.setStimatoSped(op.getStimatoSped()+item.getNumero());
+                          break;
+                      case AdpSede:
+                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
+                          break;
+                      default:
+                        break;
                       }
-             );
+                  })
+              );
                         
         return op;        
     }
-
+    
     public static List<Spedizione> listaSpedizioni(List<Spedizione> spedizioni, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
         return spedizioni
                 .stream()

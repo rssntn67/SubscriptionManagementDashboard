@@ -37,7 +37,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         = new ComboBox<StatoAbbonamento>();
     
     private Pubblicazione pubblicazione;
-    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo Estratto Conto", EnumSet.allOf(TipoEstrattoConto.class));
+    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
     
     private final EstrattoContoDao estrattoContoDao;
 
@@ -54,12 +54,12 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
         
-        TextField filterCampo = new TextField("Cerca per Code Line");
-        TextField filterCap = new TextField("Cerca per CAP");
+        TextField filterCampo = new TextField();
+        TextField filterCap = new TextField();
 
 
-        setComponents(new HorizontalLayout(filterAnagrafica,filterStatoAbbonamento,filterAnno),
-                      new HorizontalLayout(filterCampo,filterCampagna,filterCassa,filterCcp));
+        setComponents(new HorizontalLayout(filterAnagrafica,filterPubblicazione,filterStatoAbbonamento,filterAnno,filterCassa),
+                      new HorizontalLayout(filterCap,filterCampo,filterCampagna,filterTipoEstrattoConto,filterCcp));
 
         filterCampo.setPlaceholder("Inserisci Code Line");
         filterCampo.setValueChangeMode(ValueChangeMode.EAGER);
@@ -115,7 +115,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         });
 
         filterAnagrafica.setEmptySelectionAllowed(true);
-        filterAnagrafica.setPlaceholder("Cerca per Intestatario");
+        filterAnagrafica.setPlaceholder("Cerca per Anagrafica");
         filterAnagrafica.setItems(anagrafica);
         filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
         filterAnagrafica.addSelectionListener(e -> {
@@ -139,6 +139,10 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         filterCcp.setItems(EnumSet.allOf(Ccp.class));
         filterCcp.setItemCaptionGenerator(Ccp::getCcp);
         filterCcp.addSelectionListener(e ->onChange());
+        
+        filterTipoEstrattoConto.setPlaceholder("Cerca per Tipo Estratto Conto");
+        filterTipoEstrattoConto.setItems(EnumSet.allOf(TipoEstrattoConto.class));
+        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
 
 
     }
