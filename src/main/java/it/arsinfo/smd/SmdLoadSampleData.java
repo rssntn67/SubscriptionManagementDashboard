@@ -27,6 +27,7 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.Regione;
+import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
@@ -99,6 +100,23 @@ public class SmdLoadSampleData implements Runnable {
     private Anagrafica davidePalma;
     private Anagrafica micheleSantoro;
     private Anagrafica pasqualinaSantoro;
+    private Anagrafica t001;
+    private Anagrafica ve002;
+    private Anagrafica ve003;
+    private Anagrafica ve004;
+    private Anagrafica ve005;
+    private Anagrafica ve006;
+    private Anagrafica ve007;
+    private Anagrafica ve008;
+    private Anagrafica fi009;
+    private Anagrafica fi010;
+    private Anagrafica fi011;
+    private Anagrafica fi012;
+    private Anagrafica fi013;
+    private Anagrafica ba014;
+    private Anagrafica ba015;
+    private Anagrafica ba016;
+    private Anagrafica ba017;
 
     public static Incasso getIncassoTelematici() {
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
@@ -400,7 +418,231 @@ public class SmdLoadSampleData implements Runnable {
 
         return p;
     }
+
+    public static Anagrafica getT001() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Telematici", "001");
+        a.setDiocesi(Diocesi.DIOCESI111);
+        a.setIndirizzo("tel001");
+        a.setCitta("tel001");
+        a.setEmail("tel001@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PIEMONTEVALLEDAOSTA);
+        return a;        
+    }
+
+    public static Anagrafica getVe002() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "002");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve002");
+        a.setCitta("ve002");
+        a.setEmail("ve002@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe003() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "003");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve003");
+        a.setCitta("ve003");
+        a.setEmail("ve003@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe004() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "004");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve004");
+        a.setCitta("ve004");
+        a.setEmail("ve004@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe005() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "005");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve005");
+        a.setCitta("ve005");
+        a.setEmail("ve005@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe006() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "006");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve006");
+        a.setCitta("ve006");
+        a.setEmail("ve006@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe007() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "007");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve007");
+        a.setCitta("ve007");
+        a.setEmail("ve007@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getVe008() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Venezia", "008");
+        a.setDiocesi(Diocesi.DIOCESI003);
+        a.setIndirizzo("ve008");
+        a.setCitta("ve008");
+        a.setEmail("ve008@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TRIVENETO);
+        return a;        
+    }
+
+    public static Anagrafica getFi009() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Firenze", "009");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("fi009");
+        a.setCitta("fi009");
+        a.setEmail("fi009@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TOSCANA);
+        return a;        
+    }
+
+    public static Anagrafica getFi010() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Firenze", "010");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("fi010");
+        a.setCitta("fi010");
+        a.setEmail("fi010@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TOSCANA);
+        return a;        
+    }
+
+    public static Anagrafica getFi011() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Firenze", "011");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("fi011");
+        a.setCitta("fi011");
+        a.setEmail("fi011@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TOSCANA);
+        return a;        
+    }
     
+    public static Anagrafica getFi012() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Firenze", "012");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("fi012");
+        a.setCitta("fi012");
+        a.setEmail("fi012@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.TOSCANA);
+        return a;        
+    }
+
+    public static Anagrafica getFi013() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Firenze", "013");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("fi013");
+        a.setCitta("fi013");
+        a.setEmail("fi013@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PUGLIA);
+        return a;        
+    }
+
+    public static Anagrafica getBa014() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Bari", "014");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("ba014");
+        a.setCitta("ba014");
+        a.setEmail("ba014@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PUGLIA);
+        return a;        
+    }
+    
+    public static Anagrafica getBa015() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Bari", "015");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("ba015");
+        a.setCitta("ba015");
+        a.setEmail("ba015@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PUGLIA);
+        return a;        
+    }
+
+    public static Anagrafica getBa016() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Bari", "016");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("ba016");
+        a.setCitta("ba016");
+        a.setEmail("ba016@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PUGLIA);
+        return a;        
+    }
+    
+    public static Anagrafica getBa017() {
+        Anagrafica a = SmdLoadSampleData.getAnagraficaBy("Bari", "017");
+        a.setDiocesi(Diocesi.DIOCESI053);
+        a.setIndirizzo("ba017");
+        a.setCitta("ba017");
+        a.setEmail("ba017@arsinfo.it");
+        a.setPaese(Paese.ITALIA);
+        a.setTelefono("+3902000009");
+        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setRegioneVescovi(Regione.PUGLIA);
+        return a;        
+    }
+
+
+    
+
     public static Anagrafica getAR() {
         Anagrafica ar = SmdLoadSampleData.getAnagraficaBy("Antonio", "Russo");
         ar.setDiocesi(Diocesi.DIOCESI116);
@@ -656,7 +898,7 @@ public class SmdLoadSampleData implements Runnable {
     }
     
     private void genera(Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {
-        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        Anno anno = abb.getAnno();
         List<Spedizione> spedizioni = new ArrayList<>();        
         for (Cell<Pubblicazione, Anagrafica, Integer> ect: table.cellSet()) {
             EstrattoConto ec = new EstrattoConto();
@@ -690,6 +932,9 @@ public class SmdLoadSampleData implements Runnable {
     }
 
     private void save(Abbonamento abb, EstrattoConto...contos) {
+        for (EstrattoConto ec:contos) {
+            abb.setImporto(abb.getImporto().add(ec.getImporto()));
+        }
         abbonamentoDao.save(abb);
         for (EstrattoConto ec: contos) {
             estrattoContoDao.save(ec);
@@ -697,31 +942,31 @@ public class SmdLoadSampleData implements Runnable {
         
     }
     public void saveAbbonamentiIncassi() {
-        Abbonamento telematici001 = getAbbonamentoBy(antonioRusso);
+        Abbonamento telematici001 = getAbbonamentoBy(t001);
         telematici001.setAnno(Anno.ANNO2017);
+        telematici001.setCampo("000000018000792609");
         EstrattoConto ec001t001 = addEC(telematici001, messaggio,1,new BigDecimal(15));
-        telematici001.setImporto(new BigDecimal(15));
         save(telematici001,ec001t001);
         
-        Abbonamento venezia002 = getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia002 = getAbbonamentoBy(ve002);
         venezia002.setCampo("000000018000854368");
         venezia002.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v002 = addEC(venezia002, messaggio,1,new BigDecimal(15));
         save(venezia002,ec001v002);
         
-        Abbonamento venezia003 = getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia003 = getAbbonamentoBy(ve003);
         venezia003.setCampo("000000018000263519");
         venezia003.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v003 = addEC(venezia003, lodare,1,new BigDecimal(18));
         save(venezia003,ec001v003);
 
-        Abbonamento venezia004 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia004 = SmdLoadSampleData.getAbbonamentoBy(ve004);
         venezia004.setCampo("000000018000254017");
         venezia004.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v004 = addEC(venezia004, messaggio,2,new BigDecimal(30));
         save(venezia004,ec001v004);
 
-        Abbonamento venezia005 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia005 = SmdLoadSampleData.getAbbonamentoBy(ve005);
         venezia005.setCampo("000000018000761469");
         venezia005.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v005 = addEC(venezia005, messaggio,1,new BigDecimal(15));
@@ -729,73 +974,73 @@ public class SmdLoadSampleData implements Runnable {
         EstrattoConto ec003v005 = addEC(venezia005, blocchetti,1,new BigDecimal(6));
         save(venezia005, ec001v005,ec002v005,ec003v005);
 
-        Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia006 = SmdLoadSampleData.getAbbonamentoBy(ve006);
         venezia006.setCampo("000000018000253916");
         venezia006.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v006 = addEC(venezia006, blocchetti,8,new BigDecimal(48));
         save(venezia006, ec001v006);
 
-        Abbonamento venezia007 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia007 = SmdLoadSampleData.getAbbonamentoBy(ve007);
         venezia007.setCampo("000000018000800386");
         venezia007.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v007 = addEC(venezia007, blocchetti,12,new BigDecimal(70));
         save(venezia007, ec001v007);
         
-        Abbonamento venezia008 = SmdLoadSampleData.getAbbonamentoBy(micheleSantoro);
+        Abbonamento venezia008 = SmdLoadSampleData.getAbbonamentoBy(ve008);
         venezia008.setCampo("000000018000508854");
         venezia008.setAnno(Anno.ANNO2017);
         EstrattoConto ec001v008 = addEC(venezia008, blocchetti,15,new BigDecimal(84));
         save(venezia008, ec001v008);
 
-        Abbonamento firenze009 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
+        Abbonamento firenze009 = SmdLoadSampleData.getAbbonamentoBy(fi009);
         firenze009.setCampo("000000018000686968");
         firenze009.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f009 = addEC(firenze009, estratti,1,new BigDecimal(10));
         save(firenze009, ec001f009);
         
-        Abbonamento firenze010 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
+        Abbonamento firenze010 = SmdLoadSampleData.getAbbonamentoBy(fi010);
         firenze010.setCampo("000000018000198318");
         firenze010.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f010 = addEC(firenze010, lodare,1,new BigDecimal(15));
         save(firenze010, ec001f010);
 
-        Abbonamento firenze011 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
+        Abbonamento firenze011 = SmdLoadSampleData.getAbbonamentoBy(fi011);
         firenze011.setCampo("000000018000201449");
         firenze011.setAnno(Anno.ANNO2017);
         EstrattoConto ec001f011 = addEC(firenze011, lodare,1,new BigDecimal(15));
         save(firenze011, ec001f011);
 
-        Abbonamento firenze012 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
+        Abbonamento firenze012 = SmdLoadSampleData.getAbbonamentoBy(fi012);
         firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCampo("000000018000633491");
         EstrattoConto ec001f012 = addEC(firenze012, lodare,2,new BigDecimal(33));
         save(firenze012, ec001f012);
         
-        Abbonamento firenze013 = SmdLoadSampleData.getAbbonamentoBy(davidePalma);
+        Abbonamento firenze013 = SmdLoadSampleData.getAbbonamentoBy(fi013);
         firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCampo("000000018000196500");
         EstrattoConto ec001f013 = addEC(firenze013, blocchetti,18,new BigDecimal(108));
         save(firenze013, ec001f013);
         
-        Abbonamento bari014 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
+        Abbonamento bari014 = SmdLoadSampleData.getAbbonamentoBy(ba014);
         bari014.setAnno(Anno.ANNO2017);
         bari014.setCampo("000000018000106227");
         EstrattoConto ec001b014 = addEC(bari014, blocchetti,2,new BigDecimal(12));
         save(bari014, ec001b014);
 
-        Abbonamento bari015 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
+        Abbonamento bari015 = SmdLoadSampleData.getAbbonamentoBy(ba015);
         bari015.setAnno(Anno.ANNO2017);
         bari015.setCampo("000000018000077317");
         EstrattoConto ec001b015 = addEC(bari015, blocchetti,6,new BigDecimal(36));
         save(bari015, ec001b015);
 
-        Abbonamento bari016 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
+        Abbonamento bari016 = SmdLoadSampleData.getAbbonamentoBy(ba016);
         bari016.setAnno(Anno.ANNO2017);
         bari016.setCampo("000000018000125029");
         EstrattoConto ec001b016 = addEC(bari016, messaggio,4,new BigDecimal(60));
         save(bari016, ec001b016);
 
-        Abbonamento bari017 = SmdLoadSampleData.getAbbonamentoBy(matteoParo);
+        Abbonamento bari017 = SmdLoadSampleData.getAbbonamentoBy(ba017);
         bari017.setAnno(Anno.ANNO2017);
         bari017.setCampo("000000018000065383");
         EstrattoConto ec001b017 = addEC(bari017, estratti,12,new BigDecimal(67));
@@ -857,20 +1102,66 @@ public class SmdLoadSampleData implements Runnable {
     }
 
     private void loadAnagrafica() {
-        antonioRusso=getAR();
-        anagraficaDao.save(antonioRusso);
+        
         diocesiMilano=getDiocesiMi();
         anagraficaDao.save(diocesiMilano);
+
+        antonioRusso=getAR();
+        antonioRusso.setCo(diocesiMilano);
+        anagraficaDao.save(antonioRusso);
+        
         gabrielePizzo=getGP();
         anagraficaDao.save(gabrielePizzo);
+        
         matteoParo = getMP();
         anagraficaDao.save(matteoParo);
+        
         davidePalma = getDP();
         anagraficaDao.save(davidePalma);
+        
         micheleSantoro = getMS();
         anagraficaDao.save(micheleSantoro);
+        
         pasqualinaSantoro = getPS();
         anagraficaDao.save(pasqualinaSantoro);
+        
+        t001=getT001();
+        anagraficaDao.save(t001);
+        ve002 = getVe002();
+        anagraficaDao.save(ve002);
+        ve003 = getVe003();
+        anagraficaDao.save(ve003);
+        ve004 = getVe004();
+        anagraficaDao.save(ve004);
+        ve005 = getVe005();
+        anagraficaDao.save(ve005);
+        ve006 = getVe006();
+        anagraficaDao.save(ve006);
+        ve007 = getVe007();
+        anagraficaDao.save(ve007);
+        ve008 = getVe008();
+        anagraficaDao.save(ve008);
+        fi009 = getFi009();
+        anagraficaDao.save(fi009);
+        fi010 = getFi010();
+        anagraficaDao.save(fi010);
+        fi011 = getFi011();
+        anagraficaDao.save(fi011);
+        fi012 = getFi012();
+        anagraficaDao.save(fi012);
+        fi013 = getFi013();
+        anagraficaDao.save(fi013);
+        
+        ba014 = getBa014();
+        anagraficaDao.save(ba014);
+        ba015 = getBa015();
+        anagraficaDao.save(ba015);
+        ba016 = getBa016();
+        anagraficaDao.save(ba016);
+        ba017 = getBa017();
+        anagraficaDao.save(ba017);
+
+
     }
         
     private void loadStorico() {
@@ -923,42 +1214,27 @@ public class SmdLoadSampleData implements Runnable {
         
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
         Incasso incasso = getIncassoByImportoAndCampo(abbonamentoDp.getTotale(), abbonamentoDp.getCampo());
-        incassoDao.save(incasso);
+        save(incasso);
                 
-        pubblicazioneDao.findAll().stream().forEach(p -> 
-            EnumSet.of(Anno.ANNO2016, Anno.ANNO2017,Anno.ANNO2018).stream().forEach(anno -> 
-                EnumSet.allOf(Mese.class).stream().forEach(mese -> {
-                    Operazione op = Smd.generaOperazione(p, spedizioneDao.findAll(), mese, anno);
-                    if (op.getStimatoSped() > 0 ) {
-                        operazioneDao.save(op);                               
-                    }
-                })
-            )
-        );
-
-        operazioneDao.findAll()
-            .stream()
-            .filter(o -> o.getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()
-                          && o.getDefinitivoSped() == -1 )
-            .forEach(o -> {
-                o.setDefinitivoSped(o.getStimatoSped()+30);
-                o.setDefinitivoSede(o.getStimatoSede()+30);
-                operazioneDao.save(o);
-                log.info(o.toString());
-            });
-        operazioneDao.findByAnno(Anno.getAnnoCorrente())
-            .stream()
-            .filter(o -> o.getMese().getPosizione() < Mese.getMeseCorrente().getPosizione()
-                    && o.getDefinitivoSped() == -1)
-            .forEach(o -> {
-                o.setDefinitivoSped(o.getStimatoSped()+30);
-                o.setDefinitivoSede(o.getStimatoSede()+30);
-                operazioneDao.save(o);
-                log.info(o.toString());
-            });
-            
-            
-        
+        Anno annoCorrente = Anno.getAnnoCorrente();
+        Mese meseCorrente = Mese.getMeseCorrente();
+        pubblicazioneDao.findAll()
+        .forEach(p -> 
+            EnumSet.allOf(Mese.class)
+            .forEach(mese -> {
+                Operazione op = Smd.generaOperazione(p, spedizioneDao.findAll(), mese, annoCorrente);
+                if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
+                    log.info(op.toString());
+                    operazioneDao.save(op);                               
+                }
+            }));
+                    
+       spedizioneDao
+           .findByMeseSpedizioneAndAnnoSpedizione(meseCorrente, annoCorrente)
+           .forEach(sped -> {
+               sped.setStatoSpedizione(StatoSpedizione.INVIATA);
+               spedizioneDao.save(sped);
+           });             
    
     }   
         

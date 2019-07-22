@@ -1624,7 +1624,6 @@ public class SmdApplicationTests {
     }
     
     @Test
-    @Ignore
     public void testSmdLoadSampleData() {
         
         assertEquals(0, anagraficaDao.findAll().size());
@@ -1667,31 +1666,38 @@ public class SmdApplicationTests {
                                          true
                                          ).run();
         
-        assertEquals(7, anagraficaDao.findAll().size());
+        assertEquals(24, anagraficaDao.findAll().size());
         assertEquals(4, pubblicazioneDao.findAll().size());
         assertEquals(19, spesaSpedizioneDao.findAll().size());
         assertEquals(12, storicoDao.findAll().size());
         assertEquals(0, campagnaDao.findAll().size());
         assertEquals(20, abbonamentoDao.findAll().size());
         assertEquals(30, estrattoContoDao.findAll().size());
-        assertEquals(27, spedizioneDao.findAll().size());
+        assertEquals(11, spedizioneDao.findAll().size());
                       
         assertEquals(5, incassoDao.findAll().size());
-        assertEquals(23, versamentoDao.findAll().size());
+        assertEquals(24, versamentoDao.findAll().size());
+
+        assertEquals(8, operazioneDao.findAll().size());
 
         operazioneDao.deleteAll();
+
         spedizioneItemDao.deleteAll();
         spedizioneDao.deleteAll();
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
+        
+        campagnaItemDao.deleteAll();
         campagnaDao.deleteAll();
+        notaDao.deleteAll();
         storicoDao.deleteAll();
-        anagraficaDao.deleteAll();
-        pubblicazioneDao.deleteAll();
-        spesaSpedizioneDao.deleteAll();
+
         versamentoDao.deleteAll();
         incassoDao.deleteAll();
+        
         pubblicazioneDao.deleteAll();  
+        anagraficaDao.deleteAll();
+        spesaSpedizioneDao.deleteAll();
         
         log.info("final check load data");
         assertEquals(0, anagraficaDao.findAll().size());

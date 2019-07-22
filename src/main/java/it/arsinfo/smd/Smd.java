@@ -640,6 +640,22 @@ public class Smd {
             Pubblicazione pubblicazione, 
             List<Spedizione> spedizioni,Mese mese, Anno anno) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
+        int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
+        Mese mesePubblicazione = mese;
+        Anno annoPubblicazione = anno;
+        if (posizioneMese > 12) {
+            mesePubblicazione = Mese.getByPosizione(posizioneMese-12);
+            annoPubblicazione = Anno.getAnnoSuccessivo(anno);
+        } else {
+            annoPubblicazione=anno;
+            mesePubblicazione=Mese.getByPosizione(posizioneMese);
+        }
+
+        if (!pubblicazione.getMesiPubblicazione().contains(mesePubblicazione)) {
+            return op;
+        }
+        op.setMesePubblicazione(mesePubblicazione);
+        op.setAnnoPubblicazione(annoPubblicazione);
         spedizioni
             .stream()
             .filter( sped -> 
@@ -647,7 +663,12 @@ public class Smd {
                 && sped.getAnnoSpedizione() == anno 
                 && sped.getMeseSpedizione() == mese) 
             .forEach( sped -> 
-                  sped.getSpedizioneItems().forEach(item -> {
+                  sped
+                  .getSpedizioneItems()
+                  .stream()
+                  .filter(item -> !item.isPosticipata())
+                  .forEach(item -> 
+                  {
                       switch (sped.getInvioSpedizione()) {
                       case  Spedizioniere: 
                           op.setStimatoSped(op.getStimatoSped()+item.getNumero());
@@ -659,8 +680,7 @@ public class Smd {
                         break;
                       }
                   })
-              );
-                        
+              );                        
         return op;        
     }
     

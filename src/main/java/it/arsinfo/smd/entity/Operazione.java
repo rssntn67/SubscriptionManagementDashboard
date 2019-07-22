@@ -21,7 +21,7 @@ public class Operazione implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
     
     @Enumerated(EnumType.STRING)
@@ -37,8 +37,8 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Mese.getMeseCorrente();
 
-    private Integer definitivoSped = 0;
-    private Integer definitivoSede = 0;
+    private Integer definitivoSped = null;
+    private Integer definitivoSede = null;
 
     private Integer stimatoSped = 0;
 
@@ -53,14 +53,6 @@ public class Operazione implements SmdEntity {
         this.pubblicazione = pubblicazione;
         this.anno = anno;
         this.mese = mese;
-        int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
-        if (posizioneMese > 12) {
-            this.mesePubblicazione = Mese.getByPosizione(posizioneMese-12);
-            this.annoPubblicazione = Anno.getAnnoSuccessivo(anno);
-        } else {
-            this.annoPubblicazione=anno;
-            this.mesePubblicazione=Mese.getByPosizione(posizioneMese);
-        }
     }
 
 
@@ -79,18 +71,17 @@ public class Operazione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Operazione[id=%d, Pubblicazione=%s %s %s, Stim.Sede=%d, Def.Sede=%d, Stim.Sped=%d, Def.Sped=%d,Totale=%d, %s %s]", 
+        return String.format("Operazione[id=%d, %s %s '%s %s %s', Stim.Sede=%d, Stim.sped=%d, Def.Sped=%d, Def.Sped=%d, ]", 
                              id,
-                             pubblicazione.getNome(),
-                             annoPubblicazione,
-                             mesePubblicazione,
-                             stimatoSede,
-                             definitivoSede,
-                             stimatoSped,
-                             definitivoSped,
-                             definitivoSped+definitivoSede,
                              mese,
-                             anno);
+                             anno,
+                             pubblicazione.getNome(),
+                             mesePubblicazione,
+                             annoPubblicazione,
+                             stimatoSede,
+                             stimatoSped,
+                             definitivoSede,
+                             definitivoSped);
     }
 
     public Anno getAnno() {
@@ -172,7 +163,14 @@ public class Operazione implements SmdEntity {
     
     @Transient
     public int getTotaleDefinitivo() {
-        return definitivoSede+definitivoSped;
+        if (definitivoSede != null && definitivoSped != null)
+            return definitivoSede+definitivoSped;
+        if (definitivoSede != null ) 
+            return definitivoSede;
+        if (definitivoSped != null)
+            return definitivoSped;
+        return 0;
+
     }
 
     

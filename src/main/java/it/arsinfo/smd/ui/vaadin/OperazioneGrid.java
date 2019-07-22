@@ -47,10 +47,10 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
         return items.stream().mapToInt(o -> o.getStimatoSede()).sum();
     }
     private Integer getDefSped(List<Operazione> items) {
-        return items.stream().mapToInt(o -> o.getDefinitivoSped()).sum();
+        return items.stream().filter(o -> o.getDefinitivoSped() != null).mapToInt(o -> o.getDefinitivoSped()).sum();
     }
     private Integer getDefSede(List<Operazione> items) {
-        return items.stream().mapToInt(o -> o.getDefinitivoSede()).sum();
+        return items.stream().filter(o -> o.getDefinitivoSede() != null).mapToInt(o -> o.getDefinitivoSede()).sum();
     }
 
     
