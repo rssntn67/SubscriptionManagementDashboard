@@ -11,8 +11,10 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONI)
@@ -33,13 +35,18 @@ public class SpedizioneUI extends SmdUI {
     
     @Autowired
     AbbonamentoDao abbonamentoDao;
+    
+    @Autowired
+    PubblicazioneDao pubblicazioneDao; 
+    
 
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Spedizioni");
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
-        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica);
+        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica,pubblicazioni);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
         addSmdComponents(editor,search, grid);

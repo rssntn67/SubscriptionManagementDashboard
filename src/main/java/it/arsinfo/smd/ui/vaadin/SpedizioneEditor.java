@@ -73,7 +73,7 @@ public class SpedizioneEditor
         statoSpedizione.setEmptySelectionAllowed(false);
         
         spesePostali.setReadOnly(true);
-        
+        pesoStimato.setReadOnly(true);
         setComponents(getActions(), 
                       new HorizontalLayout(destinatario,invio,invioSpedizione,statoSpedizione),
                       new HorizontalLayout(meseSped,annoSped),
@@ -117,7 +117,8 @@ public class SpedizioneEditor
 
     @Override
     public void focus(boolean persisted, Spedizione obj) {
-        pesoStimato.focus();        
+        getSave().setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA); 
+        getDelete().setEnabled(false);        
     }
 
 }

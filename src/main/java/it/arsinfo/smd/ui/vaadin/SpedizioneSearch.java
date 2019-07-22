@@ -16,13 +16,15 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.SpedizioneDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     private Anagrafica a;
-    
+    private Pubblicazione p;
+
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     private final ComboBox<Mese> filterMese = new ComboBox<Mese>();
     private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>();
@@ -33,14 +35,29 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
             List<Abbonamento> abbonamenti,
-            List<Anagrafica> anagrafica) {
+            List<Anagrafica> anagrafica,
+            List<Pubblicazione> pubblicazioni) {
         super(spedizioneDao);
         abbonamenti.forEach( abb -> abbMap.put(abb.getId(),abb));
 
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
+        ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
 
-        setComponents(new HorizontalLayout(filterDestinatario,filterAnno,filterMese,filterInvio,filterStatoSpedizione,filterInvioSpedizione));
+        setComponents(new HorizontalLayout(filterDestinatario,filterPubblicazione,filterAnno,filterMese,filterInvio,filterStatoSpedizione,filterInvioSpedizione));
+
+        filterPubblicazione.setEmptySelectionAllowed(true);
+        filterPubblicazione.setPlaceholder("Cerca per Pubblicazioni");
+        filterPubblicazione.setItems(pubblicazioni);
+        filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        filterPubblicazione.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                p = null;
+            } else {
+                p = e.getSelectedItem().get();
+            }
+            onChange();
+        });
 
         filterDestinatario.setEmptySelectionAllowed(true);
         filterDestinatario.setPlaceholder("Cerca per Anagrafica");

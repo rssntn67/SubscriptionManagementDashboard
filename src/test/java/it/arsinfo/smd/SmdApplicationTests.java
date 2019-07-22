@@ -1624,6 +1624,7 @@ public class SmdApplicationTests {
     }
     
     @Test
+    @Ignore
     public void testSmdLoadSampleData() {
         
         assertEquals(0, anagraficaDao.findAll().size());
