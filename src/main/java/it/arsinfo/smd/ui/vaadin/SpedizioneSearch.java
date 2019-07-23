@@ -1,7 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -19,12 +18,12 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.repository.SpedizioneDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     private Anagrafica a;
-    //FIXME do search
     private Pubblicazione p;
 
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
@@ -33,8 +32,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
-    private Map<Long,Abbonamento> abbMap = new HashMap<>(); 
-
+    final Map<Long,Abbonamento> abbMap;
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
@@ -108,7 +106,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
         if (filterAnno.getValue() != null) {
-            spedizioni = spedizioni.stream().filter( s -> s.getAbbonamento().getAnno() == filterAnno.getValue()).collect(Collectors.toList());
+            spedizioni = spedizioni.stream().filter( s -> s.getAnnoSpedizione() == filterAnno.getValue()).collect(Collectors.toList());
         }
         if (filterMese.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getMeseSpedizione() == filterMese.getValue()).collect(Collectors.toList());      
@@ -122,8 +120,18 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         if (filterStatoSpedizione.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getStatoSpedizione() == filterStatoSpedizione.getValue()).collect(Collectors.toList());      
         }
-        for (Spedizione spedizione: spedizioni) {
-            spedizione.setAbbonamento(abbMap.get(spedizione.getAbbonamento().getId()));
+        if (p != null) {
+            spedizioni= spedizioni.stream().filter(s -> {
+                for (SpedizioneItem item: s.getSpedizioneItems()) {
+                    if (item.getPubblicazione().getId().longValue() == p.getId().longValue()) {
+                        return true;
+                    }
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+        for (Spedizione sped: spedizioni) {
+            sped.setAbbonamento(abbMap.get(sped.getAbbonamento().getId()));
         }
         return spedizioni;
     }
