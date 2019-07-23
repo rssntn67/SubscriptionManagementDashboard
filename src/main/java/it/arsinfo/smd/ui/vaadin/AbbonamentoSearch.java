@@ -2,6 +2,8 @@ package it.arsinfo.smd.ui.vaadin;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.util.StringUtils;
@@ -27,17 +29,13 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private String searchCampo;
-    //FIXME do search
     private String searchCap;
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
     private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>();
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
-    private final ComboBox<StatoAbbonamento> filterStatoAbbonamento
-        = new ComboBox<StatoAbbonamento>();
-    
-    //FIXME do search for EstrattoConto
+    private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
     
@@ -149,13 +147,69 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     }
 
+    private List<Abbonamento> findByTipoEstrattoConto(List<Abbonamento> abbonamenti, TipoEstrattoConto tec) {
+        List<Long> approved = estrattoContoDao
+                .findByTipoEstrattoConto(tec)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+            return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
+
+    }
+    
+    private List<Abbonamento> findByCustomer() {
+       final Map<Long,Abbonamento> abbMap = 
+                ((AbbonamentoDao) getRepo()).findByIntestatario(customer)
+                .stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
+        
+        estrattoContoDao
+            .findByDestinatario(customer)
+            .stream()
+            .filter(ec -> !abbMap.containsKey(ec.getAbbonamento().getId()))
+            .forEach( ec -> {
+                Abbonamento  abb = ((AbbonamentoDao) getRepo()).findById(ec.getAbbonamento().getId()).get();
+                abbMap.put(abb.getId(), abb);
+            });        
+        return abbMap.values().stream().collect(Collectors.toList());
+    }
+    
+
+    private List<Abbonamento> findByPubblicazione(List<Abbonamento> abbonamenti) {         
+         List<Long> approved = estrattoContoDao
+             .findByPubblicazione(pubblicazione)
+             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+         return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
+     }
+
+    private List<Abbonamento> findByCap(List<Abbonamento> abbonamenti) {
+        List<Long> approved = abbonamenti
+                 .stream()
+                 .filter(
+                         abb -> 
+                     abb.getIntestatario().getCap() != null &&    
+                     abb.getIntestatario().getCap().toLowerCase()
+                     .contains(searchCap.toLowerCase()))
+                 .map(abb -> abb.getId())
+                 .collect(Collectors.toList());
+         
+      approved.addAll(estrattoContoDao
+             .findAll()
+             .stream()
+             .filter(ec -> 
+                 ec.getDestinatario().getCap() != null &&
+                 ec.getDestinatario().getCap().toLowerCase()
+                 .contains(searchCap.toLowerCase()))
+             .map( ec -> 
+                 ec.getAbbonamento().getId()).collect(Collectors.toList())
+             );        
+      return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
+     }
+
     @Override
     public List<Abbonamento> find() {
         if (campagna == null && customer == null && anno == null) {
             return filterAll(findAll());            
         }
         if (campagna == null && anno == null) {
-            return filterAll(((AbbonamentoDao) getRepo()).findByIntestatario(customer));
+            return filterAll(findByCustomer());
         }
         if (customer == null && anno == null) {
             return filterAll(((AbbonamentoDao) getRepo()).findByCampagna(campagna));
@@ -165,7 +219,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         }
         
         if (anno == null) {
-           return filterAll(((AbbonamentoDao) getRepo()).findByIntestatario(customer)
+           return filterAll(findByCustomer()
             .stream()
             .filter(a -> 
                 a.getCampagna() != null
@@ -174,7 +228,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             .collect(Collectors.toList()));
         }
         if (campagna == null) {
-           return filterAll(((AbbonamentoDao) getRepo()).findByIntestatario(customer)
+           return filterAll(findByCustomer()
             .stream()
             .filter(a -> 
                 a.getAnno() == anno
@@ -200,6 +254,15 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     }
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
+        if (filterTipoEstrattoConto.getValue() != null) {
+            abbonamenti = findByTipoEstrattoConto(abbonamenti, filterTipoEstrattoConto.getValue());
+        }
+        if (!StringUtils.isEmpty(searchCap)) {
+            abbonamenti = findByCap(abbonamenti);
+        }
+        if (pubblicazione != null) {
+            abbonamenti = findByPubblicazione(abbonamenti);
+        }
         if (filterCcp.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCcp() == filterCcp.getValue()).collect(Collectors.toList());      
         }
