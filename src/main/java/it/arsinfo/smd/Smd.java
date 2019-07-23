@@ -111,7 +111,7 @@ public class Smd {
             sped.getSpedizioneItems()
             .stream()
             .filter(item -> item.getEstrattoConto() == ec || 
-               (item.getEstrattoConto().getId() != null && ec.getId() != null && item.getEstrattoConto().getId() == ec.getId()))
+               (item.getEstrattoConto().getId() != null && ec.getId() != null && item.getEstrattoConto().getId().longValue() == ec.getId().longValue()))
             .forEach(item -> {
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
@@ -225,7 +225,7 @@ public class Smd {
                 item.getEstrattoConto() == ec 
                 || 
                 (ec.getId() != null && item.getEstrattoConto().getId() != null &&
-                    item.getEstrattoConto().getId() == ec.getId()
+                    item.getEstrattoConto().getId().longValue() == ec.getId().longValue()
                     )
                 )
             .forEach(item -> {

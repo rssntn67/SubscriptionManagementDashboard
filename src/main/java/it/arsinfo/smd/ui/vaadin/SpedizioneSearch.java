@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.ComboBox;
@@ -23,6 +24,7 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     private Anagrafica a;
+    //FIXME do search
     private Pubblicazione p;
 
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
@@ -31,15 +33,14 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
-    private final Map<Long,Abbonamento> abbMap = new HashMap<>(); 
+    private Map<Long,Abbonamento> abbMap = new HashMap<>(); 
 
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {
         super(spedizioneDao);
-        abbonamenti.forEach( abb -> abbMap.put(abb.getId(),abb));
-
+        abbMap = abbonamenti.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 

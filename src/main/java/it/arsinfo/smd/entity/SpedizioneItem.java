@@ -91,8 +91,9 @@ public class SpedizioneItem implements SmdEntity {
         
     @Override
     public String toString() {
-        return String.format("SpedizioneItem[id=%d, %s %s %s, num. %d, post %b ]", 
+        return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b ]", 
                              id,
+                             estrattoConto.getId(),
                              pubblicazione.getNome(),
                              mesePubblicazione,
                              annoPubblicazione,

@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -128,12 +127,13 @@ public class SmdApplicationTests {
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
-    private static final Logger log = LoggerFactory.getLogger(Smd.class);
+    private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
 
     @Before
     public void setUp() {
         
         log.info("----------------->EnteringSetUp<----------------");
+        try {
         operazioneDao.deleteAll();
         spedizioneItemDao.deleteAll();
         spedizioneDao.deleteAll();
@@ -148,7 +148,9 @@ public class SmdApplicationTests {
         spesaSpedizioneDao.deleteAll();
         versamentoDao.deleteAll();
         incassoDao.deleteAll();  
-        
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);            
+        }
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, spesaSpedizioneDao.findAll().size());
@@ -169,6 +171,7 @@ public class SmdApplicationTests {
     }
     @Test
     public void testAutowire() {
+        log.info("----------------->testAutowire<----------------");
         assertNotNull(abbonamentoDao);
         assertNotNull(anagraficaDao);
         assertNotNull(pubblicazioneDao);
@@ -200,6 +203,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testLoginAdmin() {
+        log.info("----------------->testLoginAdmin<----------------");
         Authentication auth =
                 new UsernamePasswordAuthenticationToken("admin", "admin");
         try {
@@ -216,6 +220,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testUserInfo() {
+        log.info("----------------->testUserInfo<----------------");
         UserInfo adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
         userInfoDao.save(adp);
         
@@ -250,6 +255,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testAnagraficaCRUD() {
+        log.info("----------------->testAnagraficaCRUD<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         Anagrafica antonioRusso =  SmdLoadSampleData.getAR();
         anagraficaDao.save(antonioRusso);
@@ -292,6 +298,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testAnagraficaCo() {
+        log.info("----------------->testAnagraficaCo<----------------");
         Anagrafica diocesiMilano = SmdLoadSampleData.getDiocesiMi();
         anagraficaDao.save(diocesiMilano);
         assertEquals(1, anagraficaDao.findAll().size());
@@ -325,6 +332,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testSpesaSpedizioneCRUD() {
+        log.info("----------------->testSpesaSpedizioneCRUD<----------------");
         assertEquals(0, spesaSpedizioneDao.findAll().size());
         for (SpesaSpedizione ss : SmdLoadSampleData.getSpeseSpedizione()) {
             spesaSpedizioneDao.save(ss);
@@ -362,6 +370,7 @@ public class SmdApplicationTests {
     }
     @Test 
     public void testPubblicazioneDaoCRUD() {
+        log.info("----------------->testPubblicazioneDaoCRUD<----------------");
         assertEquals(0, pubblicazioneDao.findAll().size());
         Pubblicazione p = new Pubblicazione("prova", TipoPubblicazione.MENSILE);
         p.setAbbonamento(new BigDecimal("30.00"));
@@ -421,7 +430,8 @@ public class SmdApplicationTests {
 
     @Test 
     public void testPubblicazioniAdp() {
-        
+        log.info("----------------->testPubblicazioniAdp<----------------");
+
         assertEquals(0, pubblicazioneDao.findAll().size());
 
         Pubblicazione m = SmdLoadSampleData.getMessaggio();
@@ -703,6 +713,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testSmdLoadStorico() {
+        log.info("----------------->testSmdLoadStorico<----------------");
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size());
         
@@ -730,6 +741,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testAbbonamentoCRUD() {
+        log.info("----------------->testAbbonamentoCRUD<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
         Anagrafica tizio = SmdLoadSampleData.getGP();
@@ -752,6 +764,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testEstrattoContoCRUD() {
+        log.info("----------------->testEstrattoContoCRUD<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
         assertEquals(0, estrattoContoDao.findAll().size());
@@ -815,9 +828,11 @@ public class SmdApplicationTests {
 
     @Test
     public void testSpedizioneCRUD() {
+        log.info("----------------->testSpedizioneCRUD<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
         assertEquals(0, spedizioneDao.findAll().size());
+        assertEquals(0, spedizioneItemDao.findAll().size());
         
         Spedizione sped = new Spedizione();
 
@@ -856,6 +871,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testSpedizioneItemCRUD() {
+        log.info("----------------->testSpedizioneItemCRUD<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
@@ -932,6 +948,7 @@ public class SmdApplicationTests {
     
     @Test 
     public void testAbbonamentoLoad() {
+        log.info("----------------->testAbbonamentoLoad<----------------");
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
@@ -1017,6 +1034,7 @@ public class SmdApplicationTests {
     
     @Test
     public void testAbbonamentoAggiungiEstrattoConto() {
+        log.info("----------------->testAbbonamentoAggiungiEstrattoConto<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
@@ -1117,6 +1135,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testAbbonamentoRimuoviEstrattoConto() {
+        log.info("----------------->testAbbonamentoRimuoviEstrattoConto<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
@@ -1218,6 +1237,9 @@ public class SmdApplicationTests {
         }
         assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
         assertEquals(0, ec2.getImporto().doubleValue(),0);
+        for (Spedizione sped: spedizioni) {
+            assertFalse(sped.getSpedizioneItems().isEmpty());
+        }
         estrattoContoDao.deleteById(ec2.getId());
         abbonamentoDao.save(abb);
         assertEquals(3, pubblicazioneDao.findAll().size());
@@ -1226,33 +1248,17 @@ public class SmdApplicationTests {
         assertEquals(2, estrattoContoDao.findAll().size());
         assertEquals(7, spedizioneDao.findAll().size());
         assertEquals(8, spedizioneItemDao.findAll().size());
-        for (Spedizione sped: spedizioni) {
-            if (sped.getSpedizioneItems().isEmpty()) {
-                log.info("deleted: " + sped);
-                spedizioneDao.deleteById(sped.getId());
-            }
-        }
-        assertEquals(3, pubblicazioneDao.findAll().size());
-        assertEquals(1, anagraficaDao.findAll().size());
-        assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(2, estrattoContoDao.findAll().size());
-        assertEquals(7, spedizioneDao.findAll().size());
-        assertEquals(8, spedizioneItemDao.findAll().size());
-
-        for (Spedizione sped:spedizioni) {
-            if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
-            }
-        }
-        assertEquals(3, pubblicazioneDao.findAll().size());
-        assertEquals(1, anagraficaDao.findAll().size());
-        assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(2, estrattoContoDao.findAll().size());
-        assertEquals(7, spedizioneDao.findAll().size());
-        assertEquals(8, spedizioneItemDao.findAll().size());
+        
+        log.info("----------------->testAbbonamentoRimuoviEstrattoConto Rimosso:"+ec2);
 
         
         spedizioni=spedizioneDao.findByAbbonamento(abb);
+        log.info(abb.toString());
+        log.info(ec1.toString());
+        spedizioni.forEach(sped ->{
+            log.info(sped.toString());
+            sped.getSpedizioneItems().forEach(item -> log.info(item.toString()));
+        });
         deleted = Smd.rimuoviEC(abb,ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         assertEquals(6, deleted.size());
         
@@ -1327,6 +1333,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testAbbonamentoRimuoviEstrattoContoConSpediti() {
+        log.info("----------------->testAbbonamentoRimuoviEstrattoContoConSpediti<----------------");
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
@@ -1414,6 +1421,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testAbbonamentoAggiornaEstrattoConto() {
+        log.info("----------------->testAbbonamentoAggiornaEstrattoConto<----------------");
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size());        
         assertEquals(0, pubblicazioneDao.findAll().size());
@@ -1497,6 +1505,7 @@ public class SmdApplicationTests {
 
     @Test
     public void testCampagnaCRUD() {
+        log.info("----------------->testCampagnaCRUD<----------------");
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
         pubblicazioneDao.save(messaggio);
@@ -1541,6 +1550,7 @@ public class SmdApplicationTests {
 
     @Test 
     public void testVersamentoCRUD() {
+        log.info("----------------->testVersamentoCRUD<----------------");
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
         Incasso incasso = SmdLoadSampleData.getIncassoTelematici();
@@ -1558,7 +1568,8 @@ public class SmdApplicationTests {
     
     @Test
     public void testIncassa() {
-        
+        log.info("----------------->testIncassa<----------------");
+
         Anagrafica davidePalma = SmdLoadSampleData.getDP();
         anagraficaDao.save(davidePalma);
 
@@ -1624,9 +1635,10 @@ public class SmdApplicationTests {
     }
     
     @Test
-    @Ignore
     public void testSmdLoadSampleData() {
         
+        log.info("----------------->testSmdLoadSampleData<----------------");
+
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, spesaSpedizioneDao.findAll().size());
@@ -1679,7 +1691,7 @@ public class SmdApplicationTests {
         assertEquals(5, incassoDao.findAll().size());
         assertEquals(24, versamentoDao.findAll().size());
 
-        assertEquals(8, operazioneDao.findAll().size());
+        assertEquals(6, operazioneDao.findAll().size());
 
         operazioneDao.deleteAll();
 

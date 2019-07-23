@@ -27,6 +27,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private String searchCampo;
+    //FIXME do search
     private String searchCap;
     private Anagrafica customer;
     private Anno anno;
@@ -36,6 +37,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento
         = new ComboBox<StatoAbbonamento>();
     
+    //FIXME do search for EstrattoConto
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
     

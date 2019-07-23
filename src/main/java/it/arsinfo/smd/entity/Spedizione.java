@@ -78,8 +78,9 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s %s]", 
+        return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s %s]", 
                              id,
+                             abbonamento.getId(),
                              meseSpedizione,
                              annoSpedizione,
                              pesoStimato,
