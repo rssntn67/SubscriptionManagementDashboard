@@ -115,7 +115,7 @@ public class Smd {
             .forEach(item -> {
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
-                          ec.getPubblicazione().getId() == item.getPubblicazione().getId()) ) {
+                          ec.getPubblicazione().getId().longValue() == item.getPubblicazione().getId().longValue())) {
                     oldItems.add(item);
                 } else {
                     throw new UnsupportedOperationException("Aggiona EC non consente di modificare la pubblicazione");
@@ -443,7 +443,7 @@ public class Smd {
         .stream()
         .filter(storico -> 
             storico.attivo() &&
-            storico.getIntestatario().getId() == abbonamento.getIntestatario().getId()
+            storico.getIntestatario().getId().longValue() == abbonamento.getIntestatario().getId().longValue()
             && 
             campagna.hasPubblicazione(storico.getPubblicazione())
             &&
@@ -474,7 +474,7 @@ public class Smd {
                 (storico.getIntestatario() == a 
                     || ( storico.getIntestatario().getId() != null 
                          && a.getId() != null 
-                         && storico.getIntestatario().getId() == a.getId())) 
+                         && storico.getIntestatario().getId().longValue() == a.getId().longValue())) 
                && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().hashCode()) 
                && storico.attivo()
             )
@@ -579,7 +579,7 @@ public class Smd {
     
     private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estrattiConto) {
         for (Abbonamento abb: abbonamenti) {
-            if (abb.getIntestatario().getId() != storico.getIntestatario().getId() 
+            if (abb.getIntestatario().getId().longValue() != storico.getIntestatario().getId().longValue() 
                     || abb.getCampagna() == null
                     || abb.getAnno().getAnno() != Anno.getAnnoCorrente().getAnno()) {
                 continue;
