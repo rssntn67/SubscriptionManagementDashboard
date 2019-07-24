@@ -8,13 +8,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoOperazione;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"anno","mese","pubblicazione_id"})})
 public class Operazione implements SmdEntity {
 
     @Id
@@ -37,8 +41,11 @@ public class Operazione implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Mese mese = Mese.getMeseCorrente();
 
-    private Integer definitivoSped = null;
-    private Integer definitivoSede = null;
+    @Enumerated(EnumType.STRING)
+    private StatoOperazione statoOperazione = StatoOperazione.PROGRAMMATA;
+
+    private Integer definitivoSped = 0;
+    private Integer definitivoSede = 0;
 
     private Integer stimatoSped = 0;
 
@@ -71,10 +78,11 @@ public class Operazione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Operazione[id=%d, %s %s '%s %s %s', Stim.Sede=%d, Stim.sped=%d, Def.Sped=%d, Def.Sped=%d, ]", 
+        return String.format("Operazione[id=%d, %s %s %s '%s %s %s', Stim.Sede=%d, Stim.sped=%d, Def.Sped=%d, Def.Sped=%d, ]", 
                              id,
                              mese,
                              anno,
+                             statoOperazione,
                              pubblicazione.getNome(),
                              mesePubblicazione,
                              annoPubblicazione,
@@ -173,5 +181,24 @@ public class Operazione implements SmdEntity {
 
     }
 
-    
+
+    public StatoOperazione getStatoOperazione() {
+        return statoOperazione;
+    }
+
+
+    public void setStatoOperazione(StatoOperazione statoOperazione) {
+        this.statoOperazione = statoOperazione;
+    }
+
+    @Transient 
+    public String getPubblCaption() {
+        return pubblicazione.getNome()+":"+mesePubblicazione.getNomeBreve()+annoPubblicazione.getAnnoAsString();
+    }
+
+    @Transient 
+    public String getCaption() {
+        return mese.getNomeBreve()+anno.getAnnoAsString();
+    }
+
 }

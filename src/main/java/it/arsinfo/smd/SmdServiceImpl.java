@@ -1,6 +1,7 @@
 package it.arsinfo.smd;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Service;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -24,6 +27,8 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
@@ -31,6 +36,7 @@ import it.arsinfo.smd.repository.StoricoDao;
 
 @Service
 public class SmdServiceImpl implements SmdService {
+    
     @Autowired
     private CampagnaDao campagnaDao;
 
@@ -57,6 +63,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Autowired
     SpedizioneItemDao spedizioneItemDao;
+
+    @Autowired
+    OperazioneDao operazioneDao;
+
+    @Autowired
+    PubblicazioneDao pubblicazioneDao;
 
     @Override
     public void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) {
@@ -317,4 +329,31 @@ public class SmdServiceImpl implements SmdService {
         campagnaDao.save(campagna);
         
     }
+
+    @Override
+    public void generaStatisticheTipografia(Anno anno, Mese mese) {
+        pubblicazioneDao.findAll().forEach(p -> {
+            Operazione saved = operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese,p);
+            if (saved != null && saved.getStatoOperazione() == StatoOperazione.INVIATA) {
+                return;
+            }
+            if (saved != null) {
+                operazioneDao.deleteById(saved.getId());
+            }
+            Operazione op = Smd.generaOperazione(p,
+                                             spedizioneDao.findByMeseSpedizioneAndAnnoSpedizione(mese, anno), 
+                                             mese, 
+                                             anno);
+        if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
+            operazioneDao.save(op);                               
+        }
+        });
+        
+    }
+
+    @Override
+    public void generaStatisticheTipografia(Anno anno) {
+        EnumSet.allOf(Mese.class).forEach(mese -> generaStatisticheTipografia(anno, mese));
+    }
+
 }

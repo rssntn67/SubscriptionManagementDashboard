@@ -13,17 +13,19 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     public OperazioneGrid(String gridName) {
         super(new Grid<>(Operazione.class), gridName);
-        setColumns("mese","anno","pubblicazione.nome", "mesePubblicazione","annoPubblicazione",
-                   "stimatoSped","stimatoSede","totaleStimato",
-                   "definitivoSped","definitivoSede","totaleDefinitivo");
-        setColumnCaption("pubblicazione.nome", "Pubblicazione");
+        setColumns("caption","pubblCaption",
+                   "stimatoSped","definitivoSped",
+                   "stimatoSede","definitivoSede",
+                   "totaleStimato","totaleDefinitivo");
+        setColumnCaption("caption", "Ordine");
+        setColumnCaption("pubblCaption", "Pubbl.");
         gridfooter = getGrid().prependFooterRow();
     }
 
     @Override
     public void populate(List<Operazione> items) {
         super.populate(items);
-        gridfooter.getCell("pubblicazione.nome").setHtml("<strong> Totali:</strong>");
+        gridfooter.getCell("pubblCaption").setHtml("<strong> Totali:</strong>");
         gridfooter.getCell("stimatoSped").setHtml("<b>"+getStimatoSped(items).toString()+"</b>");
         gridfooter.getCell("stimatoSede").setHtml("<b>"+getStimatoSede(items).toString()+"</b>");
         gridfooter.getCell("totaleStimato").setHtml("<b>"+getStimato(items).toString()+"</b>");

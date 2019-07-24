@@ -72,7 +72,6 @@ public class SmdLoadSampleData implements Runnable {
     private final EstrattoContoDao estrattoContoDao;
     private final SpedizioneDao spedizioneDao;
     private final SpedizioneItemDao spedizioneItemDao;
-    private final CampagnaDao campagnaDao;
     private final StoricoDao storicoDao;
     private final NotaDao notaDao;
     private final IncassoDao incassoDao; 
@@ -839,7 +838,6 @@ public class SmdLoadSampleData implements Runnable {
         this.estrattoContoDao=estrattoContoDao;
         this.spedizioneDao=spedizioneDao;
         this.spedizioneItemDao=spedizioneItemDao;
-        this.campagnaDao=campagnaDao;
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
         this.operazioneDao=operazioneDao;

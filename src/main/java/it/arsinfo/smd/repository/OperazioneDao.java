@@ -16,7 +16,7 @@ public interface OperazioneDao extends JpaRepository<Operazione, Long> {
         List<Operazione> findByMese(Mese anno);
         List<Operazione> findByAnnoAndMese(Anno anno,Mese mese);
         List<Operazione> findByAnnoAndPubblicazione(Anno anno,Pubblicazione pubblicazione);
-        List<Operazione> findByAnnoAndMeseAndPubblicazione(Anno anno,Mese mese,Pubblicazione pubblicazione);
+        Operazione findByAnnoAndMeseAndPubblicazione(Anno anno,Mese mese,Pubblicazione pubblicazione);
         List<Operazione> findByMeseAndPubblicazione(Mese mese,Pubblicazione pubblicazione);
         void deleteByAnnoAndMeseAndPubblicazione(Anno anno,Mese mese,Pubblicazione pubblicazione);
 }

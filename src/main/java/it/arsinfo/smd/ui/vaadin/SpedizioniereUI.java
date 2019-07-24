@@ -51,25 +51,22 @@ public class SpedizioniereUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Tipografia");
+        super.init(request,"Spedizioniere");
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdProgressBar pb = new SmdProgressBar();
         SmdButton gss = new SmdButton("Genera Estratto Conto", VaadinIcons.CLOUD);
         SmdButton bss = new SmdButton("Aggiorna Stato Storici", VaadinIcons.CLOUD);
 
-        SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
-        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,operazioneDao, estrattoContoDao, pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
         SpedizioneGrid spedGrid = new SpedizioneGrid("Spedizioni");
-        addSmdComponents(pb,spedGrid,generaShow,gss,bss,genera,editor,search,grid);
+        addSmdComponents(pb,spedGrid,gss,bss,editor,search,grid);
         
         
         pb.setVisible(false);
         spedGrid.setVisible(false);
-        genera.setVisible(false);
         editor.setVisible(false);
 
         pb.setChangeHandler(() ->{});
@@ -155,27 +152,11 @@ public class SpedizioniereUI extends SmdUI {
             }).start();            
         });
 
-        generaShow.setChangeHandler(() -> {
-            generaShow.setVisible(false);
-            gss.setVisible(false);
-            search.setVisible(false);
-            grid.setVisible(false);
-            genera.edit();        
-        }); 
-        genera.setChangeHandler(() -> {
-            generaShow.setVisible(true);
-            spedGrid.setVisible(false);
-            genera.setVisible(false);
-            gss.setVisible(true);
-            search.setVisible(true);
-            grid.setVisible(true);
-        }); 
         search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(()-> {
             if (grid.getSelected() == null) {
                 return;
             }
-            generaShow.setVisible(false);
             search.setVisible(false);
             gss.setVisible(false);
             grid.setVisible(false);
@@ -184,7 +165,6 @@ public class SpedizioniereUI extends SmdUI {
         
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            generaShow.setVisible(true);
             gss.setVisible(true);
             spedGrid.setVisible(false);
             search.setVisible(true);
@@ -194,7 +174,6 @@ public class SpedizioniereUI extends SmdUI {
         grid.addComponentColumn(op -> {
             Button button = new Button("Spedizioniere",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
-                generaShow.setVisible(false);
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);
@@ -206,7 +185,6 @@ public class SpedizioniereUI extends SmdUI {
         grid.addComponentColumn(op -> {
             Button button = new Button("Adp Sede",VaadinIcons.ENVELOPES);
             button.addClickListener(click -> {
-                generaShow.setVisible(false);
                 search.setVisible(false);
                 grid.setVisible(false);
                 editor.edit(op);

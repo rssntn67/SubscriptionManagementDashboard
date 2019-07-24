@@ -11,6 +11,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.OperazioneDao;
@@ -31,6 +32,11 @@ public class OperazioneEditor
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> mese = new ComboBox<Mese>("Mese",
             EnumSet.allOf(Mese.class));
+    
+    private int valStimatoSede=0;
+    private int valStimatoSped=0;
+    
+    private final ComboBox<StatoOperazione> statoOperazione = new ComboBox<StatoOperazione>("Stato",EnumSet.allOf(StatoOperazione.class));
     public OperazioneEditor(
             OperazioneDao operazioneDao,
             List<Pubblicazione> pubblicazioni) {
@@ -38,10 +44,14 @@ public class OperazioneEditor
         super(operazioneDao, new Binder<>(Operazione.class) );
         
         setComponents(getActions(), 
-              new HorizontalLayout(mese, anno),
+              new HorizontalLayout(mese, anno,statoOperazione),
               new HorizontalLayout(pubblicazione, mesePubblicazione, annoPubblicazione),
               new HorizontalLayout(stimatoSped, stimatoSede,definitivoSped,definitivoSede));
 
+        statoOperazione.setEmptySelectionAllowed(false);
+        statoOperazione.setPlaceholder("Stato operazione");
+        statoOperazione.setReadOnly(true);
+        
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -67,42 +77,41 @@ public class OperazioneEditor
         stimatoSped.setReadOnly(true);
         stimatoSede.setReadOnly(true);
         
-        getBinder()
-            .forField(definitivoSped)
-            .withValidator(str -> str != null, "Inserire un numero")
-            .withConverter(new StringToIntegerConverter(""))
-            .withValidator(num -> num > 0,"deve essere maggiore di 0")
-            .bind(Operazione::getDefinitivoSped, Operazione::setDefinitivoSped);
-        
-        getBinder()
-        .forField(stimatoSped)
-        .withConverter(new StringToIntegerConverter(""))
-        .bind(Operazione::getStimatoSped, Operazione::setStimatoSped);
-
-        getBinder()
-        .forField(definitivoSede)
-        .withValidator(str -> str != null, "Inserire un numero")
-        .withConverter(new StringToIntegerConverter(""))
-        .withValidator(num -> num > 0,"deve essere maggiore di 0")
-        .bind(Operazione::getDefinitivoSede, Operazione::setDefinitivoSede);
-    
-        getBinder()
-    .forField(stimatoSede)
-    .withConverter(new StringToIntegerConverter(""))
-    .bind(Operazione::getStimatoSede, Operazione::setStimatoSede);
-
-    getBinder().bindInstanceFields(this);
-
     }
 
     @Override
     public void focus(boolean persisted, Operazione op) {
-        boolean chiuso = (op.getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()
-                || (op.getAnno() == Anno.getAnnoCorrente() && op.getMese().getPosizione() < Mese.getMeseCorrente().getPosizione()));
-        definitivoSped.setReadOnly(chiuso);
-        definitivoSede.setReadOnly(chiuso);
-        getSave().setEnabled(!chiuso);
-        getCancel().setEnabled(!chiuso);
+        valStimatoSede=op.getStimatoSede();
+        valStimatoSped=op.getStimatoSped();
+        definitivoSped.setReadOnly(op.getStatoOperazione() == StatoOperazione.INVIATA);
+        definitivoSede.setReadOnly(op.getStatoOperazione() == StatoOperazione.INVIATA);
+        getSave().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
+        getCancel().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
+        getDelete().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
+        getBinder()
+        .forField(definitivoSped)
+        .withConverter(new StringToIntegerConverter(""))
+        .withValidator(num -> num >= valStimatoSped," >= " + valStimatoSped)
+        .bind(Operazione::getDefinitivoSped, Operazione::setDefinitivoSped);
+    
+    getBinder()
+    .forField(stimatoSped)
+    .withConverter(new StringToIntegerConverter(""))
+    .bind(Operazione::getStimatoSped, Operazione::setStimatoSped);
+
+    getBinder()
+    .forField(definitivoSede)
+    .withConverter(new StringToIntegerConverter(""))
+    .withValidator(num -> num >= valStimatoSede," >= " + valStimatoSede)
+    .bind(Operazione::getDefinitivoSede, Operazione::setDefinitivoSede);
+
+    getBinder()
+    .forField(stimatoSede)
+    .withConverter(new StringToIntegerConverter(""))
+    .bind(Operazione::getStimatoSede, Operazione::setStimatoSede);
+
+getBinder().bindInstanceFields(this);
+
         definitivoSped.focus();        
     }
 

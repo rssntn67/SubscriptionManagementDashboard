@@ -666,7 +666,7 @@ public class Smd {
                   sped
                   .getSpedizioneItems()
                   .stream()
-                  .filter(item -> !item.isPosticipata())
+                  .filter(item -> !item.isPosticipata() && item.getPubblicazione().hashCode() == pubblicazione.hashCode())
                   .forEach(item -> 
                   {
                       switch (sped.getInvioSpedizione()) {
