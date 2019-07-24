@@ -83,11 +83,11 @@ public class OperazioneEditor
     public void focus(boolean persisted, Operazione op) {
         valStimatoSede=op.getStimatoSede();
         valStimatoSped=op.getStimatoSped();
-        definitivoSped.setReadOnly(op.getStatoOperazione() == StatoOperazione.INVIATA);
-        definitivoSede.setReadOnly(op.getStatoOperazione() == StatoOperazione.INVIATA);
-        getSave().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
-        getCancel().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
-        getDelete().setEnabled(op.getStatoOperazione() == StatoOperazione.PROGRAMMATA);
+        definitivoSped.setReadOnly(op.getStatoOperazione() != StatoOperazione.Programmata);
+        definitivoSede.setReadOnly(op.getStatoOperazione() != StatoOperazione.Programmata);
+        getSave().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
+        getCancel().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
+        getDelete().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
         getBinder()
         .forField(definitivoSped)
         .withConverter(new StringToIntegerConverter(""))

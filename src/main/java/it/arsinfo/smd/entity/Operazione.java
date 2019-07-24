@@ -42,7 +42,7 @@ public class Operazione implements SmdEntity {
     private Mese mese = Mese.getMeseCorrente();
 
     @Enumerated(EnumType.STRING)
-    private StatoOperazione statoOperazione = StatoOperazione.PROGRAMMATA;
+    private StatoOperazione statoOperazione = StatoOperazione.Programmata;
 
     private Integer definitivoSped = 0;
     private Integer definitivoSede = 0;

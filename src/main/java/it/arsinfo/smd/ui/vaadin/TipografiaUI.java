@@ -92,12 +92,12 @@ public class TipografiaUI extends SmdUI {
         grid.addComponentColumn(op -> {
             Button button = new Button("invia a tipografia",VaadinIcons.ENVELOPES);
             button.setEnabled(
-                  op.getStatoOperazione() == StatoOperazione.PROGRAMMATA 
+                  op.getStatoOperazione() == StatoOperazione.Programmata 
               && op.getStimatoSede() <= op.getDefinitivoSede() 
               && op.getStimatoSped() <= op.getDefinitivoSped()
               );
             button.addClickListener(click -> {
-                op.setStatoOperazione(StatoOperazione.INVIATA);
+                op.setStatoOperazione(StatoOperazione.Inviata);
                 operazioneDao.save(op);
                 grid.populate(search.find());
             });

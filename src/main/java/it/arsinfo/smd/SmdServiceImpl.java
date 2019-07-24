@@ -9,9 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoOperazione;
+import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
@@ -334,7 +337,7 @@ public class SmdServiceImpl implements SmdService {
     public void generaStatisticheTipografia(Anno anno, Mese mese) {
         pubblicazioneDao.findAll().forEach(p -> {
             Operazione saved = operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese,p);
-            if (saved != null && saved.getStatoOperazione() == StatoOperazione.INVIATA) {
+            if (saved != null && saved.getStatoOperazione() != StatoOperazione.Programmata) {
                 return;
             }
             if (saved != null) {
@@ -354,6 +357,143 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void generaStatisticheTipografia(Anno anno) {
         EnumSet.allOf(Mese.class).forEach(mese -> generaStatisticheTipografia(anno, mese));
+    }
+
+    @Override
+    public void inviaEstrattoConto(Campagna campagna) throws Exception {
+        campagna.setStatoCampagna(StatoCampagna.Chiusa);
+        campagnaDao.save(campagna);
+        // TODO Auto-generated method stub
+        /*
+         *         bss.setChangeHandler(()-> {
+            setHeader("Calcola Stato....");
+            bss.getButton().setEnabled(false);
+            pb.setVisible(true);
+            new Thread(() -> {
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
+                List<Storico> storici = storicoDao.findAll();
+                float delta = 1.0f/storici.size();
+                pb.setValue(0.0f);
+                storici.stream().forEach( s -> {
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
+                    if (s.getStatoStorico() != calcolato) {
+                        s.setStatoStorico(calcolato);
+                        storicoDao.save(s);
+                    }
+                    access(() -> {
+                        pb.setValue(pb.getValue()+delta);
+                        grid.populate(search.find());
+                        this.push();
+                    });
+                });
+
+                access(() -> {
+                    pb.setValue(0.0f);
+                    pb.setVisible(false);
+                    bss.getButton().setEnabled(true);
+                    setHeader("Storico");
+                    grid.populate(search.find());
+                    this.push();
+                });
+
+            }).start();            
+        });
+
+        gss.setChangeHandler(()-> {
+            setHeader("Calcola Stato....");
+            gss.getButton().setEnabled(false);
+            pb.setVisible(true);
+            new Thread(() -> {
+                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
+                List<Storico> storici = storicoDao.findAll();
+                List<EstrattoConto> aggiornamenti = Smd.generaEstrattoConto(estrattoContoDao.findAll());
+                if (aggiornamenti.isEmpty() && storici.isEmpty()) {
+                    return;
+                }
+                float delta = 1.0f/(storici.size() + aggiornamenti.size());
+                pb.setValue(0.0f);
+                storici.stream().forEach( s -> {
+                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
+                    if (s.getStatoStorico() != calcolato) {
+                        s.setStatoStorico(calcolato);
+                        storicoDao.save(s);
+                    }
+                    access(() -> {
+                        pb.setValue(pb.getValue()+delta);
+                        grid.populate(search.find());
+                        this.push();
+                    });
+
+                });
+                aggiornamenti.stream().forEach(ec -> {
+                    estrattoContoDao.save(ec);
+                        access(() -> {
+                            pb.setValue(pb.getValue()+delta);
+                            grid.populate(search.find());
+                            this.push();
+                        });
+                });
+                access(() -> {
+                    pb.setValue(0.0f);
+                    pb.setVisible(false);
+                    gss.getButton().setEnabled(true);
+                    setHeader("Operazioni");
+                    grid.populate(search.find());
+                    this.push();
+                });
+
+            }).start();            
+        });
+
+    public static List<Spedizione> listaSpedizioni(List<Spedizione> spedizioni, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
+        return spedizioni
+                .stream()
+                .filter(s -> 
+                s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getInvioSpedizione() == invioSpedizione
+                && s.getMeseSpedizione() == mese
+                && s.getAnnoSpedizione() == anno
+                ).collect(Collectors.toList());
+    }
+
+         * 
+         */
+        
+    }
+
+    @Override
+    public void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione) {
+        operazioneDao.findByAnnoAndMese(annoSpedizione, meseSpedizione).forEach( operazione -> {
+            if (operazione.getStatoOperazione() != StatoOperazione.Inviata) {
+                throw new UnsupportedOperationException("Bisogna inviare tutti le pubblicazione del mese");
+            }
+        });
+
+        operazioneDao.findByAnnoAndMese(annoSpedizione, meseSpedizione).forEach( operazione -> {
+            operazione.setStatoOperazione(StatoOperazione.Spedita);
+            operazioneDao.save(operazione);
+        });
+
+        spedizioneDao
+        .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione,annoSpedizione)
+        .stream().filter(sped -> sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere)
+        .forEach(sped -> {
+            sped.setStatoSpedizione(StatoSpedizione.INVIATA);
+            spedizioneDao.save(sped);
+        });
+    }
+
+    @Override
+    public List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped) {
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioneDao
+            .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione, annoSpedizione)
+            .stream().filter(sped -> sped.getInvioSpedizione() == inviosped)
+            .forEach(sped -> {
+                Abbonamento abb = abbonamentoDao.findById(sped.getAbbonamento().getId()).get();
+                sped.setAbbonamento(abb);
+                items.addAll(sped.getSpedizioneItems());
+            });
+        return items;
     }
 
 }

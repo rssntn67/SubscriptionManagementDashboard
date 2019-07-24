@@ -683,17 +683,7 @@ public class Smd {
               );                        
         return op;        
     }
-    
-    public static List<Spedizione> listaSpedizioni(List<Spedizione> spedizioni, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
-        return spedizioni
-                .stream()
-                .filter(s -> 
-                s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getInvioSpedizione() == invioSpedizione
-                && s.getMeseSpedizione() == mese
-                && s.getAnnoSpedizione() == anno
-                ).collect(Collectors.toList());
-    }
-        
+            
     public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");

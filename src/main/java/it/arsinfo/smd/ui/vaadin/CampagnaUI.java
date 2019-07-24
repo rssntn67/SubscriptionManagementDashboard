@@ -14,6 +14,7 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
@@ -157,6 +158,10 @@ public class CampagnaUI extends SmdUI {
         });
 
         abbonamentoGrid.setChangeHandler(() -> {
+            abbonamentoGrid.setVisible(false);
+            add.setVisible(true);
+            search.setVisible(true);
+            grid.populate(search.find());
         });
 
         editor.setChangeHandler(() -> {
@@ -188,17 +193,12 @@ public class CampagnaUI extends SmdUI {
                 add.setVisible(false);
                 search.setVisible(false);
                 editor.edit(campagna);
-                abbonamentoGrid
-                .populate(
-                  abbonamentoDao.findByCampagna(campagna)
-                      .stream()
-                      .filter(a -> a.getTotale().signum() > 0)
-                      .collect(Collectors.toList()));
                 grid.setVisible(false);
             });
             return button;
         });
 
+        
         grid.addComponentColumn(campagna -> {
             Button button = new Button("Visualizza Proposta Abbonamento Inviata", VaadinIcons.ENVELOPES);
             button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Inviata);
@@ -212,6 +212,45 @@ public class CampagnaUI extends SmdUI {
                   abbonamentoDao.findByCampagna(campagna)
                       .stream()
                       .filter(a -> a.getTotale().signum() > 0)
+                      .collect(Collectors.toList()));
+                grid.setVisible(false);
+            });
+            return button;
+        });
+
+        grid.addComponentColumn(campagna -> {
+            Button button = new Button("Invia Estratto Conto", VaadinIcons.ENVELOPES);
+            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Inviata);
+            button.addClickListener(click -> {
+                try {
+                    smdService.inviaEstrattoConto(campagna);
+                } catch (Exception e) {
+                    Notification.show("Non è possibile inviare Estratto Conto campagna:"+e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                setHeader("Campagna::EC");
+                add.setVisible(false);
+                search.setVisible(false);
+                grid.setVisible(false);
+                editor.edit(campagna);
+            });
+            return button;
+        });
+
+        grid.addComponentColumn(campagna -> {
+            Button button = new Button("Visualizza Estratto Conto", VaadinIcons.ENVELOPES);
+            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Chiusa);
+            button.addClickListener(click -> {
+                setHeader("Campagna::Ccp");
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.edit(campagna);
+                abbonamentoGrid
+                .populate(
+                  abbonamentoDao.findByCampagna(campagna)
+                      .stream()
+                      .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.InviatoEC)
                       .collect(Collectors.toList()));
                 grid.setVisible(false);
             });
