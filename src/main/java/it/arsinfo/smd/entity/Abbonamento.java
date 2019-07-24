@@ -180,10 +180,7 @@ public class Abbonamento implements SmdEntity {
     
     @Transient
     public BigDecimal getResiduo() {
-        if (versamento == null) {
-            return getTotale();
-        }
-        return getTotale().subtract(versamento.getImporto());
+        return getTotale().subtract(incassato);
     }
 
     public BigDecimal getIncassato() {
