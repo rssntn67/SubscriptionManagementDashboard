@@ -49,8 +49,8 @@ public class Abbonamento implements SmdEntity {
     private Versamento versamento;
 
     private BigDecimal importo=BigDecimal.ZERO;
-
     private BigDecimal spese=BigDecimal.ZERO;
+    private BigDecimal incassato=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
@@ -186,12 +186,8 @@ public class Abbonamento implements SmdEntity {
         return getTotale().subtract(versamento.getImporto());
     }
 
-    @Transient
     public BigDecimal getIncassato() {
-        if (versamento == null) {
-            return BigDecimal.ZERO;
-        }
-        return versamento.getImporto();
+        return incassato;
     }
 
     public StatoAbbonamento getStatoAbbonamento() {
@@ -310,6 +306,10 @@ public class Abbonamento implements SmdEntity {
         campo += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
         campo += String.format("%02d", Long.parseLong(campo) % 93);
         return campo;
+    }
+
+    public void setIncassato(BigDecimal incassato) {
+        this.incassato = incassato;
     }
 
 

@@ -684,7 +684,7 @@ public class Smd {
         return op;        
     }
             
-    public static Versamento incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static void incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
             throw new UnsupportedOperationException("incassa: Incasso null");
@@ -705,17 +705,20 @@ public class Smd {
             log.error("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
             throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
         }
-        if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
-            throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, non rimane abbastanza credito sul versamento");            
-        }
-        versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
-        incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
         abbonamento.setVersamento(versamento);
-        abbonamento.setStatoAbbonamento(StatoAbbonamento.Validato);
-        return versamento;
+        if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
+            abbonamento.setIncassato(versamento.getImporto());
+            versamento.setIncassato(versamento.getImporto());
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.InviatoEC);
+        } else {
+            abbonamento.setIncassato(abbonamento.getTotale());
+            versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
+            incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Validato);
+        }
     }
 
-    public static Versamento dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static void dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("dissocia: Incasso null");
             throw new UnsupportedOperationException("dissocia: Incasso null");
@@ -740,10 +743,10 @@ public class Smd {
             log.error(String.format("dissocia: Abbonamento e Versamento non sono associati. Abbonamento=%s, Versamento=%s",abbonamento.toString(),versamento.toString()));
             throw new UnsupportedOperationException("dissocia: Abbonamento e Versamento non sono associati");
         }
-        versamento.setIncassato(versamento.getIncassato().subtract(abbonamento.getTotale()));
+        versamento.setIncassato(versamento.getIncassato().subtract(abbonamento.getIncassato()));
         incasso.setIncassato(incasso.getIncassato().subtract(abbonamento.getTotale()));
+        abbonamento.setIncassato(BigDecimal.ZERO);
         abbonamento.setVersamento(null);
-        return versamento;
     }
     
     public static boolean isVersamento(String versamento) {        

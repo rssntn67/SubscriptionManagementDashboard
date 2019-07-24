@@ -1,5 +1,6 @@
 package it.arsinfo.smd;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -19,23 +21,27 @@ import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.VersamentoDao;
 
 @Service
 public class SmdServiceImpl implements SmdService {
@@ -73,6 +79,12 @@ public class SmdServiceImpl implements SmdService {
     @Autowired
     PubblicazioneDao pubblicazioneDao;
 
+    @Autowired
+    VersamentoDao versamentoDao;
+    
+    @Autowired
+    IncassoDao incassoDao;
+    
     @Override
     public void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) {
         List<Abbonamento> abbonamentiCampagna = Smd.generaAbbonamentiCampagna(campagna, anagraficaDao.findAll(),
@@ -494,6 +506,47 @@ public class SmdServiceImpl implements SmdService {
                 items.addAll(sped.getSpedizioneItems());
             });
         return items;
+    }
+
+    @Override
+    public void incassa(Abbonamento abbonamento, Versamento versamento) {
+        Incasso incasso = versamento.getIncasso();
+        Smd.incassa(incasso,versamento, abbonamento);
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+        abbonamentoDao.save(abbonamento);
+        
+    }
+
+    @Override
+    public void dissocia(Abbonamento abbonamento, Versamento versamento) {
+        Incasso incasso = versamento.getIncasso();
+        Smd.dissocia(incasso, versamento, abbonamento);
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+        abbonamentoDao.save(abbonamento);        
+    }
+
+    @Override
+    public List<Abbonamento> getAssociati(Versamento versamento) {
+        if (versamento == null) {
+            return new ArrayList<>();
+        }
+        return abbonamentoDao.findByVersamento(versamento);
+    }
+
+    @Override
+    public List<Abbonamento> getAssociabili(Versamento versamento) {
+        if (versamento == null || versamento.getResiduo().compareTo(BigDecimal.ZERO) <= 0) {
+            return new ArrayList<>();
+        }
+        return abbonamentoDao
+                .findByVersamento(null)
+                .stream()
+                .filter(abb -> 
+                    abb.getStatoIncasso() == Incassato.No 
+                    )
+                .collect(Collectors.toList());
     }
 
 }

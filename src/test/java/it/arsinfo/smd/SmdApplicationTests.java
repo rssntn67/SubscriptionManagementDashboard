@@ -1606,8 +1606,8 @@ public class SmdApplicationTests {
         assertEquals(1, versamentoDao.findAll().size());
 
         incasso.getVersamenti().stream().forEach(v-> {
-            versamentoDao.save(
-                           Smd.incassa(incasso,v, abb));
+            Smd.incassa(incasso,v, abb);
+            versamentoDao.save(v);
         });
         incassoDao.save(incasso);
         abbonamentoDao.save(abb);

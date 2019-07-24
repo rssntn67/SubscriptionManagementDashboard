@@ -11,6 +11,7 @@ import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
 
@@ -45,4 +46,11 @@ public interface SmdService {
 
     List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
 
+    void incassa(Abbonamento abbonamento, Versamento versamento);
+    
+    void dissocia(Abbonamento abbonamento, Versamento versamento);
+    
+    List<Abbonamento> getAssociati(Versamento versamento);
+    
+    List<Abbonamento> getAssociabili(Versamento versamento);
 }

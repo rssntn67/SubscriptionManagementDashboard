@@ -36,6 +36,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final TextField spese = new TextField("Spese");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
+    private final TextField incassato = new TextField("Incassato");
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
     private final TextField campo = new TextField("V Campo Poste Italiane");
@@ -53,7 +54,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,campo,
                                                     ccp);
         
-        HorizontalLayout tri = new HorizontalLayout(importo,spese,totale,residuo);
+        HorizontalLayout tri = new HorizontalLayout(importo,spese,totale,incassato,residuo);
 
         setComponents(getActions(),pri, sec,tri);
         
@@ -72,6 +73,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         importo.setReadOnly(true);
         totale.setReadOnly(true);
         spese.setReadOnly(true);
+        incassato.setReadOnly(true);
         residuo.setReadOnly(true);
         campo.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
@@ -98,6 +100,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         .forField(spese)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .bind("spese");
+        getBinder()
+        .forField(incassato)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("incassato");
         getBinder()
             .forField(totale)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
