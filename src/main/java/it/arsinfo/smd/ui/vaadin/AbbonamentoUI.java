@@ -1,7 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,9 +149,20 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Selezionare la Pubblicazione",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                if (get().getId() == null ) {
-                    get().setAbbonamento(editor.get());
+                get().setAbbonamento(editor.get());
+                if (get().getId() == null && editor.get().getId() == null) {
                     editor.addEstrattoConto(get());
+                    onChange();
+                    return;
+                }
+                if (get().getId() == null ) {
+                    editor.addEstrattoConto(get());
+                    try {
+                      smdService.generaAbbonamento(editor.get(), get());  
+                    } catch (Exception e) {
+                        Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
                     onChange();
                     return;
                 }
@@ -168,7 +178,10 @@ public class AbbonamentoUI extends SmdUI {
             @Override 
             public void delete() {
                 if (get().getId() == null ) {
-                    editor.remove(get());
+                    if (!editor.remove(get())) {
+                        Notification.show("Non posso rimuovere EC",Notification.Type.WARNING_MESSAGE);
+                        return;
+                    }
                     onChange();
                     return;
                 }
@@ -197,7 +210,6 @@ public class AbbonamentoUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(add.generate());
-            estrattoContoAdd.setAbbonamento(editor.get());
             estrattoContoAdd.setVisible(true);
         });
         
@@ -212,17 +224,9 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
-            estrattoContoAdd.setVisible(false);
+            estrattoContoAdd.setVisible(grid.getSelected().getCampagna() == null);
             estrattoContoEditor.setVisible(false);
-            estrattoContoGrid.populate(
-               estrattoContoDao.findByAbbonamento(
-              grid.getSelected())
-               .stream().map(ec -> {
-                   ec.setAbbonamento(grid.getSelected());
-                   return ec;
-               }).collect(Collectors.toList())
-               
-               );
+            estrattoContoGrid.populate(findByAbbonamento(grid.getSelected()));               
         });
 
         editor.setChangeHandler(() -> {
@@ -250,7 +254,12 @@ public class AbbonamentoUI extends SmdUI {
             estrattoContoAdd.setVisible(estrattoContoEditor.get().getStorico() == null);
             estrattoContoEditor.setVisible(false);
             editor.edit(estrattoContoEditor.get().getAbbonamento());
-            estrattoContoGrid.populate(editor.getEstrattiConto());
+            if (estrattoContoEditor.get().getId() == null) {
+                estrattoContoGrid.populate(editor.getEstrattiConto());
+            } else {
+                estrattoContoGrid.populate(findByAbbonamento(editor.get()));
+            }
+            
         });
         
         estrattoContoGrid.setChangeHandler(() -> {
@@ -269,7 +278,16 @@ public class AbbonamentoUI extends SmdUI {
 
     }
 
-    public List<EstrattoConto> findByAbbonamaneto(Abbonamento abbonamento) {
-        return estrattoContoDao.findByAbbonamento(abbonamento);
+    public List<EstrattoConto> findByAbbonamento(Abbonamento abbonamento) {
+        return estrattoContoDao.findByAbbonamento(
+                                                  abbonamento);
+
+        /*
+        .stream().map(ec -> {
+                    ec.setAbbonamento(abbonamento);
+                    return ec;
+                }).collect(Collectors.toList())
+                ;
+                */
     }
 }

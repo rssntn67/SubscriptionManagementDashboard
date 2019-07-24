@@ -148,9 +148,25 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     }
     
     public boolean remove(EstrattoConto estrattoconto) {
+        if (estrattoconto.getId() != null) {
+            return removeEstrattoContoById(estrattoconto.getId());
+        }
         return estrattiConto.remove(estrattoconto);
     }
     
+    private boolean removeEstrattoContoById(Long id) {
+        List<EstrattoConto> ecs = new ArrayList<>();
+        boolean match = false;
+        for (EstrattoConto ec : estrattiConto) {
+            if (ec.getId() != null && ec.getId().longValue() == id.longValue()) {
+                match=true;
+                continue;
+            }
+            ecs.add(ec);
+        }
+        
+        return match;
+    }
     public List<EstrattoConto> getEstrattiConto() {
         return estrattiConto;
     }
