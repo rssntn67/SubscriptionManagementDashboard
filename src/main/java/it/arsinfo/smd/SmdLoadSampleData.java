@@ -391,8 +391,8 @@ public class SmdLoadSampleData implements Runnable {
         p.setAbbonamentoConSconto(new BigDecimal(6.00));
         p.setAbbonamentoSostenitore(new BigDecimal(12.00));
 
-        p.setMar(true);
-        p.setSet(true);
+        p.setGen(true);
+        p.setLug(true);
         p.setAnticipoSpedizione(3);
         return p;
     }
@@ -413,7 +413,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setAbbonamentoSostenitore(new BigDecimal(10.00));
 
         p.setGen(true);
-        p.setAnticipoSpedizione(0);
+        p.setAnticipoSpedizione(3);
 
         return p;
     }
