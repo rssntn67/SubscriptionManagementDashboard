@@ -37,7 +37,8 @@ public abstract class SmdUI extends UI {
     public final static String URL_LOGIN = "/login.html";
     public final static String URL_LOGIN_PROCESSING = "/login";
     public final static String URL_LOGIN_FAILURE = "/login.html?error";
-    public final static String URL_LOGOUT = "/login.html?logout";
+    public final static String URL_LOGOUT = "/logout";
+    public final static String URL_REDIRECT_LOGOUT = "/login.html?logout";
     public final static String URL_ANAGRAFICA = "/anagrafica";
     public final static String URL_STORICO = "/storico";
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";

@@ -28,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Anno;
@@ -74,6 +75,7 @@ import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
 import it.arsinfo.smd.ui.security.SecurityConfig;
 import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
@@ -127,6 +129,9 @@ public class SmdApplicationTests {
     @Autowired
     private AuthenticationSuccessHandler authenticationSuccessHandler;
 
+    @Autowired 
+    private LogoutSuccessHandler logoutSuccessHandler;
+    
     private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
 
     @Before
@@ -199,6 +204,8 @@ public class SmdApplicationTests {
         assertTrue(passwordEncoder instanceof BCryptPasswordEncoder);
         assertNotNull(authenticationSuccessHandler);
         assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);        
+        assertNotNull(logoutSuccessHandler);
+        assertTrue(logoutSuccessHandler instanceof CustomLogoutSuccessHandler);        
     }
     
     @Test

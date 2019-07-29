@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -24,13 +25,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private final PasswordEncoder passwordEncoder;
 
 	private final RedirectAuthenticationSuccessHandler successHandler;
+	private final LogoutSuccessHandler logoutHandler;
+	
 	
 	@Autowired
 	public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
-			RedirectAuthenticationSuccessHandler successHandler) {
+			RedirectAuthenticationSuccessHandler successHandler, LogoutSuccessHandler logouthandler) {
 		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 		this.successHandler = successHandler;
+		this.logoutHandler=logouthandler;
 	}
 
 	@Override
@@ -60,7 +64,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		FormLoginConfigurer<HttpSecurity> login = sec.formLogin().permitAll();
 		login = login.loginPage(SmdUI.URL_LOGIN).loginProcessingUrl(SmdUI.URL_LOGIN_PROCESSING)
 				.failureUrl(SmdUI.URL_LOGIN_FAILURE).successHandler(successHandler);
-		login.and().logout().logoutSuccessUrl(SmdUI.URL_LOGOUT);
+		login.and().logout()
+		.logoutSuccessUrl(SmdUI.URL_REDIRECT_LOGOUT)
+                .logoutSuccessHandler(logoutHandler)
+		.invalidateHttpSession(true)
+		.deleteCookies("JSESSIONID")
+                ;
 	}
 
 }
