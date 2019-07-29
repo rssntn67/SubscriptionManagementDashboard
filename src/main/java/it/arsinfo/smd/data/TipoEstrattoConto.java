@@ -9,5 +9,6 @@ public enum TipoEstrattoConto {
     OmaggioGesuiti,
     OmaggioCuriaDiocesiana, 
     OmaggioDirettoreAdp, 
-    OmaggioEditore
+    OmaggioEditore,
+    DuplicatoSpedizione
 }
