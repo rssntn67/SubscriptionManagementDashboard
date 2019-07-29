@@ -541,6 +541,8 @@ public class Smd {
             break;
         case OmaggioGesuiti:
             break;
+        case DuplicatoSpedizione:
+            break;
         default:
             break;
 
