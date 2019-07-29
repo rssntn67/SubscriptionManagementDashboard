@@ -250,7 +250,7 @@ public class CampagnaUI extends SmdUI {
                 .populate(
                   abbonamentoDao.findByCampagna(campagna)
                       .stream()
-                      .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.InviatoEC)
+                      .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Sospeso)
                       .collect(Collectors.toList()));
                 grid.setVisible(false);
             });

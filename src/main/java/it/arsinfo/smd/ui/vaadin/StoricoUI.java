@@ -144,7 +144,7 @@ public class StoricoUI extends SmdUI {
         notaGrid.setChangeHandler(() -> {});
 
         update.setChangeHandler(() -> {
-            if (editor.get().getStatoStorico() == StatoStorico.SOSPESO) {
+            if (editor.get().getStatoStorico() == StatoStorico.Sospeso) {
                 
             }
             try {

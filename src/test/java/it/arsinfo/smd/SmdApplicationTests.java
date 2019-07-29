@@ -635,7 +635,7 @@ public class SmdApplicationTests {
         notaDao.save(nota1);
         assertEquals(2, notaDao.findAll().size());
         
-        storico0.setStatoStorico(StatoStorico.SOSPESO);
+        storico0.setStatoStorico(StatoStorico.Sospeso);
         storicoDao.save(storico0);
         Nota nota2 = new Nota();
         nota2.setStorico(storico0);
@@ -644,9 +644,9 @@ public class SmdApplicationTests {
         assertEquals(3, notaDao.findAll().size());
         assertEquals(2, storicoDao.findAll().size());
 
-        assertEquals(0, storicoDao.findByStatoStorico(StatoStorico.VALIDO).size());
-        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.NUOVO).size());
-        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.SOSPESO).size());
+        assertEquals(0, storicoDao.findByStatoStorico(StatoStorico.Valido).size());
+        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Nuovo).size());
+        assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Sospeso).size());
 
         assertEquals(1, storicoDao.findByInvio(Invio.Intestatario).size());
         assertEquals(1, storicoDao.findByInvio(Invio.Destinatario).size());
@@ -1625,7 +1625,7 @@ public class SmdApplicationTests {
         assertEquals(1, abbonamenti.size());
         Abbonamento abbonamento = abbonamenti.iterator().next();
         assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
-        assertEquals(StatoAbbonamento.Validato, abbonamento.getStatoAbbonamento());
+        assertEquals(StatoAbbonamento.Valido, abbonamento.getStatoAbbonamento());
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
         incassoDao.deleteAll();

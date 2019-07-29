@@ -136,7 +136,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void aggiornaAbbonamentoDaStorico(Storico storico) throws Exception {
-        if (storico.getStatoStorico() == StatoStorico.SOSPESO) {
+        if (storico.getStatoStorico() == StatoStorico.Sospeso) {
             rimuoviECDaStorico(storico);
             return;
         }
@@ -308,7 +308,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void rimuoviECDaStorico(Storico storico)
             throws Exception {
-        if (storico.getStatoStorico() != StatoStorico.SOSPESO) {
+        if (storico.getStatoStorico() != StatoStorico.Sospeso) {
             return;
         }
         Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
@@ -519,7 +519,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void dissocia(Abbonamento abbonamento, Versamento versamento) {
+    public void reverti(Abbonamento abbonamento, Versamento versamento) {
         Incasso incasso = versamento.getIncasso();
         Smd.dissocia(incasso, versamento, abbonamento);
         versamentoDao.save(versamento);
@@ -547,6 +547,12 @@ public class SmdServiceImpl implements SmdService {
                     abb.getStatoIncasso() == Incassato.No 
                     )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void chiudiCampagna(Campagna campagna) throws Exception {
+        // TODO Auto-generated method stub
+        
     }
 
 }

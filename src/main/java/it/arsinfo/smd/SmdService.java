@@ -15,7 +15,6 @@ import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
 
-    void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
     
     void deleteCampagnaAbbonamenti(Campagna campagna) throws Exception;
     
@@ -28,29 +27,24 @@ public interface SmdService {
     void rimuoviECDaStorico(Storico storico) throws Exception;
 
     void generaAbbonamento(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception;
-
+    void generaAbbonamento(Abbonamento abbonamento, List<EstrattoConto> estrattiConto) throws Exception;
     void aggiornaECAbbonamento(Abbonamento abbonamento,EstrattoConto estrattoConto) throws Exception;
     void cancellaECAbbonamento(Abbonamento abbonamento,EstrattoConto estrattoConto) throws Exception;
-
-    void generaAbbonamento(Abbonamento abbonamento, List<EstrattoConto> estrattiConto) throws Exception;
     
+    void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
     void inviaCampagna(Campagna campagna) throws Exception;
-
     void inviaEstrattoConto(Campagna campagna) throws Exception;
+    void chiudiCampagna(Campagna campagna) throws Exception;
 
     void generaStatisticheTipografia(Anno anno, Mese mese); 
-
     void generaStatisticheTipografia(Anno anno); 
-    
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione);
+    
 
     List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
 
     void incassa(Abbonamento abbonamento, Versamento versamento);
-    
-    void dissocia(Abbonamento abbonamento, Versamento versamento);
-    
+    void reverti(Abbonamento abbonamento, Versamento versamento);    
     List<Abbonamento> getAssociati(Versamento versamento);
-    
     List<Abbonamento> getAssociabili(Versamento versamento);
 }

@@ -66,7 +66,6 @@ public class StoricoEditor
         tipoEstrattoConto.setEmptySelectionAllowed(false);
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
-        statoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
 
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponentsAndExpand(intestatario);

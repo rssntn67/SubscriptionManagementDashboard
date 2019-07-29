@@ -22,7 +22,7 @@ public abstract class IncassoAbstractUI extends SmdUI {
     
     protected void dissocia(Abbonamento abbonamento, Versamento versamento) {
         try {
-            smsService.dissocia(abbonamento, versamento);
+            smsService.reverti(abbonamento, versamento);
         } catch (UnsupportedOperationException e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             

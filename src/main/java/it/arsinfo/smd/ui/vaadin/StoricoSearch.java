@@ -87,7 +87,6 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterInvioSped.setPlaceholder("Seleziona Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
         filterStatoStorico.setPlaceholder("Seleziona Stato");
-        filterStatoStorico.setItemCaptionGenerator(StatoStorico::getDescr);
         filterStatoStorico.addSelectionListener(e ->onChange());
 
         

@@ -192,10 +192,10 @@ public class Smd {
             case Proposto:
                 sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 break;
-            case Validato:
+            case Valido:
                 sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 break;
-            case InviatoEC:
+            case Sospeso:
                 sped.setStatoSpedizione(StatoSpedizione.SOSPESA);
                 break;
             case Annullato:
@@ -421,7 +421,7 @@ public class Smd {
                 .filter(abb -> abb.getCampagna().getId().longValue() == campagna.getId().longValue())
                 .map(abb -> {
                     if (abb.getStatoIncasso() ==  Incassato.Omaggio) {
-                        abb.setStatoAbbonamento(StatoAbbonamento.Validato);
+                        abb.setStatoAbbonamento(StatoAbbonamento.Valido);
                     } else {
                         abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
                     }
@@ -549,7 +549,7 @@ public class Smd {
     }
    
     public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estratticonto) {
-        StatoStorico pagamentoRegolare = StatoStorico.VALIDO;
+        StatoStorico pagamentoRegolare = StatoStorico.Valido;
         switch (storico.getTipoEstrattoConto()) {
         case Ordinario:
             pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
@@ -589,17 +589,17 @@ public class Smd {
                     continue;
                 }
                 if (abb.getTotale().signum() == 0 ) {
-                    return StatoStorico.VALIDO;
+                    return StatoStorico.Valido;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
-                    return StatoStorico.SOSPESO;
+                    return StatoStorico.Sospeso;
                 }
                 if (abb.getTotale().signum() > 0 &&  abb.getVersamento() != null) {
-                    return StatoStorico.VALIDO;
+                    return StatoStorico.Valido;
                 }
             }
         }
-        return StatoStorico.SOSPESO;
+        return StatoStorico.Sospeso;
     }
         
     public static Date getStandardDate(LocalDate localDate) {
@@ -709,12 +709,12 @@ public class Smd {
         if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
             abbonamento.setIncassato(versamento.getImporto());
             versamento.setIncassato(versamento.getImporto());
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.InviatoEC);
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
         } else {
             abbonamento.setIncassato(abbonamento.getTotale());
             versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
             incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Validato);
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
         }
     }
 
