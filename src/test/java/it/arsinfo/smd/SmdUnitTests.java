@@ -477,13 +477,17 @@ public class SmdUnitTests {
             log.info(sped.toString());
             sped.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
             switch (sped.getMeseSpedizione()) {
+            case OTTOBRE:
+                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, sped.getSpedizioneItems().size());
+                break;
             case NOVEMBRE:
                 assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(2, sped.getSpedizioneItems().size());
                 break;
             case DICEMBRE:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi()+blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(3, sped.getSpedizioneItems().size());
+                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(2, sped.getSpedizioneItems().size());
                 break;
             case GENNAIO:
                 assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
@@ -498,8 +502,8 @@ public class SmdUnitTests {
                 assertEquals(2, sped.getSpedizioneItems().size());
                 break;
             case APRILE:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, sped.getSpedizioneItems().size());
+                assertEquals(blocchetti.getGrammi()+messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(3, sped.getSpedizioneItems().size());
                 break;
             case GIUGNO:
                 assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
@@ -542,13 +546,17 @@ public class SmdUnitTests {
             log.info(sped.toString());
             sped.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
             switch (sped.getMeseSpedizione()) {
+            case OTTOBRE:
+                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, sped.getSpedizioneItems().size());
+                break;
             case NOVEMBRE:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, sped.getSpedizioneItems().size());
                 break;
             case DICEMBRE:
-                assertEquals(messaggio.getGrammi()+blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, sped.getSpedizioneItems().size());
+                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, sped.getSpedizioneItems().size());
                 break;
             case GENNAIO:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
@@ -563,12 +571,8 @@ public class SmdUnitTests {
                 assertEquals(1, sped.getSpedizioneItems().size());
                 break;
             case APRILE:
-                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, sped.getSpedizioneItems().size());
-                break;
-            case GIUGNO:
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, sped.getSpedizioneItems().size());
+                assertEquals(messaggio.getGrammi()+blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(2, sped.getSpedizioneItems().size());
                 break;
             default:
                 assertTrue(false);
@@ -590,13 +594,17 @@ public class SmdUnitTests {
             log.info(sped.toString());
             sped.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
             switch (sped.getMeseSpedizione()) {
+            case OTTOBRE:
+                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, sped.getSpedizioneItems().size());
+                break;
             case NOVEMBRE:
                 assertEquals(0, sped.getPesoStimato().intValue());
                 assertEquals(0, sped.getSpedizioneItems().size());
                 break;
             case DICEMBRE:
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, sped.getSpedizioneItems().size());
+                assertEquals(0, sped.getPesoStimato().intValue());
+                assertEquals(0, sped.getSpedizioneItems().size());
                 break;
             case GENNAIO:
                 assertEquals(0, sped.getPesoStimato().intValue());
@@ -611,12 +619,12 @@ public class SmdUnitTests {
                 assertEquals(0, sped.getSpedizioneItems().size());
                 break;
             case APRILE:
-                assertEquals(0, sped.getPesoStimato().intValue());
-                assertEquals(0, sped.getSpedizioneItems().size());
-                break;
-            case GIUGNO:
                 assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, sped.getSpedizioneItems().size());
+                break;
+            case GIUGNO:
+                assertEquals(0, sped.getPesoStimato().intValue());
+                assertEquals(0, sped.getSpedizioneItems().size());
                 break;
             default:
                 assertTrue(false);
@@ -826,7 +834,7 @@ public class SmdUnitTests {
             log.info(ec.toString());
             log.info(abb.toString());
         }                
-        assertEquals(12, spedizioni.size());
+        assertEquals(13, spedizioni.size());
         spedizioni.stream().forEach(sped -> log.info(sped.toString()));
         assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
         assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
@@ -880,7 +888,7 @@ public class SmdUnitTests {
             log.info(ec.toString());
         }      
         
-        assertEquals(12, spedizioni.size());
+        assertEquals(13, spedizioni.size());
         spedizioni.stream().forEach(sped -> log.info(sped.toString()));
         assertEquals(0, abb.getImporto().doubleValue(),0);
         assertEquals(0,abb.getSpese().doubleValue(),0);
