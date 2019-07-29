@@ -8,6 +8,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -42,7 +43,9 @@ public class NotaUI extends SmdUI {
         search.setChangeHandler(() -> grid.populate(search.find()));
 
         add.setChangeHandler(() -> {
-            editor.edit(add.generate());
+            Nota nota = add.generate();
+            nota.setOperatore(getLoggedInUser().getUsername());
+            editor.edit(nota);
             search.setVisible(false);
             grid.setVisible(false);
         });

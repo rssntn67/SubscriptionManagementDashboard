@@ -758,7 +758,7 @@ public class SmdLoadSampleData implements Runnable {
         storico.setInvio(invio);
         storico.setInvioSpedizione(invioSpedizione);
         Nota nota= new Nota(storico);
-        nota.setDescription("Creato storico");
+        nota.setDescription("Nuovo:" + storico.toString());
         storico.getNote().add(nota);
         return storico;
     }

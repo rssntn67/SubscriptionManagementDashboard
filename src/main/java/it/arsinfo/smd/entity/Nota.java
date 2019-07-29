@@ -22,6 +22,7 @@ public class Nota implements SmdEntity {
     private Storico storico;
 
     private String description;
+    private String operatore="admin";
 
     private final Date data = new Date();
 
@@ -52,8 +53,8 @@ public class Nota implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Nota[id=%d, '%s', '%s', '%td %tb %tY %tR %tZ']",
-                             id, storico.getCaption(), description,
+        return String.format("Nota[id=%d, '%s', %s '%s', '%td %tb %tY %tR %tZ']",
+                             id, storico.getCaption(), operatore, description,
                              data, data, data, data, data);
     }
 
@@ -63,5 +64,15 @@ public class Nota implements SmdEntity {
 
     public void setStorico(Storico storico) {
         this.storico = storico;
+    }
+
+
+    public String getOperatore() {
+        return operatore;
+    }
+
+
+    public void setOperatore(String operatore) {
+        this.operatore = operatore;
     }
 }

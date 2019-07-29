@@ -82,10 +82,21 @@ public class StoricoUI extends SmdUI {
                     return;
                 }
                 super.saveWithNoCallOnChange();
+                Nota nota = new Nota(get());
+                nota.setOperatore(getLoggedInUser().getUsername());
+                if (get().getId() == null) {
+                    nota.setDescription("Nuovo: " + get().toString());
+                } else {
+                    nota.setDescription("Aggiornato: " + get().toString());                    
+                }
+                notaDao.save(nota);
+                
+                
                 if (!getNota().isEmpty()) {
-                    Nota nota = new Nota(get());
-                    nota.setDescription(getNota().getValue());
-                    notaDao.save(nota);
+                    Nota unota = new Nota(get());
+                    unota.setOperatore(getLoggedInUser().getUsername());
+                    unota.setDescription(getNota().getValue());
+                    notaDao.save(unota);
                     getNota().clear();
                 }
                 onChange();
@@ -93,7 +104,7 @@ public class StoricoUI extends SmdUI {
         };
         
         NotaGrid notaGrid = new NotaGrid("Note");
-        notaGrid.getGrid().setColumns("data","description");
+        notaGrid.getGrid().setColumns("operatore","data","description");
         notaGrid.getGrid().setHeight("200px");
 
         SmdButton update = new SmdButton("Aggiorna Abbonamento Campagna ", VaadinIcons.ARCHIVES);
