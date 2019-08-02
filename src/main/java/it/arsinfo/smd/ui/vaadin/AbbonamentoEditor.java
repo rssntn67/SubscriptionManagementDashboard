@@ -34,12 +34,13 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     private final TextField importo = new TextField("Importo");
     private final TextField spese = new TextField("Spese");
+    private final TextField pregresso = new TextField("Pregresso");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
     private final TextField incassato = new TextField("Incassato");
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
-    private final TextField campo = new TextField("V Campo Poste Italiane");
+    private final TextField codeLine = new TextField("Code Line");
     private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Selezionare ccp",
             EnumSet.allOf(Ccp.class));
 
@@ -51,10 +52,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         HorizontalLayout pri = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
                                                     anno);
-        HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,campo,
+        HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,codeLine,
                                                     ccp);
         
-        HorizontalLayout tri = new HorizontalLayout(importo,spese,totale,incassato,residuo);
+        HorizontalLayout tri = new HorizontalLayout(importo,spese,pregresso,totale,incassato,residuo);
 
         setComponents(getActions(),pri, sec,tri);
         
@@ -72,9 +73,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         importo.setReadOnly(true);
         totale.setReadOnly(true);
         spese.setReadOnly(true);
+        pregresso.setReadOnly(true);
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
-        campo.setReadOnly(true);
+        codeLine.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
 
@@ -85,9 +87,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
         getBinder().forField(cassa).bind("cassa");
-        getBinder().forField(campo).asRequired().withValidator(ca -> ca != null,
-                "Deve essere definito").bind(Abbonamento::getCampo,
-                                             Abbonamento::setCampo);
+        getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
+                "Deve essere definito").bind(Abbonamento::getCodeLine,
+                                             Abbonamento::setCodeLine);
         getBinder().forField(ccp).bind("ccp");
         
 
@@ -99,6 +101,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         .forField(spese)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .bind("spese");
+        getBinder()
+        .forField(pregresso)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("pregresso");
         getBinder()
         .forField(incassato)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
@@ -124,8 +130,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null);
         intestatario.setReadOnly(persisted);
         anno.setReadOnly(persisted);
-        campo.setVisible(persisted);
-        campo.setReadOnly(persisted);
+        codeLine.setVisible(persisted);
+        codeLine.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
         statoIncasso.setVisible(persisted);
         cassa.setReadOnly(persisted);
@@ -135,7 +141,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         if (persisted && 
                 abbonamento.getTotale().doubleValue() == BigDecimal.ZERO.doubleValue()) {
             cassa.setVisible(false);
-            campo.setVisible(false);
+            codeLine.setVisible(false);
             ccp.setVisible(false);
         } else if (!persisted ){
             cassa.setVisible(true);

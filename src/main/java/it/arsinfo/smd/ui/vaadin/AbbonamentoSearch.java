@@ -28,7 +28,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
-    private String searchCampo;
+    private String searchCodeLine;
     private String searchCap;
     private Anagrafica customer;
     private Anno anno;
@@ -54,17 +54,17 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
         
-        TextField filterCampo = new TextField();
+        TextField filterCodeLine = new TextField();
         TextField filterCap = new TextField();
 
 
         setComponents(new HorizontalLayout(filterAnagrafica,filterPubblicazione,filterStatoAbbonamento,filterAnno,filterCassa),
-                      new HorizontalLayout(filterCap,filterCampo,filterCampagna,filterTipoEstrattoConto,filterCcp));
+                      new HorizontalLayout(filterCap,filterCodeLine,filterCampagna,filterTipoEstrattoConto,filterCcp));
 
-        filterCampo.setPlaceholder("Inserisci Code Line");
-        filterCampo.setValueChangeMode(ValueChangeMode.EAGER);
-        filterCampo.addValueChangeListener(e -> {
-            searchCampo = e.getValue();
+        filterCodeLine.setPlaceholder("Inserisci Code Line");
+        filterCodeLine.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCodeLine.addValueChangeListener(e -> {
+            searchCodeLine = e.getValue();
             onChange();
         });
 
@@ -272,8 +272,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         if (filterStatoAbbonamento.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getStatoAbbonamento() == filterStatoAbbonamento.getValue()).collect(Collectors.toList());      
         }
-        if (!StringUtils.isEmpty(searchCampo)) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.getCampo().toLowerCase().contains(searchCampo.toLowerCase())).collect(Collectors.toList());                  
+        if (!StringUtils.isEmpty(searchCodeLine)) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
         }
         return abbonamenti;
     }

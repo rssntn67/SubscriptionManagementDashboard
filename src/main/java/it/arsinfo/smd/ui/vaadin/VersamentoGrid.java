@@ -20,7 +20,7 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
                    "importo",
                    "incassato",
                    "residuo",
-                   "campo",
+                   "codeLine",
                    "progressivo",
                    "dataPagamento",
                    "dataContabile"
@@ -36,7 +36,7 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>");
         gridfooter.getCell("incassato").setHtml("<b>"+getIncassatoTotale(items).toString()+"</b>");
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduoTotale(items).toString()+"</b>");
-        gridfooter.getCell("campo").setHtml("-------");
+        gridfooter.getCell("codeLine").setHtml("-------");
         gridfooter.getCell("dataContabile").setHtml("-------");
 
     }

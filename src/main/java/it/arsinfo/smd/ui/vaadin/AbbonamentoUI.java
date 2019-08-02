@@ -109,7 +109,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 if (get().getId() == null) {
-                    get().setCampo(Abbonamento.generaCodeLine(get().getAnno()));
+                    get().setCodeLine(Abbonamento.generaCodeLine(get().getAnno()));
                 }
                 if (get().getId() != null && get().getStatoAbbonamento() == StatoAbbonamento.Annullato) {
                     try {

@@ -126,11 +126,11 @@ public class IncassoUI extends IncassoAbstractUI {
             for (Incasso iiii : search.find()) {
                 versamentoDao.findByIncasso(iiii)
                     .stream()
-                    .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCampo() != null)
+                    .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCodeLine() != null)
                     .forEach(v-> {
                     getAssociabili(v)
                     .stream()
-                    .filter(abb -> abb.getCampo() != null && abb.getCampo().equals(v.getCampo()))
+                    .filter(abb -> abb.getCodeLine() != null && abb.getCodeLine().equals(v.getCodeLine()))
                     .forEach(abb -> incassa(abb, v));                        
                     });
             }
@@ -186,7 +186,7 @@ public class IncassoUI extends IncassoAbstractUI {
             }
             versamentoDao.findByIncasso(grid.getSelected())
                 .stream()
-                .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCampo() != null)
+                .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCodeLine() != null)
                 .forEach(v-> {
                     List<Abbonamento> associabili = getAssociabili(v);
                     

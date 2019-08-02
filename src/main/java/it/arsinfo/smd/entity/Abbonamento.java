@@ -48,13 +48,14 @@ public class Abbonamento implements SmdEntity {
     @OneToOne
     private Versamento versamento;
 
+    private BigDecimal pregresso=BigDecimal.ZERO;
     private BigDecimal importo=BigDecimal.ZERO;
     private BigDecimal spese=BigDecimal.ZERO;
     private BigDecimal incassato=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
-    private String campo;
+    private String codeLine;
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
 
@@ -89,12 +90,15 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Int='%d', Imp. '%.2f', Spese '%.2f', , %s,'%s', Anno=%s, Data='%td %tb %tY %tR %tZ']",
-                                   id, getStatoIncasso(), intestatario.getId(), 
-                                   getImporto(),
-                                   getSpese(),
+        return String.format("Abbonamento[id=%d, %s , Int='%d', Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s, Data='%td %tb %tY %tR %tZ']",
+                                   id, 
+                                   getStatoIncasso(), 
+                                   intestatario.getId(), 
+                                   importo,
+                                   spese,
+                                   pregresso,
                                    cassa,
-                                   campo,
+                                   codeLine,
                                    anno,
                                    data, data, data, data, data);
     }
@@ -123,12 +127,12 @@ public class Abbonamento implements SmdEntity {
         this.versamento = versamento;
     }
 
-    public String getCampo() {
-        return campo;
+    public String getCodeLine() {
+        return codeLine;
     }
 
-    public void setCampo(String campo) {
-        this.campo = campo;
+    public void setCodeLine(String codeLine) {
+        this.codeLine = codeLine;
     }
 
     public Cassa getCassa() {
@@ -248,7 +252,7 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return importo.add(spese);
+        return importo.add(spese).add(pregresso);
     }
 
     public BigDecimal getImporto() {
@@ -267,42 +271,42 @@ public class Abbonamento implements SmdEntity {
         this.spese = spese;
     }
 
-    public static boolean checkCampo(String campo) {
-        if (campo == null || campo.length() != 18) {
+    public static boolean checkCodeLine(String codeline) {
+        if (codeline == null || codeline.length() != 18) {
             return false;
             
         }
         
-        String codice = campo.substring(0, 16);
+        String codice = codeline.substring(0, 16);
         
         Long valorecodice = (Long.parseLong(codice) % 93);
-        Integer codicecontrollo = Integer.parseInt(campo.substring(16,18));
+        Integer codicecontrollo = Integer.parseInt(codeline.substring(16,18));
         return codicecontrollo.intValue() == valorecodice.intValue();
     }
 
     /*
      * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
-     * riservati al correntista che intende utilizzare tale campo 2 caratteri
+     * riservati al correntista che intende utilizzare tale codeLine 2 caratteri
      * numerici di controcodice pari al resto della divisione dei primi 16
      * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
      * controcodice: 00 - 92)
      */
     public static String generaCodeLine(Anno anno, Anagrafica anagrafica) {
         // primi 2 caratteri anno
-        String campo = anno.getAnnoAsString().substring(2, 4);
+        String codeline = anno.getAnnoAsString().substring(2, 4);
         // 3-16
-        campo += anagrafica.getCodeLineBase();
-        campo += String.format("%02d", Long.parseLong(campo) % 93);
-        return campo;
+        codeline += anagrafica.getCodeLineBase();
+        codeline += String.format("%02d", Long.parseLong(codeline) % 93);
+        return codeline;
     }
     
     public static String generaCodeLine(Anno anno) {
         // primi 2 caratteri anno
-        String campo = anno.getAnnoAsString().substring(2, 4);
+        String codeLine = anno.getAnnoAsString().substring(2, 4);
         // 3-16
-        campo += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
-        campo += String.format("%02d", Long.parseLong(campo) % 93);
-        return campo;
+        codeLine += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
+        codeLine += String.format("%02d", Long.parseLong(codeLine) % 93);
+        return codeLine;
     }
 
     public void setIncassato(BigDecimal incassato) {

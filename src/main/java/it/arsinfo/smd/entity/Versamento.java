@@ -54,7 +54,7 @@ public class Versamento implements SmdEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataContabile;
     
-    private String campo;
+    private String codeLine;
     
     @Enumerated(EnumType.STRING)
     private Accettazione accettazione;
@@ -141,11 +141,11 @@ public class Versamento implements SmdEntity {
     public void setDataContabile(Date dataContabile) {
         this.dataContabile = dataContabile;
     }
-    public String getCampo() {
-        return campo;
+    public String getCodeLine() {
+        return codeLine;
     }
-    public void setCampo(String campo) {
-        this.campo = campo;
+    public void setCodeLine(String codeLine) {
+        this.codeLine = codeLine;
     }
     public Accettazione getAccettazione() {
         return accettazione;
@@ -159,10 +159,7 @@ public class Versamento implements SmdEntity {
     public void setSostitutivo(Sostitutivo tipoSostitutivo) {
         this.sostitutivo = tipoSostitutivo;
     }    
-    @Transient
-    public boolean isCampovalido() {
-        return Abbonamento.checkCampo(campo);
-    }
+    
     public String getProgressivo() {
         return progressivo;
     }
@@ -171,8 +168,8 @@ public class Versamento implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Versamento[id=%d,Incasso=%d,progressivo='%s',campo='%s',operazione='%s'valido='%b', importo='%.2f', incassato='%.2f', residuo='%.2f']",
-                             id,incasso.getId(),progressivo,campo, operazione,isCampovalido(),importo,incassato,getResiduo());
+        return String.format("Versamento[id=%d,Incasso=%d,progressivo='%s',codeLine='%s',operazione='%s'valido='%b', importo='%.2f', incassato='%.2f', residuo='%.2f']",
+                             id,incasso.getId(),progressivo,codeLine, operazione,Abbonamento.checkCodeLine(codeLine),importo,incassato,getResiduo());
     }
 
     @Transient

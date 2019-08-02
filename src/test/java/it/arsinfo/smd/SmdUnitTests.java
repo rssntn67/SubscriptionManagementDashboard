@@ -121,14 +121,14 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testGenerateCampo() {
+    public void testGenerateCodeLine() {
         Set<String> campi = new HashSet<>();
         for (int i=0; i< 200000;i++) {
         Anagrafica a = SmdLoadSampleData.getAnagraficaBy(""+i, ""+i);
-        String campo = Abbonamento.generaCodeLine(Anno.ANNO2019,a);
-        assertEquals("19", campo.substring(0, 2));
-        assertTrue(Abbonamento.checkCampo(campo));
-        assertTrue(campi.add(campo));
+        String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,a);
+        assertEquals("19", codeLine.substring(0, 2));
+        assertTrue(Abbonamento.checkCodeLine(codeLine));
+        assertTrue(campi.add(codeLine));
         }
         assertEquals(200000, campi.size());        
     }
@@ -306,30 +306,34 @@ public class SmdUnitTests {
         Anno annof = Anno.getAnnoCorrente();
         Mese meseA= Mese.getMeseCorrente();
         if (messaggio.getMesiPubblicazione().contains(meseA)) {
+            log.info(meseA +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
         }
+
         Mese meseB= Mese.getMeseSuccessivo(meseA);
-        if (messaggio.getMesiPubblicazione().contains(meseB)) {
-            numeroRiviste++;
-        }
         if (meseB == Mese.GENNAIO) {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseB)) {
+            log.info(meseB +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
         }
+        
         Mese meseC= Mese.getMeseSuccessivo(meseB);
         if (meseC == Mese.GENNAIO) {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseC)) {
+            log.info(meseC +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
         }
+
         Mese meseD= Mese.getMeseSuccessivo(meseC);
         if (meseD == Mese.GENNAIO) {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseD)) {
+            log.info(meseD +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
         }
 
@@ -350,6 +354,7 @@ public class SmdUnitTests {
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         log.info(abb.toString());
+        log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
         assertEquals(2, spedizioni.size());
         assertEquals(numeroRiviste, items.size());

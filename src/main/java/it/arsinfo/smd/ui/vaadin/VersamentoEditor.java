@@ -24,7 +24,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     private final TextField  importo = new TextField("Importo");
     private final TextField  incassato = new TextField("Incassato");
     private final TextField  residuo = new TextField("residuo");    
-    private final TextField  campo = new TextField("Campo");
+    private final TextField  codeLine = new TextField("CodeLine");
     private final TextField  progressivo = new TextField("Progressivo");
     private final TextField  operazione = new TextField("Operazione");
     
@@ -68,7 +68,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
                       getActions(),
                       new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento),
                       new HorizontalLayout(ccp,cassa,cuas),
-                      new HorizontalLayout(operazione,campo,progressivo),
+                      new HorizontalLayout(operazione,codeLine,progressivo),
                       new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina),
                       new HorizontalLayout(bollettino,accettazione,sostitutivo)
                   );
@@ -116,7 +116,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         dataPagamento.setReadOnly(persisted);
         
         operazione.setReadOnly(persisted);
-        campo.setReadOnly(persisted);
+        codeLine.setReadOnly(persisted);
         progressivo.setReadOnly(persisted);
         
         provincia.setReadOnly(persisted);

@@ -490,7 +490,7 @@ public class Smd {
                 abbonamento.setCampagna(campagna);
                 abbonamento.setAnno(campagna.getAnno());
                 abbonamento.setCassa(cassa);
-                abbonamento.setCampo(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
+                abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
                 abbonamenti.add(abbonamento);
             }
@@ -805,7 +805,7 @@ public class Smd {
         versamento.setSportello(value.substring(52, 54));
 //          value.substring(54,55);
         versamento.setDataContabile(Smd.getStandardDate(value.substring(55,61)));
-        versamento.setCampo(value.substring(61,79));
+        versamento.setCodeLine(value.substring(61,79));
         versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
         return versamento;

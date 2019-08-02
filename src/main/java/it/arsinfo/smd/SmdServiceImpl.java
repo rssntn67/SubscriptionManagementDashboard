@@ -154,7 +154,7 @@ public class SmdServiceImpl implements SmdService {
             abbonamento.setCampagna(campagna);
             abbonamento.setAnno(campagna.getAnno());
             abbonamento.setCassa(storico.getCassa());
-            abbonamento.setCampo(Abbonamento.generaCodeLine(abbonamento.getAnno(),storico.getIntestatario()));
+            abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),storico.getIntestatario()));
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);   
         }
         
@@ -375,102 +375,9 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void inviaEstrattoConto(Campagna campagna) throws Exception {
-        campagna.setStatoCampagna(StatoCampagna.Chiusa);
+        campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         campagnaDao.save(campagna);
-        // TODO Auto-generated method stub
-        /*
-         *         bss.setChangeHandler(()-> {
-            setHeader("Calcola Stato....");
-            bss.getButton().setEnabled(false);
-            pb.setVisible(true);
-            new Thread(() -> {
-                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
-                List<Storico> storici = storicoDao.findAll();
-                float delta = 1.0f/storici.size();
-                pb.setValue(0.0f);
-                storici.stream().forEach( s -> {
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
-                    if (s.getStatoStorico() != calcolato) {
-                        s.setStatoStorico(calcolato);
-                        storicoDao.save(s);
-                    }
-                    access(() -> {
-                        pb.setValue(pb.getValue()+delta);
-                        grid.populate(search.find());
-                        this.push();
-                    });
-                });
-
-                access(() -> {
-                    pb.setValue(0.0f);
-                    pb.setVisible(false);
-                    bss.getButton().setEnabled(true);
-                    setHeader("Storico");
-                    grid.populate(search.find());
-                    this.push();
-                });
-
-            }).start();            
-        });
-
-        gss.setChangeHandler(()-> {
-            setHeader("Calcola Stato....");
-            gss.getButton().setEnabled(false);
-            pb.setVisible(true);
-            new Thread(() -> {
-                List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(Anno.getAnnoCorrente());
-                List<Storico> storici = storicoDao.findAll();
-                List<EstrattoConto> aggiornamenti = Smd.generaEstrattoConto(estrattoContoDao.findAll());
-                if (aggiornamenti.isEmpty() && storici.isEmpty()) {
-                    return;
-                }
-                float delta = 1.0f/(storici.size() + aggiornamenti.size());
-                pb.setValue(0.0f);
-                storici.stream().forEach( s -> {
-                    StatoStorico calcolato =  Smd.getStatoStorico(s, abbonamenti,estrattoContoDao.findAll());
-                    if (s.getStatoStorico() != calcolato) {
-                        s.setStatoStorico(calcolato);
-                        storicoDao.save(s);
-                    }
-                    access(() -> {
-                        pb.setValue(pb.getValue()+delta);
-                        grid.populate(search.find());
-                        this.push();
-                    });
-
-                });
-                aggiornamenti.stream().forEach(ec -> {
-                    estrattoContoDao.save(ec);
-                        access(() -> {
-                            pb.setValue(pb.getValue()+delta);
-                            grid.populate(search.find());
-                            this.push();
-                        });
-                });
-                access(() -> {
-                    pb.setValue(0.0f);
-                    pb.setVisible(false);
-                    gss.getButton().setEnabled(true);
-                    setHeader("Operazioni");
-                    grid.populate(search.find());
-                    this.push();
-                });
-
-            }).start();            
-        });
-
-    public static List<Spedizione> listaSpedizioni(List<Spedizione> spedizioni, InvioSpedizione invioSpedizione, Mese mese, Anno anno) {
-        return spedizioni
-                .stream()
-                .filter(s -> 
-                s.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA && s.getInvioSpedizione() == invioSpedizione
-                && s.getMeseSpedizione() == mese
-                && s.getAnnoSpedizione() == anno
-                ).collect(Collectors.toList());
-    }
-
-         * 
-         */
+        
         
     }
 
