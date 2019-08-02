@@ -178,6 +178,19 @@ public class CampagnaUI extends SmdUI {
         });
 
         grid.addComponentColumn(campagna -> {
+            final Button button = new Button("Visualizza Abbonamenti",VaadinIcons.ENVELOPES);
+            button.addClickListener(click -> {
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.edit(campagna);
+                grid.setVisible(false);
+                abbonamentoGrid.populate(abbonamentoDao.findByAnno(campagna.getAnno()));
+                setHeader("Campagna::Abbonamenti");
+            });
+            return button;
+        });
+        
+        grid.addComponentColumn(campagna -> {
             final Button button = new Button(VaadinIcons.ENVELOPES);
             switch (campagna.getStatoCampagna()) {
             case Generata:
@@ -193,6 +206,7 @@ public class CampagnaUI extends SmdUI {
                 break;                    
 
             case Chiusa:
+                button.setCaption("Campagna Chiusa");
                 button.setEnabled(false);
                 break;
 
@@ -239,6 +253,7 @@ public class CampagnaUI extends SmdUI {
                 default:
                     break;
                 }
+                grid.populate(search.find());
             });
             return button;
         });

@@ -460,7 +460,8 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void chiudiCampagna(Campagna campagna) throws Exception {
-        // TODO Auto-generated method stub
+        campagna.setStatoCampagna(StatoCampagna.Chiusa);
+        campagnaDao.save(campagna);
         
     }
 

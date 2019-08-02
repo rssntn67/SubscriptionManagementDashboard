@@ -313,5 +313,13 @@ public class Abbonamento implements SmdEntity {
         this.incassato = incassato;
     }
 
+    public BigDecimal getPregresso() {
+        return pregresso;
+    }
+
+    public void setPregresso(BigDecimal pregresso) {
+        this.pregresso = pregresso;
+    }
+
 
 }
