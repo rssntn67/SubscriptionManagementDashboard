@@ -41,7 +41,9 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
         anno.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
-        getDelete().setEnabled(!persisted || (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno())
+        getDelete().setEnabled(
+                   !persisted 
+               ||  (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno())
                 );
         anno.focus();
 

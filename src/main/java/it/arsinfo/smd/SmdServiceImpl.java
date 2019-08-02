@@ -98,6 +98,8 @@ public class SmdServiceImpl implements SmdService {
             List<EstrattoConto> ecs = new ArrayList<>();
             for (Storico storico: storicoDao.findByIntestatario(abb.getIntestatario()).stream().filter(s -> s.getCassa() == abb.getCassa()).collect(Collectors.toList())) {
                ecs.add(Smd.generaECDaStorico(abb, storico));
+               storico.setStatoStorico(StatoStorico.Valido);
+               storicoDao.save(storico);
             }
             if (ecs.isEmpty()) {
                 continue;

@@ -185,13 +185,13 @@ public class Storico implements SmdEntity {
     
     @Transient
     public boolean attivo() {
-        boolean regolare = false;
+        boolean attivo = false;
         switch (statoStorico) {
         case Nuovo:
-            regolare=true;
+            attivo=true;
             break;
         case Valido:
-            regolare=true;
+            attivo=true;
             break;
         case Sospeso:
             break;
@@ -199,7 +199,7 @@ public class Storico implements SmdEntity {
             break;
         }
         
-        return regolare;
+        return attivo;
     }
 
     public InvioSpedizione getInvioSpedizione() {

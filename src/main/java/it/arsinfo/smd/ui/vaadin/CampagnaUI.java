@@ -60,19 +60,18 @@ public class CampagnaUI extends SmdUI {
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {
+                if (get().getStatoCampagna() == StatoCampagna.Chiusa) {
+                    Notification.show("Non è possibile cancellare campagna che è stata chiusa",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
+                if (get().getStatoCampagna() == StatoCampagna.InviatoEC) {
+                    Notification.show("Non è possibile cancellare campagna che è stata inviato EC",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 if (get().getStatoCampagna() == StatoCampagna.Inviata) {
                     Notification.show("Non è possibile cancellare campagna che è stata inviata",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getAnno() == Anno.getAnnoCorrente()) {
-                    Notification.show("Non è possibile cancellare campagna dell'anno corrente",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-
-                }
-                if (get().getAnno() == Anno.getAnnoPassato()) {
-                    Notification.show("Non è possibile cancellare campagna dell'anno passato",
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -142,6 +141,7 @@ public class CampagnaUI extends SmdUI {
         });
 
         search.setChangeHandler(() -> grid.populate(search.find()));
+        
         grid.setChangeHandler(() -> {
             if (grid.getSelected() == null) {
                 return;
@@ -153,8 +153,7 @@ public class CampagnaUI extends SmdUI {
             grid.setVisible(false);
             editor.edit(grid.getSelected());
             campagnaItemEditor.edit(campagnaItemDao.findByCampagna(grid.getSelected()),
-                                    true);
-            abbonamentoGrid.populate(abbonamentoDao.findByCampagna(grid.getSelected()));
+                                    true);            
         });
 
         abbonamentoGrid.setChangeHandler(() -> {
@@ -167,92 +166,143 @@ public class CampagnaUI extends SmdUI {
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             campagnaItemEditor.setVisible(false);
-            abbonamentoGrid.setVisible(false);
             setHeader("Campagna");
             showMenu();
             add.setVisible(true);
             search.setVisible(true);
             grid.populate(search.find());
+            abbonamentoGrid.setVisible(false);
         });
 
         campagnaItemEditor.setChangeHandler(() -> {
         });
 
         grid.addComponentColumn(campagna -> {
-            Button button = new Button("Invia Proposta Abbonamento Ccp", VaadinIcons.ENVELOPES);
-            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Generata);
+            final Button button = new Button(VaadinIcons.ENVELOPES);
+            switch (campagna.getStatoCampagna()) {
+            case Generata:
+                button.setCaption("Invia Proposta Abbonamento Ccp");
+                break;
+
+            case Inviata:
+                button.setCaption("Invia Estratto Conto");
+                break;                    
+
+            case InviatoEC:
+                button.setCaption("Chiudi");
+                break;                    
+
+            case Chiusa:
+                button.setEnabled(false);
+                break;
+
+            default:
+                button.setEnabled(false);
+                break;
+            }
+
             button.addClickListener(click -> {
-                try {
-                    smdService.inviaCampagna(campagna);
-                } catch (Exception e) {
-                    Notification.show("Non è possibile inviare campagna:"+e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
+                switch (campagna.getStatoCampagna()) {
+                case Generata:
+                    try {
+                        smdService.inviaCampagna(campagna);
+                    } catch (Exception e) {
+                        Notification.show("Non è possibile inviare campagna:"+e.getMessage(),
+                                          Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
+                    break;
+
+                case Inviata:
+                    try {
+                        smdService.inviaEstrattoConto(campagna);
+                    } catch (Exception e) {
+                        Notification.show("Non è possibile inviare Estratto Conto campagna:"+e.getMessage(),
+                                          Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
+                    break;                    
+
+                case InviatoEC:
+                    try {
+                        smdService.chiudiCampagna(campagna);
+                    } catch (Exception e) {
+                        Notification.show("Non è possibile chiudere campagna:"+e.getMessage(),
+                                          Notification.Type.ERROR_MESSAGE);
+                        return;
+                    }
+                    break;                    
+
+                case Chiusa:
+                    break;
+
+                default:
+                    break;
                 }
-                setHeader("Campagna::Ccp");
-                add.setVisible(false);
-                search.setVisible(false);
-                editor.edit(campagna);
-                grid.setVisible(false);
-            });
-            return button;
-        });
-
-        
-        grid.addComponentColumn(campagna -> {
-            Button button = new Button("Visualizza Proposta Abbonamento Inviata", VaadinIcons.ENVELOPES);
-            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Inviata);
-            button.addClickListener(click -> {
-                setHeader("Campagna::Ccp");
-                add.setVisible(false);
-                search.setVisible(false);
-                editor.edit(campagna);
-                abbonamentoGrid
-                .populate(
-                  abbonamentoDao.findByCampagna(campagna)
-                      .stream()
-                      .filter(a -> a.getTotale().signum() > 0)
-                      .collect(Collectors.toList()));
-                grid.setVisible(false);
             });
             return button;
         });
 
         grid.addComponentColumn(campagna -> {
-            Button button = new Button("Invia Estratto Conto", VaadinIcons.ENVELOPES);
-            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Inviata);
+            final Button button = new Button("",VaadinIcons.ENVELOPES);
+            switch (campagna.getStatoCampagna()) {
+            case Generata:
+                button.setCaption("Visualizza Abbonamenti Generati");
+                break;
+            case Inviata:
+                button.setCaption("Visualizza Ccp Abbonamenti Inviati");
+                break;
+            case InviatoEC:
+                button.setCaption("Visualizza Abbonamenti Sospesi");
+                break;
+            case Chiusa:
+                button.setCaption("Visualizza Abbonamenti Annullati");
+                break;
+            default:
+                button.setEnabled(false);
+                break;                
+            }
+
             button.addClickListener(click -> {
-                try {
-                    smdService.inviaEstrattoConto(campagna);
-                } catch (Exception e) {
-                    Notification.show("Non è possibile inviare Estratto Conto campagna:"+e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
+                add.setVisible(false);
+                search.setVisible(false);
+                editor.edit(campagna);
+                grid.setVisible(false);
+                switch (campagna.getStatoCampagna()) {
+                case Generata:
+                    abbonamentoGrid.populate(abbonamentoDao.findByCampagna(campagna));
+                    setHeader("Campagna::Generata");
+                    break;
+                case Inviata:
+                    abbonamentoGrid
+                    .populate(
+                      abbonamentoDao.findByCampagna(campagna)
+                          .stream()
+                          .filter(a -> a.getTotale().signum() > 0)
+                          .collect(Collectors.toList()));
+                    setHeader("Campagna::CCP Inviati");
+                    break;
+                case InviatoEC:
+                    abbonamentoGrid
+                    .populate(
+                      abbonamentoDao.findByCampagna(campagna)
+                          .stream()
+                          .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Sospeso)
+                          .collect(Collectors.toList()));
+                    setHeader("Campagna::Abbonamenti Sospesi");
+                    break;
+                case Chiusa:
+                    abbonamentoGrid
+                    .populate(
+                      abbonamentoDao.findByCampagna(campagna)
+                          .stream()
+                          .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
+                          .collect(Collectors.toList()));
+                    setHeader("Campagna::Abbonamenti Annullati");
+                    break;
+                default:
+                    break;                
                 }
-                setHeader("Campagna::EC");
-                add.setVisible(false);
-                search.setVisible(false);
-                grid.setVisible(false);
-                editor.edit(campagna);
-            });
-            return button;
-        });
-
-        grid.addComponentColumn(campagna -> {
-            Button button = new Button("Visualizza Estratto Conto", VaadinIcons.ENVELOPES);
-            button.setEnabled(campagna.getStatoCampagna() == StatoCampagna.Chiusa);
-            button.addClickListener(click -> {
-                setHeader("Campagna::Ccp");
-                add.setVisible(false);
-                search.setVisible(false);
-                editor.edit(campagna);
-                abbonamentoGrid
-                .populate(
-                  abbonamentoDao.findByCampagna(campagna)
-                      .stream()
-                      .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Sospeso)
-                      .collect(Collectors.toList()));
-                grid.setVisible(false);
             });
             return button;
         });

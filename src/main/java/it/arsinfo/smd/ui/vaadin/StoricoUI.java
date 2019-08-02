@@ -156,7 +156,8 @@ public class StoricoUI extends SmdUI {
 
         update.setChangeHandler(() -> {
             if (editor.get().getStatoStorico() == StatoStorico.Sospeso) {
-                
+                Notification.show("Abbonamento non aggiornato storico Sospeso:" , Type.WARNING_MESSAGE);
+                return;                                    
             }
             try {
                 smdService.aggiornaAbbonamentoDaStorico(editor.get());

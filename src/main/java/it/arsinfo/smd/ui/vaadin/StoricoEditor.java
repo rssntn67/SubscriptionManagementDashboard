@@ -101,7 +101,7 @@ public class StoricoEditor
         } else {
             getSave().setEnabled(true);
         }
-        getDelete().setEnabled(false);
+        getDelete().setEnabled(persisted && obj.getStatoStorico() == StatoStorico.Nuovo);
         
         numero.focus();
     }
