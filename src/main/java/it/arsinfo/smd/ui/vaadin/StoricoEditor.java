@@ -67,6 +67,7 @@ public class StoricoEditor
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
+        statoStorico.setReadOnly(true);
         HorizontalLayout pri = new HorizontalLayout();
         pri.addComponentsAndExpand(intestatario);
         pri.addComponentsAndExpand(destinatario);
@@ -94,7 +95,6 @@ public class StoricoEditor
 
     @Override
     public void focus(boolean persisted, Storico obj) {
-        statoStorico.setReadOnly(!persisted);
         pubblicazione.setReadOnly(persisted);
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);

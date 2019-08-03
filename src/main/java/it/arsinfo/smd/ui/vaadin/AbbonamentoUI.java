@@ -83,6 +83,10 @@ public class AbbonamentoUI extends SmdUI {
                     Notification.show("Abbonamento associato a Campagna va gestito da Storico", Notification.Type.ERROR_MESSAGE);
                     return;
                 }
+                if (get().getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
+                    Notification.show("Stato Abbonamento diverso da Nuovo va gestito da Campagna", Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 try {
                     smdService.deleteAbbonamento(get());
                 } catch (Exception e) {

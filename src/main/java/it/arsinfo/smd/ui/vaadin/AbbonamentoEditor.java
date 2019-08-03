@@ -69,6 +69,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
 
+        statoAbbonamento.setReadOnly(true);
         campagna.setReadOnly(true);
         importo.setReadOnly(true);
         totale.setReadOnly(true);
