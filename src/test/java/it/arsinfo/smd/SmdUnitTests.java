@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -39,6 +40,7 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.Versamento;
 
 @RunWith(SpringRunner.class)
 public class SmdUnitTests {
@@ -901,5 +903,29 @@ public class SmdUnitTests {
 
     }
 
-  
+    @Test
+    public void testStatoIncassato() {
+        Abbonamento abb = new Abbonamento();
+        assertEquals(Incassato.Omaggio, abb.getStatoIncasso());
+       
+        abb.setImporto(new BigDecimal(10));
+        assertEquals(Incassato.No, abb.getStatoIncasso());
+        
+        Versamento versamento = new Versamento();
+        abb.setVersamento(versamento);
+        assertEquals(Incassato.No, abb.getStatoIncasso());
+
+        abb.setIncassato(new BigDecimal(10));
+        assertEquals(Incassato.Si, abb.getStatoIncasso());
+
+        abb.setIncassato(new BigDecimal(7));
+        assertEquals(Incassato.SiConDebito, abb.getStatoIncasso());
+
+        abb.setIncassato(new BigDecimal(8));
+        assertEquals(Incassato.SiConDebito, abb.getStatoIncasso());
+
+        abb.setIncassato(new BigDecimal(6));
+        assertEquals(Incassato.Parzialmente, abb.getStatoIncasso());        
+        
+    }
 }

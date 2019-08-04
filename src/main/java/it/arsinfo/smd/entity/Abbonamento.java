@@ -170,13 +170,13 @@ public class Abbonamento implements SmdEntity {
         if (getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }
-        if (versamento == null) {
+        if (versamento == null || incassato == BigDecimal.ZERO) {
             return Incassato.No;
         }        
         if (getResiduo().signum() == 0) {
             return Incassato.Si;
         } 
-        if (getResiduo().compareTo(new BigDecimal(3)) > 0) {
+        if (getResiduo().compareTo(new BigDecimal(3)) <= 0) {
             return Incassato.SiConDebito;
         }
         return Incassato.Parzialmente;
