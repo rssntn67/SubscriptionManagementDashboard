@@ -30,7 +30,6 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -413,21 +412,6 @@ public class Smd {
                            );
         sped.setSpesePostali(spesa.getSpese());
     }
-
-    
-    public static List<Abbonamento> inviaPropostaAbbonamentoCampagna(final Campagna campagna, List<Abbonamento> abbonamenti) {
-        campagna.setStatoCampagna(StatoCampagna.Inviata);
-        return abbonamenti.stream()
-                .filter(abb -> abb.getCampagna().getId().longValue() == campagna.getId().longValue())
-                .map(abb -> {
-                    if (abb.getStatoIncasso() ==  Incassato.Omaggio) {
-                        abb.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    } else {
-                        abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
-                    }
-                    return abb;
-                }).collect(Collectors.toList());
-    }
     
     public static List<EstrattoConto> 
         generaEstrattoContoAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
@@ -723,13 +707,6 @@ public class Smd {
             versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
         }
         incasso.setIncassato(incasso.getIncassato().add(abbonamento.getIncassato()));
-        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Annullato) {
-            if (abbonamento.getResiduo().compareTo(new BigDecimal(3)) > 0 ) {
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-            } else {
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            }
-        }
     }
 
     public static void dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {

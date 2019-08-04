@@ -23,6 +23,8 @@ public interface SmdService {
     void annullaAbbonamento(Abbonamento abbonamento) throws Exception;
     void sospendiSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
     void riattivaSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
+    void sospendiStoricoAbbonamento(Abbonamento abbonamento) throws Exception;
+    void riattivaStoricoAbbonamento(Abbonamento abbonamento) throws Exception;
 
     void aggiornaAbbonamentoDaStorico(Storico storico) throws Exception;
 

@@ -115,17 +115,6 @@ public class AbbonamentoUI extends SmdUI {
                 if (get().getId() == null) {
                     get().setCodeLine(Abbonamento.generaCodeLine(get().getAnno()));
                 }
-                if (get().getId() != null && get().getStatoAbbonamento() == StatoAbbonamento.Annullato) {
-                    try {
-                        smdService.annullaAbbonamento(get());
-                        onChange();
-                    } catch (Exception e) {
-                        log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
-                        Notification.show("Non è possibile annullare abbonamento:" +e.getMessage(),
-                                          Notification.Type.ERROR_MESSAGE);
-                        return;
-                    }
-                }
                 if (get().getId() != null ) {
                     super.save();
                     return;
