@@ -303,7 +303,11 @@ public class SmdServiceImpl implements SmdService {
         for (EstrattoConto ec: contos) {
             spedizioni = Smd.generaSpedizioni(abbonamento, ec, spedizioni,spese);
         }
-        //FIXME calcola pregresso
+        abbonamentoDao
+            .findByIntestatarioAndAnnoAndCassa(
+                           abbonamento.getIntestatario(), 
+                           Anno.getAnnoPrecedente(abbonamento.getAnno()), 
+                           abbonamento.getCassa()).forEach(abb -> abbonamento.setPregresso(abbonamento.getPregresso().add(abb.getResiduo())));
         abbonamentoDao.save(abbonamento);
         for (EstrattoConto ec: contos) {
             estrattoContoDao.save(ec);
@@ -473,30 +477,42 @@ public class SmdServiceImpl implements SmdService {
         Smd.incassa(incasso,versamento, abbonamento);
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Valido) {
-            riattivaSpedizioniAbbonamento(abbonamento);
-        } else if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Sospeso) {
-            sospendiSpedizioniAbbonamento(abbonamento);
-        }
         Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
+        if (campagna != null) {
+            
         switch (campagna.getStatoCampagna()) {
             case Generata:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
                 break;
             case Chiusa:
                 break;
             case Inviata:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
                 break;
             case InviatoEC:
-                if (abbonamento.getResiduo().compareTo(new BigDecimal(3)) < 0 ) {
+                switch (abbonamento.getStatoIncasso()) {
+                case No:
+                    break;
+                case Omaggio:
+                    break;
+                case Parzialmente:
+                    break;
+                case Si:
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
                     riattivaSpedizioniAbbonamento(abbonamento);
                     riattivaStoricoAbbonamento(abbonamento);
+                    break;
+                case SiConDebito:
+                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+                    riattivaSpedizioniAbbonamento(abbonamento);
+                    riattivaStoricoAbbonamento(abbonamento);
+                    break;
+                default:
+                    break;
+                
                 }
                 break;
             default:
                 break;                                
+        }
         }
 
         abbonamentoDao.save(abbonamento);

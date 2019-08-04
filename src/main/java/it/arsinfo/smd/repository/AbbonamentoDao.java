@@ -15,6 +15,7 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 
         Abbonamento findByIntestatarioAndCampagnaAndCassa(Anagrafica intestatario, Campagna campagna, Cassa cassa);
 	List<Abbonamento> findByIntestatario(Anagrafica intestatario);
+        List<Abbonamento> findByIntestatarioAndAnnoAndCassa(Anagrafica intestatario, Anno anno, Cassa cassa);
 	List<Abbonamento> findByCampagna(Campagna campagna);
         List<Abbonamento> findByIntestatarioAndCampagna(Anagrafica intestatario, Campagna campagna);
 	List<Abbonamento> findByVersamento(Versamento versamento);
