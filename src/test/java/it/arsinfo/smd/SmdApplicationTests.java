@@ -1632,7 +1632,8 @@ public class SmdApplicationTests {
         assertEquals(1, abbonamenti.size());
         Abbonamento abbonamento = abbonamenti.iterator().next();
         assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
-        assertEquals(StatoAbbonamento.Valido, abbonamento.getStatoAbbonamento());
+        assertEquals(StatoAbbonamento.Nuovo, abbonamento.getStatoAbbonamento());
+        assertEquals(Incassato.Si, abbonamento.getStatoIncasso());
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
         incassoDao.deleteAll();

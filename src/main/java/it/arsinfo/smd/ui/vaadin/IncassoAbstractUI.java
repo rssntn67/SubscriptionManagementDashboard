@@ -23,7 +23,7 @@ public abstract class IncassoAbstractUI extends SmdUI {
     protected void dissocia(Abbonamento abbonamento, Versamento versamento) {
         try {
             smsService.reverti(abbonamento, versamento);
-        } catch (UnsupportedOperationException e) {
+        } catch (Exception e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             
         }
@@ -32,7 +32,7 @@ public abstract class IncassoAbstractUI extends SmdUI {
     protected void incassa(Abbonamento abbonamento, Versamento versamento) {
         try {
             smsService.incassa(abbonamento, versamento);
-        } catch (UnsupportedOperationException e) {
+        } catch (Exception e) {
             Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
         } 
     }
