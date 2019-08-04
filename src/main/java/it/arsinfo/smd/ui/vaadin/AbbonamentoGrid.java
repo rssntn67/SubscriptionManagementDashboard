@@ -20,6 +20,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         setColumnCaption("campagnaAsString", "Campagna");
         gridfooter = getGrid().prependFooterRow();
     }
+
     @Override
     public void populate(List<Abbonamento> items) {
         super.populate(items);

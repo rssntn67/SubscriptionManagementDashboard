@@ -188,10 +188,10 @@ public class Storico implements SmdEntity {
         boolean attivo = false;
         switch (statoStorico) {
         case Nuovo:
-            attivo=true;
+            attivo=(numero > 0);
             break;
         case Valido:
-            attivo=true;
+            attivo=(numero > 0);
             break;
         case Sospeso:
             break;

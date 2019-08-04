@@ -471,12 +471,15 @@ public class Smd {
             storici.stream()
             .filter(
                 storico -> 
-                (storico.getIntestatario() == a 
-                    || ( storico.getIntestatario().getId() != null 
+                    storico.attivo()
+                 && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().hashCode()) 
+                 && (
+                         storico.getIntestatario() == a 
+                    || (    storico.getIntestatario().getId() != null 
                          && a.getId() != null 
-                         && storico.getIntestatario().getId().longValue() == a.getId().longValue())) 
-               && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().hashCode()) 
-               && storico.attivo()
+                         && storico.getIntestatario().getId().longValue() == a.getId().longValue()
+                         )
+                    ) 
             )
             .forEach(storico -> { 
                 if (!cassaStorico.containsKey(storico.getCassa())) {
@@ -707,16 +710,25 @@ public class Smd {
             log.error("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
             throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
         }
+        if (versamento.getResiduo().compareTo(BigDecimal.ZERO) == 0) {
+            log.error("incassa: Versamento con residuo 0, abbonamento non incassato");
+            throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
+        }
         abbonamento.setVersamento(versamento);
-        if ((versamento.getResiduo().subtract(abbonamento.getTotale()).compareTo(BigDecimal.ZERO)) < 0) {
-            abbonamento.setIncassato(versamento.getImporto());
-            versamento.setIncassato(versamento.getImporto());
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+        if ((versamento.getResiduo()).compareTo(abbonamento.getTotale()) < 0) {
+            abbonamento.setIncassato(versamento.getResiduo());
+            versamento.setIncassato(versamento.getIncassato().add(versamento.getResiduo()));
         } else {
             abbonamento.setIncassato(abbonamento.getTotale());
             versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
-            incasso.setIncassato(incasso.getIncassato().add(abbonamento.getTotale()));
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+        }
+        incasso.setIncassato(incasso.getIncassato().add(abbonamento.getIncassato()));
+        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Annullato) {
+            if (abbonamento.getResiduo().compareTo(new BigDecimal(3)) > 0 ) {
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+            } else {
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+            }
         }
     }
 
@@ -746,7 +758,7 @@ public class Smd {
             throw new UnsupportedOperationException("dissocia: Abbonamento e Versamento non sono associati");
         }
         versamento.setIncassato(versamento.getIncassato().subtract(abbonamento.getIncassato()));
-        incasso.setIncassato(incasso.getIncassato().subtract(abbonamento.getTotale()));
+        incasso.setIncassato(incasso.getIncassato().subtract(abbonamento.getIncassato()));
         abbonamento.setIncassato(BigDecimal.ZERO);
         abbonamento.setVersamento(null);
     }

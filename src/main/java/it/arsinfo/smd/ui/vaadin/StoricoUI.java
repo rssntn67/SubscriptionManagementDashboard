@@ -55,7 +55,6 @@ public class StoricoUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Storico");
-        SmdProgressBar pb = new SmdProgressBar();
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         StoricoAdd add = new StoricoAdd("Aggiungi Storico");
@@ -110,13 +109,10 @@ public class StoricoUI extends SmdUI {
         SmdButton update = new SmdButton("Aggiorna Abbonamento Campagna ", VaadinIcons.ARCHIVES);
         update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
 
-        addSmdComponents(pb,add,update,editor,notaGrid,search, grid);
-        pb.setVisible(false);
+        addSmdComponents(add,update,editor,notaGrid,search, grid);
         editor.setVisible(false);
         notaGrid.setVisible(false);
         update.setVisible(false);
-
-        pb.setChangeHandler(() ->{});
         
         search.setChangeHandler(()-> {
             grid.populate(search.find());

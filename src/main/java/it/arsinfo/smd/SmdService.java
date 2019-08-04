@@ -21,6 +21,8 @@ public interface SmdService {
     void deleteAbbonamento(Abbonamento abbonamento) throws Exception;
 
     void annullaAbbonamento(Abbonamento abbonamento) throws Exception;
+    void sospendiSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
+    void riattivaSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
 
     void aggiornaAbbonamentoDaStorico(Storico storico) throws Exception;
 
@@ -43,8 +45,8 @@ public interface SmdService {
 
     List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
 
-    void incassa(Abbonamento abbonamento, Versamento versamento);
-    void reverti(Abbonamento abbonamento, Versamento versamento);    
+    void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
+    void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
     List<Abbonamento> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
 }
