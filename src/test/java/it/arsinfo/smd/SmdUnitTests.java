@@ -928,4 +928,16 @@ public class SmdUnitTests {
         assertEquals(Incassato.Parzialmente, abb.getStatoIncasso());        
         
     }
+    
+    @Test
+    public void testLogger() {
+        
+        String value ="smd";
+        log.trace("doStuff needed more information - {}", value);
+        log.debug("doStuff needed to debug - {}", value);
+        log.info("doStuff took input - {}", value);
+        log.warn("doStuff needed to warn - {}", value);
+        log.error("doStuff encountered an error with value - {}", value);
+    }
+
 }

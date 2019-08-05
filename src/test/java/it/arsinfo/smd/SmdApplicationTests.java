@@ -1739,5 +1739,4 @@ public class SmdApplicationTests {
         assertEquals(1, userInfoDao.findAll().size());
 
     }
-        
 }

@@ -93,14 +93,14 @@ public class Smd {
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
             throw new UnsupportedOperationException("Aggiona EC non consentita per Abbonamenti Annullati");
         }
-        log.info("aggiornaEC: intestatario: "+ abb.getIntestatario().getCaption());
-        log.info("aggiornaEC: area: "+ abb.getIntestatario().getAreaSpedizione());
-        log.info("aggiornaEC: pubbli.: "+ ec.getPubblicazione().getNome());
-        log.info("aggiornaEC: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: meseFine: "+ ec.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: quantità: "+ ec.getNumero());
+        log.info("aggiornaEC: intestatario: {}", abb.getIntestatario().getCaption());
+        log.info("aggiornaEC: area: {}", abb.getIntestatario().getAreaSpedizione());
+        log.info("aggiornaEC: pubbli.: {}", ec.getPubblicazione().getNome());
+        log.info("aggiornaEC: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
+        log.info("aggiornaEC: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
+        log.info("aggiornaEC: meseFine: {}", ec.getMeseFine().getNomeBreve());
+        log.info("aggiornaEC: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
+        log.info("aggiornaEC: quantità: {}", ec.getNumero());
         
         final List<SpedizioneItem> oldItems = new ArrayList<>();
         
@@ -130,7 +130,7 @@ public class Smd {
         
         int numeroTotaleRiviste=0;
         for (SpedizioneItem oldItem: oldItems) {
-            log.info("aggiornaEC parsing old: " + oldItem);
+            log.info("aggiornaEC parsing old: {}", oldItem.toString());
             switch (oldItem.getSpedizione().getStatoSpedizione()) {
             case INVIATA:
                 invItems.add(oldItem);
@@ -151,10 +151,10 @@ public class Smd {
 
         List<SpedizioneItem> items = generaECItems(ec);
         for (SpedizioneItem invItem: invItems) {
-            log.info("aggiornaEC parsing old inviata: " + invItems);
+            log.info("aggiornaEC parsing old inviata: {}" , invItem.toString());
             for (SpedizioneItem item: items) {
                 if (invItem.stessaPubblicazione(item)) {
-                    log.info("aggiornaEC found new: " + invItem);
+                    log.info("aggiornaEC found new: {}", item.toString());
                     if (invItem.getNumero() < item.getNumero()) {
                         item.setNumero(item.getNumero() - invItem.getNumero());
                     } else {
