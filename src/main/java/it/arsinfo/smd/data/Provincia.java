@@ -2,7 +2,7 @@ package it.arsinfo.smd.data;
 
 public enum Provincia {
 
-       ND("Non definita"),
+       ND(""),
        AG("Agrigento"),
        AL("Alessandria"),
        AN("Ancona"),

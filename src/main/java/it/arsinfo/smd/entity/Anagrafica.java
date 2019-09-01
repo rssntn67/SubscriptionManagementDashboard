@@ -48,7 +48,7 @@ public class Anagrafica implements SmdEntity {
     private String cap;
     private String citta;
     @Enumerated(EnumType.STRING)
-    private Paese paese = Paese.ITALIA;
+    private Paese paese = Paese.IT;
 
     @Enumerated(EnumType.STRING)
     private AreaSpedizione areaSpedizione = AreaSpedizione.Italia;

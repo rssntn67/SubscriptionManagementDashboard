@@ -424,7 +424,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("tel001");
         a.setCitta("tel001");
         a.setEmail("tel001@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PIEMONTEVALLEDAOSTA);
@@ -437,7 +437,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve002");
         a.setCitta("ve002");
         a.setEmail("ve002@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -450,7 +450,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve003");
         a.setCitta("ve003");
         a.setEmail("ve003@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -463,7 +463,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve004");
         a.setCitta("ve004");
         a.setEmail("ve004@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -476,7 +476,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve005");
         a.setCitta("ve005");
         a.setEmail("ve005@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -489,7 +489,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve006");
         a.setCitta("ve006");
         a.setEmail("ve006@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -502,7 +502,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve007");
         a.setCitta("ve007");
         a.setEmail("ve007@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -515,7 +515,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ve008");
         a.setCitta("ve008");
         a.setEmail("ve008@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TRIVENETO);
@@ -528,7 +528,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("fi009");
         a.setCitta("fi009");
         a.setEmail("fi009@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TOSCANA);
@@ -541,7 +541,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("fi010");
         a.setCitta("fi010");
         a.setEmail("fi010@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TOSCANA);
@@ -554,7 +554,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("fi011");
         a.setCitta("fi011");
         a.setEmail("fi011@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TOSCANA);
@@ -567,7 +567,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("fi012");
         a.setCitta("fi012");
         a.setEmail("fi012@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.TOSCANA);
@@ -580,7 +580,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("fi013");
         a.setCitta("fi013");
         a.setEmail("fi013@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PUGLIA);
@@ -593,7 +593,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ba014");
         a.setCitta("ba014");
         a.setEmail("ba014@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PUGLIA);
@@ -606,7 +606,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ba015");
         a.setCitta("ba015");
         a.setEmail("ba015@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PUGLIA);
@@ -619,7 +619,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ba016");
         a.setCitta("ba016");
         a.setEmail("ba016@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PUGLIA);
@@ -632,7 +632,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setIndirizzo("ba017");
         a.setCitta("ba017");
         a.setEmail("ba017@arsinfo.it");
-        a.setPaese(Paese.ITALIA);
+        a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
         a.setTitolo(TitoloAnagrafica.Signore);
         a.setRegioneVescovi(Regione.PUGLIA);
@@ -648,7 +648,7 @@ public class SmdLoadSampleData implements Runnable {
         ar.setIndirizzo("");
         ar.setCitta("");
         ar.setEmail("ar@arsinfo.it");
-        ar.setPaese(Paese.ITALIA);
+        ar.setPaese(Paese.IT);
         ar.setTelefono("+3902000009");
         ar.setTitolo(TitoloAnagrafica.Vescovo);
         ar.setRegioneVescovi(Regione.LOMBARDIA);
@@ -663,7 +663,7 @@ public class SmdLoadSampleData implements Runnable {
         ar.setProvincia(Provincia.MI);
         ar.setCap("20100");
         ar.setEmail("milano@arsinfo.it");
-        ar.setPaese(Paese.ITALIA);
+        ar.setPaese(Paese.IT);
         ar.setTelefono("+3902000001");
         ar.setTitolo(TitoloAnagrafica.Diocesi);
         return ar;
@@ -676,7 +676,7 @@ public class SmdLoadSampleData implements Runnable {
         gp.setCitta("Milano");
         gp.setProvincia(Provincia.MI);
         gp.setCap("20110");
-        gp.setPaese(Paese.ITALIA);
+        gp.setPaese(Paese.IT);
         gp.setEmail("gp@arsinfo.it");
         gp.setTelefono("+3902000010");
         return gp;
@@ -690,7 +690,7 @@ public class SmdLoadSampleData implements Runnable {
         mp.setCitta("Roma");
         mp.setProvincia(Provincia.RM);
         mp.setCap("00192");
-        mp.setPaese(Paese.ITALIA);
+        mp.setPaese(Paese.IT);
         mp.setEmail("mp@arsinfo.it");
         mp.setTelefono("+3906000020");
         return mp;
@@ -704,7 +704,7 @@ public class SmdLoadSampleData implements Runnable {
         dp.setCitta("Roma");
         dp.setProvincia(Provincia.RM);
         dp.setCap("00195");
-        dp.setPaese(Paese.ITALIA);
+        dp.setPaese(Paese.IT);
         dp.setEmail("dp@arsinfo.it");
         dp.setTelefono("+3906000020");
         dp.setDirettoreDiocesiano(true);
@@ -719,7 +719,7 @@ public class SmdLoadSampleData implements Runnable {
         ms.setCitta("Napoli");
         ms.setProvincia(Provincia.NA);
         ms.setCap("80135");
-        ms.setPaese(Paese.ITALIA);
+        ms.setPaese(Paese.IT);
         ms.setEmail("ms@arsinfo.it");
         ms.setTelefono("+39081400022");
         return ms;
@@ -732,7 +732,7 @@ public class SmdLoadSampleData implements Runnable {
         ps.setCitta("Napoli");
         ps.setProvincia(Provincia.NA);
         ps.setCap("80135");
-        ps.setPaese(Paese.ITALIA);
+        ps.setPaese(Paese.IT);
         ps.setEmail("arsinfo@adp.it");
         ps.setTelefono("+39081400023");
         return ps;
