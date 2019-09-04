@@ -1,31 +1,55 @@
 package it.arsinfo.smd.data;
 
+
 public enum TitoloAnagrafica {
         Nessuno(""),
-        Cattedrale("Spett.le"),
         Diocesi("Spett.le"),
+        Istituto("Spett.le"),
+        Cattedrale("Spett.le"),
+        Ditta("Spett.le"),
+        CasaDiRiposo("Spett.le"),
+        Diacono("Rev. Diac."),
         Parrocchia("Parrocchia"),
-	Istituto("Spett.le"),
+        Insegnante("Gent. Ins."),
         Scuola("Spett.le"),
-        Signore("Egr. Sig."),
-        Signora("Gent. Sig.ra"),
-        Dottore("Egregio Dott."),
+        Famiglia("Gent.ma Famiglia"),
+        Egregio("Egr. Sig."),
+        Egregi("Egr. Sigg."),
+        Gentilissima("Gent. Sig.ra"),
+        Gentilissime("Gent.me Sigg."),
+        Signorina("Gent. Sig.na"),
+        Dottore("Egr. Dott."),
+        Dottoressa("Gent. Dott.ssa"),
+        Ingegnere("Egr. Ing."),
         Religioso("Rev. Padre"),
         Religiosa("Rev. Madre"),
-        Superiore("Rev. Padre Superiore"),
-        Superiora("Rev. Madre Superiora"),
+        Superiore("R. P. Superiore"),
+        Superiora("R. M. Superiora"),
+        Suor("Rev. Suora"),
+        Suore("Rev. Suore"),
         Don("Don"),
         Parroco("Rev. Parroco"),
         Sacerdote("Rev."),
-	Vescovo("S.E. Mons."),
-	VescovoAusiliare("S.E. Mons."),
-        VescovoMetropolita("S.E. Mons."),
-        Arcivescovo("S.E. Mons."),
-	Cardinale("S.Em. Card.");
+        Monsignore("M. R. Mons."),
+        Rettore("M. R. Rettore"),
+	Vescovo("S. E. Mons."),
+	VescovoAusiliare("S. E. Mons."),
+        VescovoMetropolita("S. E. Mons."),
+        Arcivescovo("S. E. Mons."),
+	Cardinale("S. Em. Card.");
     
     
     private String intestazione;
     
+    public static TitoloAnagrafica getByIntestazione(String intestazione) {
+        for (TitoloAnagrafica ta: TitoloAnagrafica.values()) {
+            if (ta.getIntestazione().equals(intestazione)) {
+                return ta;
+            }
+        }
+        return TitoloAnagrafica.Nessuno;
+    }
+
     private TitoloAnagrafica(String intestazione) {
         this.intestazione=intestazione;
     }
@@ -37,6 +61,5 @@ public enum TitoloAnagrafica {
     public void setIntestazione(String intestazione) {
         this.intestazione = intestazione;
     }
-    
-    
+        
 }

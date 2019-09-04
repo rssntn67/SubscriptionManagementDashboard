@@ -426,7 +426,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("tel001@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PIEMONTEVALLEDAOSTA);
         return a;        
     }
@@ -439,7 +439,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve002@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -452,7 +452,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve003@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -465,7 +465,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve004@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -478,7 +478,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve005@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -491,7 +491,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve006@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -504,7 +504,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve007@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -517,7 +517,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ve008@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TRIVENETO);
         return a;        
     }
@@ -530,7 +530,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("fi009@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TOSCANA);
         return a;        
     }
@@ -543,7 +543,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("fi010@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TOSCANA);
         return a;        
     }
@@ -556,7 +556,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("fi011@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TOSCANA);
         return a;        
     }
@@ -569,7 +569,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("fi012@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.TOSCANA);
         return a;        
     }
@@ -582,7 +582,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("fi013@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PUGLIA);
         return a;        
     }
@@ -595,7 +595,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ba014@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PUGLIA);
         return a;        
     }
@@ -608,7 +608,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ba015@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PUGLIA);
         return a;        
     }
@@ -621,7 +621,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ba016@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PUGLIA);
         return a;        
     }
@@ -634,7 +634,7 @@ public class SmdLoadSampleData implements Runnable {
         a.setEmail("ba017@arsinfo.it");
         a.setPaese(Paese.IT);
         a.setTelefono("+3902000009");
-        a.setTitolo(TitoloAnagrafica.Signore);
+        a.setTitolo(TitoloAnagrafica.Egregio);
         a.setRegioneVescovi(Regione.PUGLIA);
         return a;        
     }

@@ -812,11 +812,5 @@ public class Smd {
         incasso.setImportoErrati(BigDecimal.ZERO);
         incasso.setImportoEsatti(incasso.getImporto());
     }
-
-    public static List<EstrattoConto> generaEstrattoConto(
-            List<EstrattoConto> findAll) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
 }
