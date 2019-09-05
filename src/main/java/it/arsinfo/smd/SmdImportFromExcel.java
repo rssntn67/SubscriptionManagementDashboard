@@ -117,22 +117,32 @@ public class SmdImportFromExcel {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));
         a.setNome(andescri);
         a.setCognome(andescr2);
-        String indirizzo = anindiri+anindir1;
+        a.setIndirizzo(anindiri);
         if (!anindir1.equals("")) {
             System.out.println("-----anindir1 ------");
             System.out.println("ANCODICE: " + a.getCodeLineBase());
-            System.out.println("ANTITOLO: " + destitolo);
-            System.out.println("ANDESCRI: " + andescri);
-            System.out.println("ANDESCR2: " + andescr2);
             System.out.println("ANINDIRI: " + anindiri);
             System.out.println("ANINDIR1: " + anindir1);
             System.out.println("ANLOCALI: " + anlocali);
             System.out.println("------------------------------");
-            if (a.getCodeLineBase().equals("00000000072596")) {
-                
+            if (a.getCodeLineBase().equals("00000000012956")) {
+                a.setIndirizzoSecondaRiga(null);
+            } else if (a.getCodeLineBase().equals("00000000066055")) {
+                    a.setIndirizzo("FRAZ.VIGHIZZOLO - VIA S. GIOVANNI 255");
+            } else if (a.getCodeLineBase().equals("00000000020992")) {
+                a.setIndirizzo("LOC.S.PIETRO DI BARBOZZA-STR.CHIESA 2");
+            } else if (a.getCodeLineBase().equals("00000000061880")) {
+                a.setIndirizzo("LOC.MAGLIO DI SOPRA - VIA MARZOTTO 2");
+            } else {
+                a.setIndirizzoSecondaRiga(anindir1);
             }
+            System.out.println("-----anindir1 fix------");
+            System.out.println("ANCODICE: " + a.getCodeLineBase());
+            System.out.println("Indirizzo: " + a.getIndirizzo());
+            System.out.println("Indirizzo2: " + a.getIndirizzoSecondaRiga());
+            System.out.println("ANLOCALI: " + anlocali);
+            System.out.println("------------------------------");
         }
-        a.setIndirizzo(indirizzo);
                
         a.setCitta(getCittaFromAnlocali(anlocali));
         a.setCap(getCapFromAnlocali(anlocali));
