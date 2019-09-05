@@ -45,6 +45,8 @@ public class Anagrafica implements SmdEntity {
     private Anagrafica co;
     
     private String indirizzo;
+    private String indirizzoSecondaRiga;
+
     private String cap;
     private String citta;
     @Enumerated(EnumType.STRING)

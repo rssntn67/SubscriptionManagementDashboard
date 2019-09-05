@@ -117,11 +117,10 @@ public class SmdImportFromExcel {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));
         a.setNome(andescri);
         a.setCognome(andescr2);
-        a.setIndirizzo(anindiri+anindir1);
+        String indirizzo = anindiri+anindir1;
         if (!anindir1.equals("")) {
-            /* FIXME
             System.out.println("-----anindir1 ------");
-            System.out.println("ANCODICE: " + pncodcon);
+            System.out.println("ANCODICE: " + a.getCodeLineBase());
             System.out.println("ANTITOLO: " + destitolo);
             System.out.println("ANDESCRI: " + andescri);
             System.out.println("ANDESCR2: " + andescr2);
@@ -129,9 +128,12 @@ public class SmdImportFromExcel {
             System.out.println("ANINDIR1: " + anindir1);
             System.out.println("ANLOCALI: " + anlocali);
             System.out.println("------------------------------");
-            */
+            if (a.getCodeLineBase().equals("00000000072596")) {
+                
+            }
         }
-        
+        a.setIndirizzo(indirizzo);
+               
         a.setCitta(getCittaFromAnlocali(anlocali));
         a.setCap(getCapFromAnlocali(anlocali));
         a.setProvincia(getProvincia(getProvinciaFromAnlocali(anlocali)));

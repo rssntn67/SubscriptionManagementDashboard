@@ -35,6 +35,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final ComboBox<Anagrafica> co = new ComboBox<Anagrafica>("c/o");
     private final TextField nome = new TextField("Nome");
     private final TextField indirizzo = new TextField("Indirizzo");
+    private final TextField indirizzoSecondaRiga = new TextField("Indirizzo+");
     private final TextField cap = new TextField("CAP");
     private final TextField citta = new TextField("Citta'");
     private final ComboBox<Paese> paese = new ComboBox<Paese>("Paese",
@@ -69,6 +70,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       cognome, 
                                                       nome,
                                                       indirizzo, 
+                                                      indirizzoSecondaRiga, 
                                                       cap, 
                                                       citta,
                                                       provincia
