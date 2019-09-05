@@ -384,4 +384,12 @@ public class Anagrafica implements SmdEntity {
     public static String generaCodeLineBase() {
         return String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
     }
+
+    public String getIndirizzoSecondaRiga() {
+        return indirizzoSecondaRiga;
+    }
+
+    public void setIndirizzoSecondaRiga(String indirizzoSecondaRiga) {
+        this.indirizzoSecondaRiga = indirizzoSecondaRiga;
+    }
 }
