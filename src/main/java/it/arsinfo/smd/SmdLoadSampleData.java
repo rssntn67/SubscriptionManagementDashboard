@@ -1,5 +1,6 @@
 package it.arsinfo.smd;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -81,6 +82,7 @@ public class SmdLoadSampleData implements Runnable {
 
     private final PasswordEncoder passwordEncoder;
     
+    private final boolean loadAnagraficaAdp;
     private final boolean loadPubblicazioniAdp;
     private final boolean loadSampleAnagrafica;
     private final boolean loadSampleStorico;
@@ -822,6 +824,7 @@ public class SmdLoadSampleData implements Runnable {
             OperazioneDao operazioneDao,
             UserInfoDao userInfoDao,
             PasswordEncoder passwordEncoder,
+            boolean loadAnagraficaAdp,
             boolean loadPubblicazioniAdp,
             boolean loadSampleAnagrafica,
             boolean loadSampleStorico,
@@ -843,6 +846,7 @@ public class SmdLoadSampleData implements Runnable {
         this.operazioneDao=operazioneDao;
         this.userInfoDao=userInfoDao;
         this.passwordEncoder=passwordEncoder;
+        this.loadAnagraficaAdp=loadAnagraficaAdp;
         this.loadPubblicazioniAdp=loadPubblicazioniAdp;
         this.loadSampleAnagrafica=loadSampleAnagrafica;
         this.loadSampleStorico=loadSampleStorico;
@@ -1095,6 +1099,21 @@ public class SmdLoadSampleData implements Runnable {
         
         if (createNormalUser) {
             createNormalUser();
+        }
+        
+        if (loadAnagraficaAdp) {
+            log.info("Start Loading Anagrafica Adp");
+            SmdImportFromExcel imp = new SmdImportFromExcel();
+            try {
+                imp.importCA2010Excelfile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return;
+            }
+            
+            imp.getCampagnaUserMap().values().forEach(a -> anagraficaDao.save(a));
+            log.info("End Loading Anagrafica Adp");
         }
 
     }

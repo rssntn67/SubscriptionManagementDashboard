@@ -67,7 +67,7 @@ public class SmdImportFromExcel {
 
     public static String getCittaFromAnlocali(String anlocali) {
         if (anlocali.contains("(")) {
-            return anlocali.substring(6,anlocali.indexOf("("));
+            return anlocali.substring(6,anlocali.indexOf("(")-1);
         }
         return anlocali.substring(6);
     }
@@ -114,17 +114,31 @@ public class SmdImportFromExcel {
             String andescri, String andescr2, String anindiri, String anindir1,
             String anlocali) throws UnsupportedOperationException {
 //FIXME
+        System.out.println("ANCODICE: " + a.getCodeLineBase());
+        System.out.println("ANDESCRI: " + andescri);            
+        System.out.println("ANLOCALI: " + anlocali);
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));
-        a.setNome(andescri);
-        a.setCognome(andescr2);
+        System.out.println("titolo: " + a.getTitolo());
+        
+        a.setCognome(andescri);
+        if (a.getTitolo().isPersona()) {
+            String[] arrayNomi = andescri.split(" ");
+            if (arrayNomi.length > 1) {
+                String cognome = "";
+                for (int i=0; i<arrayNomi.length-2;i++) {
+                    cognome += arrayNomi[i] + " ";
+                }
+                cognome += arrayNomi[arrayNomi.length-2];
+                a.setCognome(cognome);
+                a.setNome(arrayNomi[arrayNomi.length-1]);
+                System.out.println("Nome: " + a.getNome());
+            }
+        }
+        System.out.println("Cognome: " + a.getCognome());
+        
         a.setIndirizzo(anindiri);
         if (!anindir1.equals("")) {
-            System.out.println("-----anindir1 ------");
-            System.out.println("ANCODICE: " + a.getCodeLineBase());
-            System.out.println("ANINDIRI: " + anindiri);
             System.out.println("ANINDIR1: " + anindir1);
-            System.out.println("ANLOCALI: " + anlocali);
-            System.out.println("------------------------------");
             if (a.getCodeLineBase().equals("00000000012956")) {
                 a.setIndirizzoSecondaRiga(null);
             } else if (a.getCodeLineBase().equals("00000000066055")) {
@@ -136,12 +150,8 @@ public class SmdImportFromExcel {
             } else {
                 a.setIndirizzoSecondaRiga(anindir1);
             }
-            System.out.println("-----anindir1 fix------");
-            System.out.println("ANCODICE: " + a.getCodeLineBase());
             System.out.println("Indirizzo: " + a.getIndirizzo());
             System.out.println("Indirizzo2: " + a.getIndirizzoSecondaRiga());
-            System.out.println("ANLOCALI: " + anlocali);
-            System.out.println("------------------------------");
         }
                
         a.setCitta(getCittaFromAnlocali(anlocali));
@@ -161,6 +171,19 @@ public class SmdImportFromExcel {
             throw new UnsupportedOperationException();
         }
         
+        if (a.getCognome().contains("APOSTOLATO")) {
+            a.setTitolo(TitoloAnagrafica.Adp);
+            a.setCognome("ADP-"+a.getCitta());
+        }
+        
+        if (!andescr2.equals("")) {
+            System.out.println("ANDESCR2: " + andescr2); 
+            a.setDescr(andescr2);
+            if (a.getTitolo() == TitoloAnagrafica.Adp) {
+                a.setCognome(andescr2);
+            }
+        }
+
         if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
             System.err.println("-----Anagrafica Titolo error------");
             System.err.println(a.getCodeLineBase());
@@ -306,7 +329,10 @@ public class SmdImportFromExcel {
                 System.err.println();
                 throw new UnsupportedOperationException();
             }
-        }        
+        }
+        System.out.println("------------------------------");
+        System.out.println();
+
     }
     
     private void processCARow(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {

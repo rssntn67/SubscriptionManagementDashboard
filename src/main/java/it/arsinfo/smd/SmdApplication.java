@@ -34,17 +34,20 @@ public class SmdApplication {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
         
-    @Value("${load.sample.data}")
-    private String loadSampleData;
-
     @Value("${load.pubblicazioni.adp}")
     private String loadPubblicazioniAdp;
+
+    @Value("${load.anagrafica.adp}")
+    private String loadAnagraficaAdp;
 
     @Value("${load.sample.anagrafica}")
     private String loadSampleAnagraficaAdp;
 
     @Value("${load.sample.storico}")
     private String loadSampleStoricoAdp;
+
+    @Value("${load.sample.data}")
+    private String loadSampleData;
 
     @Value("${create.demo.user}")
     private String  createDemoUser;
@@ -82,6 +85,8 @@ public class SmdApplication {
                 log.info("creato user admin/admin");
             }
 
+            boolean loadADP = loadAnagraficaAdp != null && loadAnagraficaAdp.equals("true");
+            log.info("loadAnagraficaAdp="+loadADP);
             boolean loadSD = loadSampleData != null && loadSampleData.equals("true");
             log.info("loadSampleData="+loadSD);
             boolean loadPAdp = loadPubblicazioniAdp != null && loadPubblicazioniAdp.equals("true");
@@ -94,7 +99,7 @@ public class SmdApplication {
             log.info("createDemoUser="+creaDU);
             boolean creaNU =  createNormalUser != null && createNormalUser.equals("true");
             log.info("createNormalUser="+creaNU);
-            if (loadSD || loadPAdp || loadSA || loadSS || creaDU || creaNU) {
+            if (loadADP||loadSD || loadPAdp || loadSA || loadSS || creaDU || creaNU) {
                      new Thread(new SmdLoadSampleData(
                       anagraficaDao, 
                       storicoDao, 
@@ -111,6 +116,7 @@ public class SmdApplication {
                       operazioneDao,
                       userInfoDao,
                       passwordEncoder,
+                      loadADP,
                       loadPAdp,
                       loadSA,
                       loadSS,

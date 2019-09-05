@@ -2,31 +2,32 @@ package it.arsinfo.smd.data;
 
 
 public enum TitoloAnagrafica {
-        Nessuno(""),
-        Diocesi("Spett.le"),
-        Istituto("Spett.le"),
-        Cattedrale("Spett.le"),
-        Ditta("Spett.le"),
-        CasaDiRiposo("Spett.le"),
+        Nessuno("",false),
+        Adp("Spett.le Apostolato della Preghiera",false),
+        Diocesi("Spett.le",false),
+        Istituto("Spett.le",false),
+        Cattedrale("Spett.le",false),
+        Ditta("Spett.le",false),
+        CasaDiRiposo("Spett.le",false),
         Diacono("Rev. Diac."),
-        Parrocchia("Parrocchia"),
+        Parrocchia("Parrocchia",false),
         Insegnante("Gent. Ins."),
-        Scuola("Spett.le"),
-        Famiglia("Gent.ma Famiglia"),
+        Scuola("Spett.le",false),
+        Famiglia("Gent.ma Famiglia",false),
         Egregio("Egr. Sig."),
         Egregi("Egr. Sigg."),
         Gentilissima("Gent. Sig.ra"),
-        Gentilissime("Gent.me Sigg."),
+        Gentilissime("Gent.me Sigg.", false),
         Signorina("Gent. Sig.na"),
         Dottore("Egr. Dott."),
         Dottoressa("Gent. Dott.ssa"),
         Ingegnere("Egr. Ing."),
         Religioso("Rev. Padre"),
         Religiosa("Rev. Madre"),
-        Superiore("R. P. Superiore"),
-        Superiora("R. M. Superiora"),
+        Superiore("R. P. Superiore", false),
+        Superiora("R. M. Superiora",false),
         Suor("Rev. Suora"),
-        Suore("Rev. Suore"),
+        Suore("Rev. Suore",false),
         Don("Don"),
         Parroco("Rev. Parroco"),
         Sacerdote("Rev."),
@@ -40,6 +41,7 @@ public enum TitoloAnagrafica {
     
     
     private String intestazione;
+    private boolean persona;
     
     public static TitoloAnagrafica getByIntestazione(String intestazione) {
         for (TitoloAnagrafica ta: TitoloAnagrafica.values()) {
@@ -52,6 +54,12 @@ public enum TitoloAnagrafica {
 
     private TitoloAnagrafica(String intestazione) {
         this.intestazione=intestazione;
+        this.persona = true;
+    }
+
+    private TitoloAnagrafica(String intestazione,boolean persona) {
+        this.intestazione=intestazione;
+        this.persona = persona;
     }
 
     public String getIntestazione() {
@@ -60,6 +68,14 @@ public enum TitoloAnagrafica {
 
     public void setIntestazione(String intestazione) {
         this.intestazione = intestazione;
+    }
+
+    public boolean isPersona() {
+        return persona;
+    }
+
+    public void setPersona(boolean persona) {
+        this.persona = persona;
     }
         
 }

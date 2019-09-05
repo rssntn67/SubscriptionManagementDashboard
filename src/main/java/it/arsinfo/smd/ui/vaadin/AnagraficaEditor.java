@@ -33,7 +33,9 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final ComboBox<TitoloAnagrafica> titolo = new ComboBox<TitoloAnagrafica>("Titolo",
                                                                                      EnumSet.allOf(TitoloAnagrafica.class));
     private final ComboBox<Anagrafica> co = new ComboBox<Anagrafica>("c/o");
+    private final TextField codeLineBase = new TextField("Identificativo ccp");
     private final TextField nome = new TextField("Nome");
+    private final TextField descr = new TextField("Descr");
     private final TextField indirizzo = new TextField("Indirizzo");
     private final TextField indirizzoSecondaRiga = new TextField("Indirizzo+");
     private final TextField cap = new TextField("CAP");
@@ -69,13 +71,14 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         HorizontalLayout riga1 = new HorizontalLayout(titolo, 
                                                       cognome, 
                                                       nome,
-                                                      indirizzo, 
-                                                      indirizzoSecondaRiga, 
-                                                      cap, 
-                                                      citta,
-                                                      provincia
+                                                      indirizzo
                                                       );
-        HorizontalLayout riga1e2 = new HorizontalLayout(co);
+        HorizontalLayout riga1e2 = new HorizontalLayout(codeLineBase,descr,co);
+        HorizontalLayout riga11 = new HorizontalLayout(cap, 
+                                                      citta,
+                                                      provincia,
+                                                      indirizzoSecondaRiga 
+                                                      );
 
         HorizontalLayout riga2 = new HorizontalLayout(diocesi, 
                                                       regioneVescovi,
@@ -104,7 +107,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       promotoreRegionale
                                                       );
 
-        setComponents(getActions(), riga1, riga1e2,riga2, riga3, riga4);
+        setComponents(getActions(), riga1,riga11, riga1e2,riga2, riga3, riga4);
 
         co.setItems(anagraficaDao.findAll());
 
@@ -123,11 +126,17 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         paese.setEmptySelectionAllowed(false);
         co.setItemCaptionGenerator(Anagrafica::getCaption);
         areaSpedizione.setEmptySelectionAllowed(false);
+        codeLineBase.setReadOnly(true);
 
     }
 
     @Override
     public void focus(boolean persisted, Anagrafica c) {
         cognome.focus();
+        if (persisted) {
+            codeLineBase.setVisible(true);
+        } else {
+            codeLineBase.setVisible(false);            
+        }
     }
 }

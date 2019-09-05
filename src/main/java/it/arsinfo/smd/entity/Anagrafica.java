@@ -40,6 +40,7 @@ public class Anagrafica implements SmdEntity {
     
     private String nome;
     private String cognome;
+    private String descr;
     
     @ManyToOne
     private Anagrafica co;
@@ -391,5 +392,13 @@ public class Anagrafica implements SmdEntity {
 
     public void setIndirizzoSecondaRiga(String indirizzoSecondaRiga) {
         this.indirizzoSecondaRiga = indirizzoSecondaRiga;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
     }
 }
