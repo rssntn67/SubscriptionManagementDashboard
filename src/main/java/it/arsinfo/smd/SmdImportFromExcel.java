@@ -101,7 +101,7 @@ public class SmdImportFromExcel {
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,
                                                      a);
         if (!Abbonamento.checkCodeLine(codeLine)) {
-            System.err.println("----- codeLineBase invalid ------");
+            System.err.println("----- codeLine invalid ------");
             System.err.println("ANCODICE: " + pncodcon);
             System.err.println("------------------------------");
             System.out.println();
@@ -351,8 +351,23 @@ public class SmdImportFromExcel {
         String anindir1 = dataFormatter.formatCellValue(row.getCell(5));
         String anlocali = dataFormatter.formatCellValue(row.getCell(6));
         
-        String pndessup = dataFormatter.formatCellValue(row.getCell(7));
         // Check for Abbonmento and not anagrafica
+        String pndessup = dataFormatter.formatCellValue(row.getCell(7));
+        if (pncodcon.equals("0000004967")) {
+            pndessup="000000020000730517";
+            System.out.println("----- codeLine fix ------");
+            System.out.println("ANCODICE: " + pncodcon);
+            System.out.println("codeLine: " + pndessup);
+            System.out.println("------------------------------");
+            System.out.println();
+        } else if (pncodcon.equals("0000048374")) {
+            pndessup="000000020000730416";
+            System.out.println("----- codeLine fix ------");
+            System.out.println("ANCODICE: " + pncodcon);
+            System.out.println("codeLine: " + pndessup);
+            System.out.println("------------------------------");
+            System.out.println();
+        }
         if (!Abbonamento.checkCodeLine(pndessup)) {
             System.err.println("----- codeLine invalid ------");
             System.err.println("ANCODICE: " + pncodcon);
@@ -451,7 +466,7 @@ public class SmdImportFromExcel {
             throw new UnsupportedOperationException();
         }
         String pndessup1 = dataFormatter.formatCellValue(row.getCell(32));
-        if (!pndessup.equals(pndessup1)) {
+        if (!pndessup.equals(pndessup1) && !pndessup1.equals("")) {
             System.err.println("pndessup mismatch: " + pncodcon);
             throw new UnsupportedOperationException();
         }
