@@ -24,8 +24,8 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public class SmdImportFromExcel {
 
-    public static final String ARCHIVIO_CLIENTI = "/Users/antonio/Documents/ADP/Dati/ARCHIVIOCLIENTI.xls";
-    public static final String CA_2020 = "/Users/antonio/Documents/ADP/Dati/CA2020COMPLETA.xls";
+    public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI.xls";
+    public static final String CA_2020 = "data/CA2020COMPLETA.xls";
 
     final Map<String, Anagrafica> campagnaUserMap = new HashMap<String, Anagrafica>();
 
