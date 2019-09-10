@@ -25,7 +25,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     private Diocesi searchDiocesi;
-    private String searchCognome;
+    private String searchDenominazione;
     private String searchCap;
     private String searchCitta;
 
@@ -62,14 +62,14 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     public AnagraficaSearch(AnagraficaDao anagraficaDao) {
         super(anagraficaDao);
-        TextField filterCognome = new TextField("Cerca per Cognome");
+        TextField filterDenominazione = new TextField("Cerca per Denominazione");
         TextField filterCap = new TextField("Cerca per CAP");
         TextField filterCitta = new TextField("Cerca per Città");
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Cerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
         setComponents(new HorizontalLayout(filterDiocesi, 
-                                           filterCognome,
+                                           filterDenominazione,
                                            filterProvincia,
                                            filterCitta,
                                            filterCap,
@@ -107,10 +107,10 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             onChange();
         });
 
-        filterCognome.setPlaceholder("Inserisci Cognome");
-        filterCognome.setValueChangeMode(ValueChangeMode.EAGER);
-        filterCognome.addValueChangeListener(e -> {
-            searchCognome = e.getValue();
+        filterDenominazione.setPlaceholder("Inserisci Denominazione");
+        filterDenominazione.setValueChangeMode(ValueChangeMode.EAGER);
+        filterDenominazione.addValueChangeListener(e -> {
+            searchDenominazione = e.getValue();
             onChange();
         });
 
@@ -163,39 +163,39 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     @Override
     public List<Anagrafica> find() {
-        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap) && searchDiocesi == null) {
+        if (StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap) && searchDiocesi == null) {
             return filterAll(findAll());
         }
         
-        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
+        if (StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo()).findByDiocesi(searchDiocesi));
         }
         if (searchDiocesi == null && StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome));
+            return filterAll(((AnagraficaDao) getRepo()).findByDenominazioneContainingIgnoreCase(searchDenominazione));
         }
-        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCap)) {
+        if (searchDiocesi == null && StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo()).findByCittaContainingIgnoreCase(searchCitta));
         }
-        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta)) {
+        if (searchDiocesi == null && StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCitta)) {
             return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap));
         }
 
         if (StringUtils.isEmpty(searchCitta) && StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo())
-                             .findByCognomeContainingIgnoreCase(searchCognome)
+                             .findByDenominazioneContainingIgnoreCase(searchDenominazione)
                              .stream()
                              .filter(tizio -> tizio.getDiocesi().equals(searchDiocesi))
                              .collect(Collectors.toList()));
         }
 
-        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCap)) {
+        if (StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo())
                              .findByCittaContainingIgnoreCase(searchCitta)
                              .stream()
                              .filter(tizio -> tizio.getDiocesi().equals(searchDiocesi))
                              .collect(Collectors.toList()));
         }
-        if (StringUtils.isEmpty(searchCognome) && StringUtils.isEmpty(searchCitta)) {
+        if (StringUtils.isEmpty(searchDenominazione) && StringUtils.isEmpty(searchCitta)) {
             return filterAll(((AnagraficaDao) getRepo())
                              .findByCapContainingIgnoreCase(searchCap)
                              .stream()
@@ -203,7 +203,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                              .collect(Collectors.toList()));
         }
         if (searchDiocesi == null && StringUtils.isEmpty(searchCitta)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCognomeContainingIgnoreCase(searchCognome)
+            return filterAll(((AnagraficaDao) getRepo()).findByDenominazioneContainingIgnoreCase(searchDenominazione)
                              .stream()
                              .filter(tizio -> 
                                     tizio.getCap() != null 
@@ -211,7 +211,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                              )
                              .collect(Collectors.toList()));
         }
-        if (searchDiocesi == null && StringUtils.isEmpty(searchCognome)) {
+        if (searchDiocesi == null && StringUtils.isEmpty(searchDenominazione)) {
             return filterAll(((AnagraficaDao) getRepo()).findByCittaContainingIgnoreCase(searchCitta)
                              .stream()
                              .filter(tizio -> 
@@ -224,15 +224,15 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
             return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap)
                              .stream()
                              .filter(tizio -> 
-                                    tizio.getCognome() != null 
-                                 && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                                    tizio.getDenominazione() != null 
+                                 && tizio.getDenominazione().toLowerCase().contains(searchDenominazione.toLowerCase())
                              )
                              .collect(Collectors.toList()));
         }
 
         if (StringUtils.isEmpty(searchCap)) {
             return filterAll(((AnagraficaDao) getRepo())
-                             .findByCognomeContainingIgnoreCase(searchCognome)
+                             .findByDenominazioneContainingIgnoreCase(searchDenominazione)
                              .stream()
                              .filter(tizio -> 
                                     tizio.getDiocesi().equals(searchDiocesi) 
@@ -240,7 +240,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                              )
                              .collect(Collectors.toList()));
         }
-        if (StringUtils.isEmpty(searchCognome)) {
+        if (StringUtils.isEmpty(searchDenominazione)) {
             return filterAll(((AnagraficaDao) getRepo())
                              .findByCittaContainingIgnoreCase(searchCitta)
                              .stream()
@@ -256,8 +256,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                              .stream()
                              .filter(tizio ->
                                     tizio.getDiocesi().equals(searchDiocesi) 
-                                 && tizio.getCognome() != null 
-                                 && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                                 && tizio.getDenominazione() != null 
+                                 && tizio.getDenominazione().toLowerCase().contains(searchDenominazione.toLowerCase())
                              )
                              .collect(Collectors.toList()));
         }
@@ -268,8 +268,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                              .filter(tizio -> 
                                 tizio.getCitta() != null 
                              && tizio.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
-                             && tizio.getCognome() != null 
-                             && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                             && tizio.getDenominazione() != null 
+                             && tizio.getDenominazione().toLowerCase().contains(searchDenominazione.toLowerCase())
                              )
                              .collect(Collectors.toList()));
         }
@@ -281,8 +281,8 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                             tizio.getDiocesi().equals(searchDiocesi) 
                          && tizio.getCitta() != null 
                          && tizio.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
-                         && tizio.getCognome() != null 
-                         && tizio.getCognome().toLowerCase().contains(searchCognome.toLowerCase())
+                         && tizio.getDenominazione() != null 
+                         && tizio.getDenominazione().toLowerCase().contains(searchDenominazione.toLowerCase())
                          && tizio.getCap() != null 
                          && tizio.getCap().toLowerCase().contains(searchCap.toLowerCase())
                          )

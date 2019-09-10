@@ -24,21 +24,8 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public class SmdImportFromExcel {
 
-    public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI.xls";
+    public static final String ARCHIVIO_CLIENTI = "data/ELENCOABBONATI2020-060919.xls";
     public static final String CA_2020 = "data/CA2020COMPLETA.xls";
-
-    final Map<String, Anagrafica> campagnaUserMap = new HashMap<String, Anagrafica>();
-
-    public static void main(String[] args) { 
-        SmdImportFromExcel imp = new SmdImportFromExcel();
-        try {
-            imp.importCA2010Excelfile();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
-        }                
-    }
     
     public static AreaSpedizione getAreaSpedizione(String annazion) {
         if (annazion.equals("RSM") || annazion.equals("ITA") || annazion.equals("CVC")) {
@@ -109,51 +96,27 @@ public class SmdImportFromExcel {
         }
         return a;
     }
-    
+        
     public static void populateAnagraficaCampagna(Anagrafica a, String destitolo,
             String andescri, String andescr2, String anindiri, String anindir1,
             String anlocali) throws UnsupportedOperationException {
-//FIXME
-        System.out.println("ANCODICE: " + a.getCodeLineBase());
-        System.out.println("ANDESCRI: " + andescri);            
-        System.out.println("ANLOCALI: " + anlocali);
-        a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));
-        System.out.println("titolo: " + a.getTitolo());
+
+        a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));        
         
-        a.setCognome(andescri);
-        if (a.getTitolo().isPersona()) {
-            String[] arrayNomi = andescri.split(" ");
-            if (arrayNomi.length > 1) {
-                String cognome = "";
-                for (int i=0; i<arrayNomi.length-2;i++) {
-                    cognome += arrayNomi[i] + " ";
-                }
-                cognome += arrayNomi[arrayNomi.length-2];
-                a.setCognome(cognome);
-                a.setNome(arrayNomi[arrayNomi.length-1]);
-                System.out.println("Nome: " + a.getNome());
-            }
+        if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
+            System.err.println("-----Anagrafica Titolo error------");
+            System.err.println(a.getCodeLineBase());
+            System.err.println(a.getCitta());
+            System.err.println(a.getCap());
+            System.err.println(a.getProvincia());
+            System.err.println("------------------------------");
+            System.err.println();
+            throw new UnsupportedOperationException();
         }
-        System.out.println("Cognome: " + a.getCognome());
+
+        a.setDenominazione(andescri);
+        a.setNome(andescr2);
         
-        a.setIndirizzo(anindiri);
-        if (!anindir1.equals("")) {
-            System.out.println("ANINDIR1: " + anindir1);
-            if (a.getCodeLineBase().equals("00000000012956")) {
-                a.setIndirizzoSecondaRiga(null);
-            } else if (a.getCodeLineBase().equals("00000000066055")) {
-                    a.setIndirizzo("FRAZ.VIGHIZZOLO - VIA S. GIOVANNI 255");
-            } else if (a.getCodeLineBase().equals("00000000020992")) {
-                a.setIndirizzo("LOC.S.PIETRO DI BARBOZZA-STR.CHIESA 2");
-            } else if (a.getCodeLineBase().equals("00000000061880")) {
-                a.setIndirizzo("LOC.MAGLIO DI SOPRA - VIA MARZOTTO 2");
-            } else {
-                a.setIndirizzoSecondaRiga(anindir1);
-            }
-            System.out.println("Indirizzo: " + a.getIndirizzo());
-            System.out.println("Indirizzo2: " + a.getIndirizzoSecondaRiga());
-        }
-               
         a.setCitta(getCittaFromAnlocali(anlocali));
         a.setCap(getCapFromAnlocali(anlocali));
         a.setProvincia(getProvincia(getProvinciaFromAnlocali(anlocali)));
@@ -170,31 +133,31 @@ public class SmdImportFromExcel {
             System.err.println();
             throw new UnsupportedOperationException();
         }
-        
-        if (a.getCognome().contains("APOSTOLATO")) {
-            a.setTitolo(TitoloAnagrafica.Adp);
-            a.setCognome("ADP-"+a.getCitta());
-        }
-        
-        if (!andescr2.equals("")) {
-            System.out.println("ANDESCR2: " + andescr2); 
-            a.setDescr(andescr2);
-            if (a.getTitolo() == TitoloAnagrafica.Adp) {
-                a.setCognome(andescr2);
-            }
-        }
 
-        if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
-            System.err.println("-----Anagrafica Titolo error------");
-            System.err.println(a.getCodeLineBase());
-            System.err.println(a.getCitta());
-            System.err.println(a.getCap());
-            System.err.println(a.getProvincia());
-            System.err.println("------------------------------");
-            System.err.println();
-            throw new UnsupportedOperationException();
-        }
         
+        a.setIndirizzo(anindiri);
+        if (!anindir1.equals("")) {
+            if (a.getCodeLineBase().equals("00000000012956")) {
+                a.setIndirizzoSecondaRiga(null);
+            } else if (a.getCodeLineBase().equals("00000000066055")) {
+                    a.setIndirizzo("FRAZ.VIGHIZZOLO - VIA S. GIOVANNI 255");
+            } else if (a.getCodeLineBase().equals("00000000020992")) {
+                a.setIndirizzo("LOC.S.PIETRO DI BARBOZZA-STR.CHIESA 2");
+            } else if (a.getCodeLineBase().equals("00000000061880")) {
+                a.setIndirizzo("LOC.MAGLIO DI SOPRA - VIA MARZOTTO 2");
+            } else {
+                a.setIndirizzoSecondaRiga(anindir1);
+            }
+            System.out.println("-----Fixed ANINDIR1------");
+            System.out.println(a.getCodeLineBase());
+            System.out.println("ANINDIRI: " + anindiri);
+            System.out.println("ANINDIR1: " + anindir1);
+            System.out.println("Indirizzo1: " + a.getIndirizzo());
+            System.out.println("Indirizzo2: " + a.getIndirizzoSecondaRiga());
+            System.out.println("------------------------------");
+            System.out.println();
+        }
+                       
         if (a.getProvincia() == Provincia.ND) {
             if (a.getCodeLineBase().equals("00000000015153")) {
                 a.setProvincia(Provincia.RM);
@@ -330,20 +293,11 @@ public class SmdImportFromExcel {
                 throw new UnsupportedOperationException();
             }
         }
-        System.out.println("------------------------------");
-        System.out.println();
 
     }
     
-    private void processCARow(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {
-        String pncodcon = dataFormatter.formatCellValue(row.getCell(0));
-        if (pncodcon.endsWith("pncodcon")) {
-            return;
-        }
-        if (campagnaUserMap.containsKey(pncodcon)) {
-            System.err.println("duplicated: " + pncodcon);
-            return;
-        }
+    private Anagrafica processCARow(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+
         String destitolo = dataFormatter.formatCellValue(row.getCell(1));
         String andescri = dataFormatter.formatCellValue(row.getCell(2));
         String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
@@ -382,9 +336,9 @@ public class SmdImportFromExcel {
             System.out.println();
             throw new UnsupportedOperationException();
         }
-        Anagrafica a = getAnagraficaByAncodcon(pncodcon);
+        Anagrafica anagrafica = getAnagraficaByAncodcon(pncodcon);
         
-        populateAnagraficaCampagna(a, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
+        populateAnagraficaCampagna(anagrafica, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
         
 
         String msg =      dataFormatter.formatCellValue(row.getCell(8));
@@ -500,65 +454,70 @@ public class SmdImportFromExcel {
             System.err.println("totpromo2 mismatch: " + pncodcon);
             throw new UnsupportedOperationException();
         }
-
-        campagnaUserMap.put(pncodcon, a);
+        
+        return anagrafica;
 
     }
 
-    
-    public void importCA2010Excelfile() throws IOException {
+    public Map<String,Anagrafica> importCampagna2020() throws IOException {        
         DataFormatter dataFormatter = new DataFormatter();
 
         File ca2020 = new File(CA_2020);
         Workbook wbca2020 = new HSSFWorkbook(new FileInputStream(ca2020));
         
-        Set<String> caerrors = new HashSet<>();
-
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
         for (Row row : wbca2020.getSheetAt(0)) {
-            try {
-                processCARow(row,dataFormatter);                
-            } catch (UnsupportedOperationException e) {
-                String pncodcon = dataFormatter.formatCellValue(row.getCell(0));
-                caerrors.add(pncodcon);
+            String pncodcon = dataFormatter.formatCellValue(row.getCell(0));
+            if (pncodcon.endsWith("pncodcon")) {
                 continue;
             }
-        }
-
-        File ac = new File(ARCHIVIO_CLIENTI);
-        Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
-
-        Set<String> errors = new HashSet<>();
-        for (Row row : wbac.getSheetAt(0)) {
             try {
-                processRowArchivioClienti(row, dataFormatter);                
+                anagraficaMap.put(pncodcon, processCARow(row,pncodcon,dataFormatter));                
             } catch (UnsupportedOperationException e) {
-                String pncodcon = dataFormatter.formatCellValue(row.getCell(0));
                 errors.add(pncodcon);
                 continue;
             }
         }
         System.out.println("Campagna 2020 -  Errori Trovati: "
-                + caerrors.size());
+                + errors.size());
+        System.out.println("Campagna 2020 -  Clienti Trovati: "
+                + anagraficaMap.size());
+        return anagraficaMap;
+    }
+        
+    public Map<String,Anagrafica> importArchivioClienti() throws IOException {
+        DataFormatter dataFormatter = new DataFormatter();
+
+        File ac = new File(ARCHIVIO_CLIENTI);
+        Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
+
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        for (Row row : wbac.getSheetAt(0)) {
+            String picoddio = dataFormatter.formatCellValue(row.getCell(0));
+            String ancodice = dataFormatter.formatCellValue(row.getCell(1));
+            if (picoddio.equalsIgnoreCase("PICODDIO")) {
+                continue;
+            }
+            try {
+                anagraficaMap.put(ancodice, processRowArchivioClienti(row, picoddio,ancodice, dataFormatter));
+            } catch (UnsupportedOperationException e) {
+                errors.add(ancodice);
+                continue;
+            }
+        }
 
         System.out.println("Archivio Clienti Errori Trovati: "
                 + errors.size());
+        System.out.println("Archivio Clienti Trovati: "
+                + anagraficaMap.size());
         
-        System.out.println("Campagna 2020 -  Record Trovati: "
-                + campagnaUserMap.size());        
-
+        return anagraficaMap;
     }
 
-    public void processRowArchivioClienti(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {
-        String picoddio = dataFormatter.formatCellValue(row.getCell(0));
-        if (picoddio.equals("PICODDIO")) {
-            return;
-        }
-        
-            
-        String ancodice = dataFormatter.formatCellValue(row.getCell(1));
-        if (!campagnaUserMap.containsKey(ancodice)) {
-            return;
-        }
+    public Anagrafica processRowArchivioClienti(Row row, String picoddio,String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
+                    
         String andescri = dataFormatter.formatCellValue(row.getCell(2));
         String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
         String anindiri = dataFormatter.formatCellValue(row.getCell(4));
@@ -569,13 +528,24 @@ public class SmdImportFromExcel {
         String ancodfis = dataFormatter.formatCellValue(row.getCell(9));
         String anpariva = dataFormatter.formatCellValue(row.getCell(10));
         String antelefo = dataFormatter.formatCellValue(row.getCell(11));
-        String antipcon = dataFormatter.formatCellValue(row.getCell(12));
+        //String antipcon = dataFormatter.formatCellValue(row.getCell(12));
         String annumcel = dataFormatter.formatCellValue(row.getCell(13));
         String an_email = dataFormatter.formatCellValue(row.getCell(14));
-        String abcodese = dataFormatter.formatCellValue(row.getCell(15));
+        //String abcodese = dataFormatter.formatCellValue(row.getCell(15));
         
-        Anagrafica anagrafica = campagnaUserMap.get(ancodice);
-
+        Anagrafica anagrafica = getAnagraficaByAncodcon(ancodice);
+        anagrafica.setDenominazione(andescri);
+        anagrafica.setNome(andescr2);
+        anagrafica.setIndirizzo(anindiri);
+        anagrafica.setCitta(anlocali);
+        anagrafica.setCap(an___cap);
+        anagrafica.setProvincia(getProvincia(anprovin));
+        anagrafica.setCodfis(ancodfis);
+        anagrafica.setPiva(anpariva);
+        anagrafica.setTelefono(antelefo);
+        anagrafica.setCellulare(annumcel);
+        anagrafica.setEmail(an_email);    
+        anagrafica.setPaese(Paese.getBySigla(annazion));
 
         if (!checkDiocesi(anagrafica, 
                           annazion, 
@@ -625,12 +595,10 @@ public class SmdImportFromExcel {
                           anprovin,
                           picoddio)) {
                 throw new UnsupportedOperationException();
-            }
-        anagrafica.setCodfis(ancodfis);
-        anagrafica.setPiva(anpariva);
-        anagrafica.setTelefono(antelefo);
-        anagrafica.setCellulare(annumcel);
-        anagrafica.setEmail(an_email);        
+        }
+        
+        return anagrafica;
+        
     }
         
     private static boolean checkDiocesi(Anagrafica anagrafica, 
@@ -821,8 +789,6 @@ public class SmdImportFromExcel {
                         + anagrafica.getDiocesi().getDetails());
                 System.out.println("------------------------------");
                 System.out.println();
-                System.out.println("------------------------------");
-                System.out.println();
             } else {
                 System.err.println("-----Provincia non Definita------");
                 System.err.println("ANCODICE: " + ancodice);
@@ -840,10 +806,6 @@ public class SmdImportFromExcel {
         }
         return true;
    
-    }
-
-    public Map<String, Anagrafica> getCampagnaUserMap() {
-        return campagnaUserMap;
     }
 
 }

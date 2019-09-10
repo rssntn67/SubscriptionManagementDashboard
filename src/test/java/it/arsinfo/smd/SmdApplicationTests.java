@@ -269,8 +269,8 @@ public class SmdApplicationTests {
         assertEquals(1, anagraficaDao.findAll().size());
         
         assertNotNull(anagraficaDao.findById(antonioRusso.getId()));
-        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("us").size());
-        assertEquals(0,anagraficaDao.findByCognomeContainingIgnoreCase("Rosso").size());
+        assertEquals(1,anagraficaDao.findByDenominazioneContainingIgnoreCase("us").size());
+        assertEquals(0,anagraficaDao.findByDenominazioneContainingIgnoreCase("Rosso").size());
         assertEquals(1,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
         assertEquals(0,anagraficaDao.findByDiocesi(Diocesi.DIOCESI115).size());
         
@@ -278,8 +278,8 @@ public class SmdApplicationTests {
         anagraficaDao.save(diocesiMilano);
         assertEquals(2, anagraficaDao.findAll().size());
         
-        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("ar").size());
-        assertEquals(1,anagraficaDao.findByCognomeContainingIgnoreCase("mi").size());
+        assertEquals(1,anagraficaDao.findByDenominazioneContainingIgnoreCase("ar").size());
+        assertEquals(1,anagraficaDao.findByDenominazioneContainingIgnoreCase("mi").size());
         assertEquals(2,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
         assertEquals(0,anagraficaDao.findByDiocesi(Diocesi.DIOCESI115).size());
         

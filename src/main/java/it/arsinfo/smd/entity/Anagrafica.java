@@ -39,7 +39,7 @@ public class Anagrafica implements SmdEntity {
     private TitoloAnagrafica titolo=TitoloAnagrafica.Nessuno;   
     
     private String nome;
-    private String cognome;
+    private String denominazione;
     private String descr;
     
     @ManyToOne
@@ -106,12 +106,12 @@ public class Anagrafica implements SmdEntity {
         this.nome = nome;
     }
 
-    public String getCognome() {
-        return cognome;
+    public String getDenominazione() {
+        return denominazione;
     }
 
-    public void setCognome(String cognome) {
-        this.cognome = cognome;
+    public void setDenominazione(String denominazione) {
+        this.denominazione = denominazione;
     }
 
     public String getIndirizzo() {
@@ -125,7 +125,7 @@ public class Anagrafica implements SmdEntity {
     @Override
     public String toString() {
         return String.format("Anagrafica[id=%d, %s %s %s %s]",
-                             id, nome, cognome, diocesi.getDetails(),codeLineBase);
+                             id, nome, denominazione, diocesi.getDetails(),codeLineBase);
     }
 
     public String getCap() {
@@ -316,7 +316,7 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("'%s %s %s'", titolo.getIntestazione(), nome, cognome);
+        return String.format("'%s %s %s'", titolo.getIntestazione(), nome, denominazione);
     }
 
     @Transient

@@ -21,7 +21,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 
 public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
-    private final TextField cognome = new TextField("Cognome/Ragione Sociale");
+    private final TextField denominazione = new TextField("Denominazione");
     private final ComboBox<Diocesi> diocesi = new ComboBox<Diocesi>("Diocesi",
                                                                     EnumSet.allOf(Diocesi.class));
     private final ComboBox<Provincia> provincia = new ComboBox<Provincia>("Provincia",
@@ -69,7 +69,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
         HorizontalLayout riga1 = new HorizontalLayout(titolo, 
-                                                      cognome, 
+                                                      denominazione, 
                                                       nome,
                                                       indirizzo
                                                       );
@@ -112,7 +112,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
         co.setItems(anagraficaDao.findAll());
 
         getBinder().forField(diocesi).asRequired();
-        getBinder().forField(cognome).asRequired();
+        getBinder().forField(denominazione).asRequired();
         getBinder().forField(paese).asRequired();
         getBinder().forField(email).withValidator(new EmailValidator("Immettere un indizzo di mail valido"));
         getBinder().bindInstanceFields(this);
@@ -132,7 +132,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
 
     @Override
     public void focus(boolean persisted, Anagrafica c) {
-        cognome.focus();
+        denominazione.focus();
         if (persisted) {
             codeLineBase.setVisible(true);
         } else {

@@ -768,7 +768,7 @@ public class SmdLoadSampleData implements Runnable {
     public static Anagrafica getAnagraficaBy(String nome, String cognome) {
         Anagrafica anagrafica = new Anagrafica();
         anagrafica.setNome(nome);
-        anagrafica.setCognome(cognome);
+        anagrafica.setDenominazione(cognome);
         anagrafica.setCodeLineBase(Anagrafica.generaCodeLineBase());
         return anagrafica;
     }
@@ -1105,14 +1105,18 @@ public class SmdLoadSampleData implements Runnable {
             log.info("Start Loading Anagrafica Adp");
             SmdImportFromExcel imp = new SmdImportFromExcel();
             try {
-                imp.importCA2010Excelfile();
+                imp.importCampagna2020();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 return;
             }
-            
-            imp.getCampagnaUserMap().values().forEach(a -> anagraficaDao.save(a));
+            try {
+                imp.importArchivioClienti().values().forEach(a -> anagraficaDao.save(a));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                return;
+            }
             log.info("End Loading Anagrafica Adp");
         }
 
