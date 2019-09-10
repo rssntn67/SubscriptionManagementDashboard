@@ -36,7 +36,6 @@ public class SmdImportTest {
         for (String ancodice : caMap.keySet()) {
             i++;
             Anagrafica caAnagrafica = caMap.get(ancodice);
-            System.out.println(ancodice+"--->"+i+"--->"+caAnagrafica.getPaese());
             assertTrue(acMap.keySet().contains(ancodice));
             Anagrafica acAnagrafica = acMap.get(ancodice);
             assertEquals(caAnagrafica.getCodeLineBase(), acAnagrafica.getCodeLineBase());
@@ -64,6 +63,7 @@ public class SmdImportTest {
                 || ancodice.equals("0000062486")
                 || ancodice.equals("0000012438")
                 ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setDenominazione(acAnagrafica.getDenominazione());
                 caAnagrafica.setNome(acAnagrafica.getNome());
             }
@@ -97,6 +97,7 @@ public class SmdImportTest {
                     || ancodice.equals("0000007662")
                     || ancodice.equals("0000011192")
                     ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setNome(acAnagrafica.getNome());
                 caAnagrafica.setCitta(acAnagrafica.getCitta());
                 caAnagrafica.setCap(acAnagrafica.getCap());
@@ -112,6 +113,7 @@ public class SmdImportTest {
                 ||ancodice.equals("0000074822") 
                 ||ancodice.equals("0000011192") 
                     ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setProvincia(acAnagrafica.getProvincia());
                 caAnagrafica.setCitta(acAnagrafica.getCitta());
                 caAnagrafica.setIndirizzo(acAnagrafica.getIndirizzo());
@@ -126,6 +128,7 @@ public class SmdImportTest {
                 || ancodice.equals("0000017622")
                 || ancodice.equals("0000017678")
                 ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setCitta(acAnagrafica.getCitta());
                 caAnagrafica.setIndirizzo(acAnagrafica.getIndirizzo());
                 caAnagrafica.setCap(acAnagrafica.getCap());
@@ -133,7 +136,8 @@ public class SmdImportTest {
             if (ancodice.equals("0000016209")
                 || ancodice.equals("0000015153")
                     ) {
-                    acAnagrafica.setCitta(caAnagrafica.getCitta());
+                System.out.println(ancodice+"--->"+i+"--->Updated acAnagrafica");
+                acAnagrafica.setCitta(caAnagrafica.getCitta());
                 }
             assertEquals(caAnagrafica.getCitta(), acAnagrafica.getCitta());
 
@@ -141,6 +145,7 @@ public class SmdImportTest {
                 ||   ancodice.equals("0000069121") 
                 ||   ancodice.equals("0000067234")
                     ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setCap(acAnagrafica.getCap());
                 caAnagrafica.setIndirizzo(acAnagrafica.getIndirizzo());
             }
@@ -170,6 +175,7 @@ public class SmdImportTest {
                || ancodice.equals("0000018603")
                || ancodice.equals("0000006535")
                ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 caAnagrafica.setIndirizzo(acAnagrafica.getIndirizzo());
             }
             if (ancodice.equals("0000061880") 
@@ -179,18 +185,16 @@ public class SmdImportTest {
             || ancodice.equals("0000006605")
             || ancodice.equals("0000020992")
                ) {
+                System.out.println(ancodice+"--->"+i+"--->Updated acAnagrafica");
                 acAnagrafica.setIndirizzo(caAnagrafica.getIndirizzo());
             }
             assertEquals(caAnagrafica.getIndirizzo(), acAnagrafica.getIndirizzo());
             
             if (ancodice.equals("0000069501") 
                     || ancodice.equals("0000022252")
-                    ) {
+                    || ancodice.equals("0000072596")) {
+                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 acAnagrafica.setIndirizzoSecondaRiga(caAnagrafica.getIndirizzoSecondaRiga());
-            }
-            if (ancodice.equals("0000072596") 
-                    ) {
-                caAnagrafica.setIndirizzoSecondaRiga(acAnagrafica.getIndirizzoSecondaRiga());
             }
             assertEquals(caAnagrafica.getIndirizzoSecondaRiga(), acAnagrafica.getIndirizzoSecondaRiga());
         }
