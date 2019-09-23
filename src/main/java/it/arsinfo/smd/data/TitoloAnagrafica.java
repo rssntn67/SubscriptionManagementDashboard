@@ -3,6 +3,7 @@ package it.arsinfo.smd.data;
 
 public enum TitoloAnagrafica {
         Nessuno("",false),
+        Spettabile("Spett.le", false),
         Adp("Spett.le Apostolato della Preghiera",false),
         Diocesi("Spett.le",false),
         Istituto("Spett.le",false),
