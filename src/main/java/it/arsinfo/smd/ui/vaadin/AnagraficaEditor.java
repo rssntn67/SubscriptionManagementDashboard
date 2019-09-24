@@ -68,19 +68,21 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     public AnagraficaEditor(AnagraficaDao anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
-        HorizontalLayout riga1 = new HorizontalLayout(titolo, 
+        HorizontalLayout riga1 = new HorizontalLayout(
+                                                      diocesi,
+                                                      titolo, 
                                                       denominazione, 
-                                                      nome,
-                                                      indirizzo
+                                                      nome
                                                       );
+        riga1.addComponentsAndExpand(indirizzo);
         HorizontalLayout riga1e2 = new HorizontalLayout(codeLineBase,descr,co);
         HorizontalLayout riga11 = new HorizontalLayout(cap, 
                                                       citta,
-                                                      provincia,
-                                                      indirizzoSecondaRiga 
+                                                      provincia 
                                                       );
+        riga11.addComponentsAndExpand(indirizzoSecondaRiga);
 
-        HorizontalLayout riga2 = new HorizontalLayout(diocesi, 
+        HorizontalLayout riga2 = new HorizontalLayout( 
                                                       regioneVescovi,
                                                       centroDiocesano,
                                                       regionePresidenteDiocesano,
