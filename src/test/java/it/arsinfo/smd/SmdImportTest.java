@@ -17,19 +17,28 @@ import it.arsinfo.smd.entity.Anagrafica;
 public class SmdImportTest {
 
     @Test
+    public void testImportArchivioClienti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        smdImportFromExcel.importArchivioClienti();
+    }
+
+    @Test
+    public void testImportElencoAbboinati() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        smdImportFromExcel.importElencoAbbonati();
+    }
+
+    @Test
     public void testImportAll() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
-        /*
-        smdImportFromExcel.importArchivioClienti();
-        smdImportFromExcel.importElencoAbbonati();
         smdImportFromExcel.importCampagna2020();
         smdImportFromExcel.importIntestatari();
         smdImportFromExcel.importBeneficiari();
         smdImportFromExcel.importAbbonatiEstero();
-        */
-        smdImportFromExcel.importIntestatariItaEstero();
-        smdImportFromExcel.importBeneficiariItaEstero();
+        smdImportFromExcel.importItaEsteroIntestatari();
+        smdImportFromExcel.importItaEsteroBeneficiari();
     }
+    
  
     @Test 
     public void testFixesElencoAbbonatiCampagna() throws Exception {
@@ -87,6 +96,39 @@ public class SmdImportTest {
         Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         Map<String, Anagrafica> aiMap = smdImportFromExcel.importIntestatari();
+        smdImportFromExcel.fixIntestatari(eaMap, aiMap);
+        for (String ancodice : aiMap.keySet()) {
+            assertTrue(eaMap.containsKey(ancodice));
+            checkAnagrafica(eaMap.get(ancodice), aiMap.get(ancodice));
+        }
+    }
+
+    @Test
+    public void testFixItaEsteroBeneficiari() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
+        Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+        Map<String, Anagrafica> abMap = smdImportFromExcel.importItaEsteroBeneficiari();
+        smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
+        for (String ancodice : abMap.keySet()) {
+            if (eaMap.containsKey(ancodice)) {
+                checkAnagrafica(eaMap.get(ancodice), abMap.get(ancodice));
+            } else {
+                assertTrue(acMap.containsKey(ancodice));
+                checkAnagrafica(acMap.get(ancodice), abMap.get(ancodice));
+            }
+        }
+    }
+
+    @Test
+    public void testFixItaEsteroIntestatari() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+        Map<String, Anagrafica> aiMap = smdImportFromExcel.importItaEsteroIntestatari();
         smdImportFromExcel.fixIntestatari(eaMap, aiMap);
         for (String ancodice : aiMap.keySet()) {
             assertTrue(eaMap.containsKey(ancodice));

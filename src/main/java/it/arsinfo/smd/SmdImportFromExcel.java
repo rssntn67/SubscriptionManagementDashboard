@@ -663,7 +663,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
 
-    public Map<String,Anagrafica> importIntestatariItaEstero() throws IOException {
+    public Map<String,Anagrafica> importItaEsteroIntestatari() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ABBONATI_ITA_ESTERO);
@@ -711,7 +711,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
 
-    public Map<String,Anagrafica> importBeneficiariItaEstero() throws IOException {
+    public Map<String,Anagrafica> importItaEsteroBeneficiari() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ABBONATI_ITA_ESTERO);
@@ -749,9 +749,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Intestatari ITA Estero Errori Trovati: "
+        System.out.println("Beneficiari ITA Estero Errori Trovati: "
                 + errors.size());
-        System.out.println("Intestatari ITA Estero Trovati: "
+        System.out.println("Beneficiari ITA Estero Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -779,9 +779,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Elenco Abbonanti Errori Trovati: "
+        System.out.println("Abbonanti Estero Errori Trovati: "
                 + errors.size());
-        System.out.println("Elenco Abbonati Trovati: "
+        System.out.println("Abbonati Estero Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;

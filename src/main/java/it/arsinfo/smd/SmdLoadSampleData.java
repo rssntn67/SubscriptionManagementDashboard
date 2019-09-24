@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -1103,18 +1104,56 @@ public class SmdLoadSampleData implements Runnable {
         
         if (loadAnagraficaAdp) {
             log.info("Start Loading Anagrafica Adp");
-            SmdImportFromExcel imp = new SmdImportFromExcel();
+            SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
             try {
-                imp.importCampagna2020();
+                Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
+                Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+                
+                Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
+                Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero();
+                Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari();
+                Map<String, Anagrafica> aiMap = smdImportFromExcel.importIntestatari();
+                Map<String, Anagrafica> ieMap = smdImportFromExcel.importItaEsteroBeneficiari();
+                Map<String, Anagrafica> beMap = smdImportFromExcel.importItaEsteroIntestatari();
+                smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+                smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
+                smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
+                smdImportFromExcel.fixIntestatari(eaMap, aiMap);                       
+                smdImportFromExcel.fixBeneficiari(acMap, eaMap, ieMap);
+                smdImportFromExcel.fixIntestatari(eaMap, beMap);
+                for (String codebase: aeMap.keySet()) {
+                    if (eaMap.containsKey(codebase)) {
+                        continue;
+                    }
+                    eaMap.put(codebase, aeMap.get(codebase));
+                }
+                for (String codebase: abMap.keySet()) {
+                    if (eaMap.containsKey(codebase)) {
+                        continue;
+                    }
+                    eaMap.put(codebase, abMap.get(codebase));
+                }
+                for (String codebase: aiMap.keySet()) {
+                    if (eaMap.containsKey(codebase)) {
+                        continue;
+                    }
+                    eaMap.put(codebase, aiMap.get(codebase));
+                }
+                for (String codebase: ieMap.keySet()) {
+                    if (eaMap.containsKey(codebase)) {
+                        continue;
+                    }
+                    eaMap.put(codebase, ieMap.get(codebase));
+                }
+                for (String codebase: beMap.keySet()) {
+                    if (eaMap.containsKey(codebase)) {
+                        continue;
+                    }
+                    eaMap.put(codebase, beMap.get(codebase));
+                }
+                eaMap.values().forEach(a -> anagraficaDao.save(a));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return;
-            }
-            try {
-                imp.importArchivioClienti().values().forEach(a -> anagraficaDao.save(a));
-            } catch (IOException e) {
-                log.error(e.getMessage());
+                log.error(e.getMessage(),e);
                 return;
             }
             log.info("End Loading Anagrafica Adp");
