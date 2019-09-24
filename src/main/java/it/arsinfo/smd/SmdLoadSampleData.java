@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -1069,7 +1070,7 @@ public class SmdLoadSampleData implements Runnable {
     @Override
     public void run() {
         
-        if (loadPubblicazioniAdp || loadSampleStorico || loadSampleData) {
+        if (loadAnagraficaAdp || loadPubblicazioniAdp || loadSampleStorico || loadSampleData) {
             log.info("Start Loading Pubblicazioni Adp");
            loadPubblicazioniAdp();
            loadSpeseSpedizione();
@@ -1107,7 +1108,8 @@ public class SmdLoadSampleData implements Runnable {
             SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
             try {
                 Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
-                Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+                Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+                Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
                 
                 Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
                 Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero();
@@ -1152,6 +1154,33 @@ public class SmdLoadSampleData implements Runnable {
                     eaMap.put(codebase, beMap.get(codebase));
                 }
                 eaMap.values().forEach(a -> anagraficaDao.save(a));
+                rowMap.keySet().forEach(cod ->
+                {
+                    Row row = rowMap.get(cod);
+                    if (row == null) {
+                        System.err.println("row is null for: " + cod);
+                    }
+                    Anagrafica a = eaMap.get(cod);
+                    if (a == null) {
+                        System.err.println("anagrafica is null for: " + cod);
+                    }
+                    Integer num = smdImportFromExcel.processRowCampagnaMessaggioNum(row, cod);
+                    if ( num > 0) {
+                        storicoDao.save(getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    }
+                    num = smdImportFromExcel.processRowCampagnaLodareNum(row, cod);
+                    if ( num > 0) {
+                        storicoDao.save(getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    }
+                    num = smdImportFromExcel.processRowCampagnaBlocchettiNum(row, cod);
+                    if ( num > 0) {
+                        storicoDao.save(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    }
+                    num = smdImportFromExcel.processRowCampagnaManifestiNum(row, cod);
+                    if ( num > 0) {
+                        storicoDao.save(getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    }
+                });                
             } catch (IOException e) {
                 log.error(e.getMessage(),e);
                 return;
@@ -1160,7 +1189,7 @@ public class SmdLoadSampleData implements Runnable {
         }
 
     }
-
+    
     private void loadAnagrafica() {
         
         diocesiMilano=getDiocesiMi();

@@ -28,7 +28,7 @@ public class StoricoGrid extends SmdGrid<Storico> {
     @Override
     public void populate(List<Storico> storici) {
         super.populate(storici);
-        gridfooter.getCell("numero").setHtml("<b>Totale Abbonamenti: "+getTotale(storici).toString()+"</b>");
+        gridfooter.getCell("numero").setHtml("<b>Totale Storici: "+getTotale(storici).toString()+"</b>");
 
     }
 

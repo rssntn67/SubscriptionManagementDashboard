@@ -3,15 +3,20 @@ package it.arsinfo.smd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
@@ -21,6 +26,7 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Storico;
 
 public class SmdImportFromExcel {
 
@@ -329,6 +335,83 @@ public class SmdImportFromExcel {
 
     }
     
+    public Integer processRowCampagnaMessaggioNum(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String msg = dataFormatter.formatCellValue(row.getCell(8)).trim();
+        try {
+            return Integer.parseInt(msg);
+        } catch (Exception e) {
+            return 0;
+        }
+    }    
+    public BigDecimal processRowCampagnaMessaggioCosto(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String totmsg =   dataFormatter.formatCellValue(row.getCell(9)).trim();
+        if (!StringUtils.isEmpty(totmsg)) {
+            return BigDecimal.ZERO;
+        }
+        return new BigDecimal(totmsg);
+    }
+    public Integer processRowCampagnaBlocchettiNum(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String blocchetti = dataFormatter.formatCellValue(row.getCell(10)).trim();
+        try {
+            return Integer.parseInt(blocchetti);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    public BigDecimal processRowCampagnaBlocchettiCosto(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String totblocchetti = dataFormatter.formatCellValue(row.getCell(11)).trim();
+        if (!StringUtils.isEmpty(totblocchetti)) {
+            return BigDecimal.ZERO;
+        }        
+        return new BigDecimal(totblocchetti);
+    }
+    public Integer processRowCampagnaManifestiNum(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String manifesti =     dataFormatter.formatCellValue(row.getCell(12)).trim();
+        try {
+            return Integer.parseInt(manifesti);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    public BigDecimal processRowCampagnaManifestiCosto(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String totmani =       dataFormatter.formatCellValue(row.getCell(13)).trim();
+        if (!StringUtils.isEmpty(totmani)) {
+            return BigDecimal.ZERO;
+        }        
+        return new BigDecimal(totmani);
+    }        
+    public Integer processRowCampagnaLodareNum(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String lodare = dataFormatter.formatCellValue(row.getCell(14)).trim();
+        try {
+            return Integer.parseInt(lodare);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    public BigDecimal processRowCampagnaLodareCosto(Row row,String pncodcon) {
+        DataFormatter dataFormatter = new DataFormatter();
+        String totlodare =     dataFormatter.formatCellValue(row.getCell(15)).trim();
+        if (!StringUtils.isEmpty(totlodare)) {
+            return BigDecimal.ZERO;
+        }        
+        return new BigDecimal(totlodare);
+    }
+
+    public BigDecimal processRowCampagnaTotaleCosto(Row row,String pncodcon, DataFormatter dataFormatter) {
+        String totimp =        dataFormatter.formatCellValue(row.getCell(16)).trim();
+        if (!StringUtils.isEmpty(totimp)) {
+            return BigDecimal.ZERO;
+        }        
+        return new BigDecimal(totimp);
+    }
+    
     private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
 
         String destitolo = dataFormatter.formatCellValue(row.getCell(1));
@@ -372,22 +455,7 @@ public class SmdImportFromExcel {
         Anagrafica anagrafica = getAnagraficaByAncodcon(pncodcon);
         
         populateAnagraficaCampagna(anagrafica, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
-        
-
-        String msg =      dataFormatter.formatCellValue(row.getCell(8));
-        String totmsg =   dataFormatter.formatCellValue(row.getCell(9));
-        
-        String blocchetti = dataFormatter.formatCellValue(row.getCell(10));
-        String totblocchetti = dataFormatter.formatCellValue(row.getCell(11));
-
-        String manifesti =     dataFormatter.formatCellValue(row.getCell(12));
-        String totmani =       dataFormatter.formatCellValue(row.getCell(13));
-        
-        String lodare =        dataFormatter.formatCellValue(row.getCell(14));
-        String totlodare =     dataFormatter.formatCellValue(row.getCell(15));
-
-        String totimp =        dataFormatter.formatCellValue(row.getCell(16));
-        
+                
         String scopro =        dataFormatter.formatCellValue(row.getCell(17));
         if (!scopro.equals("")) {
             System.err.println("scopro mismatch: " + pncodcon);
@@ -492,21 +560,29 @@ public class SmdImportFromExcel {
 
     }
 
-    public Map<String,Anagrafica> importCampagna2020() throws IOException {        
+    public Map<String,Row> getCampagna2020() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
-
         File ca2020 = new File(CAMPAGNA_2020);
         Workbook wbca2020 = new HSSFWorkbook(new FileInputStream(ca2020));
-        
-        Set<String> errors = new HashSet<>();
-        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
-        for (Row row : wbca2020.getSheetAt(0)) {
+        Map<String,Row> rows = new HashMap<>();
+        for (Row row: wbca2020.getSheetAt(0)) {
             String pncodcon = dataFormatter.formatCellValue(row.getCell(0));
             if (pncodcon.endsWith("pncodcon")) {
                 continue;
             }
+            rows.put(pncodcon,row);
+        }
+        return rows;
+    }
+    
+    public Map<String,Anagrafica> importCampagna2020(Map<String, Row> campagnaRows) throws IOException {        
+        DataFormatter dataFormatter = new DataFormatter();
+        
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        for (String pncodcon : campagnaRows.keySet() ) {
             try {
-                anagraficaMap.put(pncodcon, processRowCampagna(row,pncodcon,dataFormatter));                
+                anagraficaMap.put(pncodcon, processRowCampagna(campagnaRows.get(pncodcon),pncodcon,dataFormatter));                
             } catch (UnsupportedOperationException e) {
                 errors.add(pncodcon);
                 continue;
@@ -518,7 +594,8 @@ public class SmdImportFromExcel {
                 + anagraficaMap.size());
         return anagraficaMap;
     }
-        
+     
+    
     public Map<String,Anagrafica> importArchivioClienti() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 

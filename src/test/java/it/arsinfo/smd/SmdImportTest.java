@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Row;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,7 +32,8 @@ public class SmdImportTest {
     @Test
     public void testImportAll() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
-        smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.importIntestatari();
         smdImportFromExcel.importBeneficiari();
         smdImportFromExcel.importAbbonatiEstero();
@@ -44,7 +46,8 @@ public class SmdImportTest {
     public void testFixesElencoAbbonatiCampagna() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         for (String ancodice : caMap.keySet()) {
             Anagrafica ca = caMap.get(ancodice);
@@ -59,7 +62,8 @@ public class SmdImportTest {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
         Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero();
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
         for (String ancodice : aeMap.keySet()) {
             assertTrue(eaMap.containsKey(ancodice));
@@ -75,8 +79,8 @@ public class SmdImportTest {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
-        smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari();
         smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
         for (String ancodice : abMap.keySet()) {
@@ -93,7 +97,8 @@ public class SmdImportTest {
     public void testFixIntestatari() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         Map<String, Anagrafica> aiMap = smdImportFromExcel.importIntestatari();
         smdImportFromExcel.fixIntestatari(eaMap, aiMap);
@@ -108,7 +113,8 @@ public class SmdImportTest {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         Map<String, Anagrafica> abMap = smdImportFromExcel.importItaEsteroBeneficiari();
         smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
@@ -126,7 +132,8 @@ public class SmdImportTest {
     public void testFixItaEsteroIntestatari() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020();
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         Map<String, Anagrafica> aiMap = smdImportFromExcel.importItaEsteroIntestatari();
         smdImportFromExcel.fixIntestatari(eaMap, aiMap);
