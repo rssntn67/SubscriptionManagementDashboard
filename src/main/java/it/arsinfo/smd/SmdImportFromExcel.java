@@ -15,6 +15,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.data.Anno;
@@ -27,6 +29,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 
 public class SmdImportFromExcel {
+    private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     public static final String ABBONATI_ESTERO = "data/ABBONATIESTERO2020.xls";
     public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020-060919.xls";
@@ -94,10 +97,9 @@ public class SmdImportFromExcel {
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,
                                                      a);
         if (!Abbonamento.checkCodeLine(codeLine)) {
-            System.err.println("----- codeLine invalid ------");
-            System.err.println("ANCODICE: " + pncodcon);
-            System.err.println("------------------------------");
-            System.out.println();
+            log.warn("----- codeLine invalid ------");
+            log.warn("ANCODICE: " + pncodcon);
+            log.warn("------------------------------");
             throw new UnsupportedOperationException();
         }
         return a;
@@ -107,10 +109,10 @@ public class SmdImportFromExcel {
             String anlocali,String annazion) {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));        
         if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
-            System.err.println("-----Anagrafica Titolo error------");
-            System.err.println(a.getCodeLineBase());
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("-----Anagrafica Titolo error------");
+            log.warn(a.getCodeLineBase());
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
         a.setDenominazione(andescri);
@@ -120,14 +122,14 @@ public class SmdImportFromExcel {
         a.setDiocesi(Diocesi.DIOCESI000);
         a.setPaese(Paese.getBySigla(annazion));
         if (a.getPaese() == Paese.ND) {
-            System.err.println("-----Paese non Definito------");
-            System.err.println(ancodice);
-            System.err.println(andescri);
-            System.err.println(anindiri);
-            System.err.println(anlocali);
-            System.err.println(annazion);
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("-----Paese non Definito------");
+            log.warn(ancodice);
+            log.warn(andescri);
+            log.warn(anindiri);
+            log.warn(anlocali);
+            log.warn(annazion);
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
         a.setAreaSpedizione(getAreaSpedizione(annazion));
@@ -140,13 +142,13 @@ public class SmdImportFromExcel {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));        
         
         if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
-            System.err.println("-----Anagrafica Titolo error------");
-            System.err.println(a.getCodeLineBase());
-            System.err.println(a.getCitta());
-            System.err.println(a.getCap());
-            System.err.println(a.getProvincia());
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("-----Anagrafica Titolo error------");
+            log.warn(a.getCodeLineBase());
+            log.warn(a.getCitta());
+            log.warn(a.getCap());
+            log.warn(a.getProvincia().getNome());
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
 
@@ -160,13 +162,13 @@ public class SmdImportFromExcel {
         try {
             Integer.getInteger(a.getCap());
         } catch (Exception e) {
-            System.err.println("-----Anagrafica CAP error------");
-            System.err.println(a.getCodeLineBase());
-            System.err.println(a.getCitta());
-            System.err.println(a.getCap());
-            System.err.println(a.getProvincia());
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("-----Anagrafica CAP error------");
+            log.warn(a.getCodeLineBase());
+            log.warn(a.getCitta());
+            log.warn(a.getCap());
+            log.warn(a.getProvincia().getNome());
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
 
@@ -184,148 +186,148 @@ public class SmdImportFromExcel {
             } else {
                 a.setIndirizzoSecondaRiga(anindir1);
             }
-            System.out.println("-----Fixed ANINDIR1------");
-            System.out.println(a.getCodeLineBase());
-            System.out.println("ANINDIRI: " + anindiri);
-            System.out.println("ANINDIR1: " + anindir1);
-            System.out.println("Indirizzo1: " + a.getIndirizzo());
-            System.out.println("Indirizzo2: " + a.getIndirizzoSecondaRiga());
-            System.out.println("------------------------------");
-            System.out.println();
+            log.debug("-----Fixed ANINDIR1------");
+            log.debug(a.getCodeLineBase());
+            log.debug("ANINDIRI: " + anindiri);
+            log.debug("ANINDIR1: " + anindir1);
+            log.debug("Indirizzo1: " + a.getIndirizzo());
+            log.debug("Indirizzo2: " + a.getIndirizzoSecondaRiga());
+            log.debug("------------------------------");
+            
         }
                        
         if (a.getProvincia() == Provincia.ND) {
             if (a.getCodeLineBase().equals("00000000015153")) {
                 a.setProvincia(Provincia.RM);
-                System.out.println("-----Anagrafica Provincia RM------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("-----Anagrafica Provincia RM------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                
             } else if (a.getCodeLineBase().equals("00000000070340")) {
                 a.setProvincia(Provincia.TV);
-                System.out.println("-----Anagrafica Provincia TV------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("-----Anagrafica Provincia TV------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                
             } else if (a.getCap().equals("87020")) {
                 a.setProvincia(Provincia.CS);
-                System.out.println("-----Anagrafica Provincia CS------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia CS------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("31048")) {
                 a.setProvincia(Provincia.TV);
-                System.out.println("-----Anagrafica Provincia TV------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia TV------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("35010")) {
                 a.setProvincia(Provincia.PD);
-                System.out.println("-----Anagrafica Provincia PD------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia PD------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("41033")) {
                 a.setProvincia(Provincia.MO);
-                System.out.println("-----Anagrafica Provincia MO------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia MO------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("47893")) {
                 a.setPaese(Paese.SM);
                 a.setCitta("BORGO MAGGIORE");
                 a.setDiocesi(Diocesi.DIOCESI175);
-                System.out.println("-----Anagrafica Paese San Marino------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getPaese().getNome());
-                System.out.println(a.getDiocesi().getDetails());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Paese San Marino------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getPaese().getNome());
+                log.debug(a.getDiocesi().getDetails());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("50038")) {
                 a.setProvincia(Provincia.FI);
-                System.out.println("-----Anagrafica Provincia FI------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia FI------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("54028")) {
                 a.setProvincia(Provincia.MS);
-                System.out.println("-----Anagrafica Provincia MS------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia MS------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("56035")) {
                 a.setProvincia(Provincia.PI);
-                System.out.println("-----Anagrafica Provincia PI------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("-----Anagrafica Provincia PI------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                
             } else if (a.getCap().equals("87064")) {
                 a.setProvincia(Provincia.CS);
-                System.out.println("-----Anagrafica Provincia CS------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("-----Anagrafica Provincia CS------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                
             } else if (a.getCap().equals("60012")) {
                 a.setProvincia(Provincia.AN);
                 a.setIndirizzo(a.getIndirizzo()+ " FRAZ.BRUGNETTO");
-                System.out.println("-----Anagrafica Provincia AN------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getIndirizzo());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia AN------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getIndirizzo());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else if (a.getCap().equals("80061")) {
                 a.setProvincia(Provincia.NA);
-                System.out.println("-----Anagrafica Provincia NA------");
-                System.out.println(a.getCodeLineBase());
-                System.out.println(a.getIndirizzo());
-                System.out.println(a.getCitta());
-                System.out.println(a.getCap());
-                System.out.println(a.getProvincia());
-                System.out.println("------------------------------");
-                System.out.println();                
+                log.debug("-----Anagrafica Provincia NA------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getIndirizzo());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
+                                
             } else {
-                System.err.println("-----Anagrafica Provincia error------");
-                System.err.println(a.getCodeLineBase());
-                System.err.println(a.getCitta());
-                System.err.println(a.getCap());
-                System.err.println(a.getProvincia());
-                System.err.println("------------------------------");
-                System.err.println();
+                log.warn("-----Anagrafica Provincia error------");
+                log.warn(a.getCodeLineBase());
+                log.warn(a.getCitta());
+                log.warn(a.getCap());
+                log.warn(a.getProvincia().getNome());
+                log.warn("------------------------------");
+                
                 throw new UnsupportedOperationException();
             }
         }
@@ -402,24 +404,24 @@ public class SmdImportFromExcel {
         String pndessup = dataFormatter.formatCellValue(row.getCell(7));
         if (pncodcon.equals("0000004967")) {
             pndessup="000000020000730517";
-            System.out.println("----- codeLine fix ------");
-            System.out.println("ANCODICE: " + pncodcon);
-            System.out.println("codeLine: " + pndessup);
-            System.out.println("------------------------------");
-            System.out.println();
+            log.debug("----- codeLine fix ------");
+            log.debug("ANCODICE: " + pncodcon);
+            log.debug("codeLine: " + pndessup);
+            log.debug("------------------------------");
+            
         } else if (pncodcon.equals("0000048374")) {
             pndessup="000000020000730416";
-            System.out.println("----- codeLine fix ------");
-            System.out.println("ANCODICE: " + pncodcon);
-            System.out.println("codeLine: " + pndessup);
-            System.out.println("------------------------------");
-            System.out.println();
+            log.debug("----- codeLine fix ------");
+            log.debug("ANCODICE: " + pncodcon);
+            log.debug("codeLine: " + pndessup);
+            log.debug("------------------------------");
+            
         }
         if (!Abbonamento.checkCodeLine(pndessup)) {
-            System.err.println("----- codeLine invalid ------");
-            System.err.println("ANCODICE: " + pncodcon);
-            System.err.println("------------------------------");
-            System.out.println();
+            log.warn("----- codeLine invalid ------");
+            log.warn("ANCODICE: " + pncodcon);
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
         return pndessup;
@@ -442,7 +444,7 @@ public class SmdImportFromExcel {
                 
         String scopro =        dataFormatter.formatCellValue(row.getCell(17));
         if (!scopro.equals("")) {
-            System.err.println("scopro mismatch: " + pncodcon);
+            log.warn("scopro mismatch: " + pncodcon);
             throw new UnsupportedOperationException();
         }
         
@@ -478,9 +480,9 @@ public class SmdImportFromExcel {
                 continue;
             }
         }
-        System.out.println("Campagna 2020 -  Errori Trovati: "
+        log.debug("Campagna 2020 -  Errori Trovati: "
                 + errors.size());
-        System.out.println("Campagna 2020 -  Clienti Trovati: "
+        log.debug("Campagna 2020 -  Clienti Trovati: "
                 + anagraficaMap.size());
         return anagraficaMap;
     }
@@ -508,9 +510,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Archivio Clienti Errori Trovati: "
+        log.debug("Archivio Clienti Errori Trovati: "
                 + errors.size());
-        System.out.println("Archivio Clienti Trovati: "
+        log.debug("Archivio Clienti Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -538,9 +540,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Elenco Abbonanti Errori Trovati: "
+        log.debug("Elenco Abbonanti Errori Trovati: "
                 + errors.size());
-        System.out.println("Elenco Abbonati Trovati: "
+        log.debug("Elenco Abbonati Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -626,9 +628,9 @@ public class SmdImportFromExcel {
             anagraficaMap.put(bancodice, ainte);
         }
 
-        System.out.println("Beneficiari Ita Errori Trovati: "
+        log.debug("Beneficiari Ita Errori Trovati: "
                 + errors.size());
-        System.out.println("Beneficiari Ita Trovati: "
+        log.debug("Beneficiari Ita Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -688,9 +690,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Anagrafica ITA Estero Errori Trovati: "
+        log.debug("Anagrafica ITA Estero Errori Trovati: "
                 + errors.size());
-        System.out.println("Anagrafica ITA Estero Trovati: "
+        log.debug("Anagrafica ITA Estero Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -726,9 +728,9 @@ public class SmdImportFromExcel {
             }
         }
 
-        System.out.println("Abbonanti Estero Errori Trovati: "
+        log.debug("Abbonanti Estero Errori Trovati: "
                 + errors.size());
-        System.out.println("Abbonati Estero Trovati: "
+        log.debug("Abbonati Estero Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
@@ -815,31 +817,31 @@ public class SmdImportFromExcel {
         }
 
         if (anagrafica.getPaese() == Paese.ND) {
-            System.err.println("-----Paese non Definito------");
-            System.err.println(ancodice);
-            System.err.println(andescri);
-            System.err.println(anindiri);
-            System.err.println(anlocali);
-            System.err.println(anprovin);
-            System.err.println(annazion);
-            System.err.println(picoddio);
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("-----Paese non Definito------");
+            log.warn(ancodice);
+            log.warn(andescri);
+            log.warn(anindiri);
+            log.warn(anlocali);
+            log.warn(anprovin);
+            log.warn(annazion);
+            log.warn(picoddio);
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
         
         if (annazion.equals("ITA") && anagrafica.getDiocesi() == Diocesi.DIOCESI000) {
-            System.err.println("-----Nazione ITA Errata ------");
-            System.err.println("ANCODICE: " + ancodice);
-            System.err.println("ANDESCRI: " + andescri);
-            System.err.println("ANINDIRI: " + anindiri);
-            System.err.println("ANLOCALI: " + anlocali);
-            System.err.println("ANPROVIN: " + anprovin);
-            System.err.println("ANNAZION: " + annazion);
-            System.err.println("Diocesi: "
+            log.warn("-----Nazione ITA Errata ------");
+            log.warn("ANCODICE: " + ancodice);
+            log.warn("ANDESCRI: " + andescri);
+            log.warn("ANINDIRI: " + anindiri);
+            log.warn("ANLOCALI: " + anlocali);
+            log.warn("ANPROVIN: " + anprovin);
+            log.warn("ANNAZION: " + annazion);
+            log.warn("Diocesi: "
                     + anagrafica.getDiocesi().getDetails());
-            System.err.println("------------------------------");
-            System.err.println();
+            log.warn("------------------------------");
+            
             throw new UnsupportedOperationException();
         }
         
@@ -871,81 +873,81 @@ public class SmdImportFromExcel {
         
         if (ancodice.equals("0000062854")) {
             anagrafica.setDiocesi(Diocesi.DIOCESI193);
-            System.out.println("-----Diocesi 193------");
-            System.out.println("ANCODICE: " + ancodice);
-            System.out.println("Provincia: "
+            log.debug("-----Diocesi 193------");
+            log.debug("ANCODICE: " + ancodice);
+            log.debug("Provincia: "
                     + anagrafica.getProvincia().getNome());
-            System.out.println("ANNAZION: " + annazion);
-            System.out.println("Diocesi: "
+            log.debug("ANNAZION: " + annazion);
+            log.debug("Diocesi: "
                     + anagrafica.getDiocesi().getDetails());
-            System.out.println("------------------------------");
-            System.out.println();
+            log.debug("------------------------------");
+            
         } else if (ancodice.equals("0000072701")) {
             anagrafica.setDiocesi(Diocesi.DIOCESI194);
-            System.out.println("-----Diocesi 194------");
-            System.out.println("ANCODICE: " + ancodice);
-            System.out.println("ANDESCRI: " + andescri);
-            System.out.println("ANINDIRI: " + anindiri);
-            System.out.println("ANLOCALI: " + anlocali);
-            System.out.println("ANPROVIN: " + anprovin);
-            System.out.println("ANNAZION: " + annazion);
-            System.out.println("Diocesi: "
+            log.debug("-----Diocesi 194------");
+            log.debug("ANCODICE: " + ancodice);
+            log.debug("ANDESCRI: " + andescri);
+            log.debug("ANINDIRI: " + anindiri);
+            log.debug("ANLOCALI: " + anlocali);
+            log.debug("ANPROVIN: " + anprovin);
+            log.debug("ANNAZION: " + annazion);
+            log.debug("Diocesi: "
                     + anagrafica.getDiocesi().getDetails());
-            System.out.println("------------------------------");
-            System.out.println();
+            log.debug("------------------------------");
+            
         }
 
         if (anagrafica.getDiocesi() == Diocesi.DIOCESISTD) {
             if (annazion.equals("RSM")) {
                 anagrafica.setDiocesi(Diocesi.DIOCESI175);
-                System.out.println("-----Diocesi RSM------");
-                System.out.println("ANCODICE: " + ancodice);
-                System.out.println("ANDESCRI: " + andescri);
-                System.out.println("ANINDIRI: " + anindiri);
-                System.out.println("ANLOCALI: " + anlocali);
-                System.out.println("ANPROVIN: " + anprovin);
-                System.out.println("ANNAZION: " + annazion);
-                System.out.println("Diocesi: "
+                log.debug("-----Diocesi RSM------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("ANPROVIN: " + anprovin);
+                log.debug("ANNAZION: " + annazion);
+                log.debug("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("------------------------------");
+                
             } else if (!annazion.equals("ITA")) {
                 anagrafica.setDiocesi(Diocesi.DIOCESI000);
-                System.out.println("-----Diocesi ESTERO------");
-                System.out.println("ANCODICE: " + ancodice);
-                System.out.println("ANDESCRI: " + andescri);
-                System.out.println("ANINDIRI: " + anindiri);
-                System.out.println("ANLOCALI: " + anlocali);
-                System.out.println("ANPROVIN: " + anprovin);
-                System.out.println("ANNAZION: " + annazion);
-                System.out.println("Diocesi: "
+                log.debug("-----Diocesi ESTERO------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("ANPROVIN: " + anprovin);
+                log.debug("ANNAZION: " + annazion);
+                log.debug("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("------------------------------");
+                
             } else if (anlocali.equals("ROMA")) {
                 anagrafica.setDiocesi(Diocesi.DIOCESI168);
-                System.out.println("-----Diocesi ROMA------");
-                System.out.println("ANCODICE: " + ancodice);
-                System.out.println("ANDESCRI: " + andescri);
-                System.out.println("ANINDIRI: " + anindiri);
-                System.out.println("ANLOCALI: " + anlocali);
-                System.out.println("ANPROVIN: " + anprovin);
-                System.out.println("ANNAZION: " + annazion);
-                System.out.println("Diocesi: "
+                log.debug("-----Diocesi ROMA------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("ANPROVIN: " + anprovin);
+                log.debug("ANNAZION: " + annazion);
+                log.debug("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("------------------------------");
+                
             } else {
-                System.err.println("-----Diocesi non Definita------");
-                System.err.println("ANCODICE: " + ancodice);
-                System.err.println("ANDESCRI: " + andescri);
-                System.err.println("ANINDIRI: " + anindiri);
-                System.err.println("ANLOCALI: " + anlocali);
-                System.err.println("ANPROVIN: " + anprovin);
-                System.err.println("ANNAZION: " + annazion);
-                System.err.println("PICODDIO: " + picoddio);
-                System.err.println("------------------------------");
-                System.err.println();
+                log.warn("-----Diocesi non Definita------");
+                log.warn("ANCODICE: " + ancodice);
+                log.warn("ANDESCRI: " + andescri);
+                log.warn("ANINDIRI: " + anindiri);
+                log.warn("ANLOCALI: " + anlocali);
+                log.warn("ANPROVIN: " + anprovin);
+                log.warn("ANNAZION: " + annazion);
+                log.warn("PICODDIO: " + picoddio);
+                log.warn("------------------------------");
+                
                 return false;
             }
         }
@@ -1034,29 +1036,29 @@ public class SmdImportFromExcel {
                 anagrafica.setProvincia(Provincia.SO);
             } else if (anagrafica.getDiocesi() == Diocesi.DIOCESI175) {
                 anagrafica.setPaese(Paese.SM);
-                System.out.println("-----Paese RSM------");
-                System.out.println("ANCODICE: " + ancodice);
-                System.out.println("ANDESCRI: " + andescri);
-                System.out.println("ANINDIRI: " + anindiri);
-                System.out.println("ANLOCALI: " + anlocali);
-                System.out.println("Paese: "
+                log.debug("-----Paese RSM------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("Paese: "
                         + anagrafica.getPaese().getNome());
-                System.out.println("Diocesi: "
+                log.debug("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                System.out.println("------------------------------");
-                System.out.println();
+                log.debug("------------------------------");
+                
             } else {
-                System.err.println("-----Provincia non Definita------");
-                System.err.println("ANCODICE: " + ancodice);
-                System.err.println("ANDESCRI: " + andescri);
-                System.err.println("ANINDIRI: " + anindiri);
-                System.err.println("ANLOCALI: " + anlocali);
-                System.err.println("ANPROVIN: " + anprovin);
-                System.err.println("ANNAZION: " + annazion);
-                System.err.println("Diocesi: "
+                log.warn("-----Provincia non Definita------");
+                log.warn("ANCODICE: " + ancodice);
+                log.warn("ANDESCRI: " + andescri);
+                log.warn("ANINDIRI: " + anindiri);
+                log.warn("ANLOCALI: " + anlocali);
+                log.warn("ANPROVIN: " + anprovin);
+                log.warn("ANNAZION: " + annazion);
+                log.warn("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                System.err.println("------------------------------");
-                System.err.println();
+                log.warn("------------------------------");
+                
                 return false;
             }
         }
@@ -1086,7 +1088,7 @@ public class SmdImportFromExcel {
             } else if (acMap.containsKey(ancodice)) {
                 abMap.put(ancodice, acMap.get(ancodice));
             } else {
-                System.err.println(ancodice);
+                log.warn(ancodice);
             }
         }
     }
@@ -1131,7 +1133,7 @@ public class SmdImportFromExcel {
                 || ancodice.equals("0000062486")
                 || ancodice.equals("0000012438")
                 ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setDenominazione(ac.getDenominazione());
                 ca.setNome(ac.getNome());
             }
@@ -1163,7 +1165,7 @@ public class SmdImportFromExcel {
                     || ancodice.equals("0000007662")
                     || ancodice.equals("0000011192")
                     ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setNome(ac.getNome());
                 ca.setCitta(ac.getCitta());
                 ca.setCap(ac.getCap());
@@ -1176,7 +1178,7 @@ public class SmdImportFromExcel {
                 ||ancodice.equals("0000074822") 
                 ||ancodice.equals("0000011192") 
                     ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setProvincia(ac.getProvincia());
                 ca.setCitta(ac.getCitta());
                 ca.setIndirizzo(ac.getIndirizzo());
@@ -1190,7 +1192,7 @@ public class SmdImportFromExcel {
                 || ancodice.equals("0000017622")
                 || ancodice.equals("0000017678")
                 ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setCitta(ac.getCitta());
                 ca.setIndirizzo(ac.getIndirizzo());
                 ca.setCap(ac.getCap());
@@ -1198,7 +1200,7 @@ public class SmdImportFromExcel {
             if (ancodice.equals("0000016209")
                 || ancodice.equals("0000015153")
                     ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated acAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated acAnagrafica");
                 ac.setCitta(ca.getCitta());
                 }
 
@@ -1206,7 +1208,7 @@ public class SmdImportFromExcel {
                 ||   ancodice.equals("0000069121") 
                 ||   ancodice.equals("0000067234")
                     ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setCap(ac.getCap());
                 ca.setIndirizzo(ac.getIndirizzo());
             }
@@ -1235,7 +1237,7 @@ public class SmdImportFromExcel {
                || ancodice.equals("0000018603")
                || ancodice.equals("0000006535")
                ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setIndirizzo(ac.getIndirizzo());
             }
             if (ancodice.equals("0000061880") 
@@ -1245,14 +1247,14 @@ public class SmdImportFromExcel {
             || ancodice.equals("0000006605")
             || ancodice.equals("0000020992")
                ) {
-                System.out.println(ancodice+"--->"+i+"--->Updated acAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated acAnagrafica");
                 ac.setIndirizzo(ca.getIndirizzo());
             }
             
             if (ancodice.equals("0000069501") 
                     || ancodice.equals("0000022252")
                     || ancodice.equals("0000072596")) {
-                System.out.println(ancodice+"--->"+i+"--->Updated caAnagrafica");
+                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ac.setIndirizzoSecondaRiga(ca.getIndirizzoSecondaRiga());
             }
         }
