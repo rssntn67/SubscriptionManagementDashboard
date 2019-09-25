@@ -12,6 +12,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 
 import it.arsinfo.smd.SmdEntity;
 
@@ -21,6 +22,7 @@ public abstract class SmdGrid<T extends SmdEntity>
     private final Grid<T> grid;
     private T selected;
     private final String gridName;
+    Label itemNumber = new Label();
     
     public SmdGrid(Grid<T> grid, String gridName) {
         Button downloadAsExcel = new Button("Download As Excel");
@@ -48,7 +50,8 @@ public abstract class SmdGrid<T extends SmdEntity>
             selected = e.getValue();
             onChange();
         });
-        setComponents(new HorizontalLayout(downloadAsExcel,downloadAsCSV),this.grid);
+        
+        setComponents(new HorizontalLayout(downloadAsExcel,downloadAsCSV),this.itemNumber,this.grid);
     }
         
 
@@ -68,8 +71,10 @@ public abstract class SmdGrid<T extends SmdEntity>
     
     public void populate(List<T> items) {
         if (items == null || items.size() == 0) {
+            itemNumber.setValue("");
             setVisible(false);
         } else {
+            itemNumber.setValue("Trovati " + items.size() + " Record");
             grid.setItems(items);
             setVisible(true);
         }
