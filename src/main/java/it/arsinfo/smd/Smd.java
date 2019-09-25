@@ -93,14 +93,14 @@ public class Smd {
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
             throw new UnsupportedOperationException("Aggiona EC non consentita per Abbonamenti Annullati");
         }
-        log.info("aggiornaEC: intestatario: {}", abb.getIntestatario().getCaption());
-        log.info("aggiornaEC: area: {}", abb.getIntestatario().getAreaSpedizione());
-        log.info("aggiornaEC: pubbli.: {}", ec.getPubblicazione().getNome());
-        log.info("aggiornaEC: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: meseFine: {}", ec.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: quantità: {}", ec.getNumero());
+        log.debug("aggiornaEC: intestatario: {}", abb.getIntestatario().getCaption());
+        log.debug("aggiornaEC: area: {}", abb.getIntestatario().getAreaSpedizione());
+        log.debug("aggiornaEC: pubbli.: {}", ec.getPubblicazione().getNome());
+        log.debug("aggiornaEC: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
+        log.debug("aggiornaEC: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
+        log.debug("aggiornaEC: meseFine: {}", ec.getMeseFine().getNomeBreve());
+        log.debug("aggiornaEC: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
+        log.debug("aggiornaEC: quantità: {}", ec.getNumero());
         
         final List<SpedizioneItem> oldItems = new ArrayList<>();
         
@@ -130,7 +130,7 @@ public class Smd {
         
         int numeroTotaleRiviste=0;
         for (SpedizioneItem oldItem: oldItems) {
-            log.info("aggiornaEC parsing old: {}", oldItem.toString());
+            log.debug("aggiornaEC parsing old: {}", oldItem.toString());
             switch (oldItem.getSpedizione().getStatoSpedizione()) {
             case INVIATA:
                 invItems.add(oldItem);
@@ -151,10 +151,10 @@ public class Smd {
 
         List<SpedizioneItem> items = generaECItems(ec);
         for (SpedizioneItem invItem: invItems) {
-            log.info("aggiornaEC parsing old inviata: {}" , invItem.toString());
+            log.debug("aggiornaEC parsing old inviata: {}" , invItem.toString());
             for (SpedizioneItem item: items) {
                 if (invItem.stessaPubblicazione(item)) {
-                    log.info("aggiornaEC found new: {}", item.toString());
+                    log.debug("aggiornaEC found new: {}", item.toString());
                     if (invItem.getNumero() < item.getNumero()) {
                         item.setNumero(item.getNumero() - invItem.getNumero());
                     } else {
@@ -262,13 +262,13 @@ public class Smd {
     }
 
     public static List<SpedizioneItem> generaECItems(EstrattoConto ec) throws UnsupportedOperationException {
-        log.info("generaECItems: tipo: "+ ec.getTipoEstrattoConto());
-        log.info("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
-        log.info("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
-        log.info("generaECItems: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
-        log.info("generaECItems: meseFine: "+ ec.getMeseFine().getNomeBreve());
-        log.info("generaECItems: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
-        log.info("generaECItems: quantità: "+ ec.getNumero());
+        log.debug("generaECItems: tipo: "+ ec.getTipoEstrattoConto());
+        log.debug("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
+        log.debug("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
+        log.debug("generaECItems: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
+        log.debug("generaECItems: meseFine: "+ ec.getMeseFine().getNomeBreve());
+        log.debug("generaECItems: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
+        log.debug("generaECItems: quantità: "+ ec.getNumero());
         List<SpedizioneItem> items = new ArrayList<>();
         Map<Anno, EnumSet<Mese>> mappaPubblicazioni = EstrattoConto.getAnnoMeseMap(ec);
         for (Anno anno: mappaPubblicazioni.keySet()) {
@@ -292,8 +292,8 @@ public class Smd {
         Anagrafica destinatario = ec.getDestinatario();
         Invio invio = ec.getInvio();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        log.info("aggiungiItemSpedizione: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
-        log.info("aggiungiItemSpedizione: item" + item);
+        log.debug("aggiungiItemSpedizione: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
+        log.debug("aggiungiItemSpedizione: item" + item);
         InvioSpedizione isped = invioSpedizione;
         Mese mesePubblicazione = item.getMesePubblicazione();
         Anno annoPubblicazione = item.getAnnoPubblicazione();
@@ -312,7 +312,7 @@ public class Smd {
                     - anticipoSpedizione);
             spedAnno = annoPubblicazione;
         }
-        log.info("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+        log.debug("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
 
         if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
                 || (spedAnno == Anno.getAnnoCorrente()
@@ -321,14 +321,14 @@ public class Smd {
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
             posticipata=true;
-            log.info("geneneraSpedizioni: spedizione anticipata");
+            log.debug("geneneraSpedizioni: spedizione anticipata");
 
         }
         if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
             isped = InvioSpedizione.AdpSede;
-            log.info("geneneraSpedizioni: spedizione estero");
+            log.debug("geneneraSpedizioni: spedizione estero");
         }
-        log.info("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+        log.debug("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
         Spedizione spedizione = new Spedizione();
         spedizione.setMeseSpedizione(spedMese);
         spedizione.setAnnoSpedizione(spedAnno);
@@ -350,8 +350,8 @@ public class Smd {
             List<Spedizione> spedizioni, 
             List<SpesaSpedizione> spese) throws UnsupportedOperationException {
 
-        log.info("generaSpedizioni: intestatario: "+ abb.getIntestatario().getCaption());
-        log.info("generaSpedizioni: area: "+ abb.getIntestatario().getAreaSpedizione());
+        log.debug("generaSpedizioni: intestatario: "+ abb.getIntestatario().getCaption());
+        log.debug("generaSpedizioni: area: "+ abb.getIntestatario().getAreaSpedizione());
         ec.setAbbonamento(abb);
         List<SpedizioneItem> items = generaECItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
