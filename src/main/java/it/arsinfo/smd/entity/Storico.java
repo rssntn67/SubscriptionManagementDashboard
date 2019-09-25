@@ -103,12 +103,12 @@ public class Storico implements SmdEntity {
     
     @Transient
     public String getCaptionDestinatario() {
-        return destinatario.getCaption();
+        return destinatario.getDenominazione();
     }
 
     @Transient
     public String getCaptionIntestatario() {
-        return intestatario.getCaption();
+        return intestatario.getDenominazione();
     }
     
     @Transient
