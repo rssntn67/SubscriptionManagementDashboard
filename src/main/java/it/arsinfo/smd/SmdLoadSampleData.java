@@ -1,6 +1,5 @@
 package it.arsinfo.smd;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -8,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -36,6 +36,8 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -68,6 +70,7 @@ public class SmdLoadSampleData implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
+    private final SmdService smdService;
     private final AnagraficaDao anagraficaDao; 
     private final PubblicazioneDao pubblicazioneDao;
     private final SpesaSpedizioneDao spesaSpedizioneDao;
@@ -392,7 +395,7 @@ public class SmdLoadSampleData implements Runnable {
         p.setCostoUnitario(new BigDecimal(3.50));
         p.setAbbonamento(new BigDecimal(7.00));
         p.setAbbonamentoWeb(new BigDecimal(5.00));
-        p.setAbbonamentoConSconto(new BigDecimal(7.00));
+        p.setAbbonamentoConSconto(new BigDecimal(5.60));
         p.setAbbonamentoSostenitore(new BigDecimal(20.00));
 
         p.setGen(true);
@@ -762,7 +765,7 @@ public class SmdLoadSampleData implements Runnable {
         storico.setInvio(invio);
         storico.setInvioSpedizione(invioSpedizione);
         Nota nota= new Nota(storico);
-        nota.setDescription("Nuovo:" + storico.toString());
+        nota.setDescription("Importato da Ad Hoc: " + storico.toString());
         storico.getNote().add(nota);
         return storico;
     }
@@ -811,6 +814,7 @@ public class SmdLoadSampleData implements Runnable {
     }
 
     public SmdLoadSampleData(
+            SmdService smdService,
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
             NotaDao notaDao,
@@ -834,6 +838,7 @@ public class SmdLoadSampleData implements Runnable {
             boolean createNormalUser,
             boolean loadSampleData
     ) {
+        this.smdService = smdService;
         this.anagraficaDao=anagraficaDao;
         this.storicoDao=storicoDao;
         this.notaDao=notaDao;
@@ -1105,83 +1110,9 @@ public class SmdLoadSampleData implements Runnable {
         
         if (loadAnagraficaAdp) {
             log.info("Start Loading Anagrafica Adp");
-            SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
             try {
-                Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
-                Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
-                Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(rowMap);
-                
-                Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
-                Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero();
-                Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari();
-                Map<String, Anagrafica> aiMap = smdImportFromExcel.importIntestatari();
-                Map<String, Anagrafica> ieMap = smdImportFromExcel.importItaEsteroBeneficiari();
-                Map<String, Anagrafica> beMap = smdImportFromExcel.importItaEsteroIntestatari();
-                smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
-                smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
-                smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
-                smdImportFromExcel.fixIntestatari(eaMap, aiMap);                       
-                smdImportFromExcel.fixBeneficiari(acMap, eaMap, ieMap);
-                smdImportFromExcel.fixIntestatari(eaMap, beMap);
-                for (String codebase: aeMap.keySet()) {
-                    if (eaMap.containsKey(codebase)) {
-                        continue;
-                    }
-                    eaMap.put(codebase, aeMap.get(codebase));
-                }
-                for (String codebase: abMap.keySet()) {
-                    if (eaMap.containsKey(codebase)) {
-                        continue;
-                    }
-                    eaMap.put(codebase, abMap.get(codebase));
-                }
-                for (String codebase: aiMap.keySet()) {
-                    if (eaMap.containsKey(codebase)) {
-                        continue;
-                    }
-                    eaMap.put(codebase, aiMap.get(codebase));
-                }
-                for (String codebase: ieMap.keySet()) {
-                    if (eaMap.containsKey(codebase)) {
-                        continue;
-                    }
-                    eaMap.put(codebase, ieMap.get(codebase));
-                }
-                for (String codebase: beMap.keySet()) {
-                    if (eaMap.containsKey(codebase)) {
-                        continue;
-                    }
-                    eaMap.put(codebase, beMap.get(codebase));
-                }
-                eaMap.values().forEach(a -> anagraficaDao.save(a));
-                rowMap.keySet().forEach(cod ->
-                {
-                    Row row = rowMap.get(cod);
-                    if (row == null) {
-                        System.err.println("row is null for: " + cod);
-                    }
-                    Anagrafica a = eaMap.get(cod);
-                    if (a == null) {
-                        System.err.println("anagrafica is null for: " + cod);
-                    }
-                    Integer num = smdImportFromExcel.processRowCampagnaMessaggioNum(row, cod);
-                    if ( num > 0) {
-                        storicoDao.save(getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                    }
-                    num = smdImportFromExcel.processRowCampagnaLodareNum(row, cod);
-                    if ( num > 0) {
-                        storicoDao.save(getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                    }
-                    num = smdImportFromExcel.processRowCampagnaBlocchettiNum(row, cod);
-                    if ( num > 0) {
-                        storicoDao.save(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                    }
-                    num = smdImportFromExcel.processRowCampagnaManifestiNum(row, cod);
-                    if ( num > 0) {
-                        storicoDao.save(getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                    }
-                });                
-            } catch (IOException e) {
+                loadAnagraficaAdp();
+            } catch (Exception e) {
                 log.error(e.getMessage(),e);
                 return;
             }
@@ -1190,6 +1121,105 @@ public class SmdLoadSampleData implements Runnable {
 
     }
     
+    private void loadAnagraficaAdp() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
+        Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
+
+        Map<String,Row> campagnarowMap = smdImportFromExcel.getCampagna2020();    
+        List<Row> benefrows = smdImportFromExcel.getBeneficiari();    
+        List<Row> itaesterows = smdImportFromExcel.getAbbonatiItaEstero();    
+        Map<String,Row> esteroMap = smdImportFromExcel.getAbbonatiEstero();    
+       
+        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(campagnarowMap);
+        Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero(esteroMap);
+        Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari(benefrows);
+        Map<String, Anagrafica> ieMap = smdImportFromExcel.importAbbonatiItaEstero(itaesterows);
+        
+        smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+        smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
+        smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
+        smdImportFromExcel.fixBeneficiari(acMap, eaMap, ieMap);
+        
+        for (String codebase: aeMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, aeMap.get(codebase));
+        }
+        for (String codebase: abMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, abMap.get(codebase));
+        }
+        for (String codebase: ieMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, ieMap.get(codebase));
+        }
+        eaMap.values().forEach(a -> anagraficaDao.save(a));
+        final List<Storico> storici = new ArrayList<>();
+
+        campagnarowMap.keySet().forEach(cod ->
+        {
+            Row row = campagnarowMap.get(cod);
+            Anagrafica a = eaMap.get(cod);
+            Integer num = smdImportFromExcel.processRowCampagnaMessaggioNum(row);
+            if ( num > 0) {
+                storici.add(getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+            num = smdImportFromExcel.processRowCampagnaLodareNum(row);
+            if ( num > 0) {
+                storici.add(getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+            num = smdImportFromExcel.processRowCampagnaBlocchettiNum(row);
+            BigDecimal costo = smdImportFromExcel.processRowCampagnaBlocchettiCosto(row);
+            if ( num > 0) {
+                if ( costo.doubleValue() != blocchetti.getAbbonamento().multiply(new BigDecimal(num)).doubleValue()) {
+                    storici.add(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Scontato, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                } else {
+                    storici.add(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                }
+            }
+            num = smdImportFromExcel.processRowCampagnaManifestiNum(row);
+            if ( num > 0) {
+                storici.add(getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+        });                
+        
+        storici.stream().forEach(s -> {
+            storicoDao.save(s);
+            s.getNote().stream().forEach(n -> notaDao.save(n));
+        });
+
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.ANNO2020);
+        List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
+                                                                                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
+        
+        for (Pubblicazione pubb: attivi) {
+            CampagnaItem ci = new CampagnaItem();
+            ci.setPubblicazione(pubb);
+            ci.setCampagna(campagna);
+            campagna.addCampagnaItem(ci);
+        }
+        smdService.generaCampagnaAbbonamenti(campagna, attivi);
+
+        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
+        campagnarowMap.keySet().forEach(cod ->
+        {
+            final String codeline = smdImportFromExcel.processRowCampagnaCodeline(campagnarowMap.get(cod), cod);
+            Anagrafica a = eaMap.get(cod);
+            abbonamenti.stream().filter(abb -> abb.getIntestatario().getId().longValue() == a.getId().longValue() ).forEach(abb -> {
+                abb.setCodeLine(codeline);
+                abbonamentoDao.save(abb);
+            });
+            
+        });
+        
+    }
     private void loadAnagrafica() {
         
         diocesiMilano=getDiocesiMi();

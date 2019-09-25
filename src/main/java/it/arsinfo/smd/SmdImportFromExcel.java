@@ -14,7 +14,6 @@ import java.util.Set;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +25,6 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Storico;
 
 public class SmdImportFromExcel {
 
@@ -34,8 +32,8 @@ public class SmdImportFromExcel {
     public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020-060919.xls";
     public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI-11092019.xls";
     public static final String CAMPAGNA_2020 = "data/CA2020COMPLETA.xls";
-    public static final String BENEFICIARI_2020 = "data/BENEFICIARI2020.xls";
     public static final String ABBONATI_ITA_ESTERO = "data/ABBONATITALIABENEFESTERO-10092019.xls";
+    public static final String BENEFICIARI_2020 = "data/BENEFICIARI2020Exported.xls";
     public static AreaSpedizione getAreaSpedizione(String annazion) {
         if (annazion.equals("RSM") || annazion.equals("ITA") || annazion.equals("CVC")) {
                 return AreaSpedizione.Italia;
@@ -82,9 +80,8 @@ public class SmdImportFromExcel {
         try {
             return Provincia.valueOf(sigla);
         } catch (Exception e) {
-            // TODO: handle exception
+            return Provincia.ND;
         }
-        return Provincia.ND;
     }
 
     public static Anagrafica getAnagraficaByAncodcon(String pncodcon) throws UnsupportedOperationException {
@@ -335,93 +332,73 @@ public class SmdImportFromExcel {
 
     }
     
-    public Integer processRowCampagnaMessaggioNum(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String msg = dataFormatter.formatCellValue(row.getCell(8)).trim();
+    private Integer getRowInteger(String value) {
+        value = value.trim();
         try {
-            return Integer.parseInt(msg);
+            return Integer.parseInt(value.trim());
         } catch (Exception e) {
             return 0;
         }
-    }    
-    public BigDecimal processRowCampagnaMessaggioCosto(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String totmsg =   dataFormatter.formatCellValue(row.getCell(9)).trim();
-        if (!StringUtils.isEmpty(totmsg)) {
-            return BigDecimal.ZERO;
-        }
-        return new BigDecimal(totmsg);
-    }
-    public Integer processRowCampagnaBlocchettiNum(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String blocchetti = dataFormatter.formatCellValue(row.getCell(10)).trim();
-        try {
-            return Integer.parseInt(blocchetti);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-    public BigDecimal processRowCampagnaBlocchettiCosto(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String totblocchetti = dataFormatter.formatCellValue(row.getCell(11)).trim();
-        if (!StringUtils.isEmpty(totblocchetti)) {
-            return BigDecimal.ZERO;
-        }        
-        return new BigDecimal(totblocchetti);
-    }
-    public Integer processRowCampagnaManifestiNum(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String manifesti =     dataFormatter.formatCellValue(row.getCell(12)).trim();
-        try {
-            return Integer.parseInt(manifesti);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-    public BigDecimal processRowCampagnaManifestiCosto(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String totmani =       dataFormatter.formatCellValue(row.getCell(13)).trim();
-        if (!StringUtils.isEmpty(totmani)) {
-            return BigDecimal.ZERO;
-        }        
-        return new BigDecimal(totmani);
-    }        
-    public Integer processRowCampagnaLodareNum(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String lodare = dataFormatter.formatCellValue(row.getCell(14)).trim();
-        try {
-            return Integer.parseInt(lodare);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-    public BigDecimal processRowCampagnaLodareCosto(Row row,String pncodcon) {
-        DataFormatter dataFormatter = new DataFormatter();
-        String totlodare =     dataFormatter.formatCellValue(row.getCell(15)).trim();
-        if (!StringUtils.isEmpty(totlodare)) {
-            return BigDecimal.ZERO;
-        }        
-        return new BigDecimal(totlodare);
-    }
-
-    public BigDecimal processRowCampagnaTotaleCosto(Row row,String pncodcon, DataFormatter dataFormatter) {
-        String totimp =        dataFormatter.formatCellValue(row.getCell(16)).trim();
-        if (!StringUtils.isEmpty(totimp)) {
-            return BigDecimal.ZERO;
-        }        
-        return new BigDecimal(totimp);
+        
     }
     
-    private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+    private BigDecimal getRowBigDecimal(String value) {
+        value = value.trim().replace(",", ".");
+        if (StringUtils.isEmpty(value)) {
+            return BigDecimal.ZERO;
+        }
+        return new BigDecimal(value.trim().replace(",", "."));
+    }
+    
+    public Integer processRowCampagnaMessaggioNum(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(8)));
+    }    
+    public BigDecimal processRowCampagnaMessaggioCosto(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(9)));
+    }
+    
+    public Integer processRowCampagnaBlocchettiNum(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(10)));
+    }
+    
+    public BigDecimal processRowCampagnaBlocchettiCosto(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
+    }
+    public Integer processRowCampagnaManifestiNum(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(12)));
+    }
+    public BigDecimal processRowCampagnaManifestiCosto(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(13)));
+    }        
+    public Integer processRowCampagnaLodareNum(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(14)));
+    }
 
-        String destitolo = dataFormatter.formatCellValue(row.getCell(1));
-        String andescri = dataFormatter.formatCellValue(row.getCell(2));
-        String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
-        String anindiri = dataFormatter.formatCellValue(row.getCell(4));
-        String anindir1 = dataFormatter.formatCellValue(row.getCell(5));
-        String anlocali = dataFormatter.formatCellValue(row.getCell(6));
-        
-        // Check for Abbonmento and not anagrafica
+    public BigDecimal processRowCampagnaLodareCosto(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(15)));
+    }
+
+    public BigDecimal processRowCampagnaTotaleCosto(Row row) throws UnsupportedOperationException {
+        DataFormatter dataFormatter = new DataFormatter();
+        BigDecimal totimp = getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(16)));
+        BigDecimal totabb = getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(22)));
+        if ( totabb.compareTo(totimp) != 0) {
+            throw new UnsupportedOperationException();
+        }
+
+        return totimp;
+    }
+
+    public String processRowCampagnaCodeline(Row row,String pncodcon) throws UnsupportedOperationException {
+        DataFormatter dataFormatter = new DataFormatter();
         String pndessup = dataFormatter.formatCellValue(row.getCell(7));
         if (pncodcon.equals("0000004967")) {
             pndessup="000000020000730517";
@@ -441,17 +418,24 @@ public class SmdImportFromExcel {
         if (!Abbonamento.checkCodeLine(pndessup)) {
             System.err.println("----- codeLine invalid ------");
             System.err.println("ANCODICE: " + pncodcon);
-            System.err.println("ANTITOLO: " + destitolo);
-            System.err.println("ANDESCRI: " + andescri);
-            System.err.println("ANDESCR2: " + andescr2);
-            System.err.println("ANINDIRI: " + anindiri);
-            System.err.println("ANINDIR1: " + anindir1);
-            System.err.println("ANLOCALI: " + anlocali);
-            System.err.println("PNDESSUP: " + pndessup);
             System.err.println("------------------------------");
             System.out.println();
             throw new UnsupportedOperationException();
         }
+        return pndessup;
+        
+    }
+    
+    private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+
+        String destitolo = dataFormatter.formatCellValue(row.getCell(1));
+        String andescri = dataFormatter.formatCellValue(row.getCell(2));
+        String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
+        String anindiri = dataFormatter.formatCellValue(row.getCell(4));
+        String anindir1 = dataFormatter.formatCellValue(row.getCell(5));
+        String anlocali = dataFormatter.formatCellValue(row.getCell(6));
+        
+        // Check for Abbonmento and not anagrafica
         Anagrafica anagrafica = getAnagraficaByAncodcon(pncodcon);
         
         populateAnagraficaCampagna(anagrafica, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
@@ -459,100 +443,6 @@ public class SmdImportFromExcel {
         String scopro =        dataFormatter.formatCellValue(row.getCell(17));
         if (!scopro.equals("")) {
             System.err.println("scopro mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        
-        String totpro =        dataFormatter.formatCellValue(row.getCell(18));
-        if (!totpro.equals("")) {
-            System.err.println("totpro mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-
-        String anno =          dataFormatter.formatCellValue(row.getCell(19));
-        String test_spese =    dataFormatter.formatCellValue(row.getCell(20));
-        String test_saldo =    dataFormatter.formatCellValue(row.getCell(21));
-        String totabbo    =    dataFormatter.formatCellValue(row.getCell(22));
-        String testo_promo=    dataFormatter.formatCellValue(row.getCell(23));
-        if (!testo_promo.equals("")) {
-            System.err.println("testo_promo mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-
-        String totpromo1  =    dataFormatter.formatCellValue(row.getCell(24));
-        if (!totpromo1.equals("")) {
-            System.err.println("totpromo1 mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-
-        }
-
-        String pncodcon1 = dataFormatter.formatCellValue(row.getCell(25));
-        if (!pncodcon.equals(pncodcon1)) {
-            System.err.println("pncodcon mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String destitolo1 = dataFormatter.formatCellValue(row.getCell(26));
-        if (!destitolo.equals(destitolo1)) {
-            System.err.println("destitolo mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String andescri1 = dataFormatter.formatCellValue(row.getCell(27));
-        if (!andescri.equals(andescri1)) {
-            System.err.println("andescri mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String andescr21 = dataFormatter.formatCellValue(row.getCell(28));
-        if (!andescr2.equals(andescr21)) {
-            System.err.println("andescri2 mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String anindiri1 = dataFormatter.formatCellValue(row.getCell(29));
-        if (!anindiri.equals(anindiri1)) {
-            System.err.println("anindiri mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String vuoto2 = dataFormatter.formatCellValue(row.getCell(30));
-        if (!vuoto2.equals("")) {
-            System.err.println("vuoto2 mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String anlocali1 = dataFormatter.formatCellValue(row.getCell(31));
-        if (!anlocali.equals(anlocali1)) {
-            System.err.println("anlocali mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String pndessup1 = dataFormatter.formatCellValue(row.getCell(32));
-        if (!pndessup.equals(pndessup1) && !pndessup1.equals("")) {
-            System.err.println("pndessup mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String anno1 =          dataFormatter.formatCellValue(row.getCell(33));
-        if (!anno.equals(anno1)) {
-            System.err.println("anno mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String test_spes1 =    dataFormatter.formatCellValue(row.getCell(34));
-        if (!test_spese.equals(test_spes1)) {
-            System.err.println("test_spese mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String test_sald1 =    dataFormatter.formatCellValue(row.getCell(35));
-        if (!test_saldo.equals(test_sald1)) {
-            System.err.println("test_saldo mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String totabbo1    =    dataFormatter.formatCellValue(row.getCell(36));
-        if (!totabbo.equals(totabbo1)) {
-            System.err.println("totabbo mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String testo_prm1=    dataFormatter.formatCellValue(row.getCell(37));
-        if (!testo_prm1.equals("")) {
-            System.err.println("testo_prm1 mismatch: " + pncodcon);
-            throw new UnsupportedOperationException();
-        }
-        String totpromo2  =    dataFormatter.formatCellValue(row.getCell(38));
-        if (!totpromo2.equals("")) {
-            System.err.println("totpromo2 mismatch: " + pncodcon);
             throw new UnsupportedOperationException();
         }
         
@@ -656,146 +546,100 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
     
-    public Map<String,Anagrafica> importBeneficiari() throws IOException {
+    public List<Row> getBeneficiari() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(BENEFICIARI_2020);
         Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
 
-        Set<String> errors = new HashSet<>();
-        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        List<Row> rows = new ArrayList<Row>();
         for (Row row : wbac.getSheetAt(0)) {
-            String ancodiceI = dataFormatter.formatCellValue(row.getCell(0));
-            if (ancodiceI.equalsIgnoreCase("codice Intestatario")) {
+            String antipcon = dataFormatter.formatCellValue(row.getCell(0));
+            if (antipcon.equalsIgnoreCase("antipcon")) {
                 continue;
             }
-            if (ancodiceI.trim().equalsIgnoreCase("")) {
-                continue;
-            }
-            String destinatI = dataFormatter.formatCellValue(row.getCell(1));
-            String ancodiceD = dataFormatter.formatCellValue(row.getCell(2));
-            String destinatD = dataFormatter.formatCellValue(row.getCell(3));
-            String messaggio = dataFormatter.formatCellValue(row.getCell(4));
-            String blocchetti = dataFormatter.formatCellValue(row.getCell(5));
-            String lodare = dataFormatter.formatCellValue(row.getCell(6));
-            String manifesti = dataFormatter.formatCellValue(row.getCell(7));
-
-            try {
-                Anagrafica destinatario = getAnagraficaByAncodcon(ancodiceD);
-                destinatario.setDenominazione(destinatD);
-                anagraficaMap.put(ancodiceD, destinatario);
-            } catch (UnsupportedOperationException e) {
-                errors.add(ancodiceD);
-                continue;
-            }
-        }
-
-        System.out.println("Beneficiari Errori Trovati: "
-                + errors.size());
-        System.out.println("Beneficiari Trovati: "
-                + anagraficaMap.size());
-        
-        return anagraficaMap;
+            rows.add(row);
+        }            
+        return rows;
+    }
+    
+    public BigDecimal getPrezzoFromRowBeneficiari(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
     }
 
-    public Map<String,Anagrafica> importIntestatari() throws IOException {
+    public Integer getQuantitaFromRowBeneficiari(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
-
-        File ac = new File(BENEFICIARI_2020);
-        Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
-
-        Set<String> errors = new HashSet<>();
-        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
-        for (Row row : wbac.getSheetAt(0)) {
-            String ancodiceI = dataFormatter.formatCellValue(row.getCell(0));
-            if (ancodiceI.equalsIgnoreCase("codice Intestatario")) {
-                continue;
-            }
-            if (ancodiceI.trim().equalsIgnoreCase("")) {
-                continue;
-            }
-            String destinatI = dataFormatter.formatCellValue(row.getCell(1));
-            String ancodiceD = dataFormatter.formatCellValue(row.getCell(2));
-            String destinatD = dataFormatter.formatCellValue(row.getCell(3));
-            String messaggio = dataFormatter.formatCellValue(row.getCell(4));
-            String blocchetti = dataFormatter.formatCellValue(row.getCell(5));
-            String lodare = dataFormatter.formatCellValue(row.getCell(6));
-            String manifesti = dataFormatter.formatCellValue(row.getCell(7));
-
-            try {
-                Anagrafica intestatario = getAnagraficaByAncodcon(ancodiceI);
-                intestatario.setDenominazione(destinatI);
-                anagraficaMap.put(ancodiceI, intestatario);
-            } catch (UnsupportedOperationException e) {
-                errors.add(ancodiceI);
-                continue;
-            }
-        }
-
-        System.out.println("Intestatari Errori Trovati: "
-                + errors.size());
-        System.out.println("Intestatari Trovati: "
-                + anagraficaMap.size());
-        
-        return anagraficaMap;
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(14)));
     }
 
-    public Map<String,Anagrafica> importItaEsteroIntestatari() throws IOException {
+    public Map<String,Anagrafica> importBeneficiari(List<Row> rows) throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
-
-        File ac = new File(ABBONATI_ITA_ESTERO);
-        Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
 
         Set<String> errors = new HashSet<>();
         Map<String, Anagrafica> anagraficaMap = new HashMap<>();
-        for (Row row : wbac.getSheetAt(0)) {
-            String ancodiceI = dataFormatter.formatCellValue(row.getCell(0));
-            if (ancodiceI.equals("COD.")) {
-                continue;
+        for (Row row : rows) {
+            String ancodice = dataFormatter.formatCellValue(row.getCell(1));
+            String andescri = dataFormatter.formatCellValue(row.getCell(2));
+            String anindiri = dataFormatter.formatCellValue(row.getCell(3));
+            String anindir2 = dataFormatter.formatCellValue(row.getCell(4));
+            String an___cap = dataFormatter.formatCellValue(row.getCell(5));
+            String anlocali = dataFormatter.formatCellValue(row.getCell(6));
+            String anprovin = dataFormatter.formatCellValue(row.getCell(7));
+            String annazion = dataFormatter.formatCellValue(row.getCell(8));
+            String bancodice  = dataFormatter.formatCellValue(row.getCell(15));
+            String bandescri = dataFormatter.formatCellValue(row.getCell(16));
+            String banindiri = dataFormatter.formatCellValue(row.getCell(17));
+            String banindir2 = dataFormatter.formatCellValue(row.getCell(18));
+            String ban___cap = dataFormatter.formatCellValue(row.getCell(19));
+            String banlocali = dataFormatter.formatCellValue(row.getCell(20));
+            String banprovin = dataFormatter.formatCellValue(row.getCell(21));
+            String bannazion = dataFormatter.formatCellValue(row.getCell(22));
+            Anagrafica abene = getAnagraficaByAncodcon(ancodice);
+            abene.setDenominazione(andescri);
+            abene.setIndirizzo(anindiri);
+            abene.setIndirizzoSecondaRiga(anindir2);
+            abene.setCitta(anlocali);
+            if (!an___cap.trim().equals("")) {
+                abene.setCap(an___cap);
             }
-            if (ancodiceI.trim().equalsIgnoreCase("")) {
-                break;
-            }
-            ancodiceI="00000"+ancodiceI;
-            String destinatI = dataFormatter.formatCellValue(row.getCell(1));
-            String ancodiceD = dataFormatter.formatCellValue(row.getCell(2));
+            abene.setProvincia(getProvincia(anprovin));
+            abene.setPaese(Paese.getBySigla(annazion));
+            abene.setAreaSpedizione(getAreaSpedizione(annazion));
             
-            String destinatD = dataFormatter.formatCellValue(row.getCell(3));
-            String descri = dataFormatter.formatCellValue(row.getCell(4));
-            String indiri = dataFormatter.formatCellValue(row.getCell(5));
-            String locali = dataFormatter.formatCellValue(row.getCell(6));
-            String nazion = dataFormatter.formatCellValue(row.getCell(7));
-            String testat = dataFormatter.formatCellValue(row.getCell(8));
-            String quanti = dataFormatter.formatCellValue(row.getCell(9));
-            String impori = dataFormatter.formatCellValue(row.getCell(10));
-            String spese = dataFormatter.formatCellValue(row.getCell(11));
-
-            try {
-                Anagrafica intestatario = getAnagraficaByAncodcon(ancodiceI);
-                intestatario.setDenominazione(destinatI);
-                anagraficaMap.put(ancodiceI, intestatario);
-            } catch (UnsupportedOperationException e) {
-                errors.add(ancodiceI);
+            anagraficaMap.put(ancodice, abene);
+            
+            if (bancodice.trim().equals("")) {
                 continue;
             }
+            Anagrafica ainte = getAnagraficaByAncodcon(bancodice);
+            ainte.setDenominazione(bandescri);
+            ainte.setIndirizzo(banindiri);
+            ainte.setIndirizzoSecondaRiga(banindir2);
+            ainte.setCitta(banlocali);
+            if (!ban___cap.trim().equals("")) {
+                ainte.setCap(ban___cap);
+            }
+            ainte.setProvincia(getProvincia(banprovin));
+            ainte.setPaese(Paese.getBySigla(bannazion));
+            ainte.setAreaSpedizione(getAreaSpedizione(bannazion));
+            anagraficaMap.put(bancodice, ainte);
         }
 
-        System.out.println("Intestatari ITA Estero Errori Trovati: "
+        System.out.println("Beneficiari Ita Errori Trovati: "
                 + errors.size());
-        System.out.println("Intestatari ITA Estero Trovati: "
+        System.out.println("Beneficiari Ita Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
     }
 
-    public Map<String,Anagrafica> importItaEsteroBeneficiari() throws IOException {
+    public List<Row> getAbbonatiItaEstero() throws IOException{
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ABBONATI_ITA_ESTERO);
         Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
-
-        Set<String> errors = new HashSet<>();
-        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        List<Row> rows = new ArrayList<>();
         for (Row row : wbac.getSheetAt(0)) {
             String ancodiceI = dataFormatter.formatCellValue(row.getCell(0));
             if (ancodiceI.equals("COD.")) {
@@ -804,7 +648,22 @@ public class SmdImportFromExcel {
             if (ancodiceI.trim().equalsIgnoreCase("")) {
                 break;
             }
+            rows.add(row);
+        }
+       
+        return rows;
+    }
+
+    //FIXME
+    public Map<String,Anagrafica> importAbbonatiItaEstero(List<Row> rows) throws IOException {
+ 
+        DataFormatter dataFormatter = new DataFormatter();
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        for (Row row : rows) {
+            String ancodiceI = "00000"+dataFormatter.formatCellValue(row.getCell(0));
             String destinatI = dataFormatter.formatCellValue(row.getCell(1));
+            
             String ancodiceD = "00000"+dataFormatter.formatCellValue(row.getCell(2));
             String destinatD = dataFormatter.formatCellValue(row.getCell(3));
             String descri = dataFormatter.formatCellValue(row.getCell(4));
@@ -817,37 +676,48 @@ public class SmdImportFromExcel {
             String spese = dataFormatter.formatCellValue(row.getCell(11));
 
             try {
+                Anagrafica intestatario = getAnagraficaByAncodcon(ancodiceI);
+                intestatario.setDenominazione(destinatI);
+                anagraficaMap.put(ancodiceI, intestatario);
                 Anagrafica beneficiario = getAnagraficaByAncodcon(ancodiceD);
-                beneficiario.setDenominazione(destinatI);
+                beneficiario.setDenominazione(destinatD);
                 anagraficaMap.put(ancodiceD, beneficiario);
             } catch (UnsupportedOperationException e) {
-                errors.add(ancodiceD);
+                errors.add(ancodiceI);
                 continue;
             }
         }
 
-        System.out.println("Beneficiari ITA Estero Errori Trovati: "
+        System.out.println("Anagrafica ITA Estero Errori Trovati: "
                 + errors.size());
-        System.out.println("Beneficiari ITA Estero Trovati: "
+        System.out.println("Anagrafica ITA Estero Trovati: "
                 + anagraficaMap.size());
         
         return anagraficaMap;
     }
-
-    
-    public Map<String,Anagrafica> importAbbonatiEstero() throws IOException {
+    public Map<String,Row> getAbbonatiEstero() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
-
         File ac = new File(ABBONATI_ESTERO);
         Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
 
-        Set<String> errors = new HashSet<>();
-        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        Map<String, Row> rowMap = new HashMap<>();
         for (Row row : wbac.getSheetAt(0)) {
             String ancodice = dataFormatter.formatCellValue(row.getCell(0));
             if (ancodice.equalsIgnoreCase("ancodice")) {
                 continue;
             }
+            rowMap.put(ancodice, row);
+        }
+        return rowMap;
+    }
+    
+    public Map<String,Anagrafica> importAbbonatiEstero(Map<String,Row> rowMap) throws IOException {
+        DataFormatter dataFormatter = new DataFormatter();
+
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        for (String ancodice : rowMap.keySet()) {
+            Row row = rowMap.get(ancodice);
             try {
                 anagraficaMap.put(ancodice, processRowAbbonatiEstero(row, ancodice, dataFormatter));
             } catch (UnsupportedOperationException e) {
@@ -864,6 +734,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
     
+    //FIXME
     public Anagrafica processRowAbbonatiEstero(Row row, String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
         
         String andescri = dataFormatter.formatCellValue(row.getCell(1));
@@ -873,7 +744,26 @@ public class SmdImportFromExcel {
         String anlocali = dataFormatter.formatCellValue(row.getCell(6));
         String annazion = dataFormatter.formatCellValue(row.getCell(8));        
         String destitolo = dataFormatter.formatCellValue(row.getCell(10));
-
+        
+        String abtestata = dataFormatter.formatCellValue(row.getCell(13));
+        String tot03 = dataFormatter.formatCellValue(row.getCell(14));
+        String abqtaabb = dataFormatter.formatCellValue(row.getCell(15));
+        
+        String abtestata1 = dataFormatter.formatCellValue(row.getCell(16));
+        String tot02 = dataFormatter.formatCellValue(row.getCell(17));
+        String abqtaabb1 = dataFormatter.formatCellValue(row.getCell(18));
+        
+        String abtestata2 = dataFormatter.formatCellValue(row.getCell(19));
+        String tot01 = dataFormatter.formatCellValue(row.getCell(20));
+        String abqtaabb2 = dataFormatter.formatCellValue(row.getCell(21));
+        
+        String abtestata3 = dataFormatter.formatCellValue(row.getCell(22));
+        String tot00 = dataFormatter.formatCellValue(row.getCell(23));
+        
+        String abtestata4 = dataFormatter.formatCellValue(row.getCell(24));
+        String tot04 = dataFormatter.formatCellValue(row.getCell(25));
+        String abqtaabb4 = dataFormatter.formatCellValue(row.getCell(26));
+        
         Anagrafica anagrafica = getAnagraficaByAncodcon(ancodice);
         
         populateAnagraficaEstero(anagrafica, ancodice,destitolo, andescri, andescr2, anindiri, anindir1, anlocali, annazion);
@@ -1174,9 +1064,7 @@ public class SmdImportFromExcel {
    
     }
     public void fixAbbonatiEstero(Map<String, Anagrafica> acMap, Map<String, Anagrafica> aeMap) {
-        int i=0;
         for (String ancodice : aeMap.keySet()) {
-            i++;
             Anagrafica ae = aeMap.get(ancodice);
             Anagrafica ac = acMap.get(ancodice);
             ae.setDiocesi(ac.getDiocesi());
@@ -1200,14 +1088,6 @@ public class SmdImportFromExcel {
             } else {
                 System.err.println(ancodice);
             }
-        }
-    }
-
-    
-    public void fixIntestatari(Map<String, Anagrafica> acMap, Map<String, Anagrafica> iaMap) {
-        for (String ancodice: iaMap.keySet()) {
-            Anagrafica ac = acMap.get(ancodice);
-            iaMap.put(ancodice, ac);
         }
     }
 

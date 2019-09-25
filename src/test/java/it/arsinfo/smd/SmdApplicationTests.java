@@ -1664,6 +1664,7 @@ public class SmdApplicationTests {
         assertEquals(1, userInfoDao.findAll().size());
 
         new SmdLoadSampleData(
+                              smdService,
                                          anagraficaDao, 
                                          storicoDao, 
                                          notaDao,

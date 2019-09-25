@@ -130,12 +130,12 @@ public class Storico implements SmdEntity {
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, '%d %s' %s -> %s, %s %s, %s, %s]",
+        return String.format("Storico[id=%d, '%d %s' %d -> %d, %s %s, %s, %s]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
-                             intestatario.getCaption(), 
-                             destinatario.getCaption(), 
+                             intestatario.getId(), 
+                             destinatario.getId(), 
                              tipoEstrattoConto,invio,statoStorico,cassa);
     }
 

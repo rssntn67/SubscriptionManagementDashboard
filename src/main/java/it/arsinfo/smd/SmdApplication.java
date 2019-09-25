@@ -62,6 +62,7 @@ public class SmdApplication {
     @Bean
     @Transactional
     public CommandLineRunner loadData(
+            SmdService smdService,
             AnagraficaDao anagraficaDao, 
             StoricoDao storicoDao,
             NotaDao notaDao,
@@ -101,6 +102,7 @@ public class SmdApplication {
             log.info("createNormalUser="+creaNU);
             if (loadADP||loadSD || loadPAdp || loadSA || loadSS || creaDU || creaNU) {
                      new Thread(new SmdLoadSampleData(
+                      smdService,                                
                       anagraficaDao, 
                       storicoDao, 
                       notaDao,
