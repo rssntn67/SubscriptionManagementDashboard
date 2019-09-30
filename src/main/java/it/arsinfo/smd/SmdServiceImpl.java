@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
@@ -47,7 +49,7 @@ import it.arsinfo.smd.repository.VersamentoDao;
 
 @Service
 public class SmdServiceImpl implements SmdService {
-    
+
     @Autowired
     private CampagnaDao campagnaDao;
 
@@ -92,6 +94,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) {
         
+        log.info("genera Campagna start");
         List<Abbonamento> abbonamentiCampagna = Smd.generaAbbonamentiCampagna(campagna, anagraficaDao.findAll(),
                                                                               storicoDao.findAll(),
                                                                               attivi);
@@ -119,7 +122,8 @@ public class SmdServiceImpl implements SmdService {
             }
             genera(abb, ecs.toArray(new EstrattoConto[ecs.size()]));
         }
-        
+        log.info("genera Campagna end");
+
     }
 
     @Override
@@ -624,6 +628,53 @@ public class SmdServiceImpl implements SmdService {
         sospendiStoricoAbbonamento(abbonamento);
         abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
         estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> cancellaECAbbonamento(abbonamento, ec));
+    }
+
+    @Override
+    public List<Spedizione> findSpedizioneByDestinatario(Anagrafica a) {
+        log.info("Spedizioni By Destinatario fetch start");
+        List<Spedizione> spedizioni = spedizioneDao.findByDestinatario(a);
+        log.info("Spedizioni By Destinatario fetch end");
+        return populateSpedizioni(spedizioni);
+    }
+
+    private List<Spedizione> populateSpedizioni(List<Spedizione> spedizioni) {
+        log.info("Pubblicazioni Item fetch start");
+        final Map<Long,Pubblicazione> pubbliMap = pubblicazioneDao
+                .findAll().stream().collect(Collectors.toMap(Pubblicazione::getId, p ->p));
+        log.info("Pubblicazioni Item fetch end");
+        log.info("Anagrafica Item fetch start");
+        final Map<Long,Anagrafica> anagrafMap = anagraficaDao
+                .findAll().stream().collect(Collectors.toMap(Anagrafica::getId, a ->a));
+        log.info("Anagrafica Item fetch end");
+        final Map<Long,Spedizione> spedizioniMap = spedizioni
+                .stream()
+                .collect(Collectors.toMap(Spedizione::getId, sped->sped));
+        log.info("Spedizioni Item fetch start");
+        spedizioneItemDao
+                .findAll().forEach(item -> {
+                    Spedizione sped = spedizioniMap.get(item.getSpedizione().getId());
+                    item.setSpedizione(sped);
+                    sped.addSpedizioneItem(item);
+                    Pubblicazione p = pubbliMap.get(item.getPubblicazione().getId());
+                    item.setPubblicazione(p);
+                });
+        log.info("Spedizioni Item fetch end");
+        spedizioni.forEach(sped -> {
+            Anagrafica a = anagrafMap.get(sped.getDestinatario().getId());
+            sped.setDestinatario(a);
+        }
+        );
+
+        return spedizioni;
+    }
+
+    @Override
+    public List<Spedizione> findSpedizioneAll() {
+        log.info("Spedizioni All fetch start");
+        List<Spedizione> spedizioni = spedizioneDao.findAll();
+        log.info("Spedizioni All fetch end");
+        return populateSpedizioni(spedizioni);
     }
 
 

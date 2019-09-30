@@ -9,6 +9,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -43,6 +44,9 @@ public class SpedizioneUI extends SmdUI {
     @Autowired
     PubblicazioneDao pubblicazioneDao; 
     
+    @Autowired
+    SmdService smdService;
+    
 
     @Override
     protected void init(VaadinRequest request) {
@@ -51,6 +55,7 @@ public class SpedizioneUI extends SmdUI {
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica,pubblicazioni);
+        search.setSmdService(smdService);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
         SpedizioneItemGrid itemgrid = new SpedizioneItemGrid("Items");

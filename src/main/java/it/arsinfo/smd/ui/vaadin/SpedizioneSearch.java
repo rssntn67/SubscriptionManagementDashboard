@@ -99,9 +99,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     @Override
     public List<Spedizione> find() {
         if (a == null) {
-            return filterAll(findAll());            
+            return filterAll(getSmdService().findSpedizioneAll());            
         }
-        return filterAll(((SpedizioneDao) getRepo()).findByDestinatario(a));
+        return filterAll(getSmdService().findSpedizioneByDestinatario(a));
     }
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {

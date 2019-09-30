@@ -6,9 +6,11 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -51,4 +53,8 @@ public interface SmdService {
     void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
     List<Abbonamento> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
+
+    List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
+
+    List<Spedizione> findSpedizioneAll();
 }
