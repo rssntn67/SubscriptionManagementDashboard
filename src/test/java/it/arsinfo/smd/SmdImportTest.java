@@ -64,9 +64,49 @@ public class SmdImportTest {
     @Test
     public void testImportOmaggioMessaggio() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
-        Map<String,Row> omaggioMesssaggioRowMap = smdImportFromExcel.getOmaggioMessaggio2020();
-        assertEquals(481, omaggioMesssaggioRowMap.size());
-        assertEquals(481,smdImportFromExcel.importOmaggioMessaggio2020(omaggioMesssaggioRowMap).size());
+        List<Row> rows = smdImportFromExcel.getOmaggioMessaggio2020();
+        assertEquals(481, rows.size());
+        assertEquals(481,smdImportFromExcel.importOmaggio(rows).size());
+    }
+
+    @Test
+    public void testImportOmaggioGesuitiMessaggio() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        List<Row> rows = smdImportFromExcel.getOmaggioGesuitiBlocchetti2020();
+        assertEquals(16, rows.size());
+        assertEquals(16,smdImportFromExcel.importOmaggio(rows).size());
+    }
+
+    @Test
+    public void testImportOmaggioBlocchetti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        List<Row> rows = smdImportFromExcel.getOmaggioBlocchetti2020();
+        assertEquals(5, rows.size());
+        assertEquals(5,smdImportFromExcel.importOmaggio(rows).size());
+    }
+
+    @Test
+    public void testImportOmaggioGesuitiBlocchetti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        List<Row> rows = smdImportFromExcel.getOmaggioGesuitiBlocchetti2020();
+        assertEquals(5, rows.size());
+        assertEquals(5,smdImportFromExcel.importOmaggio(rows).size());
+    }
+
+    @Test
+    public void testImportOmaggioLodare() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        List<Row> rows = smdImportFromExcel.getOmaggioLodare2020();
+        assertEquals(4, rows.size());
+        assertEquals(4,smdImportFromExcel.importOmaggio(rows).size());
+    }
+
+    @Test
+    public void testImportOmaggioGesuitiManifesti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        List<Row> rows = smdImportFromExcel.getOmaggioGesuitiManifesti2020();
+        assertEquals(2, rows.size());
+        assertEquals(2,smdImportFromExcel.importOmaggio(rows).size());
     }
 
     @Test
@@ -94,37 +134,79 @@ public class SmdImportTest {
     }
 
     @Test 
+    public void testFixOmaggioGesuitiMessaggio() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioGesuitiMessaggio2020());
+    }
+    @Test 
     public void testFixOmaggioMessaggio() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioMessaggio2020());
+    }
+
+    @Test 
+    public void testFixOmaggioGesuitiBlocchetti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioGesuitiBlocchetti2020());
+    }
+
+    @Test 
+    public void testFixOmaggioBlocchetti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioBlocchetti2020());
+    }
+
+    @Test 
+    public void testFixOmaggioLodare() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioLodare2020());
+    }
+
+    @Test 
+    public void testFixOmaggioGesuitiManifesti() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        checkOmaggio(smdImportFromExcel, smdImportFromExcel.getOmaggioGesuitiManifesti2020());
+    }
+
+    private void checkOmaggio(SmdImportFromExcel smdImportFromExcel, List<Row> rows) throws Exception {
         Map<String, Anagrafica> elencoAbbonatiMap = smdImportFromExcel.importElencoAbbonati();      
-        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
-        Map<String, Anagrafica> abbonatiCampagnaMap = smdImportFromExcel.importCampagna2020(rowMap);
+        Map<String, Anagrafica> abbonatiCampagnaMap = smdImportFromExcel.importCampagna2020(smdImportFromExcel.getCampagna2020());
         smdImportFromExcel.fixElencoAbbonatiCampagna(elencoAbbonatiMap, abbonatiCampagnaMap);
+        
         Map<String, Anagrafica> archivioClientiMap = smdImportFromExcel.importArchivioClienti();
-        Map<String,Row> omaggioMessaggioRowMap = smdImportFromExcel.getOmaggioMessaggio2020();
-        Map<String,Anagrafica> clientiOmaggio = smdImportFromExcel.importOmaggioMessaggio2020(omaggioMessaggioRowMap);
-        for (String ancodice : clientiOmaggio.keySet()) {
-            Anagrafica omaggioMessaggio = clientiOmaggio.get(ancodice);
-            assertFalse(elencoAbbonatiMap.containsKey(ancodice));
-            assertFalse(archivioClientiMap.containsKey(ancodice));
+        List<Anagrafica> clientiOmaggio = smdImportFromExcel.importOmaggio(rows);
+        for (Anagrafica omaggioMessaggio : clientiOmaggio) {
             assertEquals(Diocesi.DIOCESISTD, omaggioMessaggio.getDiocesi());
             assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
+            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
             assertNull(omaggioMessaggio.getCellulare());
             assertNull(omaggioMessaggio.getTelefono());
             assertNull(omaggioMessaggio.getEmail());
             assertNull(omaggioMessaggio.getPiva());
             assertNull(omaggioMessaggio.getCodfis());
         }   
-        smdImportFromExcel.fixOmaggioMessaggio(elencoAbbonatiMap, archivioClientiMap, clientiOmaggio);
-        for (Anagrafica omaggioMessaggio: clientiOmaggio.values()) {
-            System.out.println(omaggioMessaggio.getCodeLineBase());
-            String key = omaggioMessaggio.getCodeLineBase().substring(4);
-            if (omaggioMessaggio.getCodeLineBase().equals("10000000004232")) {
-                key = "E"+omaggioMessaggio.getCodeLineBase().substring(5);
+        Map<String,Anagrafica> clientiOmaggioMap =  smdImportFromExcel.fixOmaggio(elencoAbbonatiMap, archivioClientiMap, clientiOmaggio);
+        int i=0;
+        for (String ancodice: clientiOmaggioMap.keySet()) {
+            i++;
+            Anagrafica omaggioMessaggio = clientiOmaggioMap.get(ancodice);
+            System.out.println("parsing:  n." +i);
+            assertFalse(Diocesi.DIOCESISTD == omaggioMessaggio.getDiocesi());
+            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
+            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
+            assertNotNull(omaggioMessaggio.getCellulare());
+            assertNotNull(omaggioMessaggio.getTelefono());
+            assertNotNull(omaggioMessaggio.getEmail());
+            assertNotNull(omaggioMessaggio.getPiva());
+            assertNotNull(omaggioMessaggio.getCodfis());
+            if (elencoAbbonatiMap.containsKey(ancodice)) {
+                Anagrafica anagElenco = elencoAbbonatiMap.get(ancodice);
+                checkAnagrafica(anagElenco, omaggioMessaggio);
+            } else {
+                assertTrue(archivioClientiMap.containsKey(ancodice));
+                Anagrafica anagArchivio = archivioClientiMap.get(ancodice);
+                checkAnagrafica(anagArchivio, omaggioMessaggio);
             }
-            assertTrue(elencoAbbonatiMap.containsKey(key));
-            Anagrafica anagrafica = elencoAbbonatiMap.get(key);
-            checkAnagrafica(anagrafica, omaggioMessaggio);
         }
     }
 
