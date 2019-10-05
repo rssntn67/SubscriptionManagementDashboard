@@ -31,12 +31,33 @@ import it.arsinfo.smd.entity.Anagrafica;
 public class SmdImportFromExcel {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    public static final String ABBONATI_ESTERO = "data/ABBONATIESTERO2020.xls";
     public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020-060919.xls";
     public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI-11092019.xls";
     public static final String CAMPAGNA_2020 = "data/CA2020COMPLETA.xls";
+    public static final String ABBONATI_ESTERO = "data/ABBONATIESTERO2020.xls";
     public static final String ABBONATI_ITA_ESTERO = "data/ABBONATITALIABENEFESTERO-10092019.xls";
     public static final String BENEFICIARI_2020 = "data/BENEFICIARI2020Exported.xls";
+    public static final String OMAGGIO_MESSAGGIO = "data/OMAGGIOMESSAGGIO2020.xls";
+
+    public static Integer getRowInteger(String value) {
+        value = value.trim();
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (Exception e) {
+            return 0;
+        }
+        
+    }
+    
+    public BigDecimal getRowBigDecimal(String value) {
+        value = value.trim().replace(",", ".");
+        if (StringUtils.isEmpty(value)) {
+            return BigDecimal.ZERO;
+        }
+        return new BigDecimal(value.trim().replace(",", "."));
+    }
+    
+
     public static AreaSpedizione getAreaSpedizione(String annazion) {
         if (annazion.equals("RSM") || annazion.equals("ITA") || annazion.equals("CVC")) {
                 return AreaSpedizione.Italia;
@@ -89,10 +110,14 @@ public class SmdImportFromExcel {
 
     public static Anagrafica getAnagraficaByAncodcon(String pncodcon) throws UnsupportedOperationException {
         Anagrafica a = new Anagrafica();
-        if (pncodcon.startsWith("E")) {
-            a.setCodeLineBase("10000" + pncodcon.substring(1));
-        } else {
-            a.setCodeLineBase("0000" + pncodcon);
+        if (pncodcon.length() == 10) {
+            if (pncodcon.startsWith("E")) {
+                a.setCodeLineBase("10000" + pncodcon.substring(1));
+            } else {
+                a.setCodeLineBase("0000" + pncodcon);
+            }
+        } else if (pncodcon.length() == 14){
+            a.setCodeLineBase(pncodcon);
         }
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,
                                                      a);
@@ -334,24 +359,6 @@ public class SmdImportFromExcel {
 
     }
     
-    private Integer getRowInteger(String value) {
-        value = value.trim();
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (Exception e) {
-            return 0;
-        }
-        
-    }
-    
-    private BigDecimal getRowBigDecimal(String value) {
-        value = value.trim().replace(",", ".");
-        if (StringUtils.isEmpty(value)) {
-            return BigDecimal.ZERO;
-        }
-        return new BigDecimal(value.trim().replace(",", "."));
-    }
-    
     public Integer processRowCampagnaMessaggioNum(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(8)));
@@ -428,25 +435,78 @@ public class SmdImportFromExcel {
         
     }
     
-    private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+    public Map<String,Row> getOmaggioMessaggio2020() throws IOException {
+        DataFormatter dataFormatter = new DataFormatter();
+        File ca2020 = new File(OMAGGIO_MESSAGGIO);
+        Workbook wbca2020 = new HSSFWorkbook(new FileInputStream(ca2020));
+        Map<String,Row> rows = new HashMap<>();
+        for (Row row: wbca2020.getSheetAt(0)) {
+            String nominativo = dataFormatter.formatCellValue(row.getCell(2));
+            if (nominativo.endsWith("NOMINATIVO")) {
+                continue;
+            }
+            rows.put(nominativo,row);
+        }
+        return rows;
+    }
+    
+    public Map<String,Anagrafica> importOmaggioMessaggio2020(Map<String, Row> campagnaRows) throws IOException {        
+        DataFormatter dataFormatter = new DataFormatter();
+        Set<String> errors = new HashSet<>();
+        Map<String, Anagrafica> anagraficaMap = new HashMap<>();
+        for (String nominativo : campagnaRows.keySet() ) {
+            try {
+                Anagrafica a = processRowOmaggio(campagnaRows.get(nominativo),nominativo,dataFormatter);
+                anagraficaMap.put(a.getCodeLineBase(), a);                
+            } catch (UnsupportedOperationException e) {
+                errors.add(nominativo);
+                continue;
+            }
+        }
+        log.debug("Omaggio Messaggio 2020 -  Errori Trovati: "
+                + errors.size());
+        log.debug("Omaggio Messaggio 2020 -  Clienti Trovati: "
+                + anagraficaMap.size());
+        return anagraficaMap;
+    }
 
-        String destitolo = dataFormatter.formatCellValue(row.getCell(1));
-        String andescri = dataFormatter.formatCellValue(row.getCell(2));
-        String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
-        String anindiri = dataFormatter.formatCellValue(row.getCell(4));
-        String anindir1 = dataFormatter.formatCellValue(row.getCell(5));
-        String anlocali = dataFormatter.formatCellValue(row.getCell(6));
-        
-        // Check for Abbonmento and not anagrafica
-        Anagrafica anagrafica = getAnagraficaByAncodcon(pncodcon);
-        
-        populateAnagraficaCampagna(anagrafica, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
-                
-        String scopro =        dataFormatter.formatCellValue(row.getCell(17));
-        if (!scopro.equals("")) {
-            log.warn("scopro mismatch: " + pncodcon);
+    public Integer getQuantitaFromOmaggioRow(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(0)));
+    }
+    
+    private Anagrafica processRowOmaggio(Row row, String nominativo, DataFormatter dataFormatter) throws UnsupportedOperationException {
+
+        String cap = dataFormatter.formatCellValue(row.getCell(1));
+        String titolo = dataFormatter.formatCellValue(row.getCell(3));
+        String sottointes = dataFormatter.formatCellValue(row.getCell(4));
+        String indirizzo = dataFormatter.formatCellValue(row.getCell(5));
+        String citta = dataFormatter.formatCellValue(row.getCell(6));
+        String provincia = dataFormatter.formatCellValue(row.getCell(7));
+        String via_aerea = dataFormatter.formatCellValue(row.getCell(8));
+        if (!via_aerea.equals("N")) {
+            log.warn("via_aerea mismatch: " + via_aerea);
             throw new UnsupportedOperationException();
         }
+        
+        String paese = dataFormatter.formatCellValue(row.getCell(9));
+        String abstato = dataFormatter.formatCellValue(row.getCell(10));
+        if (!abstato.equals("OM")) {
+            log.warn("abstato mismatch: " + abstato);
+            throw new UnsupportedOperationException();
+        }
+        Anagrafica anagrafica = getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
+        anagrafica.setCap(cap);
+        anagrafica.setTitolo(TitoloAnagrafica.getByIntestazione(titolo));
+        anagrafica.setNome(sottointes);
+        anagrafica.setDenominazione(nominativo);
+        anagrafica.setIndirizzo(indirizzo);
+        anagrafica.setCitta(citta);
+        anagrafica.setProvincia(getProvincia(provincia));
+        anagrafica.setPaese(Paese.getByNome(paese));
+        anagrafica.setAreaSpedizione(getAreaSpedizione(anagrafica.getPaese().getSigla()));
+        
+                
         
         return anagrafica;
 
@@ -487,6 +547,27 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
      
+    private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+
+        String destitolo = dataFormatter.formatCellValue(row.getCell(1));
+        String andescri = dataFormatter.formatCellValue(row.getCell(2));
+        String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
+        String anindiri = dataFormatter.formatCellValue(row.getCell(4));
+        String anindir1 = dataFormatter.formatCellValue(row.getCell(5));
+        String anlocali = dataFormatter.formatCellValue(row.getCell(6));
+        Anagrafica anagrafica = getAnagraficaByAncodcon(pncodcon);
+        
+        populateAnagraficaCampagna(anagrafica, destitolo, andescri, andescr2, anindiri, anindir1, anlocali);
+                
+        String scopro =        dataFormatter.formatCellValue(row.getCell(17));
+        if (!scopro.equals("")) {
+            log.warn("scopro mismatch: " + pncodcon);
+            throw new UnsupportedOperationException();
+        }
+        
+        return anagrafica;
+
+    }
     
     public Map<String,Anagrafica> importArchivioClienti() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
@@ -1093,6 +1174,81 @@ public class SmdImportFromExcel {
         }
     }
 
+    public void fixOmaggioMessaggio(
+            Map<String,Anagrafica> elencoAbbonatiMap, 
+            Map<String,Anagrafica> archivioClientiMap,
+            Map<String,Anagrafica> clientiOmaggio) {
+        for (Anagrafica omaggioMessaggio : clientiOmaggio.values()) {
+            boolean found = false;
+            for (Anagrafica anagrafica: elencoAbbonatiMap.values()) {
+                if (
+                        anagrafica.getDenominazione().equals(omaggioMessaggio.getDenominazione())
+                        && anagrafica.getProvincia() == omaggioMessaggio.getProvincia()
+                        
+                    ) {
+                    found = true;
+                    if (anagrafica.getTitolo() == TitoloAnagrafica.Nessuno) {
+                        anagrafica.setTitolo(omaggioMessaggio.getTitolo());
+                    }
+                    omaggioMessaggio.setCodeLineBase(anagrafica.getCodeLineBase());
+                    omaggioMessaggio.setDiocesi(anagrafica.getDiocesi());
+                    omaggioMessaggio.setCellulare(anagrafica.getCellulare());
+                    omaggioMessaggio.setTelefono(anagrafica.getTelefono());
+                    omaggioMessaggio.setEmail(anagrafica.getEmail());
+                    omaggioMessaggio.setCodfis(anagrafica.getCodfis());
+                    omaggioMessaggio.setPiva(anagrafica.getPiva());
+                    log.debug("Trovato su elencoAbbonati: {}", anagrafica);
+                    break;
+                }
+            }
+            if (found) {
+                continue;
+            }
+            for (String ancodice : archivioClientiMap.keySet()) {
+                Anagrafica anagrafica = archivioClientiMap.get(ancodice);
+                if (
+                        anagrafica.getDenominazione().equals(omaggioMessaggio.getDenominazione())
+                        && anagrafica.getProvincia() == omaggioMessaggio.getProvincia()
+                        ) {
+                    found = true;
+                    omaggioMessaggio.setCodeLineBase(anagrafica.getCodeLineBase());
+                    if (anagrafica.getTitolo() == TitoloAnagrafica.Nessuno) {
+                        anagrafica.setTitolo(omaggioMessaggio.getTitolo());
+                    }
+                    if (
+                            omaggioMessaggio.getCodeLineBase().equals("00000000005133") 
+                         || omaggioMessaggio.getCodeLineBase().equals("00000000004447")) {
+                        anagrafica.setIndirizzo(omaggioMessaggio.getIndirizzo());
+                        log.debug(ancodice+"---> Updated Anagrafica");
+                                            }
+                    if (
+                            omaggioMessaggio.getCodeLineBase().equals("00000000021809") 
+                        ) {
+                        omaggioMessaggio.setNome("");
+                        omaggioMessaggio.setTitolo(TitoloAnagrafica.VescovoAusiliare);
+                        anagrafica.setTitolo(TitoloAnagrafica.VescovoAusiliare);
+                        anagrafica.setIndirizzo(omaggioMessaggio.getIndirizzo());
+                        log.debug(ancodice+"---> Updated Anagrafica");
+                    }
+                    
+
+                    
+                    omaggioMessaggio.setDiocesi(anagrafica.getDiocesi());
+                    omaggioMessaggio.setCellulare(anagrafica.getCellulare());
+                    omaggioMessaggio.setTelefono(anagrafica.getTelefono());
+                    omaggioMessaggio.setEmail(anagrafica.getEmail());
+                    omaggioMessaggio.setCodfis(anagrafica.getCodfis());
+                    omaggioMessaggio.setPiva(anagrafica.getPiva());
+                    log.debug("Trovato su archivio clienti: {}", anagrafica);
+                    elencoAbbonatiMap.put(ancodice, omaggioMessaggio);
+                    log.info(ancodice+"---> Added to Elenco Abbonati");
+                    break;
+                }
+            }
+        }
+        
+    }
+
     public void fixElencoAbbonatiCampagna(Map<String, Anagrafica> acMap, Map<String, Anagrafica> caMap) {
         int i=0;
         for (String ancodice : caMap.keySet()) {
@@ -1260,5 +1416,6 @@ public class SmdImportFromExcel {
         }
 
     }
+        
 
 }

@@ -3,6 +3,7 @@ package it.arsinfo.smd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -14,6 +15,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 
@@ -58,6 +62,14 @@ public class SmdImportTest {
     }
 
     @Test
+    public void testImportOmaggioMessaggio() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        Map<String,Row> omaggioMesssaggioRowMap = smdImportFromExcel.getOmaggioMessaggio2020();
+        assertEquals(481, omaggioMesssaggioRowMap.size());
+        assertEquals(481,smdImportFromExcel.importOmaggioMessaggio2020(omaggioMesssaggioRowMap).size());
+    }
+
+    @Test
     public void testImportEstero() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
         Map<String,Row> esteroRowMap = smdImportFromExcel.getAbbonatiEstero();
@@ -80,7 +92,42 @@ public class SmdImportTest {
             checkAnagrafica(ac, ca);
         }
     }
-    
+
+    @Test 
+    public void testFixOmaggioMessaggio() throws Exception {
+        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
+        Map<String, Anagrafica> elencoAbbonatiMap = smdImportFromExcel.importElencoAbbonati();      
+        Map<String,Row> rowMap = smdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> abbonatiCampagnaMap = smdImportFromExcel.importCampagna2020(rowMap);
+        smdImportFromExcel.fixElencoAbbonatiCampagna(elencoAbbonatiMap, abbonatiCampagnaMap);
+        Map<String, Anagrafica> archivioClientiMap = smdImportFromExcel.importArchivioClienti();
+        Map<String,Row> omaggioMessaggioRowMap = smdImportFromExcel.getOmaggioMessaggio2020();
+        Map<String,Anagrafica> clientiOmaggio = smdImportFromExcel.importOmaggioMessaggio2020(omaggioMessaggioRowMap);
+        for (String ancodice : clientiOmaggio.keySet()) {
+            Anagrafica omaggioMessaggio = clientiOmaggio.get(ancodice);
+            assertFalse(elencoAbbonatiMap.containsKey(ancodice));
+            assertFalse(archivioClientiMap.containsKey(ancodice));
+            assertEquals(Diocesi.DIOCESISTD, omaggioMessaggio.getDiocesi());
+            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
+            assertNull(omaggioMessaggio.getCellulare());
+            assertNull(omaggioMessaggio.getTelefono());
+            assertNull(omaggioMessaggio.getEmail());
+            assertNull(omaggioMessaggio.getPiva());
+            assertNull(omaggioMessaggio.getCodfis());
+        }   
+        smdImportFromExcel.fixOmaggioMessaggio(elencoAbbonatiMap, archivioClientiMap, clientiOmaggio);
+        for (Anagrafica omaggioMessaggio: clientiOmaggio.values()) {
+            System.out.println(omaggioMessaggio.getCodeLineBase());
+            String key = omaggioMessaggio.getCodeLineBase().substring(4);
+            if (omaggioMessaggio.getCodeLineBase().equals("10000000004232")) {
+                key = "E"+omaggioMessaggio.getCodeLineBase().substring(5);
+            }
+            assertTrue(elencoAbbonatiMap.containsKey(key));
+            Anagrafica anagrafica = elencoAbbonatiMap.get(key);
+            checkAnagrafica(anagrafica, omaggioMessaggio);
+        }
+    }
+
     @Test
     public void testCheckAbbonatiEstero() throws Exception {
         SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();

@@ -285,6 +285,16 @@ public enum Paese {
         this.sigla = sigla;
     }
     
+    public static Paese getByNome(String nome) {
+        for (Paese p : Paese.values()) {
+            if (p.getNome().toLowerCase().equals(nome.toLowerCase())) {
+                return p;
+            }
+        }
+        return Paese.ND;
+        
+    }
+    
     public static Paese getBySigla(String sigla) {
         for (Paese p : Paese.values()) {
             if (p.getSigla().equals(sigla) ||p.getOldsigla().equals(sigla)) {

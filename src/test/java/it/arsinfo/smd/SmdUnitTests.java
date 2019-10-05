@@ -26,6 +26,7 @@ import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -940,4 +941,27 @@ public class SmdUnitTests {
         log.error("doStuff encountered an error with value - {}", value);
     }
 
+    @Test
+    public void testGetPaeseBy() {
+        Paese paese = Paese.getBySigla("ITA");
+        assertEquals(Paese.IT, paese);
+        paese = Paese.getBySigla("CAN");
+        assertEquals(Paese.CA, paese);
+        paese = Paese.getBySigla("RSM");
+        assertEquals(Paese.SM, paese);
+        paese = Paese.getBySigla("SRM");
+        assertEquals(Paese.SM, paese);
+        
+        paese = Paese.valueOf("IT");
+        assertEquals(Paese.IT, paese);
+        paese = Paese.getByNome("Italia");
+        assertEquals(Paese.IT, paese);
+        
+    }
+    
+    @Test 
+    public void testGeneraCodeLineBase() {
+        SmdImportFromExcel.getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
+    }
+    
 }
