@@ -100,6 +100,9 @@ public class Smd {
                 map.get(anno).add(mese);
             }
             mese = Mese.getMeseSuccessivo(mese);
+            if (mese == Mese.GENNAIO) {
+                break;
+            }
         }
         return map;
     }

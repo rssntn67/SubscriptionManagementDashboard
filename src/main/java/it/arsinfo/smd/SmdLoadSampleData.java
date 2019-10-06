@@ -1220,8 +1220,7 @@ public class SmdLoadSampleData implements Runnable {
         }
         eaMap.values().forEach(a -> anagraficaDao.save(a));
         
-        /*  FIXME
-
+        //  FIXME
         final List<Storico> storici = new ArrayList<>();
 
         campagnarowMap.keySet().forEach(cod ->
@@ -1254,10 +1253,8 @@ public class SmdLoadSampleData implements Runnable {
         storici.stream().forEach(s -> {
             storicoDao.save(s);
             s.getNote().stream().forEach(n -> notaDao.save(n));
-        });
-        */
+        });        
 
-        /*  FIXME
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.ANNO2020);
         List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
@@ -1281,8 +1278,7 @@ public class SmdLoadSampleData implements Runnable {
                 abbonamentoDao.save(abb);
             });
             
-        });
-        */
+        });        
     }
     private void loadAnagrafica() {
         

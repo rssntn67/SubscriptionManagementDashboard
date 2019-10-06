@@ -301,7 +301,7 @@ public class SmdUnitTests {
     }
 
     @Test 
-    public void testGetAnnoMeseMap() {
+    public void testGetAnnoMeseMapAlfa() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Anno annoi=Anno.ANNO2019;
         Mese mesei=Mese.OTTOBRE;
@@ -324,7 +324,7 @@ public class SmdUnitTests {
     }
 
     @Test 
-    public void testGetAnnoMeseMapAgain() {
+    public void testGetAnnoMeseMapBeta() {
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Anno annoi=Anno.ANNO2019;
         Mese mesei=Mese.NOVEMBRE;
@@ -350,6 +350,32 @@ public class SmdUnitTests {
         assertTrue(riviste2020.contains(Mese.LUGLIO));
         assertTrue(riviste2020.contains(Mese.SETTEMBRE));
         
+    }
+
+    @Test 
+    public void testGetAnnoMeseMapGamma() {
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Anno annoi=Anno.ANNO2019;
+        Mese mesei=Mese.GENNAIO;
+        Anno annof=Anno.ANNO2019;
+        Mese mesef=Mese.DICEMBRE;
+        
+        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        assertEquals(1, map.size());
+        assertTrue(map.containsKey(Anno.ANNO2019));
+        EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
+        assertEquals(11, riviste2019.size());
+        assertTrue(riviste2019.contains(Mese.GENNAIO));
+        assertTrue(riviste2019.contains(Mese.FEBBRAIO));
+        assertTrue(riviste2019.contains(Mese.MARZO));
+        assertTrue(riviste2019.contains(Mese.APRILE));
+        assertTrue(riviste2019.contains(Mese.MAGGIO));
+        assertTrue(riviste2019.contains(Mese.GIUGNO));
+        assertTrue(riviste2019.contains(Mese.LUGLIO));
+        assertTrue(riviste2019.contains(Mese.SETTEMBRE));
+        assertTrue(riviste2019.contains(Mese.OTTOBRE));
+        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        assertTrue(riviste2019.contains(Mese.DICEMBRE));   
     }
 
     @Test

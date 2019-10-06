@@ -1791,18 +1791,16 @@ public class SmdApplicationTests {
         
         assertEquals(4, pubblicazioneDao.findAll().size());
         assertEquals(19, spesaSpedizioneDao.findAll().size());
-        assertEquals(0, campagnaDao.findAll().size());
         assertEquals(8310, anagraficaDao.findAll().size());
-        assertEquals(0, storicoDao.findAll().size());
-        assertEquals(0, abbonamentoDao.findAll().size());
+        assertEquals(11819, storicoDao.findAll().size());
+        assertEquals(1, campagnaDao.findAll().size());
+        assertEquals(7238, abbonamentoDao.findAll().size());
         assertEquals(0, estrattoContoDao.findAll().size());
-                      
-
-        assertEquals(0, spedizioneDao.findAll().size());
         assertEquals(0, operazioneDao.findAll().size());
-
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, spedizioneDao.findAll().size());
+
 
         operazioneDao.deleteAll();
 

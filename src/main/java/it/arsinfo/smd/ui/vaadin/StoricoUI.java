@@ -148,6 +148,9 @@ public class StoricoUI extends SmdUI {
             add.setVisible(false);
         });
 
+        add.getButton().addClickListener(event ->
+            search.setVisible(false));
+        
         notaGrid.setChangeHandler(() -> {});
 
         update.setChangeHandler(() -> {
