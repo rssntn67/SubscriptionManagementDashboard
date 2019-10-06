@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
@@ -182,38 +183,11 @@ public class EstrattoConto implements SmdEntity {
     }
 
     public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(EstrattoConto ec) throws UnsupportedOperationException {
-        if (ec.getAnnoInizio().getAnno() > ec.getAnnoFine().getAnno()) {
-            throw new UnsupportedOperationException("data inizio maggiore di data fine");
-        }
-        if (ec.getAnnoInizio() == ec.getAnnoFine() && ec.getMeseInizio().getPosizione() > ec.getMeseFine().getPosizione()) {
-            throw new UnsupportedOperationException("data inizio maggiore di data fine");
-        }
-        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
-        Anno anno = ec.getAnnoInizio();
-        while (anno.getAnno() <= ec.getAnnoFine().getAnno()) {
-            EnumSet<Mese> mesiin = EnumSet.noneOf(Mese.class);
-            for (Mese mese: ec.getPubblicazione().getMesiPubblicazione()) {
-                if (anno == ec.getAnnoInizio() && anno == ec.getAnnoFine()) {
-                    if (mese.getPosizione() >= ec.getMeseInizio().getPosizione() && mese.getPosizione() <= ec.getMeseFine().getPosizione()) {
-                        mesiin.add(mese);
-                    }
-                } else if (anno == ec.getAnnoInizio() ) {
-                    if (mese.getPosizione() >= ec.getMeseFine().getPosizione()) {
-                        mesiin.add(mese);
-                    }
-                } else if (anno == ec.getAnnoFine()) {
-                    if (mese.getPosizione() <= ec.getMeseFine().getPosizione()) {
-                        mesiin.add(mese);
-                    }
-                } else {
-                    mesiin.add(mese);
-                }
-            }
-            map.put(anno, mesiin);
-            anno=Anno.getAnnoSuccessivo(anno);
-        }
         
-        return map;
+        if (ec.getPubblicazione() == null) {
+            throw new UnsupportedOperationException("pubblicazione null");
+        }        
+        return Smd.getAnnoMeseMap(ec.getMeseInizio(), ec.getAnnoInizio(), ec.getMeseFine(), ec.getAnnoFine(), ec.getPubblicazione());
     }
 
     public Anagrafica getDestinatario() {

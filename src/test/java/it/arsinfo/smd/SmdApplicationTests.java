@@ -987,7 +987,7 @@ public class SmdApplicationTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
         List<Spedizione> spedizioni 
-            = Smd.generaSpedizioni(abb, 
+            = Smd.genera(abb, 
                                ec,
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
@@ -1076,8 +1076,8 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
         ec2.setDestinatario(tizio);
-        List<Spedizione> spedizioni = Smd.generaSpedizioni(abb, ec1, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
-        spedizioni = Smd.generaSpedizioni(abb, ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
+        List<Spedizione> spedizioni = Smd.genera(abb, ec1, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
+        spedizioni = Smd.genera(abb, ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
@@ -1103,7 +1103,7 @@ public class SmdApplicationTests {
         ec3.setAnnoFine(anno);     
         ec3.setDestinatario(tizio);
         spedizioni = spedizioneDao.findByAbbonamento(abb);
-        spedizioni = Smd.generaSpedizioni(abb,
+        spedizioni = Smd.genera(abb,
                                           ec3,
                                           spedizioni,
                                           SmdLoadSampleData.getSpeseSpedizione());
@@ -1187,20 +1187,20 @@ public class SmdApplicationTests {
         ec3.setDestinatario(tizio);
 
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb,
                      ec1,
                      new ArrayList<Spedizione>(),
                      SmdLoadSampleData.getSpeseSpedizione());
         spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb,
                      ec2,
                     spedizioni,
                      SmdLoadSampleData.getSpeseSpedizione());        
 
         spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb,
                      ec3,
                     spedizioni,
@@ -1361,7 +1361,7 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         
 
-        List<Spedizione> spedizioni = Smd.generaSpedizioni(
+        List<Spedizione> spedizioni = Smd.genera(
                                            abb,
                                            ec1,
                                            new ArrayList<>(), 
@@ -1450,7 +1450,7 @@ public class SmdApplicationTests {
         ec1.setAnnoFine(Anno.getAnnoProssimo());
         ec1.setDestinatario(tizio);
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -1599,7 +1599,7 @@ public class SmdApplicationTests {
         ec.setAnnoFine(Anno.getAnnoProssimo());
         ec.setDestinatario(davidePalma);
 
-        Smd.generaSpedizioni(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
+        Smd.genera(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         

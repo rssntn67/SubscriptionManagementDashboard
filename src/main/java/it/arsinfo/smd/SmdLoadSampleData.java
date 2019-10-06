@@ -920,7 +920,7 @@ public class SmdLoadSampleData implements Runnable {
             ec.setAnnoFine(anno);
             ec.setDestinatario(ect.getColumnKey());
             spedizioni =
-                  Smd.generaSpedizioni(
+                  Smd.genera(
                            abb, 
                            ec,
                            spedizioni, 

@@ -305,7 +305,7 @@ public class SmdServiceImpl implements SmdService {
         List<Spedizione> spedizioni = new ArrayList<>();
         List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
         for (EstrattoConto ec: contos) {
-            spedizioni = Smd.generaSpedizioni(abbonamento, ec, spedizioni,spese);
+            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spese);
         }
         abbonamentoDao
             .findByIntestatarioAndAnnoAndCassa(

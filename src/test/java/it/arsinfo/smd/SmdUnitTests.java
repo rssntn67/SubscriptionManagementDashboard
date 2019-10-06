@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(abb.getIntestatario());
-        Smd.generaSpedizioni(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
+        Smd.genera(abb, ec, new ArrayList<>(), SmdLoadSampleData.getSpeseSpedizione());
 
         return ec;
     }
@@ -215,7 +215,7 @@ public class SmdUnitTests {
         ec.setInvio(Invio.Destinatario);
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                          abb, 
                          ec,
                          new ArrayList<Spedizione>(),spese);
@@ -266,7 +266,7 @@ public class SmdUnitTests {
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(abb, 
+                Smd.genera(abb, 
                                      ec,
                                      new ArrayList<Spedizione>(),
                                      spese);
@@ -300,19 +300,70 @@ public class SmdUnitTests {
         assertEquals(items.size(), spedizione.getSpedizioneItems().size());
     }
 
+    @Test 
+    public void testGetAnnoMeseMap() {
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Anno annoi=Anno.ANNO2019;
+        Mese mesei=Mese.OTTOBRE;
+        Anno annof=Anno.ANNO2020;
+        Mese mesef=Mese.GENNAIO;
+        
+        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        assertEquals(2, map.size());
+        assertTrue(map.containsKey(Anno.ANNO2019));
+        assertTrue(map.containsKey(Anno.ANNO2020));
+        EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
+        assertEquals(3, riviste2019.size());
+        assertTrue(riviste2019.contains(Mese.OTTOBRE));
+        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        assertTrue(riviste2019.contains(Mese.DICEMBRE));
+        EnumSet<Mese> riviste2020 = map.get(Anno.ANNO2020);
+        assertEquals(1, riviste2020.size());
+        assertTrue(riviste2020.contains(Mese.GENNAIO));
+        
+    }
+
+    @Test 
+    public void testGetAnnoMeseMapAgain() {
+        Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
+        Anno annoi=Anno.ANNO2019;
+        Mese mesei=Mese.NOVEMBRE;
+        Anno annof=Anno.ANNO2020;
+        Mese mesef=Mese.SETTEMBRE;
+        
+        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        assertEquals(2, map.size());
+        assertTrue(map.containsKey(Anno.ANNO2019));
+        assertTrue(map.containsKey(Anno.ANNO2020));
+        EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
+        assertEquals(2, riviste2019.size());
+        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        assertTrue(riviste2019.contains(Mese.DICEMBRE));
+        EnumSet<Mese> riviste2020 = map.get(Anno.ANNO2020);
+        assertEquals(8, riviste2020.size());
+        assertTrue(riviste2020.contains(Mese.GENNAIO));
+        assertTrue(riviste2020.contains(Mese.FEBBRAIO));
+        assertTrue(riviste2020.contains(Mese.MARZO));
+        assertTrue(riviste2020.contains(Mese.APRILE));
+        assertTrue(riviste2020.contains(Mese.MAGGIO));
+        assertTrue(riviste2020.contains(Mese.GIUGNO));
+        assertTrue(riviste2020.contains(Mese.LUGLIO));
+        assertTrue(riviste2020.contains(Mese.SETTEMBRE));
+        
+    }
+
     @Test
-    @Ignore
     public void testRimuoviECConSpedizioniInviate() {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), Cassa.Ccp);
         int numeroRiviste =0;
         Anno annoi = Anno.getAnnoCorrente();
         Anno annof = Anno.getAnnoCorrente();
         Mese meseA= Mese.getMeseCorrente();
         if (messaggio.getMesiPubblicazione().contains(meseA)) {
-            log.info(meseA +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
+            log.info(meseA.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
         }
 
         Mese meseB= Mese.getMeseSuccessivo(meseA);
@@ -320,8 +371,8 @@ public class SmdUnitTests {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseB)) {
-            log.info(meseB +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
+            log.info(meseB.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
         }
         
         Mese meseC= Mese.getMeseSuccessivo(meseB);
@@ -329,8 +380,8 @@ public class SmdUnitTests {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseC)) {
-            log.info(meseC +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
+            log.info(meseC.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
         }
 
         Mese meseD= Mese.getMeseSuccessivo(meseC);
@@ -338,12 +389,11 @@ public class SmdUnitTests {
             annof = Anno.getAnnoProssimo();
         }
         if (messaggio.getMesiPubblicazione().contains(meseD)) {
-            log.info(meseD +"numeroriviste: " + numeroRiviste );
             numeroRiviste++;
+            log.info(meseD.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
         }
 
         EstrattoConto ec1 = new EstrattoConto();
-        ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(meseA);
         ec1.setAnnoInizio(annoi);
@@ -354,12 +404,13 @@ public class SmdUnitTests {
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
 
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(abb,ec1,new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
+                Smd.genera(abb,ec1,new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         log.info(abb.toString());
         log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
+        assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
         assertEquals(2, spedizioni.size());
         assertEquals(numeroRiviste, items.size());
@@ -461,21 +512,21 @@ public class SmdUnitTests {
         ec3.setDestinatario(tizio);
 
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb, 
                      ec1,
                      new ArrayList<Spedizione>(),
                      SmdLoadSampleData.getSpeseSpedizione());        
         
         spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb, 
                      ec2,
                      spedizioni,
                      SmdLoadSampleData.getSpeseSpedizione());
        
        spedizioni = 
-               Smd.generaSpedizioni(
+               Smd.genera(
                     abb, 
                     ec3,
                     spedizioni,
@@ -699,7 +750,7 @@ public class SmdUnitTests {
         List<SpesaSpedizione> spese = SmdLoadSampleData.getSpeseSpedizione();
 
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(abb, 
+                Smd.genera(abb, 
                                      ec,
                                      new ArrayList<>(), 
                                      spese
@@ -749,7 +800,7 @@ public class SmdUnitTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
         List<Spedizione> spedizioni = 
-                Smd.generaSpedizioni(
+                Smd.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -840,7 +891,7 @@ public class SmdUnitTests {
         List<Spedizione> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
             EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
-            spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
+            spedizioni = Smd.genera(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
             log.info(ec.toString());
             log.info(abb.toString());
         }                
@@ -893,7 +944,7 @@ public class SmdUnitTests {
         List<Spedizione> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
             EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
-            spedizioni = Smd.generaSpedizioni(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
+            spedizioni = Smd.genera(abb, ec, spedizioni, SmdLoadSampleData.getSpeseSpedizione());
             log.info(abb.toString());
             log.info(ec.toString());
         }      
