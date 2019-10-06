@@ -2,7 +2,6 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Entity;

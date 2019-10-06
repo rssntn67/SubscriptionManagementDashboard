@@ -94,7 +94,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) {
         
-        log.info("genera Campagna start");
+        log.info("genera Campagna start {}", campagna);
         List<Abbonamento> abbonamentiCampagna = Smd.generaAbbonamentiCampagna(campagna, anagraficaDao.findAll(),
                                                                               storicoDao.findAll(),
                                                                               attivi);

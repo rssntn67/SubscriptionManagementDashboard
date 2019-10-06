@@ -1135,12 +1135,35 @@ public class SmdLoadSampleData implements Runnable {
         Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero(esteroMap);
         Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari(benefrows);
         Map<String, Anagrafica> ieMap = smdImportFromExcel.importAbbonatiItaEstero(itaesterows);
-        
         smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
         smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
         smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
         smdImportFromExcel.fixBeneficiari(acMap, eaMap, ieMap);
+
+        //Omaggi Gesuiti Messaggi
+        List<Anagrafica> omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiMessaggio2020());
+        Map<String,Anagrafica> ogmMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
         
+        //Omaggi Messaggi
+        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioMessaggio2020());
+        Map<String,Anagrafica> omMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        
+        //Omaggi Blocchetti
+        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioBlocchetti2020());
+        Map<String,Anagrafica> obMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        
+        //Omaggi Gesuiti Blocchetti
+        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiBlocchetti2020());
+        Map<String,Anagrafica> ogbMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+
+        //Omaggi Lodare
+        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioLodare2020());
+        Map<String,Anagrafica> olMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+
+        //Omaggi Gesuiti Manifesti
+        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiManifesti2020());
+        Map<String,Anagrafica> ogeMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+                
         for (String codebase: aeMap.keySet()) {
             if (eaMap.containsKey(codebase)) {
                 continue;
@@ -1159,7 +1182,46 @@ public class SmdLoadSampleData implements Runnable {
             }
             eaMap.put(codebase, ieMap.get(codebase));
         }
+        for (String codebase: ogmMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, ogmMap.get(codebase));
+        }
+        for (String codebase: omMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, omMap.get(codebase));
+        }
+        for (String codebase: ogbMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, ogbMap.get(codebase));
+        }
+        for (String codebase: obMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, obMap.get(codebase));
+        }
+        for (String codebase: olMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, olMap.get(codebase));
+        }
+        for (String codebase: ogeMap.keySet()) {
+            if (eaMap.containsKey(codebase)) {
+                continue;
+            }
+            eaMap.put(codebase, ogeMap.get(codebase));
+        }
         eaMap.values().forEach(a -> anagraficaDao.save(a));
+        
+        /*  FIXME
+
         final List<Storico> storici = new ArrayList<>();
 
         campagnarowMap.keySet().forEach(cod ->
@@ -1193,7 +1255,9 @@ public class SmdLoadSampleData implements Runnable {
             storicoDao.save(s);
             s.getNote().stream().forEach(n -> notaDao.save(n));
         });
+        */
 
+        /*  FIXME
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.ANNO2020);
         List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
@@ -1218,7 +1282,7 @@ public class SmdLoadSampleData implements Runnable {
             });
             
         });
-        
+        */
     }
     private void loadAnagrafica() {
         

@@ -1741,4 +1741,105 @@ public class SmdApplicationTests {
         assertEquals(1, userInfoDao.findAll().size());
 
     }
+    
+    @Test
+    public void testSmdLoadImportData() {
+        
+        log.info("----------------->testSmdLoadSampleData<----------------");
+
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, spesaSpedizioneDao.findAll().size());
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());
+        assertEquals(0, campagnaDao.findAll().size());
+        assertEquals(0, campagnaItemDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findAll().size());
+        assertEquals(0, estrattoContoDao.findAll().size());
+        assertEquals(0, spedizioneDao.findAll().size());
+        assertEquals(0, spedizioneItemDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, operazioneDao.findAll().size());
+        assertEquals(1, userInfoDao.findAll().size());
+
+        new SmdLoadSampleData(
+                              smdService,
+                                         anagraficaDao, 
+                                         storicoDao, 
+                                         notaDao,
+                                         pubblicazioneDao, 
+                                         spesaSpedizioneDao,
+                                         abbonamentoDao, 
+                                         estrattoContoDao,
+                                         spedizioneDao,
+                                         spedizioneItemDao,
+                                         campagnaDao, 
+                                         incassoDao, 
+                                         versamentoDao, 
+                                         operazioneDao,
+                                         userInfoDao,
+                                         passwordEncoder,
+                                         true,
+                                         false,
+                                         false,
+                                         false,
+                                         false,
+                                         false,
+                                         false
+                                         ).run();
+        
+        assertEquals(4, pubblicazioneDao.findAll().size());
+        assertEquals(19, spesaSpedizioneDao.findAll().size());
+        assertEquals(0, campagnaDao.findAll().size());
+        assertEquals(8310, anagraficaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findAll().size());
+        assertEquals(0, estrattoContoDao.findAll().size());
+                      
+
+        assertEquals(0, spedizioneDao.findAll().size());
+        assertEquals(0, operazioneDao.findAll().size());
+
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+
+        operazioneDao.deleteAll();
+
+        spedizioneItemDao.deleteAll();
+        spedizioneDao.deleteAll();
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        
+        campagnaItemDao.deleteAll();
+        campagnaDao.deleteAll();
+        notaDao.deleteAll();
+        storicoDao.deleteAll();
+
+        versamentoDao.deleteAll();
+        incassoDao.deleteAll();
+        
+        pubblicazioneDao.deleteAll();  
+        anagraficaDao.deleteAll();
+        spesaSpedizioneDao.deleteAll();
+        
+        log.info("final check load data");
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, pubblicazioneDao.findAll().size());
+        assertEquals(0, spesaSpedizioneDao.findAll().size());
+        assertEquals(0, notaDao.findAll().size());
+        assertEquals(0, storicoDao.findAll().size());
+        assertEquals(0, campagnaDao.findAll().size());
+        assertEquals(0, campagnaItemDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findAll().size());
+        assertEquals(0, estrattoContoDao.findAll().size());
+        assertEquals(0, spedizioneDao.findAll().size());
+        assertEquals(0, spedizioneItemDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, operazioneDao.findAll().size());
+        assertEquals(1, userInfoDao.findAll().size());
+
+    }
+
 }
