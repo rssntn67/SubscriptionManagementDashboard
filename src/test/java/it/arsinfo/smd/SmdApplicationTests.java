@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -368,7 +369,7 @@ public class SmdApplicationTests {
         spesaSpedizioneDao.delete(spedizioneItaliaDa1a2Kg);
         spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
         assertNull(spedizioneItaliaDa1a2Kg);
-        assertEquals(18, spesaSpedizioneDao.findAll().size());
+        assertEquals(19, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.save(duplicato);
         assertEquals(20, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.deleteAll();
@@ -1744,6 +1745,7 @@ public class SmdApplicationTests {
     }
     
     @Test
+    @Ignore
     public void testSmdLoadImportData() {
         
         log.info("----------------->testSmdLoadSampleData<----------------");
@@ -1812,28 +1814,37 @@ public class SmdApplicationTests {
         assertEquals(0, versamentoDao.findAll().size());
         log.info("Start check spedizioni");
         assertEquals(51262, spedizioneDao.count());
+        log.info("End check spedizioni");
 
 
+        log.info("Delete operazioni");
         operazioneDao.deleteAll();
 
+        log.info("Delete spedizione item");
         spedizioneItemDao.deleteAll();
+        log.info("Delete spedizione");
         spedizioneDao.deleteAll();
+        log.info("Delete ec");
         estrattoContoDao.deleteAll();
+        log.info("Delete abb");
         abbonamentoDao.deleteAll();
-        
+        log.info("Delete campagna");        
         campagnaItemDao.deleteAll();
         campagnaDao.deleteAll();
+        log.info("Delete storico");        
         notaDao.deleteAll();
         storicoDao.deleteAll();
-
+        log.info("Delete versamento ed incasso");        
         versamentoDao.deleteAll();
         incassoDao.deleteAll();
         
+        log.info("Delete pubblicazione e spese");        
         pubblicazioneDao.deleteAll();  
-        anagraficaDao.deleteAll();
         spesaSpedizioneDao.deleteAll();
-        
-        log.info("end load data");
+
+        log.info("Delete anagrafica");        
+        anagraficaDao.deleteAll();
+
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, spesaSpedizioneDao.findAll().size());
