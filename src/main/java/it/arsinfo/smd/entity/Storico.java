@@ -1,8 +1,5 @@
 package it.arsinfo.smd.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdEntity;
@@ -37,9 +33,6 @@ public class Storico implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
     
-    @OneToMany(mappedBy="storico", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<Nota> note = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
@@ -161,18 +154,6 @@ public class Storico implements SmdEntity {
 
     public void setCassa(Cassa cassa) {
         this.cassa = cassa;
-    }
-
-    public List<Nota> getNote() {
-        return note;
-    }
-
-    public void setNote(List<Nota> note) {
-        this.note = note;
-    }
-
-    public void addNota(Nota nota) {
-        note.add(nota);
     }
 
     public StatoStorico getStatoStorico() {

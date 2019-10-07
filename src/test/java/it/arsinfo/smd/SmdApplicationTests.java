@@ -700,12 +700,12 @@ public class SmdApplicationTests {
         assertEquals(2, notaDao.findAll().size());
         assertEquals(2, storicoDao.findAll().size());
         
-        storicoDao.delete(storico0);
+        smdService.delete(storico0);
         assertEquals(1, notaDao.findAll().size());
         assertEquals(1, storicoDao.findAll().size());
         
         storico1 = storicoDao.findAll().iterator().next();
-        storicoDao.delete(storico1);
+        smdService.delete(storico1);
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size()); 
         pubblicazioneDao.deleteAll();
@@ -731,10 +731,11 @@ public class SmdApplicationTests {
         
         Storico storico = SmdLoadSampleData.getStoricoBy(matteo, matteo, blocchetti, 100, Cassa.Carte, TipoEstrattoConto.Sostenitore, Invio.Destinatario, InvioSpedizione.AdpSede);
         storicoDao.save(storico);
-        storico.getNote().stream().forEach(nota -> notaDao.save(nota));
+        notaDao.save(SmdLoadSampleData.getNota(storico));
         assertEquals(1, notaDao.findAll().size());
         assertEquals(1, storicoDao.findAll().size());
         
+        notaDao.deleteAll();
         storicoDao.deleteAll();
         pubblicazioneDao.deleteAll();
         anagraficaDao.deleteAll();

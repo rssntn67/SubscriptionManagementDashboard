@@ -26,6 +26,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -39,6 +40,7 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
+import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
@@ -64,6 +66,9 @@ public class SmdServiceImpl implements SmdService {
 
     @Autowired
     StoricoDao storicoDao;
+
+    @Autowired
+    NotaDao notaDao;
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
@@ -675,6 +680,19 @@ public class SmdServiceImpl implements SmdService {
         List<Spedizione> spedizioni = spedizioneDao.findAll();
         log.info("Spedizioni All fetch end");
         return populateSpedizioni(spedizioni);
+    }
+
+    @Override
+    public void delete(Storico storico) {
+        notaDao.findByStorico(storico).forEach(nota->notaDao.deleteById(nota.getId()));
+        storicoDao.delete(storico);
+        
+    }
+
+    @Override
+    public void save(Storico storico, Nota nota) {
+        storicoDao.save(storico);
+        notaDao.save(nota);
     }
 
 

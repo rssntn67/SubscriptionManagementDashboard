@@ -762,12 +762,14 @@ public class SmdLoadSampleData implements Runnable {
         storico.setCassa(cassa);
         storico.setInvio(invio);
         storico.setInvioSpedizione(invioSpedizione);
-        Nota nota= new Nota(storico);
-        nota.setDescription("Importato da Ad Hoc: " + storico.toString());
-        storico.getNote().add(nota);
         return storico;
     }
-
+    
+    public static Nota getNota(Storico storico) {
+        Nota nota= new Nota(storico);
+        nota.setDescription("Importato da Ad Hoc: " + storico.toString());
+        return nota;
+    }
     public static Anagrafica getAnagraficaBy(String nome, String cognome) {
         Anagrafica anagrafica = new Anagrafica();
         anagrafica.setNome(nome);
@@ -1214,7 +1216,7 @@ public class SmdLoadSampleData implements Runnable {
             rowMap, anagraficaMap, messaggio, lodare, blocchetti, estratti)        
         .stream().forEach(s -> {
             storicoDao.save(s);
-            s.getNote().stream().forEach(n -> notaDao.save(n));
+            notaDao.save(getNota(s));
         });        
         log.info("End Saving Storico");
 
@@ -1329,7 +1331,7 @@ public class SmdLoadSampleData implements Runnable {
 
         storici.stream().forEach(s -> {
             storicoDao.save(s);
-            s.getNote().stream().forEach(n -> notaDao.save(n));
+            notaDao.save(getNota(s));
         });
     }
 

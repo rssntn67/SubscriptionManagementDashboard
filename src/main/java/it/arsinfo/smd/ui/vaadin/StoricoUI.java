@@ -80,7 +80,6 @@ public class StoricoUI extends SmdUI {
                     Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
                     return;
                 }
-                super.saveWithNoCallOnChange();
                 Nota nota = new Nota(get());
                 nota.setOperatore(getLoggedInUser().getUsername());
                 if (get().getId() == null) {
@@ -88,17 +87,29 @@ public class StoricoUI extends SmdUI {
                 } else {
                     nota.setDescription("Aggiornato: " + get().toString());                    
                 }
-                notaDao.save(nota);
-                
-                
-                if (!getNota().isEmpty()) {
-                    Nota unota = new Nota(get());
-                    unota.setOperatore(getLoggedInUser().getUsername());
-                    unota.setDescription(getNota().getValue());
-                    notaDao.save(unota);
-                    getNota().clear();
+                try {
+                    smdService.save(get(), nota);
+                    log.info("save: {}" + get());
+                    if (!getNota().isEmpty()) {
+                        Nota unota = new Nota(get());
+                        unota.setOperatore(getLoggedInUser().getUsername());
+                        unota.setDescription(getNota().getValue());
+                        notaDao.save(unota);
+                        getNota().clear();
+                    }
+                    onChange();
+                } catch (Exception e) {
+                    log.warn("save failed for : {} ", get(),e);
+                    Notification.show("Non è possibile salvare questo record: ",
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
-                onChange();
+                                
+            }
+            
+            @Override
+            public void delete() {
+                smdService.delete(get());
             }
         };
         
