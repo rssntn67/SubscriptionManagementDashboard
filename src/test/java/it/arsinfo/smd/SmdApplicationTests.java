@@ -1789,10 +1789,15 @@ public class SmdApplicationTests {
                                          false
                                          ).run();
         
+        log.info("Start check Pubblicazione");
         assertEquals(4, pubblicazioneDao.findAll().size());
+        log.info("Start check Spesa Sped");
         assertEquals(19, spesaSpedizioneDao.findAll().size());
+        log.info("Start check Anagrafica");
         assertEquals(8310, anagraficaDao.findAll().size());
-        assertEquals(0, storicoDao.findAll().size());
+        log.info("Start check Storico");
+        assertEquals(11819, storicoDao.findAll().size());
+        log.info("End check Storico");
         assertEquals(0, campagnaDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
         assertEquals(0, estrattoContoDao.findAll().size());

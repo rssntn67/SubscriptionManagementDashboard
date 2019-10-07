@@ -1107,19 +1107,20 @@ public class SmdLoadSampleData implements Runnable {
         }
         
         if (loadAnagraficaAdp) {
-            log.info("Start Loading Anagrafica Adp");
+            log.info("Start Import Adp");
             try {
                 loadAnagraficaAdp();
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
                 return;
             }
-            log.info("End Loading Anagrafica Adp");
+            log.info("End Import Adp");
         }
 
     }
     
     private void loadAnagraficaAdp() throws Exception {
+        log.info("Start Saving Anagrafica");
         Map<String, Anagrafica> eaMap = SmdImportFromExcel.importElencoAbbonati();      
         Map<String,Row> rowMap = SmdImportFromExcel.getCampagna2020();    
         Map<String, Anagrafica> caMap = SmdImportFromExcel.importCampagna2020(rowMap);
@@ -1205,15 +1206,17 @@ public class SmdLoadSampleData implements Runnable {
             }
         }
         anagraficaMap.values().forEach(a -> anagraficaDao.save(a));
+        log.info("End Saving Anagrafica");
         
-        //  FIXME
-        /*SmdImportFromExcel
+        log.info("Start Saving Storico");
+        SmdImportFromExcel
         .getStoriciFromCampagna2010(
-            campagnarowMap, eaMap, messaggio, lodare, blocchetti, estratti)        
+            rowMap, anagraficaMap, messaggio, lodare, blocchetti, estratti)        
         .stream().forEach(s -> {
             storicoDao.save(s);
             s.getNote().stream().forEach(n -> notaDao.save(n));
-        });*/        
+        });        
+        log.info("End Saving Storico");
 
         //FIXME
         /*

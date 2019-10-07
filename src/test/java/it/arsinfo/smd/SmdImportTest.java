@@ -21,6 +21,7 @@ import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Storico;
 
 @RunWith(SpringRunner.class)
 public class SmdImportTest {
@@ -107,7 +108,7 @@ public class SmdImportTest {
 
  
     @Test 
-    public void testFixAnagrafica() throws Exception {
+    public void testImportAnagraficaAdp() throws Exception {
         Map<String, Anagrafica> eaMap = SmdImportFromExcel.importElencoAbbonati();      
         Map<String,Row> rowMap = SmdImportFromExcel.getCampagna2020();    
         Map<String, Anagrafica> caMap = SmdImportFromExcel.importCampagna2020(rowMap);
@@ -209,77 +210,7 @@ public class SmdImportTest {
         System.out.println("+Omaggi Gesuiti Manifesti: Anagrafica size: " + i);
 
         assertEquals(i, anagraficaMap.size());
-    }
-    
-    private void checkOmaggioBeforeFix(List<Anagrafica> clientiOmaggio) {
-        for (Anagrafica omaggioMessaggio : clientiOmaggio) {
-            assertEquals(Diocesi.DIOCESISTD, omaggioMessaggio.getDiocesi());
-            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
-            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
-            assertNull(omaggioMessaggio.getCellulare());
-            assertNull(omaggioMessaggio.getTelefono());
-            assertNull(omaggioMessaggio.getEmail());
-            assertNull(omaggioMessaggio.getPiva());
-            assertNull(omaggioMessaggio.getCodfis());
-        }           
-    }
-
-    private int checkOmaggio(
-            Map<String,Anagrafica> clientiOmaggioMap,
-            Map<String,Anagrafica> anagraficaMap,
-            Map<String,Anagrafica> archivioClientiMap) throws Exception {
         
-        int i=0;
-        for (String ancodice: clientiOmaggioMap.keySet()) {
-            Anagrafica omaggioMessaggio = clientiOmaggioMap.get(ancodice);
-            assertFalse(Diocesi.DIOCESISTD == omaggioMessaggio.getDiocesi());
-            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
-            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
-            assertNotNull(omaggioMessaggio.getCellulare());
-            assertNotNull(omaggioMessaggio.getTelefono());
-            assertNotNull(omaggioMessaggio.getEmail());
-            assertNotNull(omaggioMessaggio.getPiva());
-            assertNotNull(omaggioMessaggio.getCodfis());
-            if (anagraficaMap.containsKey(ancodice)) {
-                Anagrafica anagElenco = anagraficaMap.get(ancodice);
-                checkAnagrafica(anagElenco, omaggioMessaggio);
-            } else {
-                assertTrue(archivioClientiMap.containsKey(ancodice));
-                Anagrafica anagArchivio = archivioClientiMap.get(ancodice);
-                checkAnagrafica(anagArchivio, omaggioMessaggio);
-                anagraficaMap.put(ancodice, omaggioMessaggio);
-                i++;
-            }
-        }
-        System.out.println("added:  n." +i);
-        return i;
-    }
-
-    private void checkAnagrafica(Anagrafica an1,Anagrafica an2) {
-        //System.out.println(an1.getCodeLineBase());
-        assertEquals(an1.getCodeLineBase(), an2.getCodeLineBase());
-        assertNotNull(an1.getDiocesi());
-        assertEquals(an1.getDenominazione(), an2.getDenominazione());
-        assertEquals(an1.getNome(), an2.getNome());
-        assertEquals(an1.getPaese(), an2.getPaese());
-        assertEquals(an1.getProvincia(), an2.getProvincia());
-        assertEquals(an1.getCitta(), an2.getCitta());
-        assertEquals(an1.getCap(), an2.getCap());            
-        assertEquals(an1.getIndirizzo(), an2.getIndirizzo());
-        assertEquals(an1.getIndirizzoSecondaRiga(), an2.getIndirizzoSecondaRiga());
-        assertEquals(an1.getAreaSpedizione(), an2.getAreaSpedizione());
-        assertEquals(an1.getDiocesi(), an2.getDiocesi());
-        assertEquals(an1.getTitolo(), an2.getTitolo());        
-        assertEquals(an1.getCellulare(), an2.getCellulare());        
-        assertEquals(an1.getCodfis(), an2.getCodfis());        
-        assertEquals(an1.getEmail(), an2.getEmail());        
-        assertEquals(an1.getPiva(), an2.getPiva());        
-        assertEquals(an1.getTelefono(), an2.getTelefono());        
-    }
-    
-    @Test
-    public void checkImportiCampagna2020() throws Exception {
-        Map<String,Row> rowMap = SmdImportFromExcel.getCampagna2020();    
         Pubblicazione messaggio = SmdLoadSampleData.getMessaggio();
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         Pubblicazione blocchetti = SmdLoadSampleData.getBlocchetti();
@@ -362,9 +293,76 @@ public class SmdImportTest {
         System.out.println("----Totale Blocchetti----");
         System.out.println(bitems);
         System.out.println("----Totale Manifesti----");
-        System.out.println(eitems);
-        
+        System.out.println(eitems);        
 
+        List<Storico> storici = SmdImportFromExcel.getStoriciFromCampagna2010(rowMap, anagraficaMap, messaggio, lodare, blocchetti, estratti);
+        assertEquals(items, storici.size());
+        
     }
     
+    private void checkOmaggioBeforeFix(List<Anagrafica> clientiOmaggio) {
+        for (Anagrafica omaggioMessaggio : clientiOmaggio) {
+            assertEquals(Diocesi.DIOCESISTD, omaggioMessaggio.getDiocesi());
+            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
+            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
+            assertNull(omaggioMessaggio.getCellulare());
+            assertNull(omaggioMessaggio.getTelefono());
+            assertNull(omaggioMessaggio.getEmail());
+            assertNull(omaggioMessaggio.getPiva());
+            assertNull(omaggioMessaggio.getCodfis());
+        }           
+    }
+
+    private int checkOmaggio(
+            Map<String,Anagrafica> clientiOmaggioMap,
+            Map<String,Anagrafica> anagraficaMap,
+            Map<String,Anagrafica> archivioClientiMap) throws Exception {
+        
+        int i=0;
+        for (String ancodice: clientiOmaggioMap.keySet()) {
+            Anagrafica omaggioMessaggio = clientiOmaggioMap.get(ancodice);
+            assertFalse(Diocesi.DIOCESISTD == omaggioMessaggio.getDiocesi());
+            assertEquals(AreaSpedizione.Italia, omaggioMessaggio.getAreaSpedizione());
+            assertFalse(TitoloAnagrafica.Nessuno ==  omaggioMessaggio.getTitolo());
+            assertNotNull(omaggioMessaggio.getCellulare());
+            assertNotNull(omaggioMessaggio.getTelefono());
+            assertNotNull(omaggioMessaggio.getEmail());
+            assertNotNull(omaggioMessaggio.getPiva());
+            assertNotNull(omaggioMessaggio.getCodfis());
+            if (anagraficaMap.containsKey(ancodice)) {
+                Anagrafica anagElenco = anagraficaMap.get(ancodice);
+                checkAnagrafica(anagElenco, omaggioMessaggio);
+            } else {
+                assertTrue(archivioClientiMap.containsKey(ancodice));
+                Anagrafica anagArchivio = archivioClientiMap.get(ancodice);
+                checkAnagrafica(anagArchivio, omaggioMessaggio);
+                anagraficaMap.put(ancodice, omaggioMessaggio);
+                i++;
+            }
+        }
+        System.out.println("added:  n." +i);
+        return i;
+    }
+
+    private void checkAnagrafica(Anagrafica an1,Anagrafica an2) {
+        //System.out.println(an1.getCodeLineBase());
+        assertEquals(an1.getCodeLineBase(), an2.getCodeLineBase());
+        assertNotNull(an1.getDiocesi());
+        assertEquals(an1.getDenominazione(), an2.getDenominazione());
+        assertEquals(an1.getNome(), an2.getNome());
+        assertEquals(an1.getPaese(), an2.getPaese());
+        assertEquals(an1.getProvincia(), an2.getProvincia());
+        assertEquals(an1.getCitta(), an2.getCitta());
+        assertEquals(an1.getCap(), an2.getCap());            
+        assertEquals(an1.getIndirizzo(), an2.getIndirizzo());
+        assertEquals(an1.getIndirizzoSecondaRiga(), an2.getIndirizzoSecondaRiga());
+        assertEquals(an1.getAreaSpedizione(), an2.getAreaSpedizione());
+        assertEquals(an1.getDiocesi(), an2.getDiocesi());
+        assertEquals(an1.getTitolo(), an2.getTitolo());        
+        assertEquals(an1.getCellulare(), an2.getCellulare());        
+        assertEquals(an1.getCodfis(), an2.getCodfis());        
+        assertEquals(an1.getEmail(), an2.getEmail());        
+        assertEquals(an1.getPiva(), an2.getPiva());        
+        assertEquals(an1.getTelefono(), an2.getTelefono());        
+    }    
 }
