@@ -21,12 +21,18 @@ import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Invio;
+import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Storico;
 
 public class SmdImportFromExcel {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
@@ -44,6 +50,41 @@ public class SmdImportFromExcel {
     public static final String ELENCO_OMAGGIO_LODARE = "data/ELENCOOMAGGIOLODARE2020.xls";
     public static final String ELENCO_OMAGGIO_GESUITI_MANIFESTI = "data/ELENCOOMAGGIOGESUITIMANIFESTI2020.xls";
 
+    public static List<Storico> 
+        getStoriciFromCampagna2010(
+                Map<String,Row> campagnarowMap,Map<String,Anagrafica> eaMap,
+                Pubblicazione messaggio,Pubblicazione lodare,Pubblicazione blocchetti, Pubblicazione estratti ) {
+        final List<Storico> storici = new ArrayList<>();
+
+        campagnarowMap.keySet().forEach(cod ->
+        {
+            Row row = campagnarowMap.get(cod);
+            Anagrafica a = eaMap.get(cod);
+            Integer num = processRowCampagnaMessaggioNum(row);
+            if ( num > 0) {
+                storici.add(SmdLoadSampleData.getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+            num = processRowCampagnaLodareNum(row);
+            if ( num > 0) {
+                storici.add(SmdLoadSampleData.getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+            num = processRowCampagnaBlocchettiNum(row);
+            BigDecimal costo = processRowCampagnaBlocchettiCosto(row);
+            if ( num > 0) {
+                if ( costo.doubleValue() != blocchetti.getAbbonamento().multiply(new BigDecimal(num)).doubleValue()) {
+                    storici.add(SmdLoadSampleData.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Scontato, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                } else {
+                    storici.add(SmdLoadSampleData.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                }
+            }
+            num = processRowCampagnaManifestiNum(row);
+            if ( num > 0) {
+                storici.add(SmdLoadSampleData.getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+            }
+        });                
+        return storici;
+    }
+    
     public static Integer getRowInteger(String value) {
         value = value.trim();
         try {
@@ -54,7 +95,7 @@ public class SmdImportFromExcel {
         
     }
     
-    public BigDecimal getRowBigDecimal(String value) {
+    public static BigDecimal getRowBigDecimal(String value) {
         value = value.trim().replace(",", ".");
         if (StringUtils.isEmpty(value)) {
             return BigDecimal.ZERO;
@@ -127,9 +168,9 @@ public class SmdImportFromExcel {
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,
                                                      a);
         if (!Abbonamento.checkCodeLine(codeLine)) {
-            log.warn("----- codeLine invalid ------");
-            log.warn("ANCODICE: " + pncodcon);
-            log.warn("------------------------------");
+            log.debug("----- codeLine invalid ------");
+            log.debug("ANCODICE: " + pncodcon);
+            log.debug("------------------------------");
             throw new UnsupportedOperationException();
         }
         return a;
@@ -139,9 +180,9 @@ public class SmdImportFromExcel {
             String anlocali,String annazion) {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));        
         if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
-            log.warn("-----Anagrafica Titolo error------");
-            log.warn(a.getCodeLineBase());
-            log.warn("------------------------------");
+            log.debug("-----Anagrafica Titolo error------");
+            log.debug(a.getCodeLineBase());
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -152,13 +193,13 @@ public class SmdImportFromExcel {
         a.setDiocesi(Diocesi.DIOCESI000);
         a.setPaese(Paese.getBySigla(annazion));
         if (a.getPaese() == Paese.ND) {
-            log.warn("-----Paese non Definito------");
-            log.warn(ancodice);
-            log.warn(andescri);
-            log.warn(anindiri);
-            log.warn(anlocali);
-            log.warn(annazion);
-            log.warn("------------------------------");
+            log.debug("-----Paese non Definito------");
+            log.debug(ancodice);
+            log.debug(andescri);
+            log.debug(anindiri);
+            log.debug(anlocali);
+            log.debug(annazion);
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -172,12 +213,12 @@ public class SmdImportFromExcel {
         a.setTitolo(TitoloAnagrafica.getByIntestazione(destitolo));        
         
         if (a.getTitolo() == TitoloAnagrafica.Nessuno) {
-            log.warn("-----Anagrafica Titolo error------");
-            log.warn(a.getCodeLineBase());
-            log.warn(a.getCitta());
-            log.warn(a.getCap());
-            log.warn(a.getProvincia().getNome());
-            log.warn("------------------------------");
+            log.debug("-----Anagrafica Titolo error------");
+            log.debug(a.getCodeLineBase());
+            log.debug(a.getCitta());
+            log.debug(a.getCap());
+            log.debug(a.getProvincia().getNome());
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -192,12 +233,12 @@ public class SmdImportFromExcel {
         try {
             Integer.getInteger(a.getCap());
         } catch (Exception e) {
-            log.warn("-----Anagrafica CAP error------");
-            log.warn(a.getCodeLineBase());
-            log.warn(a.getCitta());
-            log.warn(a.getCap());
-            log.warn(a.getProvincia().getNome());
-            log.warn("------------------------------");
+            log.debug("-----Anagrafica CAP error------");
+            log.debug(a.getCodeLineBase());
+            log.debug(a.getCitta());
+            log.debug(a.getCap());
+            log.debug(a.getProvincia().getNome());
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -351,12 +392,12 @@ public class SmdImportFromExcel {
                 log.debug("------------------------------");
                                 
             } else {
-                log.warn("-----Anagrafica Provincia error------");
-                log.warn(a.getCodeLineBase());
-                log.warn(a.getCitta());
-                log.warn(a.getCap());
-                log.warn(a.getProvincia().getNome());
-                log.warn("------------------------------");
+                log.debug("-----Anagrafica Provincia error------");
+                log.debug(a.getCodeLineBase());
+                log.debug(a.getCitta());
+                log.debug(a.getCap());
+                log.debug(a.getProvincia().getNome());
+                log.debug("------------------------------");
                 
                 throw new UnsupportedOperationException();
             }
@@ -364,43 +405,43 @@ public class SmdImportFromExcel {
 
     }
     
-    public Integer processRowCampagnaMessaggioNum(Row row) {
+    public static Integer processRowCampagnaMessaggioNum(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(8)));
     }    
-    public BigDecimal processRowCampagnaMessaggioCosto(Row row) {
+    public static BigDecimal processRowCampagnaMessaggioCosto(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(9)));
     }
     
-    public Integer processRowCampagnaBlocchettiNum(Row row) {
+    public static Integer processRowCampagnaBlocchettiNum(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(10)));
     }
     
-    public BigDecimal processRowCampagnaBlocchettiCosto(Row row) {
+    public static BigDecimal processRowCampagnaBlocchettiCosto(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
     }
-    public Integer processRowCampagnaManifestiNum(Row row) {
+    public static  Integer processRowCampagnaManifestiNum(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(12)));
     }
-    public BigDecimal processRowCampagnaManifestiCosto(Row row) {
+    public static BigDecimal processRowCampagnaManifestiCosto(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(13)));
     }        
-    public Integer processRowCampagnaLodareNum(Row row) {
+    public static Integer processRowCampagnaLodareNum(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(14)));
     }
 
-    public BigDecimal processRowCampagnaLodareCosto(Row row) {
+    public static BigDecimal processRowCampagnaLodareCosto(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(15)));
     }
 
-    public BigDecimal processRowCampagnaTotaleCosto(Row row) throws UnsupportedOperationException {
+    public static BigDecimal processRowCampagnaTotaleCosto(Row row) throws UnsupportedOperationException {
         DataFormatter dataFormatter = new DataFormatter();
         BigDecimal totimp = getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(16)));
         BigDecimal totabb = getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(22)));
@@ -411,7 +452,7 @@ public class SmdImportFromExcel {
         return totimp;
     }
 
-    public String processRowCampagnaCodeline(Row row,String pncodcon) throws UnsupportedOperationException {
+    public static String processRowCampagnaCodeline(Row row,String pncodcon) throws UnsupportedOperationException {
         DataFormatter dataFormatter = new DataFormatter();
         String pndessup = dataFormatter.formatCellValue(row.getCell(7));
         if (pncodcon.equals("0000004967")) {
@@ -430,9 +471,9 @@ public class SmdImportFromExcel {
             
         }
         if (!Abbonamento.checkCodeLine(pndessup)) {
-            log.warn("----- codeLine invalid ------");
-            log.warn("ANCODICE: " + pncodcon);
-            log.warn("------------------------------");
+            log.debug("----- codeLine invalid ------");
+            log.debug("ANCODICE: " + pncodcon);
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -458,31 +499,31 @@ public class SmdImportFromExcel {
         
     }
 
-    public List<Row> getOmaggioGesuitiMessaggio2020() throws IOException {
+    public static List<Row> getOmaggioGesuitiMessaggio2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_GESUITI_MESSAGGIO));
     }
 
-    public List<Row> getOmaggioGesuitiBlocchetti2020() throws IOException {
+    public static List<Row> getOmaggioGesuitiBlocchetti2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_GESUITI_BLOCCHETTI));
     }
 
-    public List<Row> getOmaggioGesuitiManifesti2020() throws IOException {
+    public static List<Row> getOmaggioGesuitiManifesti2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_GESUITI_MANIFESTI));
     }
 
-    public List<Row> getOmaggioMessaggio2020() throws IOException {
+    public static List<Row> getOmaggioMessaggio2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_MESSAGGIO));
     }
     
-    public List<Row> getOmaggioBlocchetti2020() throws IOException {
+    public static List<Row> getOmaggioBlocchetti2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_BLOCCHETTI));
     }
 
-    public List<Row> getOmaggioLodare2020() throws IOException {
+    public static List<Row> getOmaggioLodare2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_LODARE));
     }
 
-    public List<Anagrafica> importOmaggio(List<Row> campagnaRows) throws IOException {        
+    public static List<Anagrafica> importOmaggio(List<Row> campagnaRows) throws IOException {        
         DataFormatter dataFormatter = new DataFormatter();
         Set<String> errors = new HashSet<>();
         List<Anagrafica> anagraficaMap = new ArrayList<>();
@@ -502,12 +543,12 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
 
-    public Integer getQuantitaFromOmaggioRow(Row row) {
+    public static Integer getQuantitaFromOmaggioRow(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(0)));
     }
     
-    private Anagrafica processRowOmaggio(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {
+    private static Anagrafica processRowOmaggio(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {
 
         String cap = dataFormatter.formatCellValue(row.getCell(1));
         String nominativo = dataFormatter.formatCellValue(row.getCell(2));
@@ -518,14 +559,14 @@ public class SmdImportFromExcel {
         String provincia = dataFormatter.formatCellValue(row.getCell(7));
         String via_aerea = dataFormatter.formatCellValue(row.getCell(8));
         if (!via_aerea.equals("N")) {
-            log.warn("via_aerea mismatch: {} -> {}" ,nominativo, via_aerea);
+            log.debug("via_aerea mismatch: {} -> {}" ,nominativo, via_aerea);
             throw new UnsupportedOperationException("via_aerea mismatch ->"+ nominativo);
         }
         
         String paese = dataFormatter.formatCellValue(row.getCell(9));
         String abstato = dataFormatter.formatCellValue(row.getCell(10));
         if (!abstato.equals("OM")) {
-            log.warn("abstato mismatch: {} -> {}" , nominativo,abstato);
+            log.debug("abstato mismatch: {} -> {}" , nominativo,abstato);
             throw new UnsupportedOperationException("abstato mismatch ->"+ nominativo);
         }
         Anagrafica anagrafica = getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
@@ -545,7 +586,7 @@ public class SmdImportFromExcel {
 
     }
 
-    public Map<String,Row> getCampagna2020() throws IOException {
+    public static Map<String,Row> getCampagna2020() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
         File ca2020 = new File(CAMPAGNA_2020);
         Workbook wbca2020 = new HSSFWorkbook(new FileInputStream(ca2020));
@@ -560,7 +601,7 @@ public class SmdImportFromExcel {
         return rows;
     }
     
-    public Map<String,Anagrafica> importCampagna2020(Map<String, Row> campagnaRows) throws IOException {        
+    public static Map<String,Anagrafica> importCampagna2020(Map<String, Row> campagnaRows) throws IOException {        
         DataFormatter dataFormatter = new DataFormatter();
         
         Set<String> errors = new HashSet<>();
@@ -580,7 +621,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
      
-    private Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
+    private static Anagrafica processRowCampagna(Row row, String pncodcon, DataFormatter dataFormatter) throws UnsupportedOperationException {
 
         String destitolo = dataFormatter.formatCellValue(row.getCell(1));
         String andescri = dataFormatter.formatCellValue(row.getCell(2));
@@ -594,7 +635,7 @@ public class SmdImportFromExcel {
                 
         String scopro =        dataFormatter.formatCellValue(row.getCell(17));
         if (!scopro.equals("")) {
-            log.warn("scopro mismatch: " + pncodcon);
+            log.debug("scopro mismatch: " + pncodcon);
             throw new UnsupportedOperationException();
         }
         
@@ -602,7 +643,7 @@ public class SmdImportFromExcel {
 
     }
     
-    public Map<String,Anagrafica> importArchivioClienti() throws IOException {
+    public static Map<String,Anagrafica> importArchivioClienti() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ARCHIVIO_CLIENTI);
@@ -632,7 +673,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
 
-    public Map<String,Anagrafica> importElencoAbbonati() throws IOException {
+    public static Map<String,Anagrafica> importElencoAbbonati() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ELENCO_ABBONATI);
@@ -662,7 +703,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
     
-    public List<Row> getBeneficiari() throws IOException {
+    public static List<Row> getBeneficiari() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ELENCO_BENEFICIARI_2020);
@@ -679,17 +720,17 @@ public class SmdImportFromExcel {
         return rows;
     }
     
-    public BigDecimal getPrezzoFromRowBeneficiari(Row row) {
+    public static BigDecimal getPrezzoFromRowBeneficiari(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
     }
 
-    public Integer getQuantitaFromRowBeneficiari(Row row) {
+    public static Integer getQuantitaFromRowBeneficiari(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(14)));
     }
 
-    public Map<String,Anagrafica> importBeneficiari(List<Row> rows) throws IOException {
+    public static Map<String,Anagrafica> importBeneficiari(List<Row> rows) throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         Set<String> errors = new HashSet<>();
@@ -750,7 +791,7 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
 
-    public List<Row> getAbbonatiItaEstero() throws IOException{
+    public static List<Row> getAbbonatiItaEstero() throws IOException{
         DataFormatter dataFormatter = new DataFormatter();
 
         File ac = new File(ELENCO_ABBONATI_ITA_ESTERO);
@@ -771,7 +812,7 @@ public class SmdImportFromExcel {
     }
 
     //FIXME
-    public Map<String,Anagrafica> importAbbonatiItaEstero(List<Row> rows) throws IOException {
+    public static Map<String,Anagrafica> importAbbonatiItaEstero(List<Row> rows) throws IOException {
  
         DataFormatter dataFormatter = new DataFormatter();
         Set<String> errors = new HashSet<>();
@@ -811,7 +852,7 @@ public class SmdImportFromExcel {
         
         return anagraficaMap;
     }
-    public Map<String,Row> getAbbonatiEstero() throws IOException {
+    public static Map<String,Row> getAbbonatiEstero() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
         File ac = new File(ELENCO_ABBONATI_ESTERO);
         Workbook wbac = new HSSFWorkbook(new FileInputStream(ac));
@@ -827,7 +868,7 @@ public class SmdImportFromExcel {
         return rowMap;
     }
     
-    public Map<String,Anagrafica> importAbbonatiEstero(Map<String,Row> rowMap) throws IOException {
+    public static Map<String,Anagrafica> importAbbonatiEstero(Map<String,Row> rowMap) throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
 
         Set<String> errors = new HashSet<>();
@@ -851,7 +892,7 @@ public class SmdImportFromExcel {
     }
     
     //FIXME
-    public Anagrafica processRowAbbonatiEstero(Row row, String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
+    public static Anagrafica processRowAbbonatiEstero(Row row, String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
         
         String andescri = dataFormatter.formatCellValue(row.getCell(1));
         String andescr2 = dataFormatter.formatCellValue(row.getCell(2));
@@ -886,7 +927,7 @@ public class SmdImportFromExcel {
         return anagrafica;        
     }
 
-    public Anagrafica processRowAnagrafica(Row row, String picoddio,String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
+    public static Anagrafica processRowAnagrafica(Row row, String picoddio,String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
                     
         String andescri = dataFormatter.formatCellValue(row.getCell(2));
         String andescr2 = dataFormatter.formatCellValue(row.getCell(3));
@@ -931,30 +972,30 @@ public class SmdImportFromExcel {
         }
 
         if (anagrafica.getPaese() == Paese.ND) {
-            log.warn("-----Paese non Definito------");
-            log.warn(ancodice);
-            log.warn(andescri);
-            log.warn(anindiri);
-            log.warn(anlocali);
-            log.warn(anprovin);
-            log.warn(annazion);
-            log.warn(picoddio);
-            log.warn("------------------------------");
+            log.debug("-----Paese non Definito------");
+            log.debug(ancodice);
+            log.debug(andescri);
+            log.debug(anindiri);
+            log.debug(anlocali);
+            log.debug(anprovin);
+            log.debug(annazion);
+            log.debug(picoddio);
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
         
         if (annazion.equals("ITA") && anagrafica.getDiocesi() == Diocesi.DIOCESI000) {
-            log.warn("-----Nazione ITA Errata ------");
-            log.warn("ANCODICE: " + ancodice);
-            log.warn("ANDESCRI: " + andescri);
-            log.warn("ANINDIRI: " + anindiri);
-            log.warn("ANLOCALI: " + anlocali);
-            log.warn("ANPROVIN: " + anprovin);
-            log.warn("ANNAZION: " + annazion);
-            log.warn("Diocesi: "
+            log.debug("-----Nazione ITA Errata ------");
+            log.debug("ANCODICE: " + ancodice);
+            log.debug("ANDESCRI: " + andescri);
+            log.debug("ANINDIRI: " + anindiri);
+            log.debug("ANLOCALI: " + anlocali);
+            log.debug("ANPROVIN: " + anprovin);
+            log.debug("ANNAZION: " + annazion);
+            log.debug("Diocesi: "
                     + anagrafica.getDiocesi().getDetails());
-            log.warn("------------------------------");
+            log.debug("------------------------------");
             
             throw new UnsupportedOperationException();
         }
@@ -1052,15 +1093,15 @@ public class SmdImportFromExcel {
                 log.debug("------------------------------");
                 
             } else {
-                log.warn("-----Diocesi non Definita------");
-                log.warn("ANCODICE: " + ancodice);
-                log.warn("ANDESCRI: " + andescri);
-                log.warn("ANINDIRI: " + anindiri);
-                log.warn("ANLOCALI: " + anlocali);
-                log.warn("ANPROVIN: " + anprovin);
-                log.warn("ANNAZION: " + annazion);
-                log.warn("PICODDIO: " + picoddio);
-                log.warn("------------------------------");
+                log.debug("-----Diocesi non Definita------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("ANPROVIN: " + anprovin);
+                log.debug("ANNAZION: " + annazion);
+                log.debug("PICODDIO: " + picoddio);
+                log.debug("------------------------------");
                 
                 return false;
             }
@@ -1162,16 +1203,16 @@ public class SmdImportFromExcel {
                 log.debug("------------------------------");
                 
             } else {
-                log.warn("-----Provincia non Definita------");
-                log.warn("ANCODICE: " + ancodice);
-                log.warn("ANDESCRI: " + andescri);
-                log.warn("ANINDIRI: " + anindiri);
-                log.warn("ANLOCALI: " + anlocali);
-                log.warn("ANPROVIN: " + anprovin);
-                log.warn("ANNAZION: " + annazion);
-                log.warn("Diocesi: "
+                log.debug("-----Provincia non Definita------");
+                log.debug("ANCODICE: " + ancodice);
+                log.debug("ANDESCRI: " + andescri);
+                log.debug("ANINDIRI: " + anindiri);
+                log.debug("ANLOCALI: " + anlocali);
+                log.debug("ANPROVIN: " + anprovin);
+                log.debug("ANNAZION: " + annazion);
+                log.debug("Diocesi: "
                         + anagrafica.getDiocesi().getDetails());
-                log.warn("------------------------------");
+                log.debug("------------------------------");
                 
                 return false;
             }
@@ -1179,10 +1220,19 @@ public class SmdImportFromExcel {
         return true;
    
     }
-    public void fixAbbonatiEstero(Map<String, Anagrafica> acMap, Map<String, Anagrafica> aeMap) {
-        for (String ancodice : aeMap.keySet()) {
-            Anagrafica ae = aeMap.get(ancodice);
-            Anagrafica ac = acMap.get(ancodice);
+    public static void fixAbbonatiEstero(Map<String, Anagrafica> elencoAbbonatiMap, Map<String, Anagrafica> abbonatiEsteroMap) throws UnsupportedOperationException {
+        for (String ancodice : abbonatiEsteroMap.keySet()) {
+            Anagrafica ae = abbonatiEsteroMap.get(ancodice);
+            if (ae  == null ) {
+                throw new UnsupportedOperationException("Anagrafica Abbonati Estero is null per ancodice: "+ancodice);
+            }
+            if (!elencoAbbonatiMap.containsKey(ancodice)){
+                throw new UnsupportedOperationException("Elenco Abbonati non contiene ancodice: "+ancodice);
+            }
+            Anagrafica ac = elencoAbbonatiMap.get(ancodice);
+            if (ac == null) {
+                throw new UnsupportedOperationException("Anagrafica Elenco Abbonati is null per ancodice: "+ancodice);
+            }
             ae.setDiocesi(ac.getDiocesi());
             ae.setCodfis(ac.getCodfis());
             ae.setPiva(ac.getPiva());
@@ -1195,19 +1245,20 @@ public class SmdImportFromExcel {
         
     }
 
-    public void fixBeneficiari(Map<String, Anagrafica> acMap, Map<String, Anagrafica> eaMap,Map<String, Anagrafica> abMap) {
-        for (String ancodice: abMap.keySet()) {
-            if (eaMap.containsKey(ancodice)) {
-                abMap.put(ancodice, eaMap.get(ancodice));
-            } else if (acMap.containsKey(ancodice)) {
-                abMap.put(ancodice, acMap.get(ancodice));
+    public static void fixBeneficiari(Map<String, Anagrafica> archivioClientiMap, 
+            Map<String, Anagrafica> elencoAbbonatiMap,Map<String, Anagrafica> beneficiariMap) throws UnsupportedOperationException{
+        for (String ancodice: beneficiariMap.keySet()) {
+            if (elencoAbbonatiMap.containsKey(ancodice)) {
+                beneficiariMap.put(ancodice, elencoAbbonatiMap.get(ancodice));
+            } else if (archivioClientiMap.containsKey(ancodice)) {
+                beneficiariMap.put(ancodice, archivioClientiMap.get(ancodice));
             } else {
-                log.warn(ancodice);
+                throw new UnsupportedOperationException("Beneficiario non trovato");
             }
         }
     }
 
-    public Map<String,Anagrafica> fixOmaggio(
+    public static Map<String,Anagrafica> fixOmaggio(
             Map<String,Anagrafica> elencoAbbonatiMap, 
             Map<String,Anagrafica> archivioClientiMap,
             List<Anagrafica> clientiOmaggio) {
@@ -1217,7 +1268,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
             for (String  ancodice: elencoAbbonatiMap.keySet()) {
                 Anagrafica anagElenco = elencoAbbonatiMap.get(ancodice);
                 if (
-                        anagElenco.getDenominazione().equals(utenteOmaggio.getDenominazione())
+                        utenteOmaggio.getDenominazione().equals(anagElenco.getDenominazione())
                         && anagElenco.getProvincia() == utenteOmaggio.getProvincia()                        
                     ) {
                     if (anagElenco.getTitolo() == TitoloAnagrafica.Nessuno) {
@@ -1231,14 +1282,14 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
                     utenteOmaggio.setCodfis(anagElenco.getCodfis());
                     utenteOmaggio.setPiva(anagElenco.getPiva());
                     clientiOmaggioMap.put(ancodice, utenteOmaggio);
-                    log.info("Elenco: {}->{}", ancodice,anagElenco.getDenominazione());
+                    log.debug("Elenco: {}->{}", ancodice,anagElenco.getDenominazione());
                     continue UP;
                 }
             }
             for (String ancodice : archivioClientiMap.keySet()) {
                 Anagrafica anagArchivio = archivioClientiMap.get(ancodice);
                 if (
-                        anagArchivio.getDenominazione().equals(utenteOmaggio.getDenominazione())
+                        utenteOmaggio.getDenominazione().equals(anagArchivio.getDenominazione())
                         && anagArchivio.getProvincia() == utenteOmaggio.getProvincia()
                         ) {
                     utenteOmaggio.setCodeLineBase(anagArchivio.getCodeLineBase());
@@ -1249,7 +1300,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
                             utenteOmaggio.getCodeLineBase().equals("00000000005133") 
                          || utenteOmaggio.getCodeLineBase().equals("00000000004447")) {
                         anagArchivio.setIndirizzo(utenteOmaggio.getIndirizzo());
-                        log.info("{}---> Updated Anagrafica", ancodice);
+                        log.debug("{}---> Updated Anagrafica", ancodice);
                     } else if (
                             utenteOmaggio.getCodeLineBase().equals("00000000021809") 
                         ) {
@@ -1257,7 +1308,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
                         utenteOmaggio.setTitolo(TitoloAnagrafica.VescovoAusiliare);
                         anagArchivio.setTitolo(TitoloAnagrafica.VescovoAusiliare);
                         anagArchivio.setIndirizzo(utenteOmaggio.getIndirizzo());
-                        log.info("{}---> Updated Anagrafica", ancodice);
+                        log.debug("{}---> Updated Anagrafica", ancodice);
                     }
                     
                     utenteOmaggio.setDiocesi(anagArchivio.getDiocesi());
@@ -1267,7 +1318,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
                     utenteOmaggio.setCodfis(anagArchivio.getCodfis());
                     utenteOmaggio.setPiva(anagArchivio.getPiva());
                     clientiOmaggioMap.put(ancodice,utenteOmaggio);
-                    log.info("Archivio: {}->{}", ancodice,anagArchivio.getDenominazione());
+                    log.debug("Archivio: {}->{}", ancodice,anagArchivio.getDenominazione());
                     break;
                 }
             }
@@ -1276,12 +1327,21 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
         
     }
 
-    public void fixElencoAbbonatiCampagna(Map<String, Anagrafica> acMap, Map<String, Anagrafica> caMap) {
+    public static void fixElencoAbbonatiCampagna(Map<String, Anagrafica> elencoAbbonatiMap, Map<String, Anagrafica> abbonatiCa2020Map) throws UnsupportedOperationException {
         int i=0;
-        for (String ancodice : caMap.keySet()) {
+        for (String ancodice : abbonatiCa2020Map.keySet()) {
             i++;
-            Anagrafica ca = caMap.get(ancodice);
-            Anagrafica ac = acMap.get(ancodice);
+            Anagrafica ca = abbonatiCa2020Map.get(ancodice);
+            if (ca == null) {
+                throw new UnsupportedOperationException("null Anagrafica for campagna 2020 ancodice: "+ancodice);
+            }
+            if (!elencoAbbonatiMap.containsKey(ancodice)) {
+                throw new UnsupportedOperationException("Elenco Abbonati non contiene ancodice: "+ancodice);                
+            }
+            Anagrafica ac = elencoAbbonatiMap.get(ancodice);
+            if (ac == null) {
+                throw new UnsupportedOperationException("null Anagrafica for elenco abbonati ancodice: "+ancodice);
+            }
             
             ca.setDiocesi(ac.getDiocesi());
             ca.setCodfis(ac.getCodfis());

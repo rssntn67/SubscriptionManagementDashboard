@@ -3,11 +3,11 @@ package it.arsinfo.smd;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -36,8 +36,6 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -1122,139 +1120,103 @@ public class SmdLoadSampleData implements Runnable {
     }
     
     private void loadAnagraficaAdp() throws Exception {
-        SmdImportFromExcel smdImportFromExcel = new SmdImportFromExcel();
-        Map<String, Anagrafica> acMap = smdImportFromExcel.importArchivioClienti();
-        Map<String, Anagrafica> eaMap = smdImportFromExcel.importElencoAbbonati();      
+        Map<String, Anagrafica> eaMap = SmdImportFromExcel.importElencoAbbonati();      
+        Map<String,Row> rowMap = SmdImportFromExcel.getCampagna2020();    
+        Map<String, Anagrafica> caMap = SmdImportFromExcel.importCampagna2020(rowMap);
+        SmdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
+        Map<String,Anagrafica>  anagraficaMap = new HashMap<String, Anagrafica>();
+        for (String key: eaMap.keySet()) {
+            anagraficaMap.put(key, eaMap.get(key));
+        }
 
-        Map<String,Row> campagnarowMap = smdImportFromExcel.getCampagna2020();    
-        List<Row> benefrows = smdImportFromExcel.getBeneficiari();    
-        List<Row> itaesterows = smdImportFromExcel.getAbbonatiItaEstero();    
-        Map<String,Row> esteroMap = smdImportFromExcel.getAbbonatiEstero();    
-       
-        Map<String, Anagrafica> caMap = smdImportFromExcel.importCampagna2020(campagnarowMap);
-        Map<String, Anagrafica> aeMap = smdImportFromExcel.importAbbonatiEstero(esteroMap);
-        Map<String, Anagrafica> abMap = smdImportFromExcel.importBeneficiari(benefrows);
-        Map<String, Anagrafica> ieMap = smdImportFromExcel.importAbbonatiItaEstero(itaesterows);
-        smdImportFromExcel.fixElencoAbbonatiCampagna(eaMap, caMap);
-        smdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
-        smdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
-        smdImportFromExcel.fixBeneficiari(acMap, eaMap, ieMap);
+        // Abbonamenti Estero
+        Map<String, Anagrafica> aeMap =SmdImportFromExcel.importAbbonatiEstero(SmdImportFromExcel.getAbbonatiEstero());
+        SmdImportFromExcel.fixAbbonatiEstero(eaMap, aeMap);
+        
+        //Beneficiari Ita Estero
+        Map<String, Anagrafica> acMap = SmdImportFromExcel.importArchivioClienti();
+        Map<String, Anagrafica> aiMap = SmdImportFromExcel.importAbbonatiItaEstero(SmdImportFromExcel.getAbbonatiItaEstero());
+        SmdImportFromExcel.fixBeneficiari(acMap, eaMap, aiMap);
+        for (String ancodice : aiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, aiMap.get(ancodice));
+            }
+        }
+
+        //Beneficiari
+        Map<String, Anagrafica> abMap = SmdImportFromExcel.importBeneficiari(SmdImportFromExcel.getBeneficiari());
+        SmdImportFromExcel.fixBeneficiari(acMap, eaMap, abMap);
+        for (String ancodice : abMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, abMap.get(ancodice));
+            }
+        }
 
         //Omaggi Gesuiti Messaggi
-        List<Anagrafica> omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiMessaggio2020());
-        Map<String,Anagrafica> ogmMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        List<Anagrafica> omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioGesuitiMessaggio2020());
+        Map<String,Anagrafica> omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
+            }
+        }
         
-        //Omaggi Messaggi
-        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioMessaggio2020());
-        Map<String,Anagrafica> omMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioMessaggio2020());
+        omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
+            }
+        }
         
         //Omaggi Blocchetti
-        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioBlocchetti2020());
-        Map<String,Anagrafica> obMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
-        
+        omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioBlocchetti2020());
+        omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
+            }
+        }
+
         //Omaggi Gesuiti Blocchetti
-        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiBlocchetti2020());
-        Map<String,Anagrafica> ogbMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioGesuitiBlocchetti2020());
+        omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
+            }
+        }
 
         //Omaggi Lodare
-        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioLodare2020());
-        Map<String,Anagrafica> olMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
+        omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioLodare2020());
+        omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
+            }
+        }
 
         //Omaggi Gesuiti Manifesti
-        omaggi = smdImportFromExcel.importOmaggio(smdImportFromExcel.getOmaggioGesuitiManifesti2020());
-        Map<String,Anagrafica> ogeMap =smdImportFromExcel.fixOmaggio(eaMap, acMap, omaggi);
-                
-        for (String codebase: aeMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
+        omaggi = SmdImportFromExcel.importOmaggio(SmdImportFromExcel.getOmaggioGesuitiManifesti2020());
+        omaggiMap  =SmdImportFromExcel.fixOmaggio(anagraficaMap, acMap, omaggi);
+        for (String ancodice : omaggiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omaggiMap.get(ancodice));
             }
-            eaMap.put(codebase, aeMap.get(codebase));
         }
-        for (String codebase: abMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, abMap.get(codebase));
-        }
-        for (String codebase: ieMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, ieMap.get(codebase));
-        }
-        for (String codebase: ogmMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, ogmMap.get(codebase));
-        }
-        for (String codebase: omMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, omMap.get(codebase));
-        }
-        for (String codebase: ogbMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, ogbMap.get(codebase));
-        }
-        for (String codebase: obMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, obMap.get(codebase));
-        }
-        for (String codebase: olMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, olMap.get(codebase));
-        }
-        for (String codebase: ogeMap.keySet()) {
-            if (eaMap.containsKey(codebase)) {
-                continue;
-            }
-            eaMap.put(codebase, ogeMap.get(codebase));
-        }
-        eaMap.values().forEach(a -> anagraficaDao.save(a));
+        anagraficaMap.values().forEach(a -> anagraficaDao.save(a));
         
         //  FIXME
-        final List<Storico> storici = new ArrayList<>();
-
-        campagnarowMap.keySet().forEach(cod ->
-        {
-            Row row = campagnarowMap.get(cod);
-            Anagrafica a = eaMap.get(cod);
-            Integer num = smdImportFromExcel.processRowCampagnaMessaggioNum(row);
-            if ( num > 0) {
-                storici.add(getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-            }
-            num = smdImportFromExcel.processRowCampagnaLodareNum(row);
-            if ( num > 0) {
-                storici.add(getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-            }
-            num = smdImportFromExcel.processRowCampagnaBlocchettiNum(row);
-            BigDecimal costo = smdImportFromExcel.processRowCampagnaBlocchettiCosto(row);
-            if ( num > 0) {
-                if ( costo.doubleValue() != blocchetti.getAbbonamento().multiply(new BigDecimal(num)).doubleValue()) {
-                    storici.add(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Scontato, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                } else {
-                    storici.add(getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-                }
-            }
-            num = smdImportFromExcel.processRowCampagnaManifestiNum(row);
-            if ( num > 0) {
-                storici.add(getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
-            }
-        });                
-        
-        storici.stream().forEach(s -> {
+        /*SmdImportFromExcel
+        .getStoriciFromCampagna2010(
+            campagnarowMap, eaMap, messaggio, lodare, blocchetti, estratti)        
+        .stream().forEach(s -> {
             storicoDao.save(s);
             s.getNote().stream().forEach(n -> notaDao.save(n));
-        });        
+        });*/        
 
+        //FIXME
+        /*
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.ANNO2020);
         List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
@@ -1271,14 +1233,14 @@ public class SmdLoadSampleData implements Runnable {
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
         campagnarowMap.keySet().forEach(cod ->
         {
-            final String codeline = smdImportFromExcel.processRowCampagnaCodeline(campagnarowMap.get(cod), cod);
+            final String codeline = SmdImportFromExcel.processRowCampagnaCodeline(campagnarowMap.get(cod), cod);
             Anagrafica a = eaMap.get(cod);
             abbonamenti.stream().filter(abb -> abb.getIntestatario().getId().longValue() == a.getId().longValue() ).forEach(abb -> {
                 abb.setCodeLine(codeline);
                 abbonamentoDao.save(abb);
             });
             
-        });        
+        }); */       
     }
     private void loadAnagrafica() {
         
