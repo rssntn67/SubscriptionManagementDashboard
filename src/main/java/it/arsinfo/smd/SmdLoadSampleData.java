@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
@@ -36,6 +37,8 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
@@ -244,6 +247,12 @@ public class SmdLoadSampleData implements Runnable {
         ss9.setArea(AreaSpedizione.Italia);
         ss9.setSpese(new BigDecimal("10.00"));
         sss.add(ss9);
+
+        SpesaSpedizione ss9bis = new SpesaSpedizione();
+        ss9bis.setRange(RangeSpeseSpedizione.Extra);
+        ss9bis.setArea(AreaSpedizione.Italia);
+        ss9bis.setSpese(new BigDecimal("20.00"));
+        sss.add(ss9bis);
 
 
         SpesaSpedizione ss10 = new SpesaSpedizione();
@@ -1220,12 +1229,11 @@ public class SmdLoadSampleData implements Runnable {
         });        
         log.info("End Saving Storico");
 
-        //FIXME
-        /*
+        log.info("Start Generating Campagna");
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.ANNO2020);
         List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
-                                                                                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
+                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
         
         for (Pubblicazione pubb: attivi) {
             CampagnaItem ci = new CampagnaItem();
@@ -1234,18 +1242,22 @@ public class SmdLoadSampleData implements Runnable {
             campagna.addCampagnaItem(ci);
         }
         smdService.generaCampagnaAbbonamenti(campagna, attivi);
+        log.info("End Generating Campagna");
 
+        log.info("Start Fix codeline");
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
-        campagnarowMap.keySet().forEach(cod ->
+        rowMap.keySet().forEach(cod ->
         {
-            final String codeline = SmdImportFromExcel.processRowCampagnaCodeline(campagnarowMap.get(cod), cod);
+            final String codeline = SmdImportFromExcel.processRowCampagnaCodeline(rowMap.get(cod), cod);
             Anagrafica a = eaMap.get(cod);
             abbonamenti.stream().filter(abb -> abb.getIntestatario().getId().longValue() == a.getId().longValue() ).forEach(abb -> {
                 abb.setCodeLine(codeline);
                 abbonamentoDao.save(abb);
             });
             
-        }); */       
+        });
+        log.info("End Fix codeline");
+
     }
     private void loadAnagrafica() {
         

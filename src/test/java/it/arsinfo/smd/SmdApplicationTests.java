@@ -347,8 +347,8 @@ public class SmdApplicationTests {
         }
         assertEquals(5,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo).size());
         assertEquals(5,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.AmericaAfricaAsia).size());
-        assertEquals(9,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.Italia).size());
-        assertEquals(19,spesaSpedizioneDao.findAll().size());
+        assertEquals(10,spesaSpedizioneDao.findByAreaSpedizione(AreaSpedizione.Italia).size());
+        assertEquals(20,spesaSpedizioneDao.findAll().size());
 
         SpesaSpedizione spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
         assertNotNull(spedizioneItaliaDa1a2Kg);
@@ -370,7 +370,7 @@ public class SmdApplicationTests {
         assertNull(spedizioneItaliaDa1a2Kg);
         assertEquals(18, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.save(duplicato);
-        assertEquals(19, spesaSpedizioneDao.findAll().size());
+        assertEquals(20, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.deleteAll();
         assertEquals(0, spesaSpedizioneDao.findAll().size());
 
@@ -1692,7 +1692,7 @@ public class SmdApplicationTests {
         
         assertEquals(24, anagraficaDao.findAll().size());
         assertEquals(4, pubblicazioneDao.findAll().size());
-        assertEquals(19, spesaSpedizioneDao.findAll().size());
+        assertEquals(20, spesaSpedizioneDao.findAll().size());
         assertEquals(12, storicoDao.findAll().size());
         assertEquals(0, campagnaDao.findAll().size());
         assertEquals(20, abbonamentoDao.findAll().size());
@@ -1793,19 +1793,25 @@ public class SmdApplicationTests {
         log.info("Start check Pubblicazione");
         assertEquals(4, pubblicazioneDao.findAll().size());
         log.info("Start check Spesa Sped");
-        assertEquals(19, spesaSpedizioneDao.findAll().size());
+        assertEquals(20, spesaSpedizioneDao.findAll().size());
         log.info("Start check Anagrafica");
         assertEquals(8310, anagraficaDao.findAll().size());
         log.info("Start check Storico");
         assertEquals(11819, storicoDao.findAll().size());
-        log.info("End check Storico");
-        assertEquals(0, campagnaDao.findAll().size());
-        assertEquals(0, abbonamentoDao.findAll().size());
-        assertEquals(0, estrattoContoDao.findAll().size());
+        log.info("Start check Campagna");
+        assertEquals(1, campagnaDao.findAll().size());
+        log.info("Start check Abbonamenti");
+        assertEquals(7238, abbonamentoDao.findAll().size());
+        log.info("Start check Estratto Conto");
+        assertEquals(11819, estrattoContoDao.findAll().size());
+        log.info("Start check operazioni");
         assertEquals(0, operazioneDao.findAll().size());
+        log.info("Start check incasso");
         assertEquals(0, incassoDao.findAll().size());
+        log.info("Start check versameno");
         assertEquals(0, versamentoDao.findAll().size());
-        assertEquals(0, spedizioneDao.findAll().size());
+        log.info("Start check spedizioni");
+        assertEquals(51262, spedizioneDao.count());
 
 
         operazioneDao.deleteAll();
@@ -1827,7 +1833,7 @@ public class SmdApplicationTests {
         anagraficaDao.deleteAll();
         spesaSpedizioneDao.deleteAll();
         
-        log.info("final check load data");
+        log.info("end load data");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, pubblicazioneDao.findAll().size());
         assertEquals(0, spesaSpedizioneDao.findAll().size());

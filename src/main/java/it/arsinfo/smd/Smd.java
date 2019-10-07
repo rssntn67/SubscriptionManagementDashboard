@@ -438,8 +438,13 @@ public class Smd {
 
     }
     
-    public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) {
-        return ss.stream().filter( s-> s.getArea() == area && s.getRange() == range).collect(Collectors.toList()).iterator().next();
+    public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
+        for (SpesaSpedizione s: ss) {
+            if (s.getArea() == area && s.getRange() == range) {
+                return s;
+            }
+        }
+        throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
     }
     
     public static void calcolaSpesePostali(Spedizione sped, List<SpesaSpedizione> spese) throws UnsupportedOperationException {
