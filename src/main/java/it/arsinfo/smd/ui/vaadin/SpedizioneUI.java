@@ -54,7 +54,7 @@ public class SpedizioneUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
-        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,spedizioneItemDao,abbonamenti,anagrafica,pubblicazioni);
+        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica,pubblicazioni);
         search.setSmdService(smdService);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);

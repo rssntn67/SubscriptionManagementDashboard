@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.SpedizioneDao;
-import it.arsinfo.smd.repository.SpedizioneItemDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
@@ -34,14 +32,11 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
     private final Map<Long,Abbonamento> abbMap;
-    private final SpedizioneItemDao spedizioneItemDao;
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
-            SpedizioneItemDao spedizioneitemDao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {
         super(spedizioneDao);
-        this.spedizioneItemDao=spedizioneitemDao;
         abbMap = abbonamenti.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
@@ -103,9 +98,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     @Override
     public List<Spedizione> find() {
         if (p != null) {
-            final List<Spedizione> spedizioni = new ArrayList<Spedizione>();
-            spedizioneItemDao.findByPubblicazione(p).forEach(si -> spedizioni.add(si.getSpedizione()));
-            return filterAll(spedizioni);
+            return filterAll(getSmdService().findSpedizioneByPubblicazione(p));
         }
         if (a == null) {
             return filterAll(getSmdService().findSpedizioneAll());            
@@ -114,6 +107,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     }
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
+        if (a != null) {
+            spedizioni = spedizioni.stream().filter( s -> s.getDestinatario().equals(a)).collect(Collectors.toList());
+        }
         if (filterAnno.getValue() != null) {
             spedizioni = spedizioni.stream().filter( s -> s.getAnnoSpedizione() == filterAnno.getValue()).collect(Collectors.toList());
         }

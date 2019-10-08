@@ -644,6 +644,15 @@ public class SmdServiceImpl implements SmdService {
         return spedizioni;
     }
 
+    @Override
+    public List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p) {
+        log.info("Spedizioni By Pubblicazione fetch start");
+        final List<Spedizione> spedizioni = new ArrayList<Spedizione>();
+        spedizioneItemDao.findByPubblicazione(p).forEach(si -> spedizioni.add(si.getSpedizione()));
+        log.info("Spedizioni By Pubblicazione fetch end");
+        return spedizioni;
+    }
+
 
     @Override
     public List<Spedizione> findSpedizioneAll() {

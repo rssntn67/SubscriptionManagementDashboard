@@ -57,7 +57,7 @@ public interface SmdService {
     List<Abbonamento> getAssociabili(Versamento versamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
-
+    List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
     List<Spedizione> findSpedizioneAll();
     
     void delete(Storico storico);
