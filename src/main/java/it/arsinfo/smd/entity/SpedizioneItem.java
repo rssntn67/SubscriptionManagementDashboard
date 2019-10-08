@@ -23,7 +23,7 @@ public class SpedizioneItem implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Spedizione spedizione;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)

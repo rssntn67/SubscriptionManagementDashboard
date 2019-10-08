@@ -51,6 +51,7 @@ import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
+import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -126,7 +127,7 @@ public class Smd {
 
     public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
             EstrattoConto ec,
-            List<Spedizione> spedizioni,
+            List<SpedizioneWithItems> spedizioni,
             List<SpesaSpedizione> spese)
     throws UnsupportedOperationException {      
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
@@ -141,7 +142,8 @@ public class Smd {
         log.debug("aggiornaEC: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
         log.debug("aggiornaEC: quantità: {}", ec.getNumero());
         
-        final List<SpedizioneItem> oldItems = new ArrayList<>();
+        final Map<Integer,SpedizioneWithItems> spedMap = spedizioni.stream().collect(Collectors.toMap(s->s.hashCode(), s->s));        
+        final Map<Integer,List<SpedizioneItem>> oldItems = new HashMap<>();
         
         spedizioni
         .stream()
@@ -154,9 +156,12 @@ public class Smd {
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
                           ec.getPubblicazione().getId().longValue() == item.getPubblicazione().getId().longValue())) {
-                    oldItems.add(item);
+                    if (!oldItems.containsKey(sped.hashCode())) {
+                        oldItems.put(sped.hashCode(),new ArrayList<>());
+                    }
+                    oldItems.get(sped.hashCode()).add(item);
                 } else {
-                    throw new UnsupportedOperationException("Aggiona EC non consente di modificare la pubblicazione");
+                    throw new UnsupportedOperationException("Aggiorna EC non consente di modificare la pubblicazione");
                 }
             });
         });
@@ -168,7 +173,9 @@ public class Smd {
         final List<SpedizioneItem> rimItems = new ArrayList<>();
         
         int numeroTotaleRiviste=0;
-        for (SpedizioneItem oldItem: oldItems) {
+        for (int hash: oldItems.keySet()) {
+            SpedizioneWithItems sped = spedMap.get(hash);
+            for (SpedizioneItem oldItem : oldItems.get(hash)) {
             log.debug("aggiornaEC parsing old: {}", oldItem.toString());
             switch (oldItem.getSpedizione().getStatoSpedizione()) {
             case INVIATA:
@@ -176,16 +183,17 @@ public class Smd {
                 numeroTotaleRiviste+=oldItem.getNumero();
                 break;
             case PROGRAMMATA:
-                oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
+                sped.deleteSpedizioneItem(oldItem);
                 rimItems.add(oldItem);
                 break;
             case SOSPESA:
-                oldItem.getSpedizione().deleteSpedizioneItem(oldItem);
+                sped.deleteSpedizioneItem(oldItem);
                 rimItems.add(oldItem);
                 break;                        
             default:
                 break;
             }
+        }
         }
 
         List<SpedizioneItem> items = generaECItems(ec);
@@ -203,7 +211,6 @@ public class Smd {
             }
         }
 
-        Map<Integer, Spedizione> spedMap = Spedizione.getSpedizioneMap(spedizioni);
         for (SpedizioneItem item: items) {
             if (item.getNumero() == 0) {
                 continue;
@@ -221,20 +228,20 @@ public class Smd {
 
         //Updated status
         spedizioni.stream()
-        .filter(sped -> sped.getStatoSpedizione() != StatoSpedizione.INVIATA)
+        .filter(sped -> sped.getSpedizione().getStatoSpedizione() != StatoSpedizione.INVIATA)
         .forEach(sped -> {
             switch (abb.getStatoAbbonamento()) {
             case Nuovo:
-                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 break;
             case Proposto:
-                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 break;
             case Valido:
-                sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 break;
             case Sospeso:
-                sped.setStatoSpedizione(StatoSpedizione.SOSPESA);
+                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.SOSPESA);
                 break;
             case Annullato:
                 break;
@@ -249,14 +256,15 @@ public class Smd {
     public static List<SpedizioneItem> rimuoviEC(
             Abbonamento abb, 
             EstrattoConto ec, 
-            List<Spedizione> spedizioni,
+            List<SpedizioneWithItems> spedizioni,
             List<SpesaSpedizione> spese) 
     {
         abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
         abb.setSpese(BigDecimal.ZERO);
-        final List<SpedizioneItem> inviati = new ArrayList<>(); 
-        final List<SpedizioneItem> rimossi = new ArrayList<>(); 
-        for (Spedizione sped:spedizioni) {
+        final Map<Integer,SpedizioneWithItems> spedMap = spedizioni.stream().collect(Collectors.toMap(s->s.hashCode(), s->s));        
+        final Map<Integer,List<SpedizioneItem>> inviati = new HashMap<>(); 
+        final Map<Integer,List<SpedizioneItem>> rimossiMap = new HashMap<>(); 
+        for (SpedizioneWithItems sped:spedizioni) {
             sped.getSpedizioneItems()
             .stream()
             .filter(item -> 
@@ -267,30 +275,47 @@ public class Smd {
                     )
                 )
             .forEach(item -> {
-                switch (sped.getStatoSpedizione()) {
+                switch (sped.getSpedizione().getStatoSpedizione()) {
                 case INVIATA:
-                    inviati.add(item);
+                    if (!inviati.containsKey(sped.hashCode()))
+                    {
+                        inviati.put(sped.hashCode(), new ArrayList<>());
+                    }
+                    inviati.get(sped.hashCode()).add(item);
                     break;
                 case PROGRAMMATA:
-                    rimossi.add(item);
+                    if (!rimossiMap.containsKey(sped.hashCode()))
+                    {
+                        rimossiMap.put(sped.hashCode(), new ArrayList<>());
+                    }
+                    rimossiMap.get(sped.hashCode()).add(item);
                     break;
                 case SOSPESA:
-                    rimossi.add(item);
+                    if (!rimossiMap.containsKey(sped.hashCode()))
+                    {
+                        rimossiMap.put(sped.hashCode(), new ArrayList<>());
+                    }
+                    rimossiMap.get(sped.hashCode()).add(item);
                     break;    
                 default:
                     break;
                 }
             });
         }
-        
-        for (SpedizioneItem rimosso:rimossi) {
-            log.info("rimuoviEC: rimosso" + rimosso);
-            rimosso.getSpedizione().deleteSpedizioneItem(rimosso);
+        List<SpedizioneItem> rimossi = new ArrayList<>();
+        for (int hash:rimossiMap.keySet()) {
+            for (SpedizioneItem rimosso:rimossiMap.get(hash)) {
+                log.info("rimuoviEC: rimosso" + rimosso);
+                spedMap.get(hash).deleteSpedizioneItem(rimosso);
+                rimossi.add(rimosso);
+            }
         }
         
         int numeroinviato=0;
-        for (SpedizioneItem inviata:inviati) {
-            numeroinviato+=inviata.getNumero();
+        for (int hash:inviati.keySet()) {
+                   for (SpedizioneItem inviata:inviati.get(hash)) {
+                       numeroinviato+=inviata.getNumero();
+                   }
         }
         ec.setNumero(0);
         ec.setNumeroTotaleRiviste(numeroinviato);
@@ -327,7 +352,7 @@ public class Smd {
       return items; 
     }
 
-    public static void aggiungiItemSpedizione(Abbonamento abb, EstrattoConto ec,Map<Integer,Spedizione> spedMap, SpedizioneItem item) {
+    public static void aggiungiItemSpedizione(Abbonamento abb, EstrattoConto ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
         Anagrafica destinatario = ec.getDestinatario();
         Invio invio = ec.getInvio();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
@@ -376,17 +401,17 @@ public class Smd {
         spedizione.setDestinatario(destinatario);
         spedizione.setInvio(invio);
         if (!spedMap.containsKey(spedizione.hashCode())) {
-            spedMap.put(spedizione.hashCode(), spedizione);
+            spedMap.put(spedizione.hashCode(), new SpedizioneWithItems(spedizione));
         }
-        Spedizione sped = spedMap.get(spedizione.hashCode());
+        SpedizioneWithItems sped = spedMap.get(spedizione.hashCode());
         item.setPosticipata(posticipata);
-        item.setSpedizione(sped);
+        item.setSpedizione(sped.getSpedizione());
         sped.addSpedizioneItem(item);        
     }
     
-    public static List<Spedizione> genera(Abbonamento abb,
+    public static List<SpedizioneWithItems> genera(Abbonamento abb,
             EstrattoConto ec, 
-            List<Spedizione> spedizioni, 
+            List<SpedizioneWithItems> spedizioni, 
             List<SpesaSpedizione> spese) throws UnsupportedOperationException {
 
         log.debug("generaSpedizioni: intestatario: "+ abb.getIntestatario().getCaption());
@@ -396,7 +421,7 @@ public class Smd {
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        final Map<Integer, Spedizione> spedMap = Spedizione.getSpedizioneMap(spedizioni);
+        final Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
 
         for (SpedizioneItem item : items) {
             aggiungiItemSpedizione(abb, ec, spedMap, item);
@@ -405,32 +430,32 @@ public class Smd {
         return spedMap.values().stream().collect(Collectors.toList());
     }
 
-    private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<Spedizione> spedizioni, List<SpesaSpedizione> spese) {
+    private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
         abb.setSpese(BigDecimal.ZERO);
-        for (Spedizione sped: spedizioni) {
+        for (SpedizioneWithItems sped: spedizioni) {
             int pesoStimato=0;
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
                 pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
             }
-            sped.setPesoStimato(pesoStimato);
-            switch (sped.getDestinatario().getAreaSpedizione()) {
+            sped.getSpedizione().setPesoStimato(pesoStimato);
+            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
             case Italia:
-                if( sped.getInvioSpedizione() == InvioSpedizione.AdpSede 
+                if( sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede 
                     && !sped.getSpedizioniPosticipate().isEmpty()) {
-                    calcolaSpesePostali(sped, spese);
+                    calcolaSpesePostali(sped.getSpedizione(), spese);
                 }
                 break;
             case EuropaBacinoMediterraneo:
-                calcolaSpesePostali(sped, spese);
+                calcolaSpesePostali(sped.getSpedizione(), spese);
                 break;
 
             case AmericaAfricaAsia:
-                calcolaSpesePostali(sped, spese);
+                calcolaSpesePostali(sped.getSpedizione(), spese);
                 break;
             default:
                 break;
             }
-            abb.setSpese(abb.getSpese().add(sped.getSpesePostali()));
+            abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
         }
         if (abb.getCassa() == Cassa.Contrassegno) {
             abb.setSpese(abb.getSpese().add(contrassegno));                
@@ -654,7 +679,7 @@ public class Smd {
 
     public static List<Operazione> generaOperazioni(
             List<Pubblicazione> pubblicazioni, 
-            List<Spedizione> spedizioni
+            List<SpedizioneWithItems> spedizioni
         ) {
         Anno anno = Anno.getAnnoCorrente();
         Mese mese = Mese.getMeseCorrente();
@@ -671,11 +696,11 @@ public class Smd {
 
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
-            List<Spedizione> spedizioni,Mese mese, Anno anno) {
+            List<SpedizioneWithItems> spedizioni,Mese mese, Anno anno) {
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
-        Mese mesePubblicazione = mese;
-        Anno annoPubblicazione = anno;
+        Mese mesePubblicazione;
+        Anno annoPubblicazione;
         if (posizioneMese > 12) {
             mesePubblicazione = Mese.getByPosizione(posizioneMese-12);
             annoPubblicazione = Anno.getAnnoSuccessivo(anno);
@@ -692,9 +717,9 @@ public class Smd {
         spedizioni
             .stream()
             .filter( sped -> 
-                   sped.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
-                && sped.getAnnoSpedizione() == anno 
-                && sped.getMeseSpedizione() == mese) 
+                   sped.getSpedizione().getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
+                && sped.getSpedizione().getAnnoSpedizione() == anno 
+                && sped.getSpedizione().getMeseSpedizione() == mese) 
             .forEach( sped -> 
                   sped
                   .getSpedizioneItems()
@@ -702,7 +727,7 @@ public class Smd {
                   .filter(item -> !item.isPosticipata() && item.getPubblicazione().hashCode() == pubblicazione.hashCode())
                   .forEach(item -> 
                   {
-                      switch (sped.getInvioSpedizione()) {
+                      switch (sped.getSpedizione().getInvioSpedizione()) {
                       case  Spedizioniere: 
                           op.setStimatoSped(op.getStimatoSped()+item.getNumero());
                           break;

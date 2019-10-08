@@ -46,6 +46,7 @@ import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
+import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
@@ -917,7 +918,7 @@ public class SmdLoadSampleData implements Runnable {
     
     private void genera(Mese inizio, Mese fine,Abbonamento abb,Table<Pubblicazione, Anagrafica, Integer> table) {
         Anno anno = abb.getAnno();
-        List<Spedizione> spedizioni = new ArrayList<>();        
+        List<SpedizioneWithItems> spedizioni = new ArrayList<>();        
         for (Cell<Pubblicazione, Anagrafica, Integer> ect: table.cellSet()) {
             EstrattoConto ec = new EstrattoConto();
             ec.setAbbonamento(abb);
@@ -938,8 +939,8 @@ public class SmdLoadSampleData implements Runnable {
                   );
             abbonamentoDao.save(abb);
             estrattoContoDao.save(ec);
-            for (Spedizione sped:spedizioni) {
-                spedizioneDao.save(sped);
+            for (SpedizioneWithItems sped:spedizioni) {
+                spedizioneDao.save(sped.getSpedizione());
                 for (SpedizioneItem item: sped.getSpedizioneItems()) {
                     spedizioneItemDao.save(item);
                 }
@@ -1376,19 +1377,26 @@ public class SmdLoadSampleData implements Runnable {
                 
         Anno annoCorrente = Anno.getAnnoCorrente();
         Mese meseCorrente = Mese.getMeseCorrente();
+        List<Spedizione> spedizioni = spedizioneDao
+                .findByMeseSpedizioneAndAnnoSpedizione(meseCorrente, annoCorrente);
+        List<SpedizioneWithItems> spwis = new ArrayList<>();
+        for (Spedizione sped:spedizioni) {
+            SpedizioneWithItems spwi = new SpedizioneWithItems(sped);
+            spwi.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));
+            spwis.add(spwi);
+        }
         pubblicazioneDao.findAll()
         .forEach(p -> 
             EnumSet.allOf(Mese.class)
             .forEach(mese -> {
-                Operazione op = Smd.generaOperazione(p, spedizioneDao.findAll(), mese, annoCorrente);
+                Operazione op = Smd.generaOperazione(p, spwis, mese, annoCorrente);
                 if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
                     log.info(op.toString());
                     operazioneDao.save(op);                               
                 }
             }));
                     
-       spedizioneDao
-           .findByMeseSpedizioneAndAnnoSpedizione(meseCorrente, annoCorrente)
+        spedizioni
            .forEach(sped -> {
                sped.setStatoSpedizione(StatoSpedizione.INVIATA);
                spedizioneDao.save(sped);

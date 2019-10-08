@@ -20,6 +20,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpedizioneItemDao;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
@@ -32,12 +33,15 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
-    final Map<Long,Abbonamento> abbMap;
+    private final Map<Long,Abbonamento> abbMap;
+    private final SpedizioneItemDao spedizioneItemDao;
     public SpedizioneSearch(SpedizioneDao spedizioneDao,
+            SpedizioneItemDao spedizioneitemDao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {
         super(spedizioneDao);
+        this.spedizioneItemDao=spedizioneitemDao;
         abbMap = abbonamenti.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
@@ -122,7 +126,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         }
         if (p != null) {
             spedizioni= spedizioni.stream().filter(s -> {
-                for (SpedizioneItem item: s.getSpedizioneItems()) {
+                for (SpedizioneItem item: spedizioneItemDao.findBySpedizione(s)) {
                     if (item.getPubblicazione().getId().longValue() == p.getId().longValue()) {
                         return true;
                     }

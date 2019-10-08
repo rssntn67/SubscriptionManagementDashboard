@@ -31,6 +31,7 @@ import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
+import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -215,7 +216,7 @@ public class SmdServiceImpl implements SmdService {
         .findByAbbonamento(abbonamento)
         .forEach(sped -> 
             {
-                sped.getSpedizioneItems().forEach(item -> {
+                spedizioneItemDao.findBySpedizione(sped).forEach(item -> {
                     spedizioneItemDao.deleteById(item.getId());
                 });
                 spedizioneDao.deleteById(sped.getId());
@@ -307,7 +308,7 @@ public class SmdServiceImpl implements SmdService {
     }    
     
     private void genera(Abbonamento abbonamento, EstrattoConto...contos) {
-        List<Spedizione> spedizioni = new ArrayList<>();
+        List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
         for (EstrattoConto ec: contos) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spese);
@@ -322,7 +323,7 @@ public class SmdServiceImpl implements SmdService {
             estrattoContoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
     }
@@ -330,22 +331,22 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void aggiornaECAbbonamento(Abbonamento abbonamento,
             EstrattoConto estrattoConto) {
-        List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abbonamento);
+        List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         List<SpedizioneItem> deleted = Smd.aggiornaEC(abbonamento,
                                                      estrattoConto, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         
         deleted.forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
         
-        for (Spedizione sped:spedizioni) {
+        for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
         estrattoContoDao.save(estrattoConto);        
@@ -356,7 +357,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void cancellaECAbbonamento(Abbonamento abbonamento,
             EstrattoConto estrattoConto) {
-        List<Spedizione> spedizioni = spedizioneDao.findByAbbonamento(abbonamento);
+        List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
                                                      estrattoConto, 
@@ -364,7 +365,7 @@ public class SmdServiceImpl implements SmdService {
                                                     spesaSpedizioneDao.findAll());  
         
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> {
                 spedizioneItemDao.save(item);
                });
@@ -373,9 +374,9 @@ public class SmdServiceImpl implements SmdService {
             spedizioneItemDao.deleteById(delitem.getId());
         }
         
-        for (Spedizione sped:spedizioni) {
+        for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
         
@@ -429,7 +430,7 @@ public class SmdServiceImpl implements SmdService {
                 operazioneDao.deleteById(saved.getId());
             }
             Operazione op = Smd.generaOperazione(p,
-                                             spedizioneDao.findByMeseSpedizioneAndAnnoSpedizione(mese, anno), 
+                                             findByMeseSpedizioneAndAnnoSpedizione(mese, anno), 
                                              mese, 
                                              anno);
         if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
@@ -475,7 +476,7 @@ public class SmdServiceImpl implements SmdService {
             .forEach(sped -> {
                 Abbonamento abb = abbonamentoDao.findById(sped.getAbbonamento().getId()).get();
                 sped.setAbbonamento(abb);
-                items.addAll(sped.getSpedizioneItems());
+                items.addAll(spedizioneItemDao.findBySpedizione(sped));
             });
         return items;
     }
@@ -640,46 +641,16 @@ public class SmdServiceImpl implements SmdService {
         log.info("Spedizioni By Destinatario fetch start");
         List<Spedizione> spedizioni = spedizioneDao.findByDestinatario(a);
         log.info("Spedizioni By Destinatario fetch end");
-        return populateSpedizioni(spedizioni);
-    }
-
-    private List<Spedizione> populateSpedizioni(List<Spedizione> spedizioni) {
-        log.info("Pubblicazioni Item fetch start");
-        final Map<Long,Pubblicazione> pubbliMap = pubblicazioneDao
-                .findAll().stream().collect(Collectors.toMap(Pubblicazione::getId, p ->p));
-        log.info("Pubblicazioni Item fetch end");
-        log.info("Anagrafica Item fetch start");
-        final Map<Long,Anagrafica> anagrafMap = anagraficaDao
-                .findAll().stream().collect(Collectors.toMap(Anagrafica::getId, a ->a));
-        log.info("Anagrafica Item fetch end");
-        final Map<Long,Spedizione> spedizioniMap = spedizioni
-                .stream()
-                .collect(Collectors.toMap(Spedizione::getId, sped->sped));
-        log.info("Spedizioni Item fetch start");
-        spedizioneItemDao
-                .findAll().forEach(item -> {
-                    Spedizione sped = spedizioniMap.get(item.getSpedizione().getId());
-                    item.setSpedizione(sped);
-                    sped.addSpedizioneItem(item);
-                    Pubblicazione p = pubbliMap.get(item.getPubblicazione().getId());
-                    item.setPubblicazione(p);
-                });
-        log.info("Spedizioni Item fetch end");
-        spedizioni.forEach(sped -> {
-            Anagrafica a = anagrafMap.get(sped.getDestinatario().getId());
-            sped.setDestinatario(a);
-        }
-        );
-
         return spedizioni;
     }
+
 
     @Override
     public List<Spedizione> findSpedizioneAll() {
         log.info("Spedizioni All fetch start");
         List<Spedizione> spedizioni = spedizioneDao.findAll();
         log.info("Spedizioni All fetch end");
-        return populateSpedizioni(spedizioni);
+        return spedizioni;
     }
 
     @Override
@@ -695,5 +666,25 @@ public class SmdServiceImpl implements SmdService {
         notaDao.save(nota);
     }
 
+    @Override
+    public List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb) {
+        List<SpedizioneWithItems> spedizioni = new ArrayList<>();
+        for (Spedizione sped: spedizioneDao.findByAbbonamento(abb)) {
+            SpedizioneWithItems swit = new SpedizioneWithItems(sped);
+            swit.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));
+            spedizioni.add(swit);
+        }
+        return spedizioni;
+    }
+
+    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese mese, Anno anno) {
+        List<SpedizioneWithItems> spedizioni = new ArrayList<>();
+        for (Spedizione sped: spedizioneDao.findByMeseSpedizioneAndAnnoSpedizione(mese, anno)) {
+            SpedizioneWithItems swit = new SpedizioneWithItems(sped);
+            swit.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));
+            spedizioni.add(swit);
+        }
+        return spedizioni;
+    }
 
 }

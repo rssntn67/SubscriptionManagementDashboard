@@ -56,6 +56,7 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
+import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
@@ -919,15 +920,16 @@ public class SmdApplicationTests {
         item.setEstrattoConto(ec);
         item.setPubblicazione(ec.getPubblicazione());
         item.setSpedizione(sped);
-        sped.addSpedizioneItem(item);
+        SpedizioneWithItems spwi = new SpedizioneWithItems(sped);
+        spwi.addSpedizioneItem(item);
 
         spedizioneItemDao.save(item);
         assertEquals(1, spedizioneItemDao.findAll().size());
  
         sped = spedizioneDao.findAll().iterator().next();
         log.info(sped.toString());
-        assertEquals(1, sped.getSpedizioneItems().size());
-        for (SpedizioneItem it: sped.getSpedizioneItems()) {
+        assertEquals(1, spwi.getSpedizioneItems().size());
+        for (SpedizioneItem it: spwi.getSpedizioneItems()) {
             log.info(it.toString());
         }
  
@@ -939,7 +941,7 @@ public class SmdApplicationTests {
         //Need to retrieve a fresh copy from database
         sped = spedizioneDao.findAll().iterator().next();
         log.info(sped.toString());
-        assertEquals(0, sped.getSpedizioneItems().size());
+        assertEquals(0, spedizioneItemDao.count());
         spedizioneDao.delete(sped);
         assertEquals(0, estrattoContoDao.findAll().size());
         abbonamentoDao.delete(abb);
@@ -988,7 +990,7 @@ public class SmdApplicationTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
-        List<Spedizione> spedizioni 
+        List<SpedizioneWithItems> spedizioni 
             = Smd.genera(abb, 
                                ec,
                                new ArrayList<>(),
@@ -1010,7 +1012,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
@@ -1078,13 +1080,13 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
         ec2.setDestinatario(tizio);
-        List<Spedizione> spedizioni = Smd.genera(abb, ec1, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
+        List<SpedizioneWithItems> spedizioni = Smd.genera(abb, ec1, new ArrayList<>(),SmdLoadSampleData.getSpeseSpedizione());
         spedizioni = Smd.genera(abb, ec2, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         estrattoContoDao.save(ec2);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
        assertEquals(2, estrattoContoDao.findAll().size());
@@ -1104,7 +1106,7 @@ public class SmdApplicationTests {
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);     
         ec3.setDestinatario(tizio);
-        spedizioni = spedizioneDao.findByAbbonamento(abb);
+        spedizioni = smdService.findByAbbonamento(abb);
         spedizioni = Smd.genera(abb,
                                           ec3,
                                           spedizioni,
@@ -1112,7 +1114,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec3);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> {
                 spedizioneItemDao.save(item);
             });
@@ -1188,11 +1190,11 @@ public class SmdApplicationTests {
         ec3.setAnnoFine(anno);
         ec3.setDestinatario(tizio);
 
-        List<Spedizione> spedizioni = 
+        List<SpedizioneWithItems> spedizioni = 
                 Smd.genera(
                      abb,
                      ec1,
-                     new ArrayList<Spedizione>(),
+                     new ArrayList<SpedizioneWithItems>(),
                      SmdLoadSampleData.getSpeseSpedizione());
         spedizioni = 
                 Smd.genera(
@@ -1214,7 +1216,7 @@ public class SmdApplicationTests {
         estrattoContoDao.save(ec3);        
 
         spedizioni.stream().forEach( sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
 
@@ -1234,7 +1236,7 @@ public class SmdApplicationTests {
         
         spedizioni.stream().forEach(sped -> {
             log.info(sped.toString());
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> {
                log.info(item.toString());
                 spedizioneItemDao.save(item);
@@ -1246,7 +1248,7 @@ public class SmdApplicationTests {
         }
         assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
         assertEquals(0, ec2.getImporto().doubleValue(),0);
-        for (Spedizione sped: spedizioni) {
+        for (SpedizioneWithItems sped: spedizioni) {
             assertFalse(sped.getSpedizioneItems().isEmpty());
         }
         estrattoContoDao.deleteById(ec2.getId());
@@ -1261,7 +1263,7 @@ public class SmdApplicationTests {
         log.info("----------------->testAbbonamentoRimuoviEstrattoConto Rimosso:"+ec2);
 
         
-        spedizioni=spedizioneDao.findByAbbonamento(abb);
+        spedizioni=smdService.findByAbbonamento(abb);
         log.info(abb.toString());
         log.info(ec1.toString());
         spedizioni.forEach(sped ->{
@@ -1273,7 +1275,7 @@ public class SmdApplicationTests {
         
         spedizioni.stream().forEach(sped -> {
             log.info(sped.toString());
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> {
                log.info(item.toString());
                 spedizioneItemDao.save(item);
@@ -1284,9 +1286,9 @@ public class SmdApplicationTests {
             spedizioneItemDao.deleteById(delitem.getId());
         }
 
-        for (Spedizione sped:spedizioni) {
+        for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
         assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
@@ -1301,19 +1303,19 @@ public class SmdApplicationTests {
         assertEquals(2, spedizioneItemDao.findAll().size());
         
 
-        spedizioni=spedizioneDao.findByAbbonamento(abb);
+        spedizioni=smdService.findByAbbonamento(abb);
         deleted = Smd.rimuoviEC(abb,ec3, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         for (SpedizioneItem delitem: deleted ) {
             log.info("deleted: " + delitem);
             spedizioneItemDao.deleteById(delitem.getId());
         }
-        for (Spedizione sped:spedizioni) {
+        for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
         assertEquals(0, ec3.getNumeroTotaleRiviste().intValue());
@@ -1363,7 +1365,7 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         
 
-        List<Spedizione> spedizioni = Smd.genera(
+        List<SpedizioneWithItems> spedizioni = Smd.genera(
                                            abb,
                                            ec1,
                                            new ArrayList<>(), 
@@ -1374,26 +1376,26 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         log.info(abb.toString());
         log.info(ec1.toString());
         
         spedizioni.stream()
-        .filter(sped -> Mese.getMeseCorrente() == sped.getMeseSpedizione())
+        .filter(sped -> Mese.getMeseCorrente() == sped.getSpedizione().getMeseSpedizione())
         .forEach(sped -> {
-          assertEquals(sped.getAnnoSpedizione(), Anno.getAnnoCorrente());
-          sped.setStatoSpedizione(StatoSpedizione.INVIATA);
-          spedizioneDao.save(sped);
+          assertEquals(sped.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
+          sped.getSpedizione().setStatoSpedizione(StatoSpedizione.INVIATA);
+          spedizioneDao.save(sped.getSpedizione());
           log.info(sped.toString());
         });
 
         int spedanticipate = 12 - spedizioni.size()+1;
-        spedizioni=spedizioneDao.findByAbbonamento(abb);
+        spedizioni=smdService.findByAbbonamento(abb);
         List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb,ec1, spedizioni,SmdLoadSampleData.getSpeseSpedizione());
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         for (SpedizioneItem deletedItem:deletedItems) {
@@ -1403,16 +1405,16 @@ public class SmdApplicationTests {
             spedizioneItemDao.deleteById(deletedItem.getId());
             
         }
-        for (Spedizione sped:spedizioni) {
+        for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getId());
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }        
-        spedizioni=spedizioneDao.findByAbbonamento(abb);
+        spedizioni=smdService.findByAbbonamento(abb);
         assertEquals(1, spedizioni.size());
-        Spedizione inviata = spedizioni.iterator().next();
-        assertEquals(inviata.getAnnoSpedizione(), Anno.getAnnoCorrente());
-        assertEquals(StatoSpedizione.INVIATA, inviata.getStatoSpedizione());
+        SpedizioneWithItems inviata = spedizioni.iterator().next();
+        assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
+        assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
         assertEquals(spedanticipate, inviata.getSpedizioneItems().size());
         SpedizioneItem messaggiInviati = inviata.getSpedizioneItems().iterator().next();
 
@@ -1422,7 +1424,7 @@ public class SmdApplicationTests {
         log.info(messaggiInviati.toString());
         
         spedizioneItemDao.deleteById(messaggiInviati.getId());
-        spedizioneDao.deleteById(inviata.getId());
+        spedizioneDao.deleteById(inviata.getSpedizione().getId());
         estrattoContoDao.deleteById(ec1.getId());
         abbonamentoDao.delete(abb);
         
@@ -1451,7 +1453,7 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoProssimo());
         ec1.setDestinatario(tizio);
-        List<Spedizione> spedizioni = 
+        List<SpedizioneWithItems> spedizioni = 
                 Smd.genera(
                      abb, 
                      ec1,
@@ -1461,7 +1463,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
@@ -1472,8 +1474,8 @@ public class SmdApplicationTests {
         spedizioneDao.findAll().forEach(s -> {
             assertEquals(0, s.getSpesePostali().doubleValue(),0);
             assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
-            assertEquals(1, s.getSpedizioneItems().size());
-            SpedizioneItem item = s.getSpedizioneItems().iterator().next();
+            assertEquals(1, spedizioneItemDao.findBySpedizione(s).size());
+            SpedizioneItem item = spedizioneItemDao.findBySpedizione(s).iterator().next();
             assertEquals(1, item.getNumero().intValue());
         });
         
@@ -1486,7 +1488,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         estrattoContoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
-            spedizioneDao.save(sped);
+            spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         rimItems.forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
@@ -1494,8 +1496,8 @@ public class SmdApplicationTests {
         spedizioneDao.findAll().forEach(s -> {
             assertEquals(0, s.getSpesePostali().doubleValue(),0);
             assertEquals(InvioSpedizione.Spedizioniere, s.getInvioSpedizione());
-            assertEquals(1, s.getSpedizioneItems().size());
-            SpedizioneItem item = s.getSpedizioneItems().iterator().next();
+            assertEquals(1, spedizioneItemDao.findBySpedizione(s).size());
+            SpedizioneItem item = spedizioneItemDao.findBySpedizione(s).iterator().next();
             assertEquals(10, item.getNumero().intValue());
         });
 

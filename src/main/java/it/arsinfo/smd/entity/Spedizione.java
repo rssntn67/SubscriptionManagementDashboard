@@ -1,11 +1,9 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.SmdEntity;
@@ -58,10 +55,6 @@ public class Spedizione implements SmdEntity {
     private Integer pesoStimato=0;
     
     private BigDecimal spesePostali = BigDecimal.ZERO;
-
-    @OneToMany(mappedBy="spedizione", orphanRemoval=true, fetch=FetchType.EAGER)
-    List<SpedizioneItem> spedizioneItems = new ArrayList<SpedizioneItem>();
-
 
     public Spedizione() {
     }
@@ -226,16 +219,7 @@ public class Spedizione implements SmdEntity {
     public void setPesoStimato(Integer pesoStimato) {
         this.pesoStimato = pesoStimato;
     }
-    
-    public List<SpedizioneItem> getSpedizioniPosticipate() {
-        return 
-            spedizioneItems.stream()
-            .filter(
-            item -> item.isPosticipata()
-        ).collect(Collectors.toList());
-    }
-    
-
+        
     public BigDecimal getSpesePostali() {
         return spesePostali;
     }
@@ -243,26 +227,7 @@ public class Spedizione implements SmdEntity {
     public void setSpesePostali(BigDecimal spesePostali) {
         this.spesePostali = spesePostali;
     }
-
-    public List<SpedizioneItem> getSpedizioneItems() {
-        return spedizioneItems;
-    }
-
-    public void setSpedizioneItems(List<SpedizioneItem> spedizioneItems) {
-        this.spedizioneItems = spedizioneItems;
-    }
-
-    public void addSpedizioneItem(SpedizioneItem item) {
-        if (spedizioneItems.contains(item)) {
-            spedizioneItems.remove(item);
-        }
-        spedizioneItems.add(item);
-    }
     
-    public boolean deleteSpedizioneItem(SpedizioneItem item) {
-        return spedizioneItems.remove(item);
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -311,15 +276,5 @@ public class Spedizione implements SmdEntity {
             return false;
         return true;
     }
-
-    public static Map<Integer,Spedizione> getSpedizioneMap(List<Spedizione> spedizioni) {
-        final Map<Integer,Spedizione> spedMap = new HashMap<>();
-        for (Spedizione spedizione:spedizioni) {
-            spedMap.put(spedizione.hashCode(), spedizione);
-        }
-        return spedMap;
-        
-    }
-
 
 }
