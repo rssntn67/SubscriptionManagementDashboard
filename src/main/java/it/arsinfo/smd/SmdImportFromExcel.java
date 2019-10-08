@@ -811,7 +811,26 @@ public class SmdImportFromExcel {
         return rows;
     }
 
-    //FIXME
+    public static String getTestataFromAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(8));
+    }
+
+    public static Integer getQuantFromAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(9)));
+    }
+
+    public static BigDecimal getImportoFromAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(10)));
+    }
+
+    public static BigDecimal getSpeseFromAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
+    }
+
     public static Map<String,Anagrafica> importAbbonatiItaEstero(List<Row> rows) throws IOException {
  
         DataFormatter dataFormatter = new DataFormatter();
@@ -823,15 +842,12 @@ public class SmdImportFromExcel {
             
             String ancodiceD = "00000"+dataFormatter.formatCellValue(row.getCell(2));
             String destinatD = dataFormatter.formatCellValue(row.getCell(3));
+            /* not used
             String descri = dataFormatter.formatCellValue(row.getCell(4));
             String indiri = dataFormatter.formatCellValue(row.getCell(5));
             String locali = dataFormatter.formatCellValue(row.getCell(6));
             String nazion = dataFormatter.formatCellValue(row.getCell(7));
-            String testat = dataFormatter.formatCellValue(row.getCell(8));
-            String quanti = dataFormatter.formatCellValue(row.getCell(9));
-            String impori = dataFormatter.formatCellValue(row.getCell(10));
-            String spese = dataFormatter.formatCellValue(row.getCell(11));
-
+            */
             try {
                 Anagrafica intestatario = getAnagraficaByAncodcon(ancodiceI);
                 intestatario.setDenominazione(destinatI);
@@ -852,6 +868,7 @@ public class SmdImportFromExcel {
         
         return anagraficaMap;
     }
+
     public static Map<String,Row> getAbbonatiEstero() throws IOException {
         DataFormatter dataFormatter = new DataFormatter();
         File ac = new File(ELENCO_ABBONATI_ESTERO);
@@ -891,7 +908,58 @@ public class SmdImportFromExcel {
         return anagraficaMap;
     }
     
-    //FIXME
+    // 3 estratti/manifesti
+    public int getIdEstrattiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(13)));
+    }
+
+    public BigDecimal getCostoEstrattiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(14)));
+    }
+    
+    public int getQtaEstrattiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(15)));
+    }
+
+    // id=2 blocchetti
+    public int getIdBlocchettiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(16)));
+    }
+
+    public BigDecimal getCostoBlocchettiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(17)));
+    }
+    
+    public int getQtaBlocchettiAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(18)));
+    }
+    // 1 messaggio
+    public int getIdMessaggioAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(19)));
+    }
+
+    public BigDecimal getCostoMessaggioAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(20)));
+    }
+    
+    public int getQtaMessaggioAbbEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowInteger(dataFormatter.formatCellValue(row.getCell(21)));
+    }
+    // 6 lodare
+    public BigDecimal getSpese(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(23)));
+    }
+
     public static Anagrafica processRowAbbonatiEstero(Row row, String ancodice,DataFormatter dataFormatter) throws UnsupportedOperationException {
         
         String andescri = dataFormatter.formatCellValue(row.getCell(1));
@@ -901,26 +969,7 @@ public class SmdImportFromExcel {
         String anlocali = dataFormatter.formatCellValue(row.getCell(6));
         String annazion = dataFormatter.formatCellValue(row.getCell(8));        
         String destitolo = dataFormatter.formatCellValue(row.getCell(10));
-        
-        String abtestata = dataFormatter.formatCellValue(row.getCell(13));
-        String tot03 = dataFormatter.formatCellValue(row.getCell(14));
-        String abqtaabb = dataFormatter.formatCellValue(row.getCell(15));
-        
-        String abtestata1 = dataFormatter.formatCellValue(row.getCell(16));
-        String tot02 = dataFormatter.formatCellValue(row.getCell(17));
-        String abqtaabb1 = dataFormatter.formatCellValue(row.getCell(18));
-        
-        String abtestata2 = dataFormatter.formatCellValue(row.getCell(19));
-        String tot01 = dataFormatter.formatCellValue(row.getCell(20));
-        String abqtaabb2 = dataFormatter.formatCellValue(row.getCell(21));
-        
-        String abtestata3 = dataFormatter.formatCellValue(row.getCell(22));
-        String tot00 = dataFormatter.formatCellValue(row.getCell(23));
-        
-        String abtestata4 = dataFormatter.formatCellValue(row.getCell(24));
-        String tot04 = dataFormatter.formatCellValue(row.getCell(25));
-        String abqtaabb4 = dataFormatter.formatCellValue(row.getCell(26));
-        
+                
         Anagrafica anagrafica = getAnagraficaByAncodcon(ancodice);
         
         populateAnagraficaEstero(anagrafica, ancodice,destitolo, andescri, andescr2, anindiri, anindir1, anlocali, annazion);

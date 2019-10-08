@@ -1704,9 +1704,8 @@ public class SmdApplicationTests {
         assertEquals(5, incassoDao.findAll().size());
         assertEquals(24, versamentoDao.findAll().size());
 
-        // this depends on when is runned...avoiding FIXME
-//      assertEquals(11, spedizioneDao.findAll().size());
-//        assertEquals(6, operazioneDao.findAll().size());
+        assertEquals(11, spedizioneDao.findAll().size());
+        assertEquals(6, operazioneDao.findAll().size());
 
         operazioneDao.deleteAll();
 
