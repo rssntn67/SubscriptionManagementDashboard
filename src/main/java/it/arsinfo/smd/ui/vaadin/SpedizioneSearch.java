@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,11 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     @Override
     public List<Spedizione> find() {
+        if (p != null) {
+            final List<Spedizione> spedizioni = new ArrayList<Spedizione>();
+            spedizioneItemDao.findByPubblicazione(p).forEach(si -> spedizioni.add(si.getSpedizione()));
+            return filterAll(spedizioni);
+        }
         if (a == null) {
             return filterAll(getSmdService().findSpedizioneAll());            
         }
@@ -123,16 +129,6 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         }
         if (filterStatoSpedizione.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getStatoSpedizione() == filterStatoSpedizione.getValue()).collect(Collectors.toList());      
-        }
-        if (p != null) {
-            spedizioni= spedizioni.stream().filter(s -> {
-                for (SpedizioneItem item: spedizioneItemDao.findBySpedizione(s)) {
-                    if (item.getPubblicazione().getId().longValue() == p.getId().longValue()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
         }
         for (Spedizione sped: spedizioni) {
             sped.setAbbonamento(abbMap.get(sped.getAbbonamento().getId()));
