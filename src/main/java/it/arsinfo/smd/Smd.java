@@ -580,6 +580,20 @@ public class Smd {
             costo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
+        case Scontato1:
+            if (!ec.isAbbonamentoAnnuale()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoConSconto1().multiply(new BigDecimal(ec.getNumero()));
+            break;
+
+        case Scontato2:
+            if (!ec.isAbbonamentoAnnuale()) {
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+            }
+            costo = ec.getPubblicazione().getAbbonamentoConSconto2().multiply(new BigDecimal(ec.getNumero()));
+            break;
+
         case Sostenitore:
             if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);

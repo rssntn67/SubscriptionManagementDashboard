@@ -49,7 +49,195 @@ public class SmdImportFromExcel {
     public static final String ELENCO_OMAGGIO_GESUITI_BLOCCHETTI = "data/ELENCOOMAGGIOGESUITIBLOCCHETTI2020.xls";
     public static final String ELENCO_OMAGGIO_LODARE = "data/ELENCOOMAGGIOLODARE2020.xls";
     public static final String ELENCO_OMAGGIO_GESUITI_MANIFESTI = "data/ELENCOOMAGGIOGESUITIMANIFESTI2020.xls";
+    public static final String CATEGORIA_BM_CASSA = "data/CATEGORIABMCASSA.xls";
 
+    public static List<Storico> getStoriciFromOmaggio(List<Row> omaggiorows,
+                Map<String,Anagrafica> anagraficaMap,
+                Map<String,Anagrafica> omaggioMap, Pubblicazione p, 
+                InvioSpedizione invioSped,
+                TipoEstrattoConto tipo) throws UnsupportedOperationException {
+        final List<Storico> storici = new ArrayList<>();
+        for (Row row: omaggiorows) {
+            Anagrafica intestatario=null;
+            String denominazione = getNominativoFromOmaggioRow(row);
+            Provincia provincia = getProvinciaFromOmaggioRow(row);
+            for (String cod: omaggioMap.keySet()) {
+                Anagrafica a = omaggioMap.get(cod);
+                if (denominazione.equals(a.getDenominazione()) 
+                        && provincia == a.getProvincia()) {
+                    intestatario = anagraficaMap.get(cod);
+                    break;
+                }
+            }
+            if (intestatario == null) {
+                throw new UnsupportedOperationException("Intestatario non trovato");
+            }
+            int qnt = getQuantitaFromOmaggioRow(row);
+            storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
+        }
+        return storici;
+    }
+    
+    public static List<Storico> 
+        getStoriciFromBeneficiari2010(
+            List<Row> abrows,
+            Map<String,Anagrafica> anagraficaMap,
+            Pubblicazione messaggio,
+            Pubblicazione lodare,
+            Pubblicazione blocchetti, 
+            Pubblicazione estratti, Set<String> bmCassa) throws UnsupportedOperationException {
+        final List<Storico> storici = new ArrayList<>();
+        for (Row row : abrows) {
+            String ancodice = SmdImportFromExcel.getAncodiceFromBeneficiari(row);
+            int qnt = SmdImportFromExcel.getQuantitaFromBeneficiari(row);
+            BigDecimal prezzo = SmdImportFromExcel.getPrezzoFromBeneficiari(row);
+            Anagrafica destinatario = anagraficaMap.get(ancodice);
+            Pubblicazione p;
+            TipoEstrattoConto tipo= TipoEstrattoConto.Ordinario;           
+            InvioSpedizione invioSped = InvioSpedizione.Spedizioniere;
+            if (messaggio.getAbbonamento().compareTo(prezzo) == 0) {
+                p=messaggio;
+            } else if (blocchetti.getAbbonamento().compareTo(prezzo) == 0) {
+                p=blocchetti;
+                if (qnt >= 30) {
+                    invioSped = InvioSpedizione.AdpSede;
+                }
+            } else if (lodare.getAbbonamento().compareTo(prezzo) == 0) {
+                p=lodare;
+            } else if (estratti.getAbbonamento().compareTo(prezzo) == 0) {
+                p=estratti;
+                if (qnt >= 2) {
+                    invioSped = InvioSpedizione.AdpSede;
+                }
+            } else if (blocchetti.getAbbonamentoConSconto().compareTo(prezzo) == 0) {
+                p=blocchetti;
+                tipo = TipoEstrattoConto.Scontato;
+                if (qnt >= 30) {
+                    invioSped = InvioSpedizione.AdpSede;
+                }
+            } else if (blocchetti.getAbbonamentoConSconto1().compareTo(prezzo) == 0) {
+                p=blocchetti;
+                tipo = TipoEstrattoConto.Scontato1;
+                if (qnt >= 30) {
+                    invioSped = InvioSpedizione.AdpSede;
+                }
+            } else if (blocchetti.getAbbonamentoConSconto2().compareTo(prezzo) == 0) {
+                p=blocchetti;
+                tipo = TipoEstrattoConto.Scontato2;
+                if (qnt >= 30) {
+                    invioSped = InvioSpedizione.AdpSede;
+                }
+           } else if (prezzo.compareTo(new BigDecimal("1.0")) == 0) {
+                continue;
+            } else {
+                throw new UnsupportedOperationException("cannot find pubblicazione");
+            }
+            String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
+            Anagrafica intestatario = destinatario;
+            if (!bancodice.trim().equals("")) {
+                intestatario = anagraficaMap.get(bancodice);
+            }
+            if (bmCassa.contains(ancodice)) {
+                invioSped = InvioSpedizione.AdpSede;
+            }
+            storici.add(SmdLoadSampleData.getStoricoBy(intestatario, destinatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
+        }
+        
+        return storici;
+    }
+    
+    public static Map<String,BigDecimal> fixSpeseEstero(Map<String,Row> aeRowMap){
+        Map<String,BigDecimal> speseMap = new HashMap<>();
+        for (String cod: aeRowMap.keySet()) {
+            speseMap.put(cod, getSpeseAbbEstero(aeRowMap.get(cod)));
+        }
+        return speseMap;
+    }
+    
+    public static List<Storico> 
+        getStoriciFromEstero2010(
+            Map<String,Row> aeRowMap,
+            Map<String,Anagrafica> anagraficaMap,
+            Pubblicazione messaggio,
+            Pubblicazione lodare,
+            Pubblicazione blocchetti, 
+            Pubblicazione estratti) throws UnsupportedOperationException 
+    {
+        
+        final List<Storico> storici = new ArrayList<>();
+        for (String ancod: aeRowMap.keySet()) {
+            Anagrafica intestatario = anagraficaMap.get(ancod);
+            Row row = aeRowMap.get(ancod);
+            if (SmdImportFromExcel.getIdEstrattiAbbEstero(row) == 3) {
+                int qnt = SmdImportFromExcel.getQtaEstrattiAbbEstero(row);
+                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, estratti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            }
+            if (SmdImportFromExcel.getIdBlocchettiAbbEstero(row) == 2) {
+                int qnt = SmdImportFromExcel.getQtaBlocchettiAbbEstero(row);
+                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, blocchetti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            }
+            if (SmdImportFromExcel.getIdMessaggioAbbEstero(row) == 1) {
+                int qnt = SmdImportFromExcel.getQtaMessaggioAbbEstero(row);
+                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, messaggio, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            }
+        }
+        return storici;
+    }
+    
+    public static Map<String,BigDecimal> fixSpeseItaEstero(List<Row> rows){
+        Map<String,BigDecimal> speseMap = new HashMap<>();
+        for (Row row: rows) {
+            String ancodInt = SmdImportFromExcel.getAnCodiceIntestatarioAbbonatiItaEstero(row);
+            if (!speseMap.containsKey(ancodInt)) {
+                speseMap.put(ancodInt, BigDecimal.ZERO);
+            }
+            BigDecimal value = speseMap.get(ancodInt).add(getSpeseFromAbbonatiItaEstero(row));
+            speseMap.put(ancodInt, value);
+        }
+        return speseMap;
+    }
+    
+    public static List<Storico> 
+        getStoriciFromItaEstero2010(
+            List<Row> rows,
+            Map<String,Anagrafica> eaMap,
+            Pubblicazione messaggio,
+            Pubblicazione lodare,
+            Pubblicazione blocchetti, 
+            Pubblicazione estratti) throws UnsupportedOperationException {
+    final List<Storico> storici = new ArrayList<>();
+    for (Row row: rows) {
+        String pubstr = SmdImportFromExcel.getTestataFromAbbonatiItaEstero(row);
+        Pubblicazione p;
+        if (pubstr.equalsIgnoreCase("messaggio")) {
+            p=messaggio;
+        } else if (pubstr.equalsIgnoreCase("blocchetti")) {
+            p=blocchetti;
+        } else if (pubstr.equalsIgnoreCase("lodare")) {
+            p=lodare;
+        } else if (pubstr.equalsIgnoreCase("estratti")) {
+            p=estratti;
+        } else {
+            throw new UnsupportedOperationException("Pubblicazione non trovata: " + pubstr);
+        }
+        int qnt = SmdImportFromExcel.getQuantFromAbbonatiItaEstero(row);
+        String ancodInt = SmdImportFromExcel.getAnCodiceIntestatarioAbbonatiItaEstero(row);
+        String ancodDst = SmdImportFromExcel.getAnCodiceDestinatatarioAbbonatiItaEstero(row);
+        storici.add( 
+            SmdLoadSampleData
+                .getStoricoBy(
+                              eaMap.get(ancodInt), 
+                              eaMap.get(ancodDst), 
+                              p, 
+                              qnt, 
+                              Cassa.Ccp, 
+                              TipoEstrattoConto.Ordinario, 
+                              Invio.Destinatario, 
+                              InvioSpedizione.AdpSede)
+            );
+    }        
+    return storici;
+    }
     public static List<Storico> 
         getStoriciFromCampagna2010(
                 Map<String,Row> campagnarowMap,Map<String,Anagrafica> eaMap,
@@ -100,7 +288,7 @@ public class SmdImportFromExcel {
         if (StringUtils.isEmpty(value)) {
             return BigDecimal.ZERO;
         }
-        return new BigDecimal(value.trim().replace(",", "."));
+        return new BigDecimal(value);
     }
     
 
@@ -499,6 +687,20 @@ public class SmdImportFromExcel {
         
     }
 
+    public static Set<String> getCategoriaBmCassa() throws IOException {
+        Set<String> codici = new HashSet<>();
+        DataFormatter dataFormatter = new DataFormatter();
+        Workbook wbca2020 = new HSSFWorkbook(new FileInputStream(CATEGORIA_BM_CASSA));
+        for (Row row: wbca2020.getSheetAt(0)) {
+            String ancodice = dataFormatter.formatCellValue(row.getCell(1));
+            if (ancodice.endsWith("ancodice")) {
+                continue;
+            }
+            codici.add(ancodice);
+        }
+        return codici;        
+    }
+    
     public static List<Row> getOmaggioGesuitiMessaggio2020() throws IOException {
         return getOmaggi(new File(ELENCO_OMAGGIO_GESUITI_MESSAGGIO));
     }
@@ -547,7 +749,17 @@ public class SmdImportFromExcel {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(0)));
     }
-    
+
+    public static String getNominativoFromOmaggioRow(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(2));
+    }
+
+    public static Provincia getProvinciaFromOmaggioRow(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getProvincia(dataFormatter.formatCellValue(row.getCell(7)));
+    }
+
     private static Anagrafica processRowOmaggio(Row row, DataFormatter dataFormatter) throws UnsupportedOperationException {
 
         String cap = dataFormatter.formatCellValue(row.getCell(1));
@@ -720,14 +932,35 @@ public class SmdImportFromExcel {
         return rows;
     }
     
-    public static BigDecimal getPrezzoFromRowBeneficiari(Row row) {
+    public static String getAbrinnautFromBeneficiari(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(9));        
+    }
+
+    public static String getAbstatoFromBeneficiari(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(10));        
+    }
+
+    public static BigDecimal getPrezzoFromBeneficiari(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
     }
 
-    public static Integer getQuantitaFromRowBeneficiari(Row row) {
+    public static Integer getQuantitaFromBeneficiari(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(14)));
+    }
+
+    public static String getAncodiceFromBeneficiari(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(1));
+        
+    }
+    
+    public static String getBancodiceFromBeneficiari(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return dataFormatter.formatCellValue(row.getCell(15));        
     }
 
     public static Map<String,Anagrafica> importBeneficiari(List<Row> rows) throws IOException {
@@ -821,7 +1054,7 @@ public class SmdImportFromExcel {
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(9)));
     }
 
-    public static BigDecimal getImportoFromAbbonatiItaEstero(Row row) {
+    public static BigDecimal getImportoRivistaFromAbbonatiItaEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(10)));
     }
@@ -829,6 +1062,26 @@ public class SmdImportFromExcel {
     public static BigDecimal getSpeseFromAbbonatiItaEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(11)));
+    }
+
+    public static String getAnCodiceIntestatarioAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return "00000"+dataFormatter.formatCellValue(row.getCell(0));        
+    }
+
+    public static String getAnCodiceDestinatatarioAbbonatiItaEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return "00000"+dataFormatter.formatCellValue(row.getCell(2));        
+    }
+
+    public static Paese getPaeseDestinatarioAbbonatiEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return Paese.getBySigla(dataFormatter.formatCellValue(row.getCell(7)));        
+    }
+
+    public static AreaSpedizione getAreaSpedizioneDestinatarioAbbonatiEstero(Row row) {
+        DataFormatter dataFormatter = new DataFormatter();
+        return getAreaSpedizione(dataFormatter.formatCellValue(row.getCell(7)));        
     }
 
     public static Map<String,Anagrafica> importAbbonatiItaEstero(List<Row> rows) throws IOException {
@@ -846,7 +1099,6 @@ public class SmdImportFromExcel {
             String descri = dataFormatter.formatCellValue(row.getCell(4));
             String indiri = dataFormatter.formatCellValue(row.getCell(5));
             String locali = dataFormatter.formatCellValue(row.getCell(6));
-            String nazion = dataFormatter.formatCellValue(row.getCell(7));
             */
             try {
                 Anagrafica intestatario = getAnagraficaByAncodcon(ancodiceI);
@@ -909,53 +1161,53 @@ public class SmdImportFromExcel {
     }
     
     // 3 estratti/manifesti
-    public int getIdEstrattiAbbEstero(Row row) {
+    public static int getIdEstrattiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(13)));
     }
 
-    public BigDecimal getCostoEstrattiAbbEstero(Row row) {
+    public static BigDecimal getCostoEstrattiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(14)));
     }
     
-    public int getQtaEstrattiAbbEstero(Row row) {
+    public static int getQtaEstrattiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(15)));
     }
 
     // id=2 blocchetti
-    public int getIdBlocchettiAbbEstero(Row row) {
+    public static int getIdBlocchettiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(16)));
     }
 
-    public BigDecimal getCostoBlocchettiAbbEstero(Row row) {
+    public static BigDecimal getCostoBlocchettiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(17)));
     }
     
-    public int getQtaBlocchettiAbbEstero(Row row) {
+    public static int getQtaBlocchettiAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(18)));
     }
     // 1 messaggio
-    public int getIdMessaggioAbbEstero(Row row) {
+    public static int getIdMessaggioAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(19)));
     }
 
-    public BigDecimal getCostoMessaggioAbbEstero(Row row) {
+    public static BigDecimal getCostoMessaggioAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(20)));
     }
     
-    public int getQtaMessaggioAbbEstero(Row row) {
+    public static int getQtaMessaggioAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowInteger(dataFormatter.formatCellValue(row.getCell(21)));
     }
     // 6 lodare
-    public BigDecimal getSpese(Row row) {
+    public static BigDecimal getSpeseAbbEstero(Row row) {
         DataFormatter dataFormatter = new DataFormatter();
         return getRowBigDecimal(dataFormatter.formatCellValue(row.getCell(23)));
     }
