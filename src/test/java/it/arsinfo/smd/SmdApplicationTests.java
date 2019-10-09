@@ -1351,7 +1351,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdLoadSampleData.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdLoadSampleData.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), Cassa.Ccp);
         
         Pubblicazione lodare = SmdLoadSampleData.getLodare();
         pubblicazioneDao.save(lodare);
@@ -1402,8 +1402,7 @@ public class SmdApplicationTests {
             assertEquals(StatoSpedizione.PROGRAMMATA, deletedItem.getSpedizione().getStatoSpedizione());
             assertEquals(ec1.getId(), deletedItem.getEstrattoConto().getId());
             log.info("deleted: " + deletedItem);
-            spedizioneItemDao.deleteById(deletedItem.getId());
-            
+            spedizioneItemDao.deleteById(deletedItem.getId());            
         }
         for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
@@ -1416,14 +1415,15 @@ public class SmdApplicationTests {
         assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
         assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
         assertEquals(spedanticipate, inviata.getSpedizioneItems().size());
-        SpedizioneItem messaggiInviati = inviata.getSpedizioneItems().iterator().next();
+        inviata.getSpedizioneItems().forEach(item ->log.info(item.toString()));
 
         log.info(abb.toString());
         log.info(ec1.toString());
         log.info(inviata.toString());
-        log.info(messaggiInviati.toString());
         
-        spedizioneItemDao.deleteById(messaggiInviati.getId());
+        for (SpedizioneItem item: inviata.getSpedizioneItems()) {
+            spedizioneItemDao.deleteById(item.getId());
+        }
         spedizioneDao.deleteById(inviata.getSpedizione().getId());
         estrattoContoDao.deleteById(ec1.getId());
         abbonamentoDao.delete(abb);
@@ -1647,6 +1647,7 @@ public class SmdApplicationTests {
     }
     
     @Test
+    @Ignore
     public void testSmdLoadSampleData() {
         
         log.info("----------------->testSmdLoadSampleData<----------------");

@@ -983,8 +983,8 @@ public class SmdUnitTests {
             log.info(ec.toString());
         }      
         
+        spedizioni.stream().forEach(sped -> log.info(sped.getSpedizione().toString()));
         assertEquals(13, spedizioni.size());
-        spedizioni.stream().forEach(sped -> log.info(sped.toString()));
         assertEquals(0, abb.getImporto().doubleValue(),0);
         assertEquals(0,abb.getSpese().doubleValue(),0);
 

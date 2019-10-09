@@ -53,11 +53,7 @@ public class SpedizioneWithItems {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((spedizione == null) ? 0 : spedizione.hashCode());
-        return result;
+        return spedizione.hashCode();
     }
 
 
