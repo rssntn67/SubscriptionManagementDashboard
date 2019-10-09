@@ -47,9 +47,9 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
     public IncassoUpload(String caption) {
         super();
 
-        Upload upload = new Upload(caption,this);
-        upload.setImmediateMode(false);
-        upload.setButtonCaption("Avvia Download");
+        Upload upload = new Upload("",this);
+        upload.setImmediateMode(true);
+        upload.setButtonCaption("+Download Poste");
         upload.addSucceededListener(this);
         avviso.addStyleName(ValoTheme.LABEL_H3);
         avviso.setVisible(false);
@@ -78,11 +78,13 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         try {
             Set<String> versamenti = new HashSet<>();
             while ((strLine = br.readLine()) != null)   {
-                if (Smd.isVersamento(strLine)) {
+                if (strLine.trim().equals("")) {
+                    log.debug("Riga vuota!");
+                } else if (Smd.isVersamento(strLine)) {
                     versamenti.add(strLine);
                 } else if (Smd.isRiepilogo(strLine)) {
                     incassi.add(Smd.generaIncasso(versamenti, strLine));
-                    versamenti.clear();
+                    versamenti.clear();                    
                 } else {
                     avviso.setValue("Incasso Cancellato: Valore non riconosciuto->" + strLine);
                     log.error("Incasso Cancellato: Valore non riconosciuto->" +strLine);
@@ -123,6 +125,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
             // Open the file for writing.
             file = new File("/tmp/" + filename);
             fos = new FileOutputStream(file);
+            log.info("Loading file: {}" , filename);
         } catch (final java.io.FileNotFoundException e) {
             new Notification("Could not open file",
                              e.getMessage(),

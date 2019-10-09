@@ -9,6 +9,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -63,7 +64,7 @@ public interface SmdService {
     void delete(Storico storico);
     
     void save(Storico storico, Nota nota);
-    
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
-
+    void save(Incasso incasso);
+    
 }

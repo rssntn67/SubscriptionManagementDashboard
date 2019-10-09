@@ -823,9 +823,13 @@ public class Smd {
         abbonamento.setVersamento(null);
     }
     
-    public static boolean isVersamento(String versamento) {        
-        return (
-                versamento != null && versamento.length() == 200 && versamento.trim().length() == 82);
+    public static boolean isVersamento(String versamento) {   
+        log.info(versamento);
+        log.info("lunghezza"+versamento.length());
+        log.info("trim"+versamento.trim().length());
+               return (
+                versamento != null && versamento.length() == 200 
+                && (versamento.trim().length() == 82 || versamento.trim().length() == 89));
     }
     
     public static boolean isRiepilogo(String riepilogo) {

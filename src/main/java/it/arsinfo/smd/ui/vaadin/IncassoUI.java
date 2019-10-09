@@ -13,6 +13,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.repository.IncassoDao;
@@ -31,6 +32,7 @@ public class IncassoUI extends IncassoAbstractUI {
     @Autowired    
     private VersamentoDao versamentoDao;
 
+    @Autowired SmdService smdService;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
@@ -52,9 +54,13 @@ public class IncassoUI extends IncassoAbstractUI {
                     Notification.show("Non si può selezionare una data contabile futuro", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-
-                super.save();
-                get().getVersamenti().forEach(v -> versamentoDao.save(v));
+                try {
+                    smdService.save(get());
+                    onChange();
+                } catch (Exception e) {
+                    Notification.show("Non è possibile salvare questo record: ",
+                                      Notification.Type.ERROR_MESSAGE);
+                }
             }
         };
         VersamentoAdd versAdd = new VersamentoAdd("Aggiungi Versamento");
@@ -84,8 +90,8 @@ public class IncassoUI extends IncassoAbstractUI {
         };
 
         addSmdComponents(
-                         add,
-                         upload, 
+                         upload,
+                         add,                          
                          search,
                          incassa,
                          editor,
@@ -116,7 +122,14 @@ public class IncassoUI extends IncassoAbstractUI {
         });
         
         upload.setChangeHandler(() -> {
-            upload.getIncassi().stream().forEach(incasso -> incassoDao.save(incasso));
+            upload.getIncassi().stream().forEach(incasso -> {
+                try {
+                    smdService.save(incasso);
+                } catch (Exception e) {
+                    Notification.show("Non è possibile salvare questo record: ",
+                                      Notification.Type.ERROR_MESSAGE);
+                }
+            });
             grid.populate(upload.getIncassi());
         });
         

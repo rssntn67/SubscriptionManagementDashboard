@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -693,6 +694,22 @@ public class SmdServiceImpl implements SmdService {
             spedizioni.add(swit);
         }
         return spedizioni;
+    }
+
+    @Override
+    public void save(Incasso incasso) {
+        List<Incasso> found = incassoDao
+        .findByDataContabile(incasso.getDataContabile())
+        .stream()
+        .filter(inc -> 
+           inc.getCassa() == Cassa.Ccp 
+        && inc.getCuas() == incasso.getCuas() 
+        && inc.getImporto().compareTo(incasso.getImporto()) == 0)
+        .collect(Collectors.toList());
+        if (found.isEmpty()) {
+            incassoDao.save(incasso);
+            incasso.getVersamenti().forEach(vers -> versamentoDao.save(vers));
+        }
     }
 
 }
