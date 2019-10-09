@@ -316,13 +316,6 @@ public class SmdImportTest {
                 assertTrue(anagraficaMap.containsKey(codbmcassa));
             }
         }
-        System.out.println("messaggio:" + messaggio.getAbbonamento());
-        System.out.println("blocchetti:" + blocchetti.getAbbonamento());
-        System.out.println("lodare:" + lodare.getAbbonamento());
-        System.out.println("estratti:" + estratti.getAbbonamento());
-        System.out.println("blocchettis:" + blocchetti.getAbbonamentoConSconto());
-        System.out.println("blocchettis1:" + blocchetti.getAbbonamentoConSconto1());
-        System.out.println("blocchettis2:" + blocchetti.getAbbonamentoConSconto2());
         
         for (Row row : abrows) {
             String ancodice = SmdImportFromExcel.getAncodiceFromBeneficiari(row);
@@ -341,16 +334,9 @@ public class SmdImportTest {
                 //System.out.println("estratti");
             } else if (blocchetti.getAbbonamentoConSconto().compareTo(prezzo) == 0) {
                 //System.out.println("blocchetti con sconto");
-            } else if (blocchetti.getAbbonamentoConSconto1().compareTo(prezzo) == 0) {
-                //System.out.println("blocchetti con sconto 1");
-            } else if (blocchetti.getAbbonamentoConSconto2().compareTo(prezzo) == 0) {
-                //System.out.println("blocchetti con sconto 2");
-            } else if (prezzo.compareTo(new BigDecimal("1")) == 0) {
-                //System.err.println(ancodice + " 1 Euro");
             } else {
                 System.out.println(ancodice);
-                System.out.println("prezzo: " + prezzo);
-                assertTrue(false);
+                System.out.println("spese: " + prezzo);
             }
             String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
             if (bancodice.trim().equals("")) {
@@ -362,7 +348,7 @@ public class SmdImportTest {
                 SmdImportFromExcel.
                 getStoriciFromBeneficiari2010(
                   abrows, anagraficaMap, messaggio, lodare, blocchetti, estratti, bmcassa);
-        assertEquals(abrows.size()-1, storicofrombeneficiari.size());
+        assertEquals(abrows.size()-3, storicofrombeneficiari.size());
 
         //Storici abbonati Estero
         int itemstoricoabbestero =0;
@@ -534,6 +520,14 @@ public class SmdImportTest {
             for (String cod: fixSpeseItaEsteroMap.keySet()) {
                 assertTrue(anagraficaMap.containsKey(cod));
             }
+            
+            Map<String,BigDecimal> fixSpeseBeneficiariMap = 
+                    SmdImportFromExcel.fixSpeseBeneficiari(abrows, messaggio, lodare, blocchetti, estratti);
+            assertEquals(3, fixSpeseBeneficiariMap.size());
+            for (String cod: fixSpeseBeneficiariMap.keySet()) {
+                assertTrue(anagraficaMap.containsKey(cod));
+            }
+
 
     }
     

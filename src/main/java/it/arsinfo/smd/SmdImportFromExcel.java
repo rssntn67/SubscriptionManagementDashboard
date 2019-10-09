@@ -77,6 +77,37 @@ public class SmdImportFromExcel {
         }
         return storici;
     }
+    public static Map<String,BigDecimal> fixSpeseBeneficiari(
+            List<Row> abrows,
+            Pubblicazione messaggio,
+            Pubblicazione lodare,
+            Pubblicazione blocchetti, 
+            Pubblicazione estratti) throws UnsupportedOperationException {
+
+        Map<String,BigDecimal> speseMap = new HashMap<>();
+        for (Row row : abrows) {
+            String ancodice = SmdImportFromExcel.getAncodiceFromBeneficiari(row);
+            BigDecimal prezzo = SmdImportFromExcel.getPrezzoFromBeneficiari(row);
+            if (messaggio.getAbbonamento().compareTo(prezzo) == 0) {
+                continue;
+            } else if (blocchetti.getAbbonamento().compareTo(prezzo) == 0) {
+                continue;
+            } else if (lodare.getAbbonamento().compareTo(prezzo) == 0) {
+                continue;
+            } else if (estratti.getAbbonamento().compareTo(prezzo) == 0) {
+                continue;
+            } else if (blocchetti.getAbbonamentoConSconto().compareTo(prezzo) == 0) {
+                continue;
+            }
+            String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
+            if (!bancodice.trim().equals("")) {
+                speseMap.put(bancodice, prezzo);
+            } else {
+                speseMap.put(ancodice, prezzo);                
+            }
+        }
+        return speseMap;
+    }
     
     public static List<Storico> 
         getStoriciFromBeneficiari2010(
@@ -115,22 +146,8 @@ public class SmdImportFromExcel {
                 if (qnt >= 30) {
                     invioSped = InvioSpedizione.AdpSede;
                 }
-            } else if (blocchetti.getAbbonamentoConSconto1().compareTo(prezzo) == 0) {
-                p=blocchetti;
-                tipo = TipoEstrattoConto.Scontato1;
-                if (qnt >= 30) {
-                    invioSped = InvioSpedizione.AdpSede;
-                }
-            } else if (blocchetti.getAbbonamentoConSconto2().compareTo(prezzo) == 0) {
-                p=blocchetti;
-                tipo = TipoEstrattoConto.Scontato2;
-                if (qnt >= 30) {
-                    invioSped = InvioSpedizione.AdpSede;
-                }
-           } else if (prezzo.compareTo(new BigDecimal("1.0")) == 0) {
-                continue;
             } else {
-                throw new UnsupportedOperationException("cannot find pubblicazione");
+                continue;
             }
             String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
             Anagrafica intestatario = destinatario;

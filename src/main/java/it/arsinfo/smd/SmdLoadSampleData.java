@@ -404,8 +404,6 @@ public class SmdLoadSampleData implements Runnable {
         p.setAbbonamento(new BigDecimal("7.00"));
         p.setAbbonamentoWeb(new BigDecimal("5.00"));
         p.setAbbonamentoConSconto(new BigDecimal("5.60"));
-        p.setAbbonamentoConSconto1(new BigDecimal("5.50"));
-        p.setAbbonamentoConSconto2(new BigDecimal("6.00"));
         p.setAbbonamentoSostenitore(new BigDecimal("20.00"));
 
         p.setGen(true);
@@ -1372,7 +1370,18 @@ public class SmdLoadSampleData implements Runnable {
                 abb.setSpese(fixSpeseItaEsteroMap.get(cod));
                 abbonamentoDao.save(abb);
             });
-        }        
+        }       
+        
+        Map<String,BigDecimal> fixSpeseBeneficiariMap = 
+                SmdImportFromExcel.fixSpeseBeneficiari(abrows, messaggio, lodare, blocchetti, estratti);
+        for (String cod: fixSpeseBeneficiariMap.keySet()) {
+            Anagrafica intestatario = anagraficaMap.get(cod);
+            abbonamentoDao.findByIntestatario(intestatario).forEach(abb -> {
+                abb.setSpese(fixSpeseBeneficiariMap.get(cod));
+                abbonamentoDao.save(abb);
+            });
+        }
+
         log.info("End Fix Spese");
     }
 

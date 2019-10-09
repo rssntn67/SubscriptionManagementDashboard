@@ -43,8 +43,6 @@ public class Pubblicazione implements SmdEntity {
     private BigDecimal abbonamentoWeb=BigDecimal.ZERO;
     private BigDecimal abbonamentoSostenitore=BigDecimal.ZERO;
     private BigDecimal abbonamentoConSconto=BigDecimal.ZERO;
-    private BigDecimal abbonamentoConSconto1=BigDecimal.ZERO;
-    private BigDecimal abbonamentoConSconto2=BigDecimal.ZERO;
 
     private boolean gen = false;
     private boolean feb = false;
@@ -394,21 +392,4 @@ public class Pubblicazione implements SmdEntity {
             return false;
         return true;
     }
-
-    public BigDecimal getAbbonamentoConSconto1() {
-        return abbonamentoConSconto1;
-    }
-
-    public void setAbbonamentoConSconto1(BigDecimal abbonamentoConSconto1) {
-        this.abbonamentoConSconto1 = abbonamentoConSconto1;
-    }
-
-    public BigDecimal getAbbonamentoConSconto2() {
-        return abbonamentoConSconto2;
-    }
-
-    public void setAbbonamentoConSconto2(BigDecimal abbonamentoConSconto2) {
-        this.abbonamentoConSconto2 = abbonamentoConSconto2;
-    }
-
 }
