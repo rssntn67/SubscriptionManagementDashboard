@@ -1338,7 +1338,7 @@ public class SmdLoadSampleData implements Runnable {
             .stream()
             .filter(abb-> abb.getIntestatario().getId().longValue() == a.getId().longValue())
             .forEach(abb -> {
-                log.info("Fix codeline: {}",codeline);
+                log.debug("Fix codeline: {}",codeline);
                 abb.setCodeLine(codeline);
                 abbonamentoDao.save(abb);
             });

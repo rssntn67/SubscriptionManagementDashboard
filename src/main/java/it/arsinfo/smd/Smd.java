@@ -810,9 +810,6 @@ public class Smd {
     }
     
     public static boolean isVersamento(String versamento) {   
-        log.info(versamento);
-        log.info("lunghezza"+versamento.length());
-        log.info("trim"+versamento.trim().length());
                return (
                 versamento != null && versamento.length() == 200 
                 && (versamento.trim().length() == 82 || versamento.trim().length() == 89));
