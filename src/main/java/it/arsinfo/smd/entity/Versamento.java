@@ -168,8 +168,8 @@ public class Versamento implements SmdEntity {
     }
     @Override
     public String toString() {
-        return String.format("Versamento[id=%d,Incasso=%d,progressivo='%s',codeLine='%s',operazione='%s'valido='%b', importo='%.2f', incassato='%.2f', residuo='%.2f']",
-                             id,incasso.getId(),progressivo,codeLine, operazione,Abbonamento.checkCodeLine(codeLine),importo,incassato,getResiduo());
+        return String.format("Versamento[id=%d,progressivo='%s',codeLine='%s', importo='%.2f', incassato='%.2f']",
+                             id,progressivo,codeLine, importo,incassato);
     }
 
     @Transient

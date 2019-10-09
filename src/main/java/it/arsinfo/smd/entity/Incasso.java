@@ -37,7 +37,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
             
-    @OneToMany(mappedBy="incasso", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="incasso", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)

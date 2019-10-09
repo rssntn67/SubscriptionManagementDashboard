@@ -90,7 +90,7 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Int='%d', Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s, Data='%td %tb %tY %tR %tZ']",
+        return String.format("Abbonamento[id=%d, %s , Intestatario='%d', Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s",
                                    id, 
                                    getStatoIncasso(), 
                                    intestatario.getId(), 
@@ -99,8 +99,7 @@ public class Abbonamento implements SmdEntity {
                                    pregresso,
                                    cassa,
                                    codeLine,
-                                   anno,
-                                   data, data, data, data, data);
+                                   anno);
     }
     
     public Anno getAnno() {

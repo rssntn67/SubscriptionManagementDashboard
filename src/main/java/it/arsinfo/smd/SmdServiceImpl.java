@@ -483,50 +483,34 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception {
+        log.info("incassa start {} {}",abbonamento,versamento);
         Incasso incasso = versamento.getIncasso();
         Smd.incassa(incasso,versamento, abbonamento);
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
-        if (campagna != null) {
             
-        switch (campagna.getStatoCampagna()) {
-            case Generata:
-                break;
-            case Chiusa:
-                break;
-            case Inviata:
-                break;
-            case InviatoEC:
-                switch (abbonamento.getStatoIncasso()) {
-                case No:
-                    break;
-                case Omaggio:
-                    break;
-                case Parzialmente:
-                    break;
-                case Si:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    riattivaSpedizioniAbbonamento(abbonamento);
-                    riattivaStoricoAbbonamento(abbonamento);
-                    break;
-                case SiConDebito:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    riattivaSpedizioniAbbonamento(abbonamento);
-                    riattivaStoricoAbbonamento(abbonamento);
-                    break;
-                default:
-                    break;
-                
-                }
-                break;
-            default:
-                break;                                
-        }
-        }
-
-        abbonamentoDao.save(abbonamento);
+        switch (abbonamento.getStatoIncasso()) {
+        case No:
+            break;
+        case Omaggio:
+            break;
+        case Parzialmente:
+            break;
+        case Si:
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+            riattivaSpedizioniAbbonamento(abbonamento);
+            riattivaStoricoAbbonamento(abbonamento);
+            break;
+        case SiConDebito:
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+            riattivaSpedizioniAbbonamento(abbonamento);
+            riattivaStoricoAbbonamento(abbonamento);
+            break;
+        default:
+            break;
         
+        }
+        abbonamentoDao.save(abbonamento);        
     }
 
     @Override
