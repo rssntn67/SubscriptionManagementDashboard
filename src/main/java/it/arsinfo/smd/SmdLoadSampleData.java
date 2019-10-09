@@ -1336,11 +1336,12 @@ public class SmdLoadSampleData implements Runnable {
         {
             final String codeline = SmdImportFromExcel.processRowCampagnaCodeline(rowMap.get(cod), cod);
             Anagrafica a = anagraficaMap.get(cod);
-            abbonamenti.stream().forEach(abb -> {
-                if (abb.getIntestatario().getId().longValue() == a.getId().longValue()) {                
-                    abb.setCodeLine(codeline);
-                }
-                abb.setSpese(BigDecimal.ZERO);
+            abbonamenti
+            .stream()
+            .filter(abb-> abb.getIntestatario().getId().longValue() == a.getId().longValue())
+            .forEach(abb -> {
+                log.info("Fix codeline: {}",codeline);
+                abb.setCodeLine(codeline);
                 abbonamentoDao.save(abb);
             });
             
@@ -1348,6 +1349,11 @@ public class SmdLoadSampleData implements Runnable {
         log.info("End Fix codeline");
         
         log.info("Start Fix Spese");
+        abbonamentoDao.findAll().forEach(abb ->{
+            abb.setSpese(BigDecimal.ZERO);
+            abbonamentoDao.save(abb);
+        });
+
         Map<String,BigDecimal> fixSpeseEsteroMap = 
                 SmdImportFromExcel.fixSpeseEstero(aeRowMap);
         for (String cod: fixSpeseEsteroMap.keySet()) {
