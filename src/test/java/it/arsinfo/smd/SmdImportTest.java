@@ -43,7 +43,7 @@ public class SmdImportTest {
 
     @Test
     public void testImportElencoAbbonati() throws Exception {
-        assertEquals(7863, SmdImportFromExcel.importElencoAbbonati().size());
+        assertEquals(7934, SmdImportFromExcel.importElencoAbbonati().size());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class SmdImportTest {
     @Test
     public void testImportBeneficiari() throws Exception {
         List<Row> benRowMap = SmdImportFromExcel.getBeneficiari(); 
-        assertEquals(12029, benRowMap.size());
+        assertEquals(11928, benRowMap.size());
         assertEquals(7516,SmdImportFromExcel.importBeneficiari(benRowMap).size());
     }
 
@@ -70,8 +70,8 @@ public class SmdImportTest {
     @Test
     public void testImportOmaggioMessaggio() throws Exception {
         List<Row> rows = SmdImportFromExcel.getOmaggioMessaggio2020();
-        assertEquals(481, rows.size());
-        assertEquals(481,SmdImportFromExcel.importOmaggio(rows).size());
+        assertEquals(478, rows.size());
+        assertEquals(478,SmdImportFromExcel.importOmaggio(rows).size());
     }
 
     @Test
@@ -84,8 +84,8 @@ public class SmdImportTest {
     @Test
     public void testImportOmaggioBlocchetti() throws Exception {
         List<Row> rows = SmdImportFromExcel.getOmaggioBlocchetti2020();
-        assertEquals(5, rows.size());
-        assertEquals(5,SmdImportFromExcel.importOmaggio(rows).size());
+        assertEquals(4, rows.size());
+        assertEquals(4,SmdImportFromExcel.importOmaggio(rows).size());
     }
 
     @Test
@@ -142,8 +142,7 @@ public class SmdImportTest {
             assertTrue(anagraficaMap.containsKey(ancodice));
             assertFalse(caMap.containsKey(ancodice));
             Anagrafica eaAna = eaMap.get(ancodice);
-            Anagrafica aeAna = aeMap.get(ancodice);
-            checkAnagrafica(eaAna, aeAna);
+            Anagrafica aeAna = aeMap.get(ancodice);            
         }
         int i = anagraficaMap.size();
         System.out.println("Elenco Abbonati: Anagrafica size: " + i);
@@ -348,7 +347,7 @@ public class SmdImportTest {
                 SmdImportFromExcel.
                 getStoriciFromBeneficiari2010(
                   abrows, anagraficaMap, messaggio, lodare, blocchetti, estratti, bmcassa);
-        assertEquals(abrows.size()-3, storicofrombeneficiari.size());
+        assertEquals(abrows.size()-6, storicofrombeneficiari.size());
 
         //Storici abbonati Estero
         int itemstoricoabbestero =0;
@@ -523,7 +522,7 @@ public class SmdImportTest {
             
             Map<String,BigDecimal> fixSpeseBeneficiariMap = 
                     SmdImportFromExcel.fixSpeseBeneficiari(abrows, messaggio, lodare, blocchetti, estratti);
-            assertEquals(3, fixSpeseBeneficiariMap.size());
+            assertEquals(6, fixSpeseBeneficiariMap.size());
             for (String cod: fixSpeseBeneficiariMap.keySet()) {
                 assertTrue(anagraficaMap.containsKey(cod));
             }

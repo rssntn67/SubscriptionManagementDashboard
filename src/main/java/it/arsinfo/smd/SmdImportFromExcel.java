@@ -37,18 +37,21 @@ import it.arsinfo.smd.entity.Storico;
 public class SmdImportFromExcel {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020-060919.xls";
-    public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI-11092019.xls";
     public static final String CAMPAGNA_2020 = "data/CA2020COMPLETA.xls";
+
+    public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI2020.xls";
+    public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020.xls";
+    public static final String ELENCO_BENEFICIARI_2020 = "data/BENEFICIARI2020.xls";
     public static final String ELENCO_ABBONATI_ESTERO = "data/ABBONATIESTERO2020.xls";
-    public static final String ELENCO_ABBONATI_ITA_ESTERO = "data/ABBONATITALIABENEFESTERO-10092019.xls";
-    public static final String ELENCO_BENEFICIARI_2020 = "data/BENEFICIARI2020Exported.xls";
+    public static final String ELENCO_ABBONATI_ITA_ESTERO = "data/ABBONATITALIABENEFESTERO2020.xls";
+    
     public static final String ELENCO_OMAGGIO_MESSAGGIO = "data/ELENCOOMAGGIOMESSAGGIO2020.xls";
     public static final String ELENCO_OMAGGIO_GESUITI_MESSAGGIO = "data/ELENCOOMAGGIOGESUITIMESSAGGIO2020.xls";
     public static final String ELENCO_OMAGGIO_BLOCCHETTI = "data/ELENCOOMAGGIOBLOCCHETTI2020.xls";
     public static final String ELENCO_OMAGGIO_GESUITI_BLOCCHETTI = "data/ELENCOOMAGGIOGESUITIBLOCCHETTI2020.xls";
     public static final String ELENCO_OMAGGIO_LODARE = "data/ELENCOOMAGGIOLODARE2020.xls";
     public static final String ELENCO_OMAGGIO_GESUITI_MANIFESTI = "data/ELENCOOMAGGIOGESUITIMANIFESTI2020.xls";
+    
     public static final String CATEGORIA_BM_CASSA = "data/CATEGORIABMCASSA.xls";
 
     public static List<Storico> getStoriciFromOmaggio(List<Row> omaggiorows,
@@ -369,7 +372,7 @@ public class SmdImportFromExcel {
             }
         } else if (pncodcon.length() == 14){
             a.setCodeLineBase(pncodcon);
-        }
+        } 
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,
                                                      a);
         if (!Abbonamento.checkCodeLine(codeLine)) {
@@ -1589,9 +1592,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
                         utenteOmaggio.getDenominazione().equals(anagElenco.getDenominazione())
                         && anagElenco.getProvincia() == utenteOmaggio.getProvincia()                        
                     ) {
-                    if (anagElenco.getTitolo() == TitoloAnagrafica.Nessuno) {
-                        anagElenco.setTitolo(utenteOmaggio.getTitolo());
-                    }
+                    anagElenco.setTitolo(utenteOmaggio.getTitolo());
                     utenteOmaggio.setCodeLineBase(anagElenco.getCodeLineBase());
                     utenteOmaggio.setDiocesi(anagElenco.getDiocesi());
                     utenteOmaggio.setCellulare(anagElenco.getCellulare());
@@ -1670,137 +1671,13 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
      
             ac.setTitolo(ca.getTitolo());
 
-            if (ancodice.equals("0000021498") 
-                || ancodice.equals("0000012046")
-                || ancodice.equals("0000069601")
-                || ancodice.equals("0000003829")
-                || ancodice.equals("0000074200")
-                || ancodice.equals("0000068384")
-                || ancodice.equals("0000013286")
-                || ancodice.equals("0000022412")
-                || ancodice.equals("0000011717")
-                || ancodice.equals("0000070010")
-                || ancodice.equals("0000067739")
-                || ancodice.equals("0000067635")
-                || ancodice.equals("0000017386")
-                || ancodice.equals("0000012586")
-                || ancodice.equals("0000018764")
-                || ancodice.equals("0000072215")
-                || ancodice.equals("0000012843")
-                || ancodice.equals("0000023556")
-                || ancodice.equals("0000005674")
-                || ancodice.equals("0000073184")
-                || ancodice.equals("0000068599")
-                || ancodice.equals("0000062486")
-                || ancodice.equals("0000012438")
-                ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setDenominazione(ac.getDenominazione());
                 ca.setNome(ac.getNome());
-            }
-            
-            if (ancodice.equals("0000071821") 
-                    || ancodice.equals("0000026435") 
-                    || ancodice.equals("0000015653")
-                    || ancodice.equals("0000018136")
-                    || ancodice.equals("0000006176")
-                    || ancodice.equals("0000015907")
-                    || ancodice.equals("0000011628")
-                    || ancodice.equals("0000029845")
-                    || ancodice.equals("0000005884")
-                    || ancodice.equals("0000022397")
-                    || ancodice.equals("0000007088")
-                    || ancodice.equals("0000004835")
-                    || ancodice.equals("0000059960")
-                    || ancodice.equals("0000004892")
-                    || ancodice.equals("0000070325")
-                    || ancodice.equals("0000010067")
-                    || ancodice.equals("0000004244")
-                    || ancodice.equals("0000004098")
-                    || ancodice.equals("0000074822")
-                    || ancodice.equals("0000064058")
-                    || ancodice.equals("0000072596")
-                    || ancodice.equals("0000004457")
-                    || ancodice.equals("0000010123")
-                    || ancodice.equals("0000010104")
-                    || ancodice.equals("0000007662")
-                    || ancodice.equals("0000011192")
-                    ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
-                ca.setNome(ac.getNome());
-                ca.setCitta(ac.getCitta());
                 ca.setCap(ac.getCap());
                 ca.setIndirizzo(ac.getIndirizzo());
-            }            
-            if (ancodice.equals("0000013374") 
-                ||ancodice.equals("0000064543") 
-                ||ancodice.equals("0000015427") 
-                ||ancodice.equals("0000011361") 
-                ||ancodice.equals("0000074822") 
-                ||ancodice.equals("0000011192") 
-                    ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
                 ca.setProvincia(ac.getProvincia());
                 ca.setCitta(ac.getCitta());
-                ca.setIndirizzo(ac.getIndirizzo());
-                ca.setCap(ac.getCap());
-            }
-            
-            if (ancodice.equals("0000063661")
-                || ancodice.equals("0000011798")
-                || ancodice.equals("0000065672")
-                || ancodice.equals("0000017604")
-                || ancodice.equals("0000017622")
-                || ancodice.equals("0000017678")
-                ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
-                ca.setCitta(ac.getCitta());
-                ca.setIndirizzo(ac.getIndirizzo());
-                ca.setCap(ac.getCap());
-            }
-            if (ancodice.equals("0000016209")
-                || ancodice.equals("0000015153")
-                    ) {
-                log.debug(ancodice+"--->"+i+"--->Updated acAnagrafica");
-                ac.setCitta(ca.getCitta());
-                }
-
-            if (ancodice.equals("0000020195")
-                ||   ancodice.equals("0000069121") 
-                ||   ancodice.equals("0000067234")
-                    ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
-                ca.setCap(ac.getCap());
-                ca.setIndirizzo(ac.getIndirizzo());
-            }
-            
-            if (ancodice.equals("0000020142") 
-               || ancodice.equals("0000003649")
-               || ancodice.equals("0000022428")
-               || ancodice.equals("0000016527")
-               || ancodice.equals("0000011988")
-               || ancodice.equals("0000063155")
-               || ancodice.equals("0000007085")
-               || ancodice.equals("0000016818")
-               || ancodice.equals("0000003551")
-               || ancodice.equals("0000008250")
-               || ancodice.equals("0000040414")
-               || ancodice.equals("0000016185")
-               || ancodice.equals("0000067648")
-               || ancodice.equals("0000017474")
-               || ancodice.equals("0000023556")
-               || ancodice.equals("0000004417")
-               || ancodice.equals("0000016407")
-               || ancodice.equals("0000073184")
-               || ancodice.equals("0000013534")
-               || ancodice.equals("0000063811")
-               || ancodice.equals("0000014742")
-               || ancodice.equals("0000018603")
-               || ancodice.equals("0000006535")
-               ) {
-                log.debug(ancodice+"--->"+i+"--->Updated caAnagrafica");
-                ca.setIndirizzo(ac.getIndirizzo());
-            }
+              
             if (ancodice.equals("0000061880") 
             || ancodice.equals("0000066055")
             || ancodice.equals("0000005008")
