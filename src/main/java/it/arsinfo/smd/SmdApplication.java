@@ -33,27 +33,11 @@ public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-        
-    @Value("${load.pubblicazioni.adp}")
-    private String loadPubblicazioniAdp;
-
     @Value("${load.anagrafica.adp}")
     private String loadAnagraficaAdp;
 
-    @Value("${load.sample.anagrafica}")
-    private String loadSampleAnagraficaAdp;
-
-    @Value("${load.sample.storico}")
-    private String loadSampleStoricoAdp;
-
     @Value("${load.sample.data}")
     private String loadSampleData;
-
-    @Value("${create.demo.user}")
-    private String  createDemoUser;
-
-    @Value("${create.normal.user}")
-    private String  createNormalUser;
 
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
@@ -86,22 +70,20 @@ public class SmdApplication {
                 log.info("creato user admin/admin");
             }
 
-            boolean loadADP = loadAnagraficaAdp != null && loadAnagraficaAdp.equals("true");
-            log.info("loadAnagraficaAdp="+loadADP);
+            UserInfo adp = userInfoDao.findByUsername("adp");
+            if (adp == null) {
+               adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
+               userInfoDao.save(adp);
+               log.info("creato user adp/adp");
+            }
+            
             boolean loadSD = loadSampleData != null && loadSampleData.equals("true");
-            log.info("loadSampleData="+loadSD);
-            boolean loadPAdp = loadPubblicazioniAdp != null && loadPubblicazioniAdp.equals("true");
-            log.info("loadPubblicazioniAdp="+loadPAdp);
-            boolean loadSA = loadSampleAnagraficaAdp != null && loadSampleAnagraficaAdp.equals("true");
-            log.info("loadSampleAnagraficaAdp="+loadSA);
-            boolean loadSS = loadSampleStoricoAdp != null && loadSampleStoricoAdp.equals("true");
-            log.info("loadSampleStoricoAdp="+loadSS);
-            boolean creaDU = createDemoUser != null && createDemoUser.equals("true");
-            log.info("createDemoUser="+creaDU);
-            boolean creaNU =  createNormalUser != null && createNormalUser.equals("true");
-            log.info("createNormalUser="+creaNU);
-            if (loadADP||loadSD || loadPAdp || loadSA || loadSS || creaDU || creaNU) {
-                     new Thread(new SmdLoadSampleData(
+            log.info("loadSampleData {}",loadSampleData);
+            boolean loadADP = loadAnagraficaAdp != null && loadAnagraficaAdp.equals("true");
+            log.info("loadAnagraficaAdp {}",loadAnagraficaAdp);
+            if (loadSD ) {
+                new Thread(
+                   new SmdLoadSampleData(
                       smdService,                                
                       anagraficaDao, 
                       storicoDao, 
@@ -115,18 +97,30 @@ public class SmdApplication {
                       campagnaDao, 
                       incassoDao, 
                       versamentoDao, 
-                      operazioneDao,
-                      userInfoDao,
-                      passwordEncoder,
-                      loadADP,
-                      loadPAdp,
-                      loadSA,
-                      loadSS,
-                      creaDU,
-                      creaNU,
-                      loadSD
-                      )).start();
+                      operazioneDao
+                   )
+                ).start();
+            } else if (loadADP) {
+                new Thread(
+                   new SmdImportAdp(
+                     smdService,                                
+                     anagraficaDao, 
+                     storicoDao, 
+                     notaDao,
+                     pubblicazioneDao, 
+                     spesaSpedizioneDao,
+                     abbonamentoDao, 
+                     estrattoContoDao,
+                     spedizioneDao,
+                     spedizioneItemDao,
+                     campagnaDao, 
+                     incassoDao, 
+                     versamentoDao, 
+                     operazioneDao
+                   )
+                ).start();
             }
+
         };
     }
 

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -28,13 +29,43 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
+import it.arsinfo.smd.repository.EstrattoContoDao;
+import it.arsinfo.smd.repository.IncassoDao;
+import it.arsinfo.smd.repository.NotaDao;
+import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.SpedizioneDao;
+import it.arsinfo.smd.repository.SpedizioneItemDao;
+import it.arsinfo.smd.repository.SpesaSpedizioneDao;
+import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.VersamentoDao;
 
-public class SmdImportFromExcel {
+public class SmdImportAdp extends SmdLoadSampleData {
+    public SmdImportAdp(SmdService smdService, AnagraficaDao anagraficaDao,
+            StoricoDao storicoDao, NotaDao notaDao,
+            PubblicazioneDao pubblicazioneDao,
+            SpesaSpedizioneDao spesaSpedizioneDao,
+            AbbonamentoDao abbonamentoDao, EstrattoContoDao estrattoContoDao,
+            SpedizioneDao spedizioneDao, SpedizioneItemDao spedizioneItemDao,
+            CampagnaDao campagnaDao, IncassoDao incassoDao,
+            VersamentoDao versamentoDao, OperazioneDao operazioneDao
+            ) {
+        super(smdService, anagraficaDao, storicoDao, notaDao, pubblicazioneDao,
+              spesaSpedizioneDao, abbonamentoDao, estrattoContoDao, spedizioneDao,
+              spedizioneItemDao, campagnaDao, incassoDao, versamentoDao,
+              operazioneDao);
+    }
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     public static final String CAMPAGNA_2020 = "data/CA2020COMPLETA.xls";
@@ -76,7 +107,7 @@ public class SmdImportFromExcel {
                 throw new UnsupportedOperationException("Intestatario non trovato");
             }
             int qnt = getQuantitaFromOmaggioRow(row);
-            storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
+            storici.add(SmdHelper.getStoricoBy(intestatario, intestatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
         }
         return storici;
     }
@@ -89,8 +120,8 @@ public class SmdImportFromExcel {
 
         Map<String,BigDecimal> speseMap = new HashMap<>();
         for (Row row : abrows) {
-            String ancodice = SmdImportFromExcel.getAncodiceFromBeneficiari(row);
-            BigDecimal prezzo = SmdImportFromExcel.getPrezzoFromBeneficiari(row);
+            String ancodice = getAncodiceFromBeneficiari(row);
+            BigDecimal prezzo = getPrezzoFromBeneficiari(row);
             if (messaggio.getAbbonamento().compareTo(prezzo) == 0) {
                 continue;
             } else if (blocchetti.getAbbonamento().compareTo(prezzo) == 0) {
@@ -102,7 +133,7 @@ public class SmdImportFromExcel {
             } else if (blocchetti.getAbbonamentoConSconto().compareTo(prezzo) == 0) {
                 continue;
             }
-            String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
+            String bancodice = getBancodiceFromBeneficiari(row);
             if (!bancodice.trim().equals("")) {
                 speseMap.put(bancodice, prezzo);
             } else {
@@ -122,9 +153,9 @@ public class SmdImportFromExcel {
             Pubblicazione estratti, Set<String> bmCassa) throws UnsupportedOperationException {
         final List<Storico> storici = new ArrayList<>();
         for (Row row : abrows) {
-            String ancodice = SmdImportFromExcel.getAncodiceFromBeneficiari(row);
-            int qnt = SmdImportFromExcel.getQuantitaFromBeneficiari(row);
-            BigDecimal prezzo = SmdImportFromExcel.getPrezzoFromBeneficiari(row);
+            String ancodice = getAncodiceFromBeneficiari(row);
+            int qnt = getQuantitaFromBeneficiari(row);
+            BigDecimal prezzo = getPrezzoFromBeneficiari(row);
             Anagrafica destinatario = anagraficaMap.get(ancodice);
             Pubblicazione p;
             TipoEstrattoConto tipo= TipoEstrattoConto.Ordinario;           
@@ -152,7 +183,7 @@ public class SmdImportFromExcel {
             } else {
                 continue;
             }
-            String bancodice = SmdImportFromExcel.getBancodiceFromBeneficiari(row);
+            String bancodice = getBancodiceFromBeneficiari(row);
             Anagrafica intestatario = destinatario;
             if (!bancodice.trim().equals("")) {
                 intestatario = anagraficaMap.get(bancodice);
@@ -160,7 +191,7 @@ public class SmdImportFromExcel {
             if (bmCassa.contains(ancodice)) {
                 invioSped = InvioSpedizione.AdpSede;
             }
-            storici.add(SmdLoadSampleData.getStoricoBy(intestatario, destinatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
+            storici.add(SmdHelper.getStoricoBy(intestatario, destinatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
         }
         
         return storici;
@@ -188,17 +219,17 @@ public class SmdImportFromExcel {
         for (String ancod: aeRowMap.keySet()) {
             Anagrafica intestatario = anagraficaMap.get(ancod);
             Row row = aeRowMap.get(ancod);
-            if (SmdImportFromExcel.getIdEstrattiAbbEstero(row) == 3) {
-                int qnt = SmdImportFromExcel.getQtaEstrattiAbbEstero(row);
-                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, estratti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            if (getIdEstrattiAbbEstero(row) == 3) {
+                int qnt = getQtaEstrattiAbbEstero(row);
+                storici.add(SmdHelper.getStoricoBy(intestatario, intestatario, estratti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
             }
-            if (SmdImportFromExcel.getIdBlocchettiAbbEstero(row) == 2) {
-                int qnt = SmdImportFromExcel.getQtaBlocchettiAbbEstero(row);
-                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, blocchetti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            if (getIdBlocchettiAbbEstero(row) == 2) {
+                int qnt = getQtaBlocchettiAbbEstero(row);
+                storici.add(SmdHelper.getStoricoBy(intestatario, intestatario, blocchetti, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
             }
-            if (SmdImportFromExcel.getIdMessaggioAbbEstero(row) == 1) {
-                int qnt = SmdImportFromExcel.getQtaMessaggioAbbEstero(row);
-                storici.add(SmdLoadSampleData.getStoricoBy(intestatario, intestatario, messaggio, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
+            if (getIdMessaggioAbbEstero(row) == 1) {
+                int qnt = getQtaMessaggioAbbEstero(row);
+                storici.add(SmdHelper.getStoricoBy(intestatario, intestatario, messaggio, qnt, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.AdpSede));
             }
         }
         return storici;
@@ -207,7 +238,7 @@ public class SmdImportFromExcel {
     public static Map<String,BigDecimal> fixSpeseItaEstero(List<Row> rows){
         Map<String,BigDecimal> speseMap = new HashMap<>();
         for (Row row: rows) {
-            String ancodInt = SmdImportFromExcel.getAnCodiceIntestatarioAbbonatiItaEstero(row);
+            String ancodInt = getAnCodiceIntestatarioAbbonatiItaEstero(row);
             if (!speseMap.containsKey(ancodInt)) {
                 speseMap.put(ancodInt, BigDecimal.ZERO);
             }
@@ -227,7 +258,7 @@ public class SmdImportFromExcel {
             Pubblicazione estratti) throws UnsupportedOperationException {
     final List<Storico> storici = new ArrayList<>();
     for (Row row: rows) {
-        String pubstr = SmdImportFromExcel.getTestataFromAbbonatiItaEstero(row);
+        String pubstr = getTestataFromAbbonatiItaEstero(row);
         Pubblicazione p;
         if (pubstr.equalsIgnoreCase("messaggio")) {
             p=messaggio;
@@ -240,11 +271,11 @@ public class SmdImportFromExcel {
         } else {
             throw new UnsupportedOperationException("Pubblicazione non trovata: " + pubstr);
         }
-        int qnt = SmdImportFromExcel.getQuantFromAbbonatiItaEstero(row);
-        String ancodInt = SmdImportFromExcel.getAnCodiceIntestatarioAbbonatiItaEstero(row);
-        String ancodDst = SmdImportFromExcel.getAnCodiceDestinatatarioAbbonatiItaEstero(row);
+        int qnt = getQuantFromAbbonatiItaEstero(row);
+        String ancodInt = getAnCodiceIntestatarioAbbonatiItaEstero(row);
+        String ancodDst = getAnCodiceDestinatatarioAbbonatiItaEstero(row);
         storici.add( 
-            SmdLoadSampleData
+            SmdHelper
                 .getStoricoBy(
                               eaMap.get(ancodInt), 
                               eaMap.get(ancodDst), 
@@ -270,24 +301,24 @@ public class SmdImportFromExcel {
             Anagrafica a = eaMap.get(cod);
             Integer num = processRowCampagnaMessaggioNum(row);
             if ( num > 0) {
-                storici.add(SmdLoadSampleData.getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                storici.add(SmdHelper.getStoricoBy(a, a, messaggio, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
             }
             num = processRowCampagnaLodareNum(row);
             if ( num > 0) {
-                storici.add(SmdLoadSampleData.getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                storici.add(SmdHelper.getStoricoBy(a, a, lodare, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
             }
             num = processRowCampagnaBlocchettiNum(row);
             BigDecimal costo = processRowCampagnaBlocchettiCosto(row);
             if ( num > 0) {
                 if ( costo.doubleValue() != blocchetti.getAbbonamento().multiply(new BigDecimal(num)).doubleValue()) {
-                    storici.add(SmdLoadSampleData.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Scontato, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    storici.add(SmdHelper.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Scontato, Invio.Destinatario, InvioSpedizione.Spedizioniere));
                 } else {
-                    storici.add(SmdLoadSampleData.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                    storici.add(SmdHelper.getStoricoBy(a, a, blocchetti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
                 }
             }
             num = processRowCampagnaManifestiNum(row);
             if ( num > 0) {
-                storici.add(SmdLoadSampleData.getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
+                storici.add(SmdHelper.getStoricoBy(a, a, estratti, num, Cassa.Ccp, TipoEstrattoConto.Ordinario, Invio.Destinatario, InvioSpedizione.Spedizioniere));
             }
         });                
         return storici;
@@ -1698,6 +1729,277 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
         }
 
     }
+    
+    @Override
+    public void run() {
+        log.info("Start Loading Pubblicazioni Adp");
+        loadPubblicazioniAdp();
+        loadSpeseSpedizione();
+        log.info("End Loading Pubblicazioni Adp");
+
+        log.info("Start Import Adp");
+        try {
+            loadAnagraficaAdp();
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            return;
+        }
+        log.info("End Import Adp");
+    }
         
+    public void loadAnagraficaAdp() throws Exception {
+        log.info("Start Saving Anagrafica");
+        Map<String, Anagrafica> eaMap = importElencoAbbonati();      
+        Map<String,Row> rowMap = getCampagna2020();    
+        Map<String, Anagrafica> caMap = importCampagna2020(rowMap);
+        fixElencoAbbonatiCampagna(eaMap, caMap);
+        Map<String,Anagrafica>  anagraficaMap = new HashMap<String, Anagrafica>();
+        for (String key: eaMap.keySet()) {
+            anagraficaMap.put(key, eaMap.get(key));
+        }
+
+        // Abbonamenti Estero
+        Map<String,Row> aeRowMap = getAbbonatiEstero();
+        Map<String, Anagrafica> aeMap =importAbbonatiEstero(aeRowMap);
+        fixAbbonatiEstero(eaMap, aeMap);
+        
+        //Beneficiari Ita Estero
+        Map<String, Anagrafica> acMap = importArchivioClienti();
+        List<Row> airows = getAbbonatiItaEstero();
+        Map<String, Anagrafica> aiMap = importAbbonatiItaEstero(airows);
+        fixBeneficiari(acMap, eaMap, aiMap);
+        for (String ancodice : aiMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, aiMap.get(ancodice));
+            }
+        }
+
+        //Beneficiari
+        List<Row> abrows = getBeneficiari();
+        Map<String, Anagrafica> abMap = importBeneficiari(abrows);
+        fixBeneficiari(acMap, eaMap, abMap);
+        for (String ancodice : abMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, abMap.get(ancodice));
+            }
+        }
+
+        //Omaggi Messaggi
+        List<Row> omrows = getOmaggioMessaggio2020();
+        List<Anagrafica> omlist = importOmaggio(omrows);
+        Map<String,Anagrafica> omMap = fixOmaggio(anagraficaMap, acMap, omlist);
+        for (String ancodice : omMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, omMap.get(ancodice));
+            }
+        }
+        
+        //Omaggi Gesuiti Messaggi
+        List<Row> ogmrows = getOmaggioGesuitiMessaggio2020();
+        List<Anagrafica> ogmlist = importOmaggio(ogmrows);
+        Map<String,Anagrafica> ogmMap = fixOmaggio(anagraficaMap, acMap, ogmlist);
+        for (String ancodice : ogmMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, ogmMap.get(ancodice));
+            }
+        }
+       
+        //Omaggi Blocchetti
+        List<Row> obrows = getOmaggioBlocchetti2020();
+        List<Anagrafica> oblist = importOmaggio(obrows);
+        Map<String,Anagrafica> obMap = fixOmaggio(anagraficaMap, acMap, oblist);
+        for (String ancodice : obMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, obMap.get(ancodice));
+            }
+        }
+
+        //Omaggi Gesuiti Blocchetti
+        List<Row> ogbrows = getOmaggioGesuitiBlocchetti2020();
+        List<Anagrafica> ogblist = importOmaggio(ogbrows);
+        Map<String,Anagrafica> ogbMap = fixOmaggio(anagraficaMap, acMap, ogblist);
+        for (String ancodice : ogbMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, ogbMap.get(ancodice));
+            }
+        }
+        
+        //Omaggi Lodare
+        List<Row> olrows = getOmaggioLodare2020();
+        List<Anagrafica> ollist = importOmaggio(olrows);
+        Map<String,Anagrafica> olMap = fixOmaggio(anagraficaMap, acMap, ollist); 
+        for (String ancodice : olMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, olMap.get(ancodice));
+            }
+        }
+
+        //Omaggi Gesuiti Manifesti
+        List<Row> ogerows = getOmaggioGesuitiManifesti2020();
+        List<Anagrafica> ogelist = importOmaggio(ogerows);
+        Map<String,Anagrafica> ogeMap = fixOmaggio(anagraficaMap, acMap, ogelist);
+        for (String ancodice : ogeMap.keySet()) {
+            if (!anagraficaMap.containsKey(ancodice)) {
+                anagraficaMap.put(ancodice, ogeMap.get(ancodice));
+            }
+        }
+        anagraficaMap.values().forEach(a -> anagraficaDao.save(a));
+        log.info("End Saving Anagrafica");
+
+        log.info("Start Saving Storico Beneficiari");
+        Set<String> bmcassa = getCategoriaBmCassa();
+        SmdImportAdp
+        .getStoriciFromBeneficiari2010(abrows, anagraficaMap, messaggio, lodare, blocchetti, estratti, bmcassa)        
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });        
+        log.info("End Saving Storico Beneficiari");
+
+        log.info("Start Saving Storico Estero");
+        SmdImportAdp
+        .getStoriciFromEstero2010(aeRowMap,anagraficaMap,messaggio,lodare,blocchetti,estratti)        
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });        
+        log.info("End Saving Storico  Estero");
+
+        log.info("Start Saving Storico Ita Estero");
+        SmdImportAdp
+        .getStoriciFromItaEstero2010(airows,anagraficaMap,messaggio,lodare,blocchetti,estratti)        
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });        
+        log.info("End Saving Storico Ita Estero");
+
+        log.info("Start Saving Storico Omaggio");
+        getStoriciFromOmaggio(omrows, anagraficaMap, omMap,
+                                                 messaggio,
+                                                 InvioSpedizione.Spedizioniere,
+                                                 TipoEstrattoConto.OmaggioCuriaDiocesiana)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+        
+        getStoriciFromOmaggio(olrows, anagraficaMap, olMap,
+                                                 lodare,
+                                                 InvioSpedizione.Spedizioniere,
+                                                 TipoEstrattoConto.OmaggioCuriaDiocesiana)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+        getStoriciFromOmaggio(obrows, anagraficaMap, obMap,
+                                                 blocchetti,
+                                                 InvioSpedizione.Spedizioniere,
+                                                 TipoEstrattoConto.OmaggioCuriaDiocesiana)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+
+        getStoriciFromOmaggio(ogmrows, anagraficaMap,
+                                                 ogmMap, messaggio,
+                                                 InvioSpedizione.AdpSede,
+                                                 TipoEstrattoConto.OmaggioGesuiti)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+
+        getStoriciFromOmaggio(ogbrows, anagraficaMap,
+                                                 ogbMap, blocchetti,
+                                                 InvioSpedizione.AdpSede,
+                                                 TipoEstrattoConto.OmaggioGesuiti)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+
+        getStoriciFromOmaggio(ogerows, anagraficaMap,
+                                                 ogeMap, estratti,
+                                                 InvioSpedizione.AdpSede,
+                                                 TipoEstrattoConto.OmaggioGesuiti)
+        .stream().forEach(s -> {
+            storicoDao.save(s);
+            notaDao.save(SmdHelper.getNota(s));
+        });
+        log.info("End Saving Storico Omaggio");
+
+        log.info("Start Generating Campagna");
+        Campagna campagna = new Campagna();
+        campagna.setAnno(Anno.ANNO2020);
+        List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
+                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
+        
+        for (Pubblicazione pubb: attivi) {
+            CampagnaItem ci = new CampagnaItem();
+            ci.setPubblicazione(pubb);
+            ci.setCampagna(campagna);
+            campagna.addCampagnaItem(ci);
+        }
+        smdService.generaCampagnaAbbonamenti(campagna, attivi);
+        log.info("End Generating Campagna");
+
+        log.info("Start Fix codeline");
+        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
+        rowMap.keySet().forEach(cod ->
+        {
+            final String codeline = processRowCampagnaCodeline(rowMap.get(cod), cod);
+            Anagrafica a = anagraficaMap.get(cod);
+            abbonamenti
+            .stream()
+            .filter(abb-> abb.getIntestatario().getId().longValue() == a.getId().longValue())
+            .forEach(abb -> {
+                log.debug("Fix codeline: {}",codeline);
+                abb.setCodeLine(codeline);
+                abbonamentoDao.save(abb);
+            });
+            
+        });
+        log.info("End Fix codeline");
+        
+        log.info("Start Fix Spese");
+        abbonamentoDao.findAll().forEach(abb ->{
+            abb.setSpese(BigDecimal.ZERO);
+            abbonamentoDao.save(abb);
+        });
+
+        Map<String,BigDecimal> fixSpeseEsteroMap = 
+                fixSpeseEstero(aeRowMap);
+        for (String cod: fixSpeseEsteroMap.keySet()) {
+            Anagrafica intestatario = anagraficaMap.get(cod);
+            abbonamentoDao.findByIntestatario(intestatario).forEach(abb -> {
+                abb.setSpese(fixSpeseEsteroMap.get(cod));
+                abbonamentoDao.save(abb);
+            });
+        }
+        
+        Map<String,BigDecimal> fixSpeseItaEsteroMap = 
+                fixSpeseItaEstero(airows);
+        for (String cod: fixSpeseItaEsteroMap.keySet()) {
+            Anagrafica intestatario = anagraficaMap.get(cod);
+            abbonamentoDao.findByIntestatario(intestatario).forEach(abb -> {
+                abb.setSpese(fixSpeseItaEsteroMap.get(cod));
+                abbonamentoDao.save(abb);
+            });
+        }       
+        
+        Map<String,BigDecimal> fixSpeseBeneficiariMap = 
+                fixSpeseBeneficiari(abrows, messaggio, lodare, blocchetti, estratti);
+        for (String cod: fixSpeseBeneficiariMap.keySet()) {
+            Anagrafica intestatario = anagraficaMap.get(cod);
+            abbonamentoDao.findByIntestatario(intestatario).forEach(abb -> {
+                abb.setSpese(fixSpeseBeneficiariMap.get(cod));
+                abbonamentoDao.save(abb);
+            });
+        }
+
+        log.info("End Fix Spese");
+    }
+
 
 }
