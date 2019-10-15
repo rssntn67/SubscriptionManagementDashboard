@@ -18,55 +18,57 @@ import it.arsinfo.smd.repository.PubblicazioneDao;
 
 public class PubblicazioneEditor extends SmdEditor<Pubblicazione> {
 
-    private final TextField nome = new TextField("Nome");
-    private final TextField descrizione = new TextField("Descrizione");
-    private final TextField autore = new TextField("Autore");
-    private final TextField editore = new TextField("Editore");
-    private final ComboBox<TipoPubblicazione> tipo = new ComboBox<TipoPubblicazione>("Tipo",EnumSet.allOf(TipoPubblicazione.class));
-    private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno Pubblicazione", EnumSet.allOf(Anno.class));
-    private final TextField grammi = new TextField("Peso in grammi");
-    private final TextField costoUnitario = new TextField("Costo Unitario");
-    private final TextField abbonamento=new TextField("Abbonamento");
-    private final TextField abbonamentoWeb=new TextField("Abbonamento Web");
-    private final TextField abbonamentoSostenitore=new TextField("Abbonamento Sostenitore");
-    private final TextField abbonamentoConSconto=new TextField("Abbonamento con Sconto");
+     private TextField nome = new TextField("Nome");
 
-    private final CheckBox gen = new CheckBox(Mese.GENNAIO.getNomeBreve());
-    private final CheckBox feb = new CheckBox(Mese.FEBBRAIO.getNomeBreve());
-    private final CheckBox mar = new CheckBox(Mese.MARZO.getNomeBreve());
-    private final CheckBox apr = new CheckBox(Mese.APRILE.getNomeBreve());
-    private final CheckBox mag = new CheckBox(Mese.MAGGIO.getNomeBreve());
-    private final CheckBox giu = new CheckBox(Mese.GIUGNO.getNomeBreve());
-    private final CheckBox lug = new CheckBox(Mese.LUGLIO.getNomeBreve());
-    private final CheckBox ago = new CheckBox(Mese.AGOSTO.getNomeBreve());
-    private final CheckBox set = new CheckBox(Mese.SETTEMBRE.getNomeBreve());
-    private final CheckBox ott = new CheckBox(Mese.OTTOBRE.getNomeBreve());
-    private final CheckBox nov = new CheckBox(Mese.NOVEMBRE.getNomeBreve());
-    private final CheckBox dic = new CheckBox(Mese.DICEMBRE.getNomeBreve());
-
-    private final TextField anticipoSpedizione = new TextField("Anticipo Spedizione Mesi");
-
-    private final CheckBox active = new CheckBox("Active");
-
-    HorizontalLayout basicA = new HorizontalLayout(nome, tipo, descrizione,grammi);
-    HorizontalLayout basicB = new HorizontalLayout(
-                                           autore,editore,anno,anticipoSpedizione
-                                           );
-    HorizontalLayout costiA = new HorizontalLayout(
-                                           costoUnitario,
-                                           abbonamento,
-                                           abbonamentoConSconto,
-                                           abbonamentoSostenitore,
-                                           abbonamentoWeb
-                                              );
-    HorizontalLayout checkA = new HorizontalLayout(active);
-    HorizontalLayout checkB = new HorizontalLayout(gen,feb,mar,apr,mag,giu);
-    HorizontalLayout checkC = new HorizontalLayout(lug,ago,set,ott,nov,dic);
 
     public PubblicazioneEditor(PubblicazioneDao repo) {
-
         super(repo,new Binder<>(Pubblicazione.class));
-        setComponents(getActions(),basicA,basicB, costiA, checkA,checkB,checkC);
+
+        TextField descrizione = new TextField("Descrizione");
+        TextField autore = new TextField("Autore");
+        TextField editore = new TextField("Editore");
+        ComboBox<TipoPubblicazione> tipo = new ComboBox<TipoPubblicazione>("Tipo",EnumSet.allOf(TipoPubblicazione.class));
+        ComboBox<Anno> anno = new ComboBox<Anno>("Anno Pubblicazione", EnumSet.allOf(Anno.class));
+        TextField grammi = new TextField("Peso in grammi");
+        TextField costoUnitario = new TextField("Costo Unitario");
+        TextField abbonamento=new TextField("Abbonamento");
+        TextField abbonamentoWeb=new TextField("Abbonamento Web");
+        TextField abbonamentoSostenitore=new TextField("Abbonamento Sostenitore");
+        TextField abbonamentoConSconto=new TextField("Abbonamento con Sconto");
+
+        CheckBox gen = new CheckBox(Mese.GENNAIO.getNomeBreve());
+        CheckBox feb = new CheckBox(Mese.FEBBRAIO.getNomeBreve());
+        CheckBox mar = new CheckBox(Mese.MARZO.getNomeBreve());
+        CheckBox apr = new CheckBox(Mese.APRILE.getNomeBreve());
+        CheckBox mag = new CheckBox(Mese.MAGGIO.getNomeBreve());
+        CheckBox giu = new CheckBox(Mese.GIUGNO.getNomeBreve());
+        CheckBox lug = new CheckBox(Mese.LUGLIO.getNomeBreve());
+        CheckBox ago = new CheckBox(Mese.AGOSTO.getNomeBreve());
+        CheckBox set = new CheckBox(Mese.SETTEMBRE.getNomeBreve());
+        CheckBox ott = new CheckBox(Mese.OTTOBRE.getNomeBreve());
+        CheckBox nov = new CheckBox(Mese.NOVEMBRE.getNomeBreve());
+        CheckBox dic = new CheckBox(Mese.DICEMBRE.getNomeBreve());
+
+        TextField anticipoSpedizione = new TextField("Anticipo Spedizione Mesi");
+
+        CheckBox active = new CheckBox("Active");
+
+        HorizontalLayout denominazione = new HorizontalLayout(nome);
+        denominazione.addComponentsAndExpand(tipo, descrizione);
+        HorizontalLayout dettagli = new HorizontalLayout(
+                                               autore,editore,anno,anticipoSpedizione,grammi
+                                               );
+        HorizontalLayout costi = new HorizontalLayout(
+                                               costoUnitario,
+                                               abbonamento,
+                                               abbonamentoConSconto,
+                                               abbonamentoSostenitore,
+                                               abbonamentoWeb
+                                                  );
+        HorizontalLayout checkAttivo = new HorizontalLayout(active);
+        HorizontalLayout mesi = new HorizontalLayout(gen,feb,mar,apr,mag,giu,lug,ago,set,ott,nov,dic);
+
+        setComponents(getActions(),denominazione,dettagli, costi, mesi,checkAttivo);
         
         getBinder().forField(nome)
             .asRequired("Il Nome della Pubblicazione e' abbligatorio")

@@ -68,36 +68,31 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     public AnagraficaEditor(AnagraficaDao anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
-        HorizontalLayout riga1 = new HorizontalLayout(
-                                                      diocesi,
-                                                      titolo, 
-                                                      denominazione, 
-                                                      nome
-                                                      );
-        riga1.addComponentsAndExpand(indirizzo);
-        HorizontalLayout riga1e2 = new HorizontalLayout(codeLineBase,descr,co);
-        HorizontalLayout riga11 = new HorizontalLayout(cap, 
-                                                      citta,
-                                                      provincia 
-                                                      );
-        riga11.addComponentsAndExpand(indirizzoSecondaRiga);
+        HorizontalLayout intestazioni = new HorizontalLayout(diocesi, titolo,nome);
+        intestazioni.addComponentsAndExpand(denominazione);
 
-        HorizontalLayout riga2 = new HorizontalLayout( 
-                                                      regioneVescovi,
-                                                      centroDiocesano,
-                                                      regionePresidenteDiocesano,
-                                                      regioneDirettoreDiocesano
-                                                      );
-        HorizontalLayout riga3 = new HorizontalLayout(paese,
-                                                      areaSpedizione,
-                                                      email, 
+        HorizontalLayout residenza = new HorizontalLayout(citta,provincia,cap);
+        residenza.addComponentsAndExpand(indirizzo);
+        
+        HorizontalLayout residenza2 = new HorizontalLayout(paese,areaSpedizione);
+        residenza2.addComponentsAndExpand(indirizzoSecondaRiga);
+        
+        HorizontalLayout dati = new HorizontalLayout( email, 
                                                       telefono,
                                                       cellulare, 
                                                       codfis, 
                                                       piva
                                                       );
+        HorizontalLayout poste = new HorizontalLayout(codeLineBase,descr,co);
 
-        HorizontalLayout riga4 = new HorizontalLayout(presidenteDiocesano,
+        HorizontalLayout vescovi = new HorizontalLayout( 
+                                                      regioneVescovi,
+                                                      centroDiocesano,
+                                                      regionePresidenteDiocesano,
+                                                      regioneDirettoreDiocesano
+                                                      );
+
+        HorizontalLayout adp = new HorizontalLayout(presidenteDiocesano,
                                                       direttoreDiocesiano,
                                                       direttoreZonaMilano,
                                                       consiglioNazionaleADP,
@@ -109,7 +104,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
                                                       promotoreRegionale
                                                       );
 
-        setComponents(getActions(), riga1,riga11, riga1e2,riga2, riga3, riga4);
+        setComponents(getActions(), intestazioni,residenza, residenza2,dati, poste,vescovi, adp);
 
         co.setItems(anagraficaDao.findAll());
 
