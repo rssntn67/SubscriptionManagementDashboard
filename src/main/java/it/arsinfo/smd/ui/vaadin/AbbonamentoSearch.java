@@ -57,19 +57,21 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         TextField filterCodeLine = new TextField();
         TextField filterCap = new TextField();
 
-
-        setComponents(new HorizontalLayout(filterAnagrafica,filterPubblicazione,filterStatoAbbonamento,filterAnno,filterCassa),
-                      new HorizontalLayout(filterCap,filterCodeLine,filterCampagna,filterTipoEstrattoConto,filterCcp));
-
+        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterAnno,filterCassa);
+        anag.addComponentsAndExpand(filterAnagrafica);
+        HorizontalLayout tipo = new HorizontalLayout(filterCap,filterCodeLine,filterCampagna,filterCcp);
+        tipo.addComponentsAndExpand(filterTipoEstrattoConto);
+        
+        setComponents(anag,tipo);
         filterCodeLine.setPlaceholder("Inserisci Code Line");
-        filterCodeLine.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
         filterCodeLine.addValueChangeListener(e -> {
             searchCodeLine = e.getValue();
             onChange();
         });
 
         filterCap.setPlaceholder("Inserisci CAP");
-        filterCap.setValueChangeMode(ValueChangeMode.EAGER);
+        filterCap.setValueChangeMode(ValueChangeMode.LAZY);
         filterCap.addValueChangeListener(e -> {
             searchCap = e.getValue();
             onChange();

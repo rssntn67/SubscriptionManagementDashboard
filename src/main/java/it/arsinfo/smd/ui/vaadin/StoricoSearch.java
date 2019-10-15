@@ -22,11 +22,11 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private Anagrafica intestatario;
     private Anagrafica destinatario;
     private Pubblicazione pubblicazione;
-    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo EC", EnumSet.allOf(TipoEstrattoConto.class));
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>("Invio", EnumSet.allOf(Invio.class));
-    private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>("Invio Sped.", EnumSet.allOf(InvioSpedizione.class));
-    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
+    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
+    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
+    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
+    private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
+    private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
 
     public StoricoSearch(StoricoDao storicoDao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
@@ -36,8 +36,11 @@ public class StoricoSearch extends SmdSearch<Storico> {
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
-        setComponents(new HorizontalLayout(filterIntestatario,filterDestinatario,filterPubblicazione),
-                      new HorizontalLayout(filterTipoEstrattoConto,filterCassa,filterStatoStorico,filterInvioSped,filterInvio));
+        HorizontalLayout anagr = new HorizontalLayout(filterPubblicazione);
+        anagr.addComponentsAndExpand(filterIntestatario,filterDestinatario);
+        HorizontalLayout stat = new HorizontalLayout(filterCassa,filterStatoStorico,filterInvioSped,filterInvio);
+        stat.addComponentsAndExpand(filterTipoEstrattoConto);
+        setComponents(anagr,stat);
 
         filterIntestatario.setEmptySelectionAllowed(true);
         filterIntestatario.setPlaceholder("Cerca per Intestatario");
@@ -78,16 +81,25 @@ public class StoricoSearch extends SmdSearch<Storico> {
             onChange();
         });
 
-        filterTipoEstrattoConto.setPlaceholder("Seleziona Omaggio");
+        filterTipoEstrattoConto.setPlaceholder("Seleziona Tipo EC");
         filterTipoEstrattoConto.addSelectionListener(e ->onChange());
+        filterTipoEstrattoConto.setItems(EnumSet.allOf(TipoEstrattoConto.class));
+
         filterCassa.setPlaceholder("Seleziona Cassa");
         filterCassa.addSelectionListener(e ->onChange());
+        filterCassa.setItems(EnumSet.allOf(Cassa.class));
+
         filterInvio.setPlaceholder("Seleziona Invio");
         filterInvio.addSelectionListener(e ->onChange());
+        filterInvio.setItems(EnumSet.allOf(Invio.class));
+        
         filterInvioSped.setPlaceholder("Seleziona Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
+        filterInvioSped.setItems(EnumSet.allOf(InvioSpedizione.class));
+
         filterStatoStorico.setPlaceholder("Seleziona Stato");
         filterStatoStorico.addSelectionListener(e ->onChange());
+        filterStatoStorico.setItems(EnumSet.allOf(StatoStorico.class));
 
         
 

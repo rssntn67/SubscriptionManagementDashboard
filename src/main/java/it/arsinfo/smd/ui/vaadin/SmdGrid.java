@@ -51,7 +51,7 @@ public abstract class SmdGrid<T extends SmdEntity>
             onChange();
         });
         
-        setComponents(new HorizontalLayout(downloadAsExcel,downloadAsCSV),this.itemNumber,this.grid);
+        setComponents(this.grid,new HorizontalLayout(this.itemNumber,downloadAsExcel,downloadAsCSV));
     }
         
 
