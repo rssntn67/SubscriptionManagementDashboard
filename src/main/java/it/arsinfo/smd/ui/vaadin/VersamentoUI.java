@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -8,6 +10,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringUI(path = SmdUI.URL_VERSAMENTI)
@@ -21,10 +27,22 @@ public class VersamentoUI extends IncassoAbstractUI {
 
     @Autowired
     private VersamentoDao versamentoDao;
+    
+    @Autowired
+    private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private AnagraficaDao anagraficaDao;
+
+    @Autowired
+    private CampagnaDao campagnaDao;
+    
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
         
+        AbbonamentoVersamentoSearch abbSearch = 
+            new AbbonamentoVersamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         VersamentoEditor editor = new VersamentoEditor(versamentoDao) {
@@ -41,8 +59,9 @@ public class VersamentoUI extends IncassoAbstractUI {
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         
-        addSmdComponents(search,editor,abbonamentiAssociabiliGrid,abbonamentiAssociatiGrid,grid);
+        addSmdComponents(search,editor,abbSearch,abbonamentiAssociabiliGrid,abbonamentiAssociatiGrid,grid);
         
+        abbSearch.setVisible(false);
         abbonamentiAssociatiGrid.setVisible(false);
         abbonamentiAssociabiliGrid.setVisible(false);
         editor.setVisible(false);
@@ -55,7 +74,10 @@ public class VersamentoUI extends IncassoAbstractUI {
             if (grid.getSelected() != null) {
                 editor.edit(grid.getSelected());
                 abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                abbonamentiAssociabiliGrid.populate(getAssociabili(grid.getSelected()));
+                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
+                abbSearch.setItems(associabili);
+                abbonamentiAssociabiliGrid.populate(associabili);
+                abbSearch.setVisible(true);
                 search.setVisible(false);
                 grid.setVisible(false);
             }
@@ -64,6 +86,7 @@ public class VersamentoUI extends IncassoAbstractUI {
         editor.setChangeHandler(() -> {
             search.setVisible(true);
             grid.populate(search.find());
+            abbSearch.setVisible(false);
             abbonamentiAssociatiGrid.setVisible(false);
             abbonamentiAssociabiliGrid.setVisible(false);
             editor.setVisible(false);
@@ -81,7 +104,9 @@ public class VersamentoUI extends IncassoAbstractUI {
                 dissocia(abbonamento, editor.get());
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
                 abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                abbonamentiAssociabiliGrid.populate(getAssociabili(grid.getSelected()));
+                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
+                abbSearch.setItems(associabili);
+                abbonamentiAssociabiliGrid.populate(associabili);
                 });
             return button;
         });
@@ -92,9 +117,15 @@ public class VersamentoUI extends IncassoAbstractUI {
                 incassa(abbonamento, editor.get());
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
                 abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                abbonamentiAssociabiliGrid.populate(getAssociabili(grid.getSelected()));
+                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
+                abbSearch.setItems(associabili);
+                abbonamentiAssociabiliGrid.populate(associabili);
             });
             return button;
+        });
+        
+        abbSearch.setChangeHandler(() -> {
+            abbonamentiAssociabiliGrid.populate(abbSearch.find());
         });
 
         grid.populate(search.findAll());
