@@ -51,12 +51,14 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     public VersamentoEditor(VersamentoDao versamentoDao) {
         super(versamentoDao, new Binder<>(Versamento.class));
 
-        ccp.setReadOnly(true);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
+        ccp.setReadOnly(true);
+        
         cuas.setReadOnly(true);
         cuas.setItemCaptionGenerator(Cuas::getDenominazione);
+        cuas.setReadOnly(true);
+        
         cassa.setReadOnly(true);
-
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
         dataContabile.setReadOnly(true);
@@ -102,16 +104,19 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
 
     @Override
     public void focus(boolean persisted, Versamento versamento) {
-
-        getDelete().setEnabled(!persisted);
+        
+        if (persisted && versamento.getIncassato().signum() == 0) {
+            importo.setReadOnly(false);            
+            getDelete().setEnabled(true);
+            getSave().setEnabled(true);
+            getCancel().setEnabled(true);
+        }
         
         ccp.setValue(versamento.getIncasso().getCcp());
         cuas.setValue(versamento.getIncasso().getCuas());
         cassa.setValue(versamento.getIncasso().getCassa());
-        importo.setReadOnly(persisted);
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
-        dataPagamento.setReadOnly(persisted);
         
         operazione.setReadOnly(persisted);
         codeLine.setReadOnly(persisted);
@@ -127,11 +132,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         
         sostitutivo.setReadOnly(persisted);
         accettazione.setReadOnly(persisted);
-        if (versamento.getIncassato().signum() == 0) {
-            importo.setReadOnly(false);            
-            getSave().setEnabled(true);
-            getCancel().setEnabled(true);
-        }
+    }
+
+    public TextField getImporto() {
+        return importo;
     }
 
 }

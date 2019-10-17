@@ -696,4 +696,34 @@ public class SmdServiceImpl implements SmdService {
         }
     }
 
+    @Override
+    public void save(Versamento versamento) {
+        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
+            return;
+        }
+        versamentoDao.save(versamento);
+        Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
+        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
+        incassoDao.save(incasso);
+        
+    }
+
+    @Override
+    public void delete(Versamento versamento) {
+        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
+            return;
+        }
+        Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
+        versamentoDao.delete(versamento);
+        List<Versamento> versamenti = versamentoDao.findByIncasso(incasso);
+        if (versamenti.size() == 0) {
+            incassoDao.delete(incasso);
+        } else {
+            Smd.calcoloImportoIncasso(incasso,versamenti);
+            incassoDao.save(incasso);
+        }
+        
+        
+    }
+
 }

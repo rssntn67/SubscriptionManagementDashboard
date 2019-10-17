@@ -1,15 +1,19 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -27,7 +31,7 @@ public class VersamentoUI extends IncassoAbstractUI {
 
     @Autowired
     private VersamentoDao versamentoDao;
-    
+
     @Autowired
     private AbbonamentoDao abbonamentoDao;
 
@@ -37,6 +41,11 @@ public class VersamentoUI extends IncassoAbstractUI {
     @Autowired
     private CampagnaDao campagnaDao;
     
+    @Autowired
+    private SmdService smdService;
+    
+    private static final Logger log = LoggerFactory.getLogger(SmdEditor.class);
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
@@ -47,11 +56,37 @@ public class VersamentoUI extends IncassoAbstractUI {
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         VersamentoEditor editor = new VersamentoEditor(versamentoDao) {
             @Override
-            public void focus(boolean persisted, Versamento versamento) {
-                super.focus(persisted, versamento);
-                getDelete().setVisible(false);
-                getSave().setVisible(false);
-                getCancel().setVisible(false);
+            public void save() {
+                if (get().getImporto().compareTo(BigDecimal.ZERO) <= 0) {
+                    Notification.show("Importo non deve essere ZERO",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                if (get().getDataPagamento().after(get().getDataContabile())) {
+                    Notification.show("La data di pagamento deve  essere anteriore alla data contabile",Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
+                try {
+                    smdService.save(get());
+                    log.info("save: {}", get());
+                    onChange();
+                } catch (Exception e) {
+                    log.warn("save failed for : {}.", get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
+            }
+            
+            @Override
+            public void delete() {
+                try {
+                    smdService.delete(get());
+                    log.info("delete: {}", get());
+                    onChange();
+                } catch (Exception e) {
+                    log.warn("delete failed for : {}.", get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
             }
         };
         

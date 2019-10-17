@@ -66,5 +66,7 @@ public interface SmdService {
     void save(Storico storico, Nota nota);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
     void save(Incasso incasso);
+    void save(Versamento versamento);
+    void delete(Versamento versamento);
     
 }

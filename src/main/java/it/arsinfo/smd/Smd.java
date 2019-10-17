@@ -869,7 +869,7 @@ public class Smd {
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
         return versamento;
     }
-    
+        
     public static void calcoloImportoIncasso(Incasso incasso) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Versamento versamento: incasso.getVersamenti()) {
@@ -882,5 +882,14 @@ public class Smd {
         incasso.setImportoErrati(BigDecimal.ZERO);
         incasso.setImportoEsatti(incasso.getImporto());
     }
-    
+
+    public static void calcoloImportoIncasso(Incasso incasso, List<Versamento> versamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Versamento versamento: versamenti) {
+            importo=importo.add(versamento.getImporto());
+        }
+        incasso.setImporto(importo);
+        incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
+    }
+
 }

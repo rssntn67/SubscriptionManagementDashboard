@@ -16,6 +16,7 @@ import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
@@ -86,6 +87,15 @@ public class IncassoUI extends IncassoAbstractUI {
                 editor.get().deleteVersamento(get());
                 Smd.calcoloImportoIncasso(editor.get());
                 onChange();
+            }
+            
+            @Override
+            public void focus(boolean persisted, Versamento versamento) {
+                super.focus(persisted, versamento);
+                getDelete().setVisible(!persisted);
+                getSave().setVisible(!persisted);
+                getCancel().setVisible(!persisted);
+                getImporto().setReadOnly(persisted);
             }
         };
 
