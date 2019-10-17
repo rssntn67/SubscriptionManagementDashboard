@@ -25,6 +25,7 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
+import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")
@@ -55,6 +56,8 @@ public class AbbonamentoUI extends SmdUI {
     @Autowired
     SmdService smdService;
 
+    @Autowired
+    VersamentoDao versamentoDao;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Abbonamento");
@@ -72,7 +75,7 @@ public class AbbonamentoUI extends SmdUI {
         EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,estrattoContoDao,pubblicazioni,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
-        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
+        AbbonamentoEditor editor = new AbbonamentoEditor(versamentoDao,abbonamentoDao,anagrafica,campagne) {
             @Override
             public void delete() {
                 if (get().getId() == null) {

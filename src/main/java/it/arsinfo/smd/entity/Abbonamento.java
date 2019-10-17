@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
@@ -64,6 +65,13 @@ public class Abbonamento implements SmdEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
+
+    @Transient
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dataPagamento = Smd.getStandardDate(new Date());
+    @Transient
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dataContabile = Smd.getStandardDate(new Date());
 
     public Abbonamento() {
     }
@@ -318,6 +326,26 @@ public class Abbonamento implements SmdEntity {
 
     public void setPregresso(BigDecimal pregresso) {
         this.pregresso = pregresso;
+    }
+
+    @Transient
+    public Date getDataPagamento() {
+        return dataPagamento;
+    }
+
+    @Transient
+    public void setDataPagamento(Date dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    @Transient
+    public Date getDataContabile() {
+        return dataContabile;
+    }
+
+    @Transient
+    public void setDataContabile(Date dataContabile) {
+        this.dataContabile = dataContabile;
     }
 
 

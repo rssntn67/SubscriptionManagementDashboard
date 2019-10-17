@@ -6,8 +6,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
@@ -20,7 +22,9 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
+import it.arsinfo.smd.repository.VersamentoDao;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
@@ -46,18 +50,25 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
-    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    
+    private final DateField dataContabile = new DateField("Data contabile");
+    private final DateField dataPagamento = new DateField("Data pagamento");
+
+    private final VersamentoDao versamentoDao;
+    public AbbonamentoEditor(VersamentoDao versamentoDao, AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
-
-        HorizontalLayout pri = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
+        this.versamentoDao = versamentoDao;
+        HorizontalLayout anag = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
                                                     anno);
-        HorizontalLayout sec = new HorizontalLayout(statoIncasso,cassa,codeLine,
+        HorizontalLayout stato = new HorizontalLayout(statoIncasso,cassa,codeLine,
                                                     ccp);
         
-        HorizontalLayout tri = new HorizontalLayout(importo,spese,pregresso,totale,incassato,residuo);
+        HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale);
 
-        setComponents(getActions(),pri, sec,tri);
+        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento);
+
+        setComponents(getActions(),anag, stato,imp, incss);
         
         campagna.setItems(campagne);
         campagna.setItemCaptionGenerator(Campagna::getCaption);
@@ -80,6 +91,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         codeLine.setReadOnly(true);
         cassa.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
+
+        dataContabile.setReadOnly(true);
+        dataPagamento.setReadOnly(true);
 
         getBinder().forField(intestatario)
             .asRequired()
@@ -120,6 +134,13 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .bind("residuo");
         getBinder().forField(statoIncasso).bind("statoIncasso");
         getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
+        getBinder().forField(dataContabile)
+        .withConverter(new LocalDateToDateConverter())
+        .bind("dataContabile");
+        getBinder().forField(dataPagamento)
+        .withConverter(new LocalDateToDateConverter())
+        .bind("dataPagamento");
+
 
     }
 
@@ -149,10 +170,19 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             ccp.setVisible(true);
             intestatario.focus();
         }
-        if (abbonamento.getVersamento() != null) {
-            residuo.setReadOnly(true);
+        
+        if (abbonamento.getVersamento() == null) {
+            dataContabile.setVisible(false);
+            dataPagamento.setVisible(false); 
+        } else {
+            Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
+            abbonamento.setDataContabile(versamento.getDataContabile());
+            abbonamento.setDataPagamento(versamento.getDataPagamento());
+            dataContabile.setVisible(true);
+            dataPagamento.setVisible(true); 
+            pregresso.setReadOnly(true);
             spese.setReadOnly(true);
-        }        
+        }
     }
 
     public void addEstrattoConto(EstrattoConto estrattoConto) {
