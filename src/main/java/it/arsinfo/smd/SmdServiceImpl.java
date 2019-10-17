@@ -2,6 +2,7 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -724,6 +727,36 @@ public class SmdServiceImpl implements SmdService {
         }
         
         
+    }
+
+    @Override
+    public void incassa(Abbonamento abbonamento, 
+            Date dataContabile, 
+            Cassa cassa,
+            Ccp ccp, 
+            Cuas cuas, 
+            Date dataPagamento, String progressivo) throws Exception {
+        
+        if (abbonamento.getStatoIncasso() != Incassato.No) {
+            return;
+        }
+        
+        Incasso incasso = incassoDao.findByDataContabileAndCassaAndCcpAndCuas(dataContabile, cassa, ccp, cuas);
+        if (incasso == null) {
+            incasso = new Incasso();
+            incasso.setDataContabile(dataContabile);
+            incasso.setCassa(cassa);
+            incasso.setCcp(ccp);
+            incasso.setCuas(cuas);
+            incassoDao.save(incasso);
+        }
+        Versamento versamento = new Versamento(incasso, abbonamento.getImporto());
+        versamento.setCodeLine(abbonamento.getCodeLine());
+        versamento.setProgressivo(progressivo);
+        versamentoDao.save(versamento);
+        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
+        incassoDao.save(incasso);
+        incassa(abbonamento, versamento);
     }
 
 }

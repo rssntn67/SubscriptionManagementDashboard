@@ -13,9 +13,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
@@ -24,6 +26,7 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})})
 public class Incasso implements SmdEntity {
 
     @Id

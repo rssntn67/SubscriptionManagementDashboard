@@ -12,6 +12,7 @@ import it.arsinfo.smd.entity.Incasso;
 
 public interface IncassoDao extends JpaRepository<Incasso, Long> {
 
+        Incasso findByDataContabileAndCassaAndCcpAndCuas(Date data,Cassa cassa, Ccp ccp, Cuas cuas);
 	List<Incasso> findByCuas(Cuas cuas);
 	List<Incasso> findByCcp(Ccp ccp);
         List<Incasso> findByDataContabile(Date data);
