@@ -73,8 +73,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         campagna.setReadOnly(true);
         importo.setReadOnly(true);
         totale.setReadOnly(true);
-        spese.setReadOnly(true);
-        pregresso.setReadOnly(true);
+        spese.setReadOnly(false);
+        pregresso.setReadOnly(false);
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
         codeLine.setReadOnly(true);
@@ -127,8 +127,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
         getDelete().setEnabled(abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
-        getSave().setEnabled(!persisted || abbonamento.getCampagna() == null);
-        getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null);
+        getSave().setEnabled(!persisted || abbonamento.getCampagna() == null || abbonamento.getVersamento() == null);
+        getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null || abbonamento.getVersamento() == null);
         intestatario.setReadOnly(persisted);
         anno.setReadOnly(persisted);
         codeLine.setVisible(persisted);
@@ -149,7 +149,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             ccp.setVisible(true);
             intestatario.focus();
         }
-        
+        if (abbonamento.getVersamento() != null) {
+            residuo.setReadOnly(true);
+            spese.setReadOnly(true);
+        }        
     }
 
     public void addEstrattoConto(EstrattoConto estrattoConto) {

@@ -104,8 +104,6 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     public void focus(boolean persisted, Versamento versamento) {
 
         getDelete().setEnabled(!persisted);
-        getSave().setEnabled(!persisted);
-        getCancel().setEnabled(!persisted);
         
         ccp.setValue(versamento.getIncasso().getCcp());
         cuas.setValue(versamento.getIncasso().getCuas());
@@ -126,8 +124,14 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         progressivoBobina.setReadOnly(persisted);
         
         bollettino.setReadOnly(persisted);
+        
         sostitutivo.setReadOnly(persisted);
         accettazione.setReadOnly(persisted);
+        if (versamento.getIncassato().signum() == 0) {
+            importo.setReadOnly(false);            
+            getSave().setEnabled(true);
+            getCancel().setEnabled(true);
+        }
     }
 
 }
