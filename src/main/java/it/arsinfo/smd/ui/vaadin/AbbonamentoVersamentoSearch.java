@@ -23,7 +23,7 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
     private Anagrafica customer;
     private Campagna campagna;
     
-    private List<Abbonamento> abbonamenti = new ArrayList<>();
+    private ArrayList<Abbonamento> abbonamenti = new ArrayList<>();
     
     public AbbonamentoVersamentoSearch(AbbonamentoDao abbonamentoDao, 
             List<Anagrafica> anagrafica, 
@@ -122,19 +122,21 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
     }
     @Override
     public List<Abbonamento> find() {
+        @SuppressWarnings("unchecked")
+        List<Abbonamento> abbs = (List<Abbonamento>) abbonamenti.clone();
         if (customer != null) {
-            abbonamenti = findByCustomer(abbonamenti);
+            abbs = findByCustomer(abbs);
         }
         if (campagna!= null) {
-            abbonamenti = findByCampagna(abbonamenti);
+            abbs = findByCampagna(abbs);
         }
         if (!StringUtils.isEmpty(searchCap)) {
-            abbonamenti = findByCap(abbonamenti);
+            abbs = findByCap(abbs);
         }
         if (!StringUtils.isEmpty(searchCodeLine)) {
-            abbonamenti=findByCodeline(abbonamenti);                  
+            abbs=findByCodeline(abbs);                  
         }
-        return abbonamenti;
+        return abbs;
     }
     
     public void setItems(List<Abbonamento> abbonamenti) {

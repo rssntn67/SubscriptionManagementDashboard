@@ -1,7 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -101,6 +99,7 @@ public class VersamentoUI extends IncassoAbstractUI {
         abbonamentiAssociatiGrid.setVisible(false);
         abbonamentiAssociabiliGrid.setVisible(false);
         editor.setVisible(false);
+
         abbonamentiAssociabiliGrid.getGrid().setHeight("300px");
         abbonamentiAssociatiGrid.getGrid().setHeight("300px");
 
@@ -110,10 +109,13 @@ public class VersamentoUI extends IncassoAbstractUI {
             if (grid.getSelected() != null) {
                 editor.edit(grid.getSelected());
                 abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
-                abbSearch.setItems(associabili);
-                abbonamentiAssociabiliGrid.populate(associabili);
-                abbSearch.setVisible(true);
+                
+                if (grid.getSelected().getResiduo().signum() > 0) {
+                    abbSearch.setItems(getAssociabili(grid.getSelected()));
+                    abbonamentiAssociabiliGrid.populate(abbSearch.find());
+                    abbSearch.setVisible(true);
+                }
+
                 search.setVisible(false);
                 grid.setVisible(false);
             }
@@ -122,6 +124,7 @@ public class VersamentoUI extends IncassoAbstractUI {
         editor.setChangeHandler(() -> {
             search.setVisible(true);
             grid.populate(search.find());
+            
             abbSearch.setVisible(false);
             abbonamentiAssociatiGrid.setVisible(false);
             abbonamentiAssociabiliGrid.setVisible(false);
@@ -139,11 +142,11 @@ public class VersamentoUI extends IncassoAbstractUI {
             button.addClickListener(click -> {
                 dissocia(abbonamento, editor.get());
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
-                abbSearch.setItems(associabili);
-                abbonamentiAssociabiliGrid.populate(associabili);
-                });
+                abbonamentiAssociatiGrid.populate(getAssociati(editor.get()));
+                abbSearch.setItems(getAssociabili(editor.get()));
+                abbonamentiAssociabiliGrid.populate(abbSearch.find());
+                abbSearch.setVisible(true);
+            });
             return button;
         });
         
@@ -152,10 +155,15 @@ public class VersamentoUI extends IncassoAbstractUI {
             button.addClickListener(click -> {
                 incassa(abbonamento, editor.get());
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
-                List<Abbonamento> associabili = getAssociabili(grid.getSelected());
-                abbSearch.setItems(associabili);
-                abbonamentiAssociabiliGrid.populate(associabili);
+                abbonamentiAssociatiGrid.populate(getAssociati(editor.get()));
+                if (grid.getSelected().getResiduo().signum() > 0) {
+                    abbSearch.setItems(getAssociabili(editor.get()));
+                    abbonamentiAssociabiliGrid.populate(abbSearch.find());
+                    abbSearch.setVisible(true);
+                } else {
+                    abbSearch.setVisible(false);
+                    abbonamentiAssociabiliGrid.setVisible(false);
+                }
             });
             return button;
         });
