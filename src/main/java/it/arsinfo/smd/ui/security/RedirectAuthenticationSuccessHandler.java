@@ -29,7 +29,7 @@ public class RedirectAuthenticationSuccessHandler implements AuthenticationSucce
 	private ServletContext servletContext;
 
 	public RedirectAuthenticationSuccessHandler() {
-		location = SmdUI.APP_URL;
+		location = SmdUI.HOME;
 	}
 
 	private String getAbsoluteUrl(String url) {

@@ -11,7 +11,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-@SpringUI
+@SpringUI(path=SmdUI.HOME)
 @Title("Gestione Abbonamenti ADP")
 public class HomeUI extends SmdUI {
 

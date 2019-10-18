@@ -23,13 +23,16 @@ public class LoginAttemptsLogger {
  
         WebAuthenticationDetails details
           = (WebAuthenticationDetails) auditEvent.getData().get("details");
-  
-        log.info("User {} - {} - IP: {} {} {}" ,
+        String requestUrl = (String)auditEvent.getData().get("requestUrl");
+        if (requestUrl != null && (requestUrl.equals("/") || requestUrl.equals("/login.html?logout"))) {
+            return;
+        }
+        log.info("'{}' {} Remote Ip Address {} SessionId {}" ,
                  auditEvent.getPrincipal() ,
                  auditEvent.getType(),
                  details.getRemoteAddress(),
-                 details.getSessionId(),
-                 auditEvent.getData().get("message"));
-
+                 details.getSessionId()
+                );
+ 
     }
 }

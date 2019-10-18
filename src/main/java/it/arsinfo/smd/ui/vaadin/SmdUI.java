@@ -33,7 +33,7 @@ public abstract class SmdUI extends UI {
     private VerticalLayout layout = new VerticalLayout();
     private MenuBar menu = new MenuBar();
     private Label header = new Label("");
-    public static final String APP_URL = "/";
+    public static final String HOME = "/";
     public final static String URL_LOGIN = "/login.html";
     public final static String URL_LOGIN_PROCESSING = "/login";
     public final static String URL_LOGIN_FAILURE = "/login.html?error";
@@ -70,7 +70,7 @@ public abstract class SmdUI extends UI {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(APP_URL);;
+                getUI().getPage().setLocation(HOME);;
             }
         });
 
@@ -227,7 +227,7 @@ public abstract class SmdUI extends UI {
     }
 
     public Link getHomePageLink() {
-        return new Link("Home",new ExternalResource(APP_URL));        
+        return new Link("Home",new ExternalResource(HOME));        
     }
     
     public Link getAnagraficaLink() {

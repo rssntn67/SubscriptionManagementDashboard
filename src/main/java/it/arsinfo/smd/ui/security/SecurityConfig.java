@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests();
 
 		// Allow access to static resources ("/VAADIN/**")
+                reg = reg.antMatchers("/favicon.ico").permitAll();
 		reg = reg.antMatchers("/VAADIN/**").permitAll();
 		// Require authentication for all URLS ("/**")
 		reg = reg.antMatchers(SmdUI.URL_USER).hasAnyAuthority(Role.ADMIN.name());
