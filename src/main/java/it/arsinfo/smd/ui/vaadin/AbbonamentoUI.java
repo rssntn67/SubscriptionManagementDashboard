@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
@@ -133,6 +134,7 @@ public class AbbonamentoUI extends SmdUI {
             }
         };
 
+        SmdButton incassa = new SmdButton("Incassa", VaadinIcons.CASH);
         EstrattoContoAdd estrattoContoAdd = new EstrattoContoAdd("Aggiungi EC");
         EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
             @Override
@@ -192,9 +194,10 @@ public class AbbonamentoUI extends SmdUI {
             };
         };
 
-        addSmdComponents(estrattoContoEditor,editor,estrattoContoAdd,estrattoContoGrid, add,search, grid);
+        addSmdComponents(estrattoContoEditor,editor,incassa,estrattoContoAdd,estrattoContoGrid, add,search, grid);
 
         editor.setVisible(false);
+        incassa.setVisible(false);
         estrattoContoEditor.setVisible(false);
         estrattoContoAdd.setVisible(false);
         estrattoContoGrid.setVisible(false);
@@ -220,6 +223,7 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
+            incassa.setVisible(editor.incassare());
             estrattoContoAdd.setVisible(grid.getSelected().getCampagna() == null);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.populate(findByAbbonamento(grid.getSelected()));               
@@ -227,6 +231,7 @@ public class AbbonamentoUI extends SmdUI {
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
+            incassa.setVisible(false);
             estrattoContoAdd.setVisible(false);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.setVisible(false);
@@ -267,9 +272,20 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.setVisible(false);
+            incassa.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });
 
+        incassa.setChangeHandler(() -> {
+            try {
+                smdService.incassa(editor.get());
+                incassa.setVisible(false);
+                editor.edit(editor.get());
+            } catch (Exception e) {
+                Notification.show(e.getMessage(),
+                                  Notification.Type.ERROR_MESSAGE);
+            }
+        });
         grid.populate(search.findAll());
 
     }

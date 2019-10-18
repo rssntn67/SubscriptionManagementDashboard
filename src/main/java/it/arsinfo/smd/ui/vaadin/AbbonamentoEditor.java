@@ -29,6 +29,8 @@ import it.arsinfo.smd.repository.VersamentoDao;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
+    private boolean noOmaggio;
+    private boolean hasVersamento;
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
     private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
@@ -175,7 +177,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
         statoIncasso.setVisible(persisted);
 
-        boolean noOmaggio = abbonamento.getStatoIncasso() != Incassato.Omaggio;
+        noOmaggio = abbonamento.getStatoIncasso() != Incassato.Omaggio;
 
         importo.setVisible(noOmaggio);
         spese.setVisible(noOmaggio);
@@ -192,19 +194,19 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         cuas.setVisible(noOmaggio);
         operazione.setVisible(noOmaggio);
         
-        boolean hasVers = abbonamento.getVersamento() != null;
+        hasVersamento = abbonamento.getVersamento() != null;
         
-        spese.setReadOnly(hasVers);
-        pregresso.setReadOnly(hasVers);
-        dataContabile.setReadOnly(hasVers);
-        dataPagamento.setReadOnly(hasVers); 
+        spese.setReadOnly(hasVersamento);
+        pregresso.setReadOnly(hasVersamento);
+        dataContabile.setReadOnly(hasVersamento);
+        dataPagamento.setReadOnly(hasVersamento); 
 
-        cassa.setReadOnly(hasVers);
-        ccp.setReadOnly(hasVers);
-        cuas.setReadOnly(hasVers);
-        operazione.setReadOnly(hasVers);
+        cassa.setReadOnly(hasVersamento);
+        ccp.setReadOnly(hasVersamento);
+        cuas.setReadOnly(hasVersamento);
+        operazione.setReadOnly(hasVersamento);
 
-        if (hasVers) {
+        if (hasVersamento) {
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
             abbonamento.setDataContabile(versamento.getDataContabile());
             abbonamento.setDataPagamento(versamento.getDataPagamento());
@@ -254,5 +256,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
         this.estrattiConto = estrattiConto;
+    }
+    
+    public boolean incassare() {
+        return noOmaggio && !hasVersamento;
     }
 }

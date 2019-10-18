@@ -136,7 +136,7 @@ public class IncassoUI extends IncassoAbstractUI {
                 try {
                     smdService.save(incasso);
                 } catch (Exception e) {
-                    Notification.show("Non è possibile salvare questo record: ",
+                    Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                 }
             });
