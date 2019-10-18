@@ -27,11 +27,17 @@ public class LoginAttemptsLogger {
         if (requestUrl != null && (requestUrl.equals("/") || requestUrl.equals("/login.html?logout"))) {
             return;
         }
+        String remoteAddress = "NA";
+        String sessionId = "NA";
+        if (details != null) {
+            remoteAddress = details.getRemoteAddress();
+            sessionId = details.getSessionId();
+        }
         log.info("'{}' {} Remote Ip Address {} SessionId {}" ,
                  auditEvent.getPrincipal() ,
                  auditEvent.getType(),
-                 details.getRemoteAddress(),
-                 details.getSessionId()
+                 remoteAddress,
+                 sessionId
                 );
  
     }

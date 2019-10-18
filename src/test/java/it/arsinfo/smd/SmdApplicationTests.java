@@ -217,7 +217,7 @@ public class SmdApplicationTests {
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage(),e);
             assertTrue(false);
         }
 
