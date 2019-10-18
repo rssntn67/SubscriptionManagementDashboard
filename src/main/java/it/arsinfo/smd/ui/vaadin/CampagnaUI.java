@@ -76,7 +76,7 @@ public class CampagnaUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.deleteCampagnaAbbonamenti(get());
+                    smdService.rimuovi(get());
                 } catch (Exception e) {
                     Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
@@ -109,7 +109,7 @@ public class CampagnaUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.generaCampagnaAbbonamenti(get(), attivi);
+                    smdService.genera(get(), attivi);
                 } catch (Exception e) {
                     Notification.show("Non è possibile generare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
@@ -219,7 +219,7 @@ public class CampagnaUI extends SmdUI {
                 switch (campagna.getStatoCampagna()) {
                 case Generata:
                     try {
-                        smdService.inviaCampagna(campagna);
+                        smdService.invia(campagna);
                     } catch (Exception e) {
                         Notification.show("Non è possibile inviare campagna:"+e.getMessage(),
                                           Notification.Type.ERROR_MESSAGE);
@@ -229,7 +229,7 @@ public class CampagnaUI extends SmdUI {
 
                 case Inviata:
                     try {
-                        smdService.inviaEstrattoConto(campagna);
+                        smdService.estratto(campagna);
                     } catch (Exception e) {
                         Notification.show("Non è possibile inviare Estratto Conto campagna:"+e.getMessage(),
                                           Notification.Type.ERROR_MESSAGE);
@@ -239,7 +239,7 @@ public class CampagnaUI extends SmdUI {
 
                 case InviatoEC:
                     try {
-                        smdService.chiudiCampagna(campagna);
+                        smdService.chiudi(campagna);
                     } catch (Exception e) {
                         Notification.show("Non è possibile chiudere campagna:"+e.getMessage(),
                                           Notification.Type.ERROR_MESSAGE);

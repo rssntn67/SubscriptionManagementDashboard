@@ -170,7 +170,7 @@ public class StoricoUI extends SmdUI {
                 return;                                    
             }
             try {
-                smdService.aggiornaAbbonamentoDaStorico(editor.get());
+                smdService.aggiorna(editor.get());
             } catch (Exception e) {
                 log.warn("update failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);
                 Notification.show("Abbonamento non aggiornato:" + e.getMessage(), Type.ERROR_MESSAGE);

@@ -57,7 +57,6 @@ public class SmdLoadSampleData implements Runnable {
     protected final NotaDao notaDao;
     private final IncassoDao incassoDao; 
     private final VersamentoDao versamentoDao;
-    private final OperazioneDao operazioneDao;
     
     protected Pubblicazione messaggio;
     protected Pubblicazione lodare;
@@ -118,7 +117,6 @@ public class SmdLoadSampleData implements Runnable {
         this.spedizioneItemDao=spedizioneItemDao;
         this.incassoDao=incassoDao;
         this.versamentoDao=versamentoDao;
-        this.operazioneDao=operazioneDao;
     }
     
     

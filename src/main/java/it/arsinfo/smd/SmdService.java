@@ -20,55 +20,44 @@ import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
 
+    void delete(Storico storico);
+    void save(Storico storico, Nota nota);
     
-    void deleteCampagnaAbbonamenti(Campagna campagna) throws Exception;
+    void rimuovi(Campagna campagna) throws Exception;
+    void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
+    void invia(Campagna campagna) throws Exception;
+    void estratto(Campagna campagna) throws Exception;
+    void chiudi(Campagna campagna) throws Exception;
+
+    void rimuovi(Abbonamento abbonamento) throws Exception;
+    void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
+    void aggiorna(Storico storico) throws Exception;
+    void aggiorna(EstrattoConto estrattoConto) throws Exception;
+    void cancella(EstrattoConto estrattoConto) throws Exception;
     
-    void deleteAbbonamento(Abbonamento abbonamento) throws Exception;
-
-    void annullaAbbonamento(Abbonamento abbonamento) throws Exception;
-    void sospendiSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
-    void riattivaSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception;
-    void sospendiStoricoAbbonamento(Abbonamento abbonamento) throws Exception;
-    void riattivaStoricoAbbonamento(Abbonamento abbonamento) throws Exception;
-
-    void aggiornaAbbonamentoDaStorico(Storico storico) throws Exception;
-
-    void rimuoviECDaStorico(Storico storico) throws Exception;
-
-    void generaAbbonamento(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception;
-    void generaAbbonamento(Abbonamento abbonamento, List<EstrattoConto> estrattiConto) throws Exception;
-    void aggiornaECAbbonamento(Abbonamento abbonamento,EstrattoConto estrattoConto) throws Exception;
-    void cancellaECAbbonamento(Abbonamento abbonamento,EstrattoConto estrattoConto) throws Exception;
-    
-    void generaCampagnaAbbonamenti(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
-    void inviaCampagna(Campagna campagna) throws Exception;
-    void inviaEstrattoConto(Campagna campagna) throws Exception;
-    void chiudiCampagna(Campagna campagna) throws Exception;
-
     void generaStatisticheTipografia(Anno anno, Mese mese); 
     void generaStatisticheTipografia(Anno anno); 
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione);
     
 
     List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
+    List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
-    void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
-    void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
-    void incassa(Abbonamento abbonamento) throws Exception;
     List<Abbonamento> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
-    List<Spedizione> findSpedizioneAll();
+    List<Spedizione> findSpedizioneAll();    
     
-    void delete(Storico storico);
-    
-    void save(Storico storico, Nota nota);
-    List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
     void save(Incasso incasso);
     void save(Versamento versamento);
     void delete(Versamento versamento);
+    
+    void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
+    void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
+    void incassa(Abbonamento abbonamento) throws Exception;
+    
     
     
 }

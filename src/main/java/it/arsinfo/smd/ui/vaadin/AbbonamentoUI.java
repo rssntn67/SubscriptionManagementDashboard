@@ -92,14 +92,13 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.deleteAbbonamento(get());
+                    smdService.rimuovi(get());
+                    onChange();
                 } catch (Exception e) {
                     log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
                     Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);
                     return;                    
                 }
-                onChange();
-
             }
             
             @Override
@@ -124,7 +123,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.generaAbbonamento(get(), getEstrattiConto());
+                    smdService.genera(get(), getEstrattiConto().toArray(new EstrattoConto[getEstrattiConto().size()]));
                 } catch (Exception e) {
                     log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
                     Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
@@ -156,7 +155,7 @@ public class AbbonamentoUI extends SmdUI {
                 if (get().getId() == null ) {
                     editor.addEstrattoConto(get());
                     try {
-                      smdService.generaAbbonamento(editor.get(), get());  
+                      smdService.genera(editor.get(), get());  
                     } catch (Exception e) {
                         Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                         return;
@@ -165,7 +164,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.aggiornaECAbbonamento(editor.get(), get());
+                    smdService.aggiorna(get());
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                     return;
@@ -184,7 +183,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.cancellaECAbbonamento(editor.get(), get());
+                    smdService.cancella(get());
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                     return;

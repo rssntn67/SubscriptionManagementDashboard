@@ -1941,7 +1941,7 @@ UP:        for (Anagrafica utenteOmaggio : clientiOmaggio) {
             ci.setCampagna(campagna);
             campagna.addCampagnaItem(ci);
         }
-        smdService.generaCampagnaAbbonamenti(campagna, attivi);
+        smdService.genera(campagna, attivi);
         log.info("End Generating Campagna");
 
         log.info("Start Fix codeline");

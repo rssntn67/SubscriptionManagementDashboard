@@ -131,7 +131,7 @@ public class Smd {
             List<SpesaSpedizione> spese)
     throws UnsupportedOperationException {      
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
-            throw new UnsupportedOperationException("Aggiona EC non consentita per Abbonamenti Annullati");
+            throw new UnsupportedOperationException("Aggiorna EC non consentita per Abbonamenti Annullati");
         }
         log.debug("aggiornaEC: intestatario: {}", abb.getIntestatario().getCaption());
         log.debug("aggiornaEC: area: {}", abb.getIntestatario().getAreaSpedizione());
