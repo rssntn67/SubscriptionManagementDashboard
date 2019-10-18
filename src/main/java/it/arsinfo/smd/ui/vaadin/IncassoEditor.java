@@ -56,6 +56,7 @@ public class IncassoEditor extends SmdEditor<Incasso> {
 
         dataContabile.setDateFormat("dd/MM/yyyy");
         cuas.setEmptySelectionAllowed(false);
+        cuas.setItemCaptionGenerator(Cuas::getDenominazione);
         cassa.setEmptySelectionAllowed(false);
         ccp.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
