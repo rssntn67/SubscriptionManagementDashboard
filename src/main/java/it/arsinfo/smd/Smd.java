@@ -108,7 +108,7 @@ public class Smd {
         return map;
     }
 
-    public static EstrattoConto generaECDaStorico(Abbonamento abb,Storico storico) {
+    public static EstrattoConto genera(Abbonamento abb,Storico storico) {
         final EstrattoConto ec = new EstrattoConto();
         ec.setStorico(storico);
         ec.setAbbonamento(abb);
@@ -502,7 +502,7 @@ public class Smd {
             &&
             abbonamento.getCassa() == storico.getCassa()
                 ).forEach(storico ->
-            generaECDaStorico(abbonamento, storico));
+            genera(abbonamento, storico));
         return ecs;
     }
     

@@ -16,7 +16,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdService;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -68,48 +67,15 @@ public class StoricoUI extends SmdUI {
                                   anagrafica) {
             @Override
             public void save() {
-                if (getIntestatario().isEmpty()) {
-                    Notification.show("Intestatario deve essere valorizzato", Type.WARNING_MESSAGE);
-                    return;                    
-                }
-                if (getDestinatario().isEmpty()) {
-                    Notification.show("Destinatario deve essere valorizzato", Type.WARNING_MESSAGE);
-                    return;                    
-                }
-                if (getPubblicazione().isEmpty()) {
-                    Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
-                    return;
-                }
-                Nota nota = new Nota(get());
-                nota.setOperatore(getLoggedInUser().getUsername());
-                if (get().getId() == null) {
-                    nota.setDescription("Nuovo: " + get().toString());
-                } else {
-                    nota.setDescription("Aggiornato: " + get().toString());                    
-                }
-                try {
-                    smdService.save(get(), nota);
-                    log.info("save: {}" + get());
-                    if (!getNota().isEmpty()) {
-                        Nota unota = new Nota(get());
-                        unota.setOperatore(getLoggedInUser().getUsername());
-                        unota.setDescription(getNota().getValue());
-                        notaDao.save(unota);
-                        getNota().clear();
-                    }
+                if (saveStorico(this)) {
                     onChange();
-                } catch (Exception e) {
-                    log.warn("save failed for : {} ", get(),e);
-                    Notification.show("Non è possibile salvare questo record: ",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
                 }
-                                
             }
             
             @Override
             public void delete() {
                 smdService.delete(get());
+                onChange();
             }
         };
         
@@ -165,28 +131,59 @@ public class StoricoUI extends SmdUI {
         notaGrid.setChangeHandler(() -> {});
 
         update.setChangeHandler(() -> {
-            if (editor.get().getStatoStorico() == StatoStorico.Sospeso) {
-                Notification.show("Abbonamento non aggiornato storico Sospeso:" , Type.WARNING_MESSAGE);
-                return;                                    
+            if (!saveStorico(editor)) {
+                return;
             }
             try {
                 smdService.aggiorna(editor.get());
+                editor.onChange();
             } catch (Exception e) {
-                log.warn("update failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);
+                log.warn("aggiorna failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);
                 Notification.show("Abbonamento non aggiornato:" + e.getMessage(), Type.ERROR_MESSAGE);
                 return;                    
             }
-            grid.populate(search.find());
-            showMenu();
-            search.setVisible(true);
-            setHeader("Storico");
-            editor.setVisible(false);
-            notaGrid.setVisible(false);
-            update.setVisible(false);
-            add.setVisible(true);
         });
 
         grid.populate(search.find());
 
+    }
+    
+    private boolean saveStorico(StoricoEditor editor) {
+        if (editor.getIntestatario().isEmpty()) {
+            Notification.show("Intestatario deve essere valorizzato", Type.WARNING_MESSAGE);
+            return false;                    
+        }
+        if (editor.getDestinatario().isEmpty()) {
+            Notification.show("Destinatario deve essere valorizzato", Type.WARNING_MESSAGE);
+            return false;                    
+        }
+        if (editor.getPubblicazione().isEmpty()) {
+            Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
+            return false;
+        }
+        Nota nota = new Nota(editor.get());
+        nota.setOperatore(getLoggedInUser().getUsername());
+        if (editor.get().getId() == null) {
+            nota.setDescription("Nuovo: " + editor.get().toString());
+        } else {
+            nota.setDescription("Aggiornato: " + editor.get().toString());                    
+        }
+        try {
+            smdService.save(editor.get(), nota);
+            log.info("save: {}" + editor.get());
+            if (!editor.getNota().isEmpty()) {
+                Nota unota = new Nota(editor.get());
+                unota.setOperatore(getLoggedInUser().getUsername());
+                unota.setDescription(editor.getNota().getValue());
+                notaDao.save(unota);
+                editor.getNota().clear();
+            }
+        } catch (Exception e) {
+            log.warn("save failed for : {} ", editor.get(),e);
+            Notification.show("Non è possibile salvare questo record: ",
+                              Notification.Type.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 }

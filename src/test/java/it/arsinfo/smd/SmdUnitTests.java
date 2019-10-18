@@ -924,7 +924,7 @@ public class SmdUnitTests {
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
-            EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
+            EstrattoConto ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
             log.info(ec.toString());
             log.info(abb.toString());
@@ -977,7 +977,7 @@ public class SmdUnitTests {
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
-            EstrattoConto ec = Smd.generaECDaStorico(abb, storico);
+            EstrattoConto ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
             log.info(abb.toString());
             log.info(ec.toString());
