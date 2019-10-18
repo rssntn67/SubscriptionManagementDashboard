@@ -50,6 +50,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             EnumSet.allOf(Ccp.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",
             EnumSet.allOf(Cuas.class));
+    private final TextField operazione = new TextField("Operazione");
 
     List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
@@ -71,10 +72,11 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
         HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale);
 
-        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento,cassa,
-                                                      ccp,cuas);
+        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento);
 
-        setComponents(getActions(),anag, status,imp, incss);
+        HorizontalLayout deta = new HorizontalLayout(cassa,ccp,cuas,operazione);
+
+        setComponents(getActions(),anag, status,imp, incss,deta);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -150,9 +152,11 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(dataPagamento)
         .withConverter(new LocalDateToDateConverter())
         .bind("dataPagamento");
+        
         getBinder().forField(cassa).bind("cassa");
         getBinder().forField(ccp).bind("ccp");
         getBinder().forField(cuas).bind("cuas");                
+        getBinder().forField(operazione).bind("operazione");                
 
     }
 
@@ -180,32 +184,38 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         incassato.setVisible(noOmaggio);
         residuo.setVisible(noOmaggio);
+        dataContabile.setVisible(noOmaggio);
+        dataPagamento.setVisible(noOmaggio); 
+
         cassa.setVisible(noOmaggio);
         ccp.setVisible(noOmaggio);
         cuas.setVisible(noOmaggio);
-        dataContabile.setVisible(noOmaggio);
-        dataPagamento.setVisible(noOmaggio); 
+        operazione.setVisible(noOmaggio);
         
         boolean hasVers = abbonamento.getVersamento() != null;
         
         spese.setReadOnly(hasVers);
         pregresso.setReadOnly(hasVers);
-        cassa.setReadOnly(hasVers);
-        ccp.setReadOnly(hasVers);
-        cuas.setReadOnly(hasVers);
         dataContabile.setReadOnly(hasVers);
         dataPagamento.setReadOnly(hasVers); 
 
+        cassa.setReadOnly(hasVers);
+        ccp.setReadOnly(hasVers);
+        cuas.setReadOnly(hasVers);
+        operazione.setReadOnly(hasVers);
+
         if (hasVers) {
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
-            System.out.println(versamento.toString());
-            System.out.println(versamento.getIncasso().toString());
             abbonamento.setDataContabile(versamento.getDataContabile());
             abbonamento.setDataPagamento(versamento.getDataPagamento());
             abbonamento.setCuas(versamento.getIncasso().getCuas());
+            abbonamento.setOperazione(versamento.getOperazione());
             cuas.setValue(abbonamento.getCuas());
             dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            if (abbonamento.getOperazione() != null) {
+                operazione.setValue(abbonamento.getOperazione());
+            }
         }
         intestatario.focus();
 
