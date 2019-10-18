@@ -13,6 +13,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -44,7 +45,7 @@ public class VersamentoUI extends IncassoAbstractUI {
     @Autowired
     private SmdService smdService;
     
-    private static final Logger log = LoggerFactory.getLogger(SmdEditor.class);
+    private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     @Override
     protected void init(VaadinRequest request) {

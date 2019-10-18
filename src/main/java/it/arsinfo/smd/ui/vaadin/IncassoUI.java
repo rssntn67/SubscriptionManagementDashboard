@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -16,7 +18,6 @@ import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
@@ -33,7 +34,11 @@ public class IncassoUI extends IncassoAbstractUI {
     @Autowired    
     private VersamentoDao versamentoDao;
 
-    @Autowired SmdService smdService;
+    @Autowired 
+    private SmdService smdService;
+    
+    private static final Logger log = LoggerFactory.getLogger(Smd.class);
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
@@ -77,26 +82,42 @@ public class IncassoUI extends IncassoAbstractUI {
                     Notification.show("La data di pagamento deve  essere anteriore alla data contabile",Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                editor.get().addVersamento(get());
-                Smd.calcoloImportoIncasso(editor.get());
-                onChange();
+                if (editor.get().getId() == null) {
+                    editor.get().addVersamento(get());
+                    Smd.calcoloImportoIncasso(editor.get());
+                    onChange();
+                    return;
+                } 
+                try {
+                    smdService.save(get());
+                    log.info("save: {}", get());
+                    onChange();
+                } catch (Exception e) {
+                    log.warn("save failed for : {}.", get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
             }
             
             @Override
             public void delete() {
-                editor.get().deleteVersamento(get());
-                Smd.calcoloImportoIncasso(editor.get());
-                onChange();
-            }
-            
-            @Override
-            public void focus(boolean persisted, Versamento versamento) {
-                super.focus(persisted, versamento);
-                getDelete().setVisible(!persisted);
-                getSave().setVisible(!persisted);
-                getCancel().setVisible(!persisted);
-                getImporto().setReadOnly(persisted);
-            }
+                if (editor.get().getId() == null) {
+                    editor.get().deleteVersamento(get());
+                    Smd.calcoloImportoIncasso(editor.get());
+                    onChange();
+                    return;
+                } 
+                
+                try {
+                    smdService.delete(get());
+                    log.info("delete: {}", get());
+                    onChange();
+                } catch (Exception e) {
+                    log.warn("delete failed for : {}.", get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                }
+            }              
         };
 
         addSmdComponents(
@@ -113,22 +134,68 @@ public class IncassoUI extends IncassoAbstractUI {
                          );
 
         editor.setVisible(false);
-        versEditor.setVisible(false);
+        versAdd.setVisible(false);
         incassaSingolo.setVisible(false);
         versGrid.setVisible(false);
-        versAdd.setVisible(false);
-        
+
+        versEditor.setVisible(false);
+
+        grid.setChangeHandler(() -> {
+            if (grid.getSelected() == null) {
+                showMenu();
+                
+                upload.setVisible(true);
+                add.setVisible(true);
+                search.setVisible(true);
+                incassa.setVisible(true);
+
+                editor.setVisible(false);
+                versAdd.setVisible(false);
+                incassaSingolo.setVisible(false);
+                versGrid.setVisible(false);
+            } else {
+                hideMenu();
+                
+                editor.edit(grid.getSelected());
+                versAdd.setVisible(true);
+                versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
+                incassaSingolo.setVisible(true);
+
+                upload.setVisible(false);
+                add.setVisible(false);
+                search.setVisible(false);
+                incassa.setVisible(false);
+                grid.setVisible(false);
+            }
+        });
+
+        editor.setChangeHandler(() -> {
+            showMenu();
+            setHeader("Incassi");
+            upload.setVisible(true);
+            add.setVisible(true);
+            search.setVisible(true);
+            incassa.setVisible(true);
+            grid.populate(search.find());
+
+            editor.setVisible(false);
+            versAdd.setVisible(false);
+            versGrid.setVisible(false);
+            incassaSingolo.setVisible(false);
+        });
+
         add.setChangeHandler(() -> {
-            setHeader("Incasso:Nuovo");
+            setHeader("Incasso:Aggiungi");
             hideMenu();
             add.setVisible(false);
             upload.setVisible(false);
             search.setVisible(false);
             incassa.setVisible(false);
             grid.setVisible(false);
+            
             editor.edit(add.generate());     
             versAdd.setIncasso(editor.get());
-            versAdd.setVisible(true);
+            versAdd.setVisible(true);           
         });
         
         upload.setChangeHandler(() -> {
@@ -161,46 +228,11 @@ public class IncassoUI extends IncassoAbstractUI {
         });
 
         versAdd.setChangeHandler(() -> {
-            setHeader(String.format("%s:Spedizione:Nuova",editor.get().getHeader()));
+            setHeader(String.format("%s:Versamento:Aggiungi",editor.get().getHeader()));
             hideMenu();
             versEditor.edit(versAdd.generate());
             editor.setVisible(false);
             versAdd.setVisible(false);
-
-        });
-        editor.setChangeHandler(() -> {
-            showMenu();
-            setHeader("Incassi");
-            grid.populate(search.find());
-            add.setVisible(true);
-            upload.setVisible(true);
-            search.setVisible(true);
-            incassa.setVisible(true);
-            editor.setVisible(false);
-            versGrid.setVisible(false);
-            versAdd.setVisible(false);
-            
-        });
-
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                add.setVisible(true);
-                upload.setVisible(true);
-                search.setVisible(true);
-                incassa.setVisible(true);
-                incassaSingolo.setVisible(false);
-                editor.setVisible(false);
-                versGrid.setVisible(false);
-            } else {
-                editor.edit(grid.getSelected());
-                versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
-                incassaSingolo.setVisible(true);
-                add.setVisible(false);
-                grid.setVisible(false);
-                upload.setVisible(false);
-                search.setVisible(false);
-                incassa.setVisible(false);
-            }
         });
         
         incassaSingolo.setChangeHandler(() -> {
@@ -225,8 +257,7 @@ public class IncassoUI extends IncassoAbstractUI {
         });
  
         versEditor.setChangeHandler(() -> {
-            setHeader("Incasso:Nuovo");
-            versAdd.setVisible(true);
+            setHeader("Incasso");
             if (editor.get().getId() != null) {
                versGrid.populate(versamentoDao.findByIncasso(editor.get()));
             } else {
@@ -245,7 +276,6 @@ public class IncassoUI extends IncassoAbstractUI {
                 editor.setVisible(false);
             } else {
                 editor.setVisible(false);
-                versAdd.setVisible(false);
                 versEditor.edit(versGrid.getSelected());
             }
         });
