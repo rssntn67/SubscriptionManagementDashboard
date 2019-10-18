@@ -1,12 +1,8 @@
 package it.arsinfo.smd;
 
-import java.util.Date;
 import java.util.List;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -58,7 +54,7 @@ public interface SmdService {
 
     void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
     void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
-    void incassa(Abbonamento abbonamento, Date dataContabile, Cassa cassa, Ccp ccp, Cuas cuas, Date dataPagamento, String progressivo) throws Exception;
+    void incassa(Abbonamento abbonamento) throws Exception;
     List<Abbonamento> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
 

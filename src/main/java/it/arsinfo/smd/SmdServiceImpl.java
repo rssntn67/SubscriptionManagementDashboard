@@ -2,7 +2,6 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -486,7 +483,6 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception {
-        log.info("incassa start {} {}",abbonamento,versamento);
         Incasso incasso = versamento.getIncasso();
         Smd.incassa(incasso,versamento, abbonamento);
         versamentoDao.save(versamento);
@@ -513,7 +509,11 @@ public class SmdServiceImpl implements SmdService {
             break;
         
         }
+        abbonamento.setCassa(incasso.getCassa());
+        abbonamento.setCcp(incasso.getCcp());
+        abbonamento.setCuas(incasso.getCuas());
         abbonamentoDao.save(abbonamento);        
+        log.info("incassato {} {}",abbonamento,versamento);
     }
 
     @Override
@@ -730,31 +730,31 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void incassa(Abbonamento abbonamento, 
-            Date dataContabile, 
-            Cassa cassa,
-            Ccp ccp, 
-            Cuas cuas, 
-            Date dataPagamento, String progressivo) throws Exception {
-        
+    public void incassa(Abbonamento abbonamento) throws Exception {
+
         if (abbonamento.getStatoIncasso() != Incassato.No) {
             return;
         }
-        
-        Incasso incasso = incassoDao.findByDataContabileAndCassaAndCcpAndCuas(dataContabile, cassa, ccp, cuas);
+
+        Incasso incasso = incassoDao.findByDataContabileAndCassaAndCcpAndCuas(abbonamento.getDataContabile(),
+                                                                              abbonamento.getCassa(),
+                                                                              abbonamento.getCcp(),
+                                                                              abbonamento.getCuas());
         if (incasso == null) {
             incasso = new Incasso();
-            incasso.setDataContabile(dataContabile);
-            incasso.setCassa(cassa);
-            incasso.setCcp(ccp);
-            incasso.setCuas(cuas);
+            incasso.setDataContabile(abbonamento.getDataContabile());
+            incasso.setCassa(abbonamento.getCassa());
+            incasso.setCcp(abbonamento.getCcp());
+            incasso.setCuas(abbonamento.getCuas());
             incassoDao.save(incasso);
         }
-        Versamento versamento = new Versamento(incasso, abbonamento.getImporto());
+        Versamento versamento = new Versamento(incasso,
+                                               abbonamento.getImporto());
         versamento.setCodeLine(abbonamento.getCodeLine());
-        versamento.setProgressivo(progressivo);
+        versamento.setOperazione(abbonamento.getOperazione());
         versamentoDao.save(versamento);
-        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
+        Smd.calcoloImportoIncasso(incasso,
+                                  versamentoDao.findByIncasso(incasso));
         incassoDao.save(incasso);
         incassa(abbonamento, versamento);
     }

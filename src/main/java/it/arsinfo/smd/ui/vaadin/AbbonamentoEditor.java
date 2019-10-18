@@ -1,6 +1,6 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -16,6 +16,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -45,8 +46,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
     private final TextField codeLine = new TextField("Code Line");
-    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Selezionare ccp",
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Conto Corrente",
             EnumSet.allOf(Ccp.class));
+    private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",
+            EnumSet.allOf(Cuas.class));
 
     List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
@@ -59,54 +62,62 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
         this.versamentoDao = versamentoDao;
-        HorizontalLayout anag = new HorizontalLayout(intestatario,statoAbbonamento,campagna,
-                                                    anno);
-        HorizontalLayout stato = new HorizontalLayout(statoIncasso,cassa,codeLine,
-                                                    ccp);
+        
+        HorizontalLayout anag = new HorizontalLayout(codeLine);
+        anag.addComponentsAndExpand(intestatario);
+
+        HorizontalLayout status = new HorizontalLayout(campagna,
+                                                     anno,statoAbbonamento,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale);
 
-        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento);
+        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento,cassa,
+                                                      ccp,cuas);
 
-        setComponents(getActions(),anag, stato,imp, incss);
-        
-        campagna.setItems(campagne);
-        campagna.setItemCaptionGenerator(Campagna::getCaption);
+        setComponents(getActions(),anag, status,imp, incss);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
         intestatario.setEmptySelectionAllowed(false);
 
+        codeLine.setReadOnly(true);
+
+        campagna.setItems(campagne);
+        campagna.setItemCaptionGenerator(Campagna::getCaption);
+        campagna.setReadOnly(true);
+
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
 
-        statoAbbonamento.setReadOnly(true);
-        campagna.setReadOnly(true);
+        
         importo.setReadOnly(true);
         totale.setReadOnly(true);
-        spese.setReadOnly(false);
-        pregresso.setReadOnly(false);
+        
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
-        codeLine.setReadOnly(true);
+
         cassa.setEmptySelectionAllowed(false);
+        ccp.setEmptySelectionAllowed(false);
         ccp.setItemCaptionGenerator(Ccp::getCcp);
+        cuas.setEmptySelectionAllowed(false);
+        cuas.setItemCaptionGenerator(Cuas::getDenominazione);
 
-        dataContabile.setReadOnly(true);
-        dataPagamento.setReadOnly(true);
+        dataContabile.setDateFormat("dd/MM/yyyy");
+        dataPagamento.setDateFormat("dd/MM/yyyy");
 
+        getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
+                "Deve essere definito").bind(Abbonamento::getCodeLine,
+                                             Abbonamento::setCodeLine);
         getBinder().forField(intestatario)
             .asRequired()
             .withValidator(an -> an != null,"Scegliere un Cliente")
             .bind(Abbonamento::getIntestatario,Abbonamento::setIntestatario);
+
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(cassa).bind("cassa");
-        getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
-                "Deve essere definito").bind(Abbonamento::getCodeLine,
-                                             Abbonamento::setCodeLine);
-        getBinder().forField(ccp).bind("ccp");
-        
+        getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
+        getBinder().forField(statoIncasso).bind("statoIncasso");
+
 
         getBinder()
         .forField(importo)
@@ -121,68 +132,83 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .bind("pregresso");
         getBinder()
+        .forField(totale)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("totale");
+
+        getBinder()
         .forField(incassato)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .bind("incassato");
         getBinder()
-            .forField(totale)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-            .bind("totale");
-        getBinder()
             .forField(residuo)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
-        getBinder().forField(statoIncasso).bind("statoIncasso");
-        getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
         getBinder().forField(dataContabile)
         .withConverter(new LocalDateToDateConverter())
         .bind("dataContabile");
         getBinder().forField(dataPagamento)
         .withConverter(new LocalDateToDateConverter())
         .bind("dataPagamento");
-
+        getBinder().forField(cassa).bind("cassa");
+        getBinder().forField(ccp).bind("ccp");
+        getBinder().forField(cuas).bind("cuas");                
 
     }
 
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled(abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
+        getDelete().setEnabled(abbonamento.getCampagna() != null && abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
         getSave().setEnabled(!persisted || abbonamento.getCampagna() == null || abbonamento.getVersamento() == null);
         getCancel().setEnabled(!persisted || abbonamento.getCampagna() == null || abbonamento.getVersamento() == null);
-        intestatario.setReadOnly(persisted);
-        anno.setReadOnly(persisted);
-        codeLine.setVisible(persisted);
-        codeLine.setReadOnly(persisted);
-        ccp.setReadOnly(persisted);
-        statoIncasso.setVisible(persisted);
-        cassa.setReadOnly(persisted);
-        campagna.setVisible(persisted);
-        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
-
-        if (persisted && 
-                abbonamento.getTotale().doubleValue() == BigDecimal.ZERO.doubleValue()) {
-            cassa.setVisible(false);
-            codeLine.setVisible(false);
-            ccp.setVisible(false);
-        } else if (!persisted ){
-            cassa.setVisible(true);
-            ccp.setVisible(true);
-            intestatario.focus();
-        }
         
-        if (abbonamento.getVersamento() == null) {
-            dataContabile.setVisible(false);
-            dataPagamento.setVisible(false); 
-        } else {
+        codeLine.setVisible(persisted);
+        intestatario.setReadOnly(persisted);
+        
+        campagna.setVisible(persisted);
+        anno.setReadOnly(persisted);
+        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
+        statoIncasso.setVisible(persisted);
+
+        boolean noOmaggio = abbonamento.getStatoIncasso() != Incassato.Omaggio;
+
+        importo.setVisible(noOmaggio);
+        spese.setVisible(noOmaggio);
+        pregresso.setVisible(noOmaggio);
+        totale.setVisible(noOmaggio);
+
+        incassato.setVisible(noOmaggio);
+        residuo.setVisible(noOmaggio);
+        cassa.setVisible(noOmaggio);
+        ccp.setVisible(noOmaggio);
+        cuas.setVisible(noOmaggio);
+        dataContabile.setVisible(noOmaggio);
+        dataPagamento.setVisible(noOmaggio); 
+        
+        boolean hasVers = abbonamento.getVersamento() != null;
+        
+        spese.setReadOnly(hasVers);
+        pregresso.setReadOnly(hasVers);
+        cassa.setReadOnly(hasVers);
+        ccp.setReadOnly(hasVers);
+        cuas.setReadOnly(hasVers);
+        dataContabile.setReadOnly(hasVers);
+        dataPagamento.setReadOnly(hasVers); 
+
+        if (hasVers) {
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
+            System.out.println(versamento.toString());
+            System.out.println(versamento.getIncasso().toString());
             abbonamento.setDataContabile(versamento.getDataContabile());
             abbonamento.setDataPagamento(versamento.getDataPagamento());
-            dataContabile.setVisible(true);
-            dataPagamento.setVisible(true); 
-            pregresso.setReadOnly(true);
-            spese.setReadOnly(true);
+            abbonamento.setCuas(versamento.getIncasso().getCuas());
+            cuas.setValue(abbonamento.getCuas());
+            dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
+        intestatario.focus();
+
     }
 
     public void addEstrattoConto(EstrattoConto estrattoConto) {

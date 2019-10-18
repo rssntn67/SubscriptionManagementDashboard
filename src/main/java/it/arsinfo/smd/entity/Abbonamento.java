@@ -24,6 +24,7 @@ import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
@@ -65,6 +66,12 @@ public class Abbonamento implements SmdEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
+
+    @Transient
+    private Cuas cuas = Cuas.NOCCP;
+
+    @Transient
+    private String operazione;
 
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
@@ -346,6 +353,26 @@ public class Abbonamento implements SmdEntity {
     @Transient
     public void setDataContabile(Date dataContabile) {
         this.dataContabile = dataContabile;
+    }
+
+    @Transient
+    public Cuas getCuas() {
+        return cuas;
+    }
+
+    @Transient
+    public void setCuas(Cuas cuas) {
+        this.cuas = cuas;
+    }
+
+    @Transient
+    public String getOperazione() {
+        return operazione;
+    }
+
+    @Transient
+    public void setOperazione(String operazione) {
+        this.operazione = operazione;
     }
 
 
