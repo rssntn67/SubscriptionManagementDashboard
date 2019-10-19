@@ -233,12 +233,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(Storico storico) throws Exception {
-        aggiorna(campagnaDao.findByAnno(Anno.getAnnoProssimo()),storico);
-        aggiorna(campagnaDao.findByAnno(Anno.getAnnoCorrente()),storico);
-    }
-    
-    private void aggiorna(Campagna campagna, Storico storico) throws Exception {
+    public void aggiorna(Campagna campagna, Storico storico) throws Exception {
         if (campagna == null 
                 || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
                 || campagna.getStatoCampagna() == StatoCampagna.InviatoEC) {

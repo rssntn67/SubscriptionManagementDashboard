@@ -17,9 +17,11 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.repository.AnagraficaDao;
+import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
@@ -37,19 +39,22 @@ public class StoricoUI extends SmdUI {
     private static final Logger log = LoggerFactory.getLogger(StoricoUI.class);
 
     @Autowired
-    PubblicazioneDao pubblicazioneDao;
+    private CampagnaDao campagnaDao;
+    
+    @Autowired
+    private PubblicazioneDao pubblicazioneDao;
 
     @Autowired
-    AnagraficaDao anagraficaDao;
+    private AnagraficaDao anagraficaDao;
 
     @Autowired
-    StoricoDao storicoDao;
+    private StoricoDao storicoDao;
 
     @Autowired
-    NotaDao notaDao;
+    private NotaDao notaDao;
 
     @Autowired
-    SmdService smdService;
+    private SmdService smdService;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -83,9 +88,11 @@ public class StoricoUI extends SmdUI {
         notaGrid.getGrid().setColumns("operatore","data","description");
         notaGrid.getGrid().setHeight("200px");
 
-        SmdButton update = new SmdButton("Aggiorna Abbonamento Campagna ", VaadinIcons.ARCHIVES);
+        SmdButtonComboBox<Campagna> update = 
+            new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll(),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
         update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-
+        update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
+        update.getComboBox().setEmptySelectionAllowed(false);
         addSmdComponents(add,update,editor,notaGrid,search, grid);
         editor.setVisible(false);
         notaGrid.setVisible(false);
@@ -134,12 +141,17 @@ public class StoricoUI extends SmdUI {
             if (!saveStorico(editor)) {
                 return;
             }
+            if (update.getValue() == null) {
+                log.warn("La Campagna da aggiornare deve essere valorizzata");
+                Notification.show("La Campagna da aggiornare deve essere valorizzato", Type.WARNING_MESSAGE);                 
+                return;
+            }
             try {
-                smdService.aggiorna(editor.get());
+                smdService.aggiorna(update.getValue(),editor.get());
                 editor.onChange();
             } catch (Exception e) {
                 log.warn("aggiorna failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);
-                Notification.show("Abbonamento non aggiornato:" + e.getMessage(), Type.ERROR_MESSAGE);
+                Notification.show("Campagna ed Abbonamento non aggiornati:" + e.getMessage(), Type.ERROR_MESSAGE);
                 return;                    
             }
         });

@@ -31,7 +31,7 @@ public interface SmdService {
 
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
-    void aggiorna(Storico storico) throws Exception;
+    void aggiorna(Campagna campagna,Storico storico) throws Exception;
     void aggiorna(EstrattoConto estrattoConto) throws Exception;
     void cancella(EstrattoConto estrattoConto) throws Exception;
     
