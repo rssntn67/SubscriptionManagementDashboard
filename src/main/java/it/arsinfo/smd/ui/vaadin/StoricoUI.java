@@ -16,6 +16,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdService;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
@@ -147,7 +148,11 @@ public class StoricoUI extends SmdUI {
                 return;
             }
             try {
-                smdService.aggiorna(update.getValue(),editor.get());
+                if (editor.get().getStatoStorico() == StatoStorico.Sospeso) {
+                    smdService.rimuovi(update.getValue(),editor.get());
+                } else {
+                    smdService.aggiorna(update.getValue(),editor.get());
+                }
                 editor.onChange();
             } catch (Exception e) {
                 log.warn("aggiorna failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);

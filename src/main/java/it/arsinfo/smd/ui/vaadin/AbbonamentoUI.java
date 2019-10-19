@@ -156,12 +156,12 @@ public class AbbonamentoUI extends SmdUI {
                     editor.addEstrattoConto(get());
                     try {
                       smdService.genera(editor.get(), get());  
+                      onChange();
+                      return;
                     } catch (Exception e) {
                         Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                         return;
                     }
-                    onChange();
-                    return;
                 }
                 try {
                     smdService.aggiorna(get());
@@ -183,12 +183,11 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.cancella(get());
+                    smdService.rimuovi(get());
+                    onChange();
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
-                    return;
                 }
-                onChange();
                 
             };
         };

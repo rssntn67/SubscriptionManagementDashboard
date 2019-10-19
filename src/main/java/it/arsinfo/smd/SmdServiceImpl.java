@@ -195,7 +195,7 @@ public class SmdServiceImpl implements SmdService {
             try {
                 sospendiStorico(abbonamento);
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-                estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> cancella(abbonamento, ec));
+                estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> rimuovi(abbonamento, ec));
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
             }
@@ -233,13 +233,16 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(Campagna campagna, Storico storico) throws Exception {
+    public void rimuovi(Campagna campagna, Storico storico) throws Exception {
         if (campagna == null 
                 || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
-                || campagna.getStatoCampagna() == StatoCampagna.InviatoEC) {
+                ) {
             return;
         }
         
+        if (storico == null || storico.getStatoStorico() != StatoStorico.Sospeso) {
+            return;
+        }
         List<EstrattoConto> ecs = 
                 estrattoContoDao
                 .findByStorico(storico)
@@ -258,11 +261,23 @@ public class SmdServiceImpl implements SmdService {
             EstrattoConto estrattoConto = ecs.iterator().next();
             Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
             estrattoConto.setAbbonamento(abbonamento);
-            cancella(abbonamento, estrattoConto);
+            rimuovi(abbonamento, estrattoConto);
+        }
+    }
+    
+    @Override
+    public void aggiorna(Campagna campagna, Storico storico) throws Exception {
+        if (campagna == null 
+                || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
+                ) {
+            return;
         }
         if (storico.getStatoStorico() == StatoStorico.Sospeso) {
             return;
         }
+        //AbbonamentoPrima -> AbbonamentoDopo
+        //EstrattoContoPrima -> EstrattoContoDopo
+        //SpedizioneItemPrima -> SpedizineIdetDopo
         Abbonamento abbonamento =
                 abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa()); 
         if (abbonamento == null) {
@@ -337,13 +352,13 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void cancella(EstrattoConto estrattoConto) {
+    public void rimuovi(EstrattoConto estrattoConto) {
         Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getId()).get();
         if (abbonamento == null) return;
-        cancella(abbonamento,estrattoConto);
+        rimuovi(abbonamento,estrattoConto);
     }
     
-    private void cancella(Abbonamento abbonamento, EstrattoConto estrattoConto) {
+    private void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
