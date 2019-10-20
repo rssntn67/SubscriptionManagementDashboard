@@ -141,8 +141,6 @@ public class SmdImportTest {
         for (String ancodice : aeMap.keySet()) {
             assertTrue(anagraficaMap.containsKey(ancodice));
             assertFalse(caMap.containsKey(ancodice));
-            Anagrafica eaAna = eaMap.get(ancodice);
-            Anagrafica aeAna = aeMap.get(ancodice);            
         }
         int i = anagraficaMap.size();
         System.out.println("Elenco Abbonati: Anagrafica size: " + i);

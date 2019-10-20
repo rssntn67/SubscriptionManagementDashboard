@@ -909,12 +909,6 @@ public class SmdUnitTests {
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));
-        for (Pubblicazione p : pubblicazioni) {
-            CampagnaItem ci = new CampagnaItem();
-            ci.setCampagna(campagna);
-            ci.setPubblicazione(p);
-            campagna.addCampagnaItem(ci);
-        }
         List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici, pubblicazioni);
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
@@ -968,7 +962,7 @@ public class SmdUnitTests {
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
         }
-        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici, pubblicazioni);
+        List<Abbonamento> abbonamenti = Smd.genera(campagna, diocesiMilano, storici);
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());

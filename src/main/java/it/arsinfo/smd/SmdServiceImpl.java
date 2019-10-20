@@ -290,7 +290,7 @@ public class SmdServiceImpl implements SmdService {
         } 
         
         //FIXME
-        EstrattoConto estrattoContoNew = getByStorico(campagna, storico);
+        //EstrattoConto estrattoContoNew = getByStorico(campagna, storico);
 
     }
 
