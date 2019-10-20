@@ -506,8 +506,7 @@ public class Smd {
         return ecs;
     }
     
-    public static List<Abbonamento> generaAbbonamentiCampagna(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
-        final Map<Integer,Pubblicazione> campagnapubblicazioniIds = new HashMap<>();
+    public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
         pubblicazioni.stream()
         .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
         .forEach(p -> {
@@ -515,45 +514,57 @@ public class Smd {
             ci.setCampagna(campagna);
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
-            campagnapubblicazioniIds.put(p.hashCode(),p);            
         });
 
         final List<Abbonamento> abbonamenti = new ArrayList<>();
         anagrafiche.stream().forEach(a -> {
-            final Map<Cassa,List<Storico>> cassaStorico = new HashMap<>();
-            storici.stream()
-            .filter(
-                storico -> 
-                    storico.attivo()
-                 && campagnapubblicazioniIds.containsKey(storico.getPubblicazione().hashCode()) 
-                 && (
-                         storico.getIntestatario() == a 
-                    || (    storico.getIntestatario().getId() != null 
-                         && a.getId() != null 
-                         && storico.getIntestatario().getId().longValue() == a.getId().longValue()
-                         )
-                    ) 
-            )
-            .forEach(storico -> { 
-                if (!cassaStorico.containsKey(storico.getCassa())) {
-                    cassaStorico.put(storico.getCassa(), new ArrayList<>());
-                }
-                cassaStorico.get(storico.getCassa()).add(storico);
-            });
-            for (Cassa cassa: cassaStorico.keySet()) {
-                Abbonamento abbonamento = new Abbonamento();
-                abbonamento.setIntestatario(a);
-                abbonamento.setCampagna(campagna);
-                abbonamento.setAnno(campagna.getAnno());
-                abbonamento.setCassa(cassa);
-                abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
-                abbonamenti.add(abbonamento);
-            }
-            
+            abbonamenti.addAll(genera(campagna, a, storici));
         });        
         return abbonamenti;
 
+    }
+    
+    public static List<Abbonamento> genera(Campagna campagna,Anagrafica a, List<Storico> storici) {
+        final List<Abbonamento> abbonamenti = new ArrayList<>();
+        final EnumSet<Cassa> cassaStorico = EnumSet.noneOf(Cassa.class);
+        storici
+            .stream()
+            .filter(
+                    storico -> 
+                        storico.attivo()
+                        && campagna.hasPubblicazione(storico.getPubblicazione()) 
+                        && storico.getIntestatario().equals(a) 
+                        && !cassaStorico.contains(storico.getCassa())
+                    )
+            .forEach(storico -> { 
+                cassaStorico.add(storico.getCassa());
+                try {
+                    abbonamenti.add(genera(campagna, a,storico));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        });
+        return abbonamenti;
+    }
+
+    public static Abbonamento genera(Campagna campagna, Anagrafica a,Storico storico) throws Exception {
+        if (campagna == null) {
+            throw new Exception("genera: Null Campagna");
+        }
+        if (a == null) {
+            throw new Exception("genera: Null Intestatario");
+        }
+        if (!a.equals(storico.getIntestatario())) {
+            throw new Exception("genera: Mismatch intestatario storico anagrafica");
+        }
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setIntestatario(a);
+        abbonamento.setCampagna(campagna);
+        abbonamento.setAnno(campagna.getAnno());
+        abbonamento.setCassa(storico.getCassa());
+        abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
+        abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
+        return abbonamento;
     }
 
     public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {

@@ -97,7 +97,7 @@ public class Campagna implements SmdEntity {
        return 
            campagnaItems
            .stream()
-           .filter(ci ->  ci.getPubblicazione().getId() == p.getId())
+           .filter(ci ->  ci.getPubblicazione().equals(p))
            .collect(Collectors.toList()).size() == 1;
    }
 }

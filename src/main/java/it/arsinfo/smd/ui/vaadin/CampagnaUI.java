@@ -76,7 +76,7 @@ public class CampagnaUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.rimuovi(get());
+                    smdService.delete(get());
                 } catch (Exception e) {
                     Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);

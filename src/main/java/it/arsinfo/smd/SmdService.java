@@ -21,23 +21,25 @@ import it.arsinfo.smd.entity.Versamento;
 public interface SmdService {
 
     void delete(Storico storico);
-    void save(Storico storico, Nota nota);
-    
-    void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
-    void rimuovi(Campagna campagna) throws Exception;
-    
+    void save(Storico storico, Nota... note);
+
     void invia(Campagna campagna) throws Exception;
     void estratto(Campagna campagna) throws Exception;
     void chiudi(Campagna campagna) throws Exception;
 
+    void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
     void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
-    void rimuovi(Abbonamento abbonamento) throws Exception;
+    void genera(Campagna campagna,Storico storico, Nota...note) throws Exception;
     
-    void aggiorna(EstrattoConto estrattoConto) throws Exception;
+    void delete(Campagna campagna) throws Exception;
+    void delete(Abbonamento abbonamento) throws Exception;
+    
     void rimuovi(EstrattoConto estrattoConto) throws Exception;
+    void rimuovi(Abbonamento abbonamento) throws Exception;
+    void rimuovi(Campagna campagna,Storico storico,Nota...note) throws Exception;
     
-    void aggiorna(Campagna campagna,Storico storico) throws Exception;
-    void rimuovi(Campagna campagna,Storico storico) throws Exception;
+    void aggiorna(EstrattoConto estrattoConto) throws Exception;    
+    void aggiorna(Campagna campagna,Storico storico, Nota...note) throws Exception;
     
     void generaStatisticheTipografia(Anno anno, Mese mese); 
     void generaStatisticheTipografia(Anno anno); 

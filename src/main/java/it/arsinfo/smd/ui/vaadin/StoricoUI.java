@@ -21,6 +21,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.NotaDao;
@@ -73,8 +74,17 @@ public class StoricoUI extends SmdUI {
                                   anagrafica) {
             @Override
             public void save() {
-                if (saveStorico(this)) {
+                if (!isStoricoValid(this)) {
+                    return;
+                }
+                try {
+                    smdService.save(get(), getNote(this));
                     onChange();
+                    log.info("save: {}" + get());
+                } catch (Exception e) {
+                    log.warn("save failed for : {} ", get(),e);
+                    Notification.show("Non è possibile salvare questo record: ",
+                                      Notification.Type.ERROR_MESSAGE);
                 }
             }
             
@@ -139,19 +149,21 @@ public class StoricoUI extends SmdUI {
         notaGrid.setChangeHandler(() -> {});
 
         update.setChangeHandler(() -> {
-            if (!saveStorico(editor)) {
-                return;
-            }
             if (update.getValue() == null) {
                 log.warn("La Campagna da aggiornare deve essere valorizzata");
                 Notification.show("La Campagna da aggiornare deve essere valorizzato", Type.WARNING_MESSAGE);                 
                 return;
             }
             try {
-                if (editor.get().getStatoStorico() == StatoStorico.Sospeso) {
-                    smdService.rimuovi(update.getValue(),editor.get());
+                if (editor.get().getNumero() <= 0) {
+                    Nota[] note = getUNote(editor, update.getValue(), "rimuovi");
+                    smdService.rimuovi(update.getValue(),editor.get(),note);
+                } else if (editor.get().getId() != null){
+                    Nota[] note = getUNote(editor, update.getValue(), "aggiorna");
+                    smdService.aggiorna(update.getValue(),editor.get(),note);
                 } else {
-                    smdService.aggiorna(update.getValue(),editor.get());
+                    Nota[] note = getUNote(editor, update.getValue(), "genera");
+                    smdService.genera(update.getValue(), editor.get(), note);
                 }
                 editor.onChange();
             } catch (Exception e) {
@@ -164,8 +176,8 @@ public class StoricoUI extends SmdUI {
         grid.populate(search.find());
 
     }
-    
-    private boolean saveStorico(StoricoEditor editor) {
+
+    private boolean isStoricoValid(StoricoEditor editor) {
         if (editor.getIntestatario().isEmpty()) {
             Notification.show("Intestatario deve essere valorizzato", Type.WARNING_MESSAGE);
             return false;                    
@@ -177,30 +189,42 @@ public class StoricoUI extends SmdUI {
         if (editor.getPubblicazione().isEmpty()) {
             Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
             return false;
-        }
-        Nota nota = new Nota(editor.get());
-        nota.setOperatore(getLoggedInUser().getUsername());
-        if (editor.get().getId() == null) {
-            nota.setDescription("Nuovo: " + editor.get().toString());
-        } else {
-            nota.setDescription("Aggiornato: " + editor.get().toString());                    
-        }
-        try {
-            smdService.save(editor.get(), nota);
-            log.info("save: {}" + editor.get());
-            if (!editor.getNota().isEmpty()) {
-                Nota unota = new Nota(editor.get());
-                unota.setOperatore(getLoggedInUser().getUsername());
-                unota.setDescription(editor.getNota().getValue());
-                notaDao.save(unota);
-                editor.getNota().clear();
-            }
-        } catch (Exception e) {
-            log.warn("save failed for : {} ", editor.get(),e);
-            Notification.show("Non è possibile salvare questo record: ",
-                              Notification.Type.ERROR_MESSAGE);
-            return false;
-        }
+        }        
         return true;
     }
+    
+    private  Nota[] getNote(StoricoEditor editor) {
+        Storico storico = editor.get();
+        Nota nota = new Nota(storico);
+        nota.setOperatore(getLoggedInUser().getUsername());
+        if (storico.getId() == null) {
+            nota.setDescription("Nuovo: " + storico.toString());
+        } else {
+            nota.setDescription("Aggiornato: " + storico.toString());                    
+        }
+        
+        if (editor.getNota().isEmpty()) {
+            Nota[] note = {nota}; 
+            return note;
+        }
+        Nota unota = new Nota(storico);
+        unota.setOperatore(getLoggedInUser().getUsername());
+        unota.setDescription(editor.getNota().getValue());
+        editor.getNota().clear();
+        Nota[] note = {nota,unota}; 
+        return note;
+    }
+
+    private  Nota[] getUNote(StoricoEditor editor,Campagna campagna, String action) {
+        Nota[] dnote = getNote(editor);
+        Nota unota = new Nota(editor.get());
+        unota.setOperatore(getLoggedInUser().getUsername());
+        unota.setDescription(action+": " + campagna.getCaption());
+        Nota[] note = new Nota[dnote.length+1];
+        for (int i = 0;i<dnote.length;i++)
+            note[i] = dnote[i];
+        note[dnote.length] = unota;
+        return note;
+    }
+
 }

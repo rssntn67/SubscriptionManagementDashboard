@@ -385,6 +385,14 @@ public class Pubblicazione implements SmdEntity {
         if (getClass() != obj.getClass())
             return false;
         Pubblicazione other = (Pubblicazione) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id)) {
+            return false;
+        } else {
+            return true;
+        }
         if (nome == null) {
             if (other.nome != null)
                 return false;

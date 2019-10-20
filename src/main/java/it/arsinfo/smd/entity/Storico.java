@@ -27,25 +27,25 @@ public class Storico implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica intestatario;
 
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Anagrafica destinatario;
-
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Pubblicazione pubblicazione;
-    
-    @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
-
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
 
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Pubblicazione pubblicazione;
+
+    private Integer numero = 1;
+
+    @Enumerated(EnumType.STRING)
+    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Anagrafica destinatario;
+    
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
 
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
-
-    private Integer numero = 1;
     
     @Enumerated(EnumType.STRING)
     private StatoStorico statoStorico = StatoStorico.Nuovo;

@@ -915,7 +915,7 @@ public class SmdUnitTests {
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
         }
-        List<Abbonamento> abbonamenti = Smd.generaAbbonamentiCampagna(campagna, anagrafiche, storici, pubblicazioni);
+        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici, pubblicazioni);
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());
@@ -968,7 +968,7 @@ public class SmdUnitTests {
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
         }
-        List<Abbonamento> abbonamenti = Smd.generaAbbonamentiCampagna(campagna, anagrafiche, storici, pubblicazioni);
+        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici, pubblicazioni);
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());

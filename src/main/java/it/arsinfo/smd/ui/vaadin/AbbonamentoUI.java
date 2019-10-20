@@ -92,7 +92,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.rimuovi(get());
+                    smdService.delete(get());
                     onChange();
                 } catch (Exception e) {
                     log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());

@@ -9,7 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.AreaSpedizione;
@@ -21,6 +23,7 @@ import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 
 @Entity
+@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"codeLineBase"})})
 public class Anagrafica implements SmdEntity {
 	
     @Id
@@ -366,6 +369,15 @@ public class Anagrafica implements SmdEntity {
         if (getClass() != obj.getClass())
             return false;
         Anagrafica other = (Anagrafica) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id)) {
+            return false;
+        } else {
+            return true;
+        }
+
         if (codeLineBase == null) {
             if (other.codeLineBase != null)
                 return false;
