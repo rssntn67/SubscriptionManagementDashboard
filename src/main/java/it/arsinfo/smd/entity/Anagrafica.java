@@ -23,7 +23,10 @@ import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"codeLineBase"})})
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"codeLineBase"})
+        })
+//create unique index anagrafica_idx_codeline on anagrafica (codelinebase);
 public class Anagrafica implements SmdEntity {
 	
     @Id

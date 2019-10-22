@@ -18,7 +18,10 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"anno","mese","pubblicazione_id"})})
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"anno","mese","pubblicazione_id"})
+        })
+//create unique index operazione_idx_key on operazione (anno,mese,pubblicazione_id);
 public class Operazione implements SmdEntity {
 
     @Id

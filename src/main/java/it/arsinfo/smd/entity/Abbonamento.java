@@ -30,7 +30,12 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"intestatario_id","campagna_id", "cassa"})})
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"codeLine"}),
+        @UniqueConstraint(columnNames = {"intestatario_id","campagna_id", "cassa"})
+        })
+//create unique index abb_idx_codeline on abbonamento (codeline);
+//create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, cassa);
 public class Abbonamento implements SmdEntity {
 
     @Id

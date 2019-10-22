@@ -21,7 +21,10 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"anno"})})
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"anno"})
+        })
+//create unique index campagna_idx_anno on campagna (anno);
 public class Campagna implements SmdEntity {
 
     @Id

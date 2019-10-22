@@ -26,7 +26,10 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 
 @Entity
-@Table(uniqueConstraints={@UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})})
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})
+        })
+//create unique index ukh0do4klnqwq54yhlvtj5hjcbe on incasso (data_contabile, cassa, cuas, ccp);
 public class Incasso implements SmdEntity {
 
     @Id
