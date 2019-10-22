@@ -19,7 +19,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
@@ -75,10 +74,10 @@ public class Abbonamento implements SmdEntity {
 
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataPagamento = Smd.getStandardDate(new Date());
+    private Date dataPagamento;
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile = Smd.getStandardDate(new Date());
+    private Date dataContabile;
 
     public Abbonamento() {
     }

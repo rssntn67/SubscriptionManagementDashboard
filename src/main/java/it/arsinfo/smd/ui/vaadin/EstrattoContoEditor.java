@@ -116,7 +116,7 @@ public class EstrattoContoEditor
         getBinder()
         .forField(destinatario)
         .asRequired()
-        .withValidator(p -> p != null, "Destinatario deve essere selezionat0")
+        .withValidator(p -> p != null, "Destinatario deve essere selezionato")
         .bind(EstrattoConto::getDestinatario,EstrattoConto::setDestinatario);
 
         getBinder().forField(tipoEstrattoconto)
@@ -141,17 +141,24 @@ public class EstrattoContoEditor
         
         importo.setReadOnly(true);
         numeroTotaleRiviste.setReadOnly(true);
-
+        
     }
 
     @Override
     public void focus(boolean persisted, EstrattoConto obj) {
         pubblicazione.setReadOnly(persisted);
-        numeroTotaleRiviste.setReadOnly(persisted);
-        importo.setVisible(persisted);
-
+        destinatario.setReadOnly(persisted);
+        invio.setReadOnly(persisted);
+        invioSpedizione.setReadOnly(persisted);
+        meseInizio.setReadOnly(persisted);
+        meseFine.setReadOnly(persisted);
+        annoInizio.setReadOnly(persisted);
+        annoFine.setReadOnly(persisted);
+        
+        getCancel().setEnabled(obj.getStorico() == null);
         getDelete().setEnabled(obj.getStorico() == null);
         getSave().setEnabled(obj.getStorico() == null);
+        
         numero.focus();
     }
     

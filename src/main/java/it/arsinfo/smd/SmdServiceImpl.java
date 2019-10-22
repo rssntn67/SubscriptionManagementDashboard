@@ -322,7 +322,9 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void aggiorna(EstrattoConto estrattoConto) {
-        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getId()).get();
+        // quantita -> spedizioneItem Importo Abbonamento
+        // Tipo -> ordinario -> Importo Abbonamento
+        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
         if (abbonamento == null) return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         List<SpedizioneItem> deleted = Smd.aggiornaEC(abbonamento,
@@ -344,7 +346,6 @@ public class SmdServiceImpl implements SmdService {
         }
         estrattoContoDao.save(estrattoConto);        
         abbonamentoDao.save(abbonamento);
-
     }
 
     @Override

@@ -59,6 +59,8 @@ public class AbbonamentoUI extends SmdUI {
 
     @Autowired
     VersamentoDao versamentoDao;
+    
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Abbonamento");
@@ -95,7 +97,7 @@ public class AbbonamentoUI extends SmdUI {
                     smdService.delete(get());
                     onChange();
                 } catch (Exception e) {
-                    log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
+                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);
                     return;                    
                 }
@@ -123,9 +125,10 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
+                    abbonamentoDao.save(get());
                     smdService.genera(get(), getEstrattiConto().toArray(new EstrattoConto[getEstrattiConto().size()]));
                 } catch (Exception e) {
-                    log.warn("save failed for :" + get().toString() +". Error log: " + e.getMessage());
+                    log.warn("save failed {} : {}",get(),e.getMessage(),e);
                     Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -159,17 +162,19 @@ public class AbbonamentoUI extends SmdUI {
                       onChange();
                       return;
                     } catch (Exception e) {
+                        log.error("save failed {} : {}", get(), e.getMessage(),e);
                         Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                         return;
                     }
                 }
                 try {
                     smdService.aggiorna(get());
+                    onChange();
                 } catch (Exception e) {
+                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                onChange();
             };
             
             @Override 
@@ -186,6 +191,7 @@ public class AbbonamentoUI extends SmdUI {
                     smdService.rimuovi(get());
                     onChange();
                 } catch (Exception e) {
+                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                 }
                 
@@ -206,6 +212,7 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
+            incassa.setVisible(false);
             editor.edit(add.generate());
             estrattoContoAdd.setVisible(true);
         });
@@ -244,6 +251,7 @@ public class AbbonamentoUI extends SmdUI {
             setHeader(String.format("%s:Estratto Conto:Nuovo",editor.get().getHeader()));
             hideMenu();
             estrattoContoEditor.edit(estrattoContoAdd.generate());
+            incassa.setVisible(false);
             editor.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });
@@ -291,13 +299,5 @@ public class AbbonamentoUI extends SmdUI {
     public List<EstrattoConto> findByAbbonamento(Abbonamento abbonamento) {
         return estrattoContoDao.findByAbbonamento(
                                                   abbonamento);
-
-        /*
-        .stream().map(ec -> {
-                    ec.setAbbonamento(abbonamento);
-                    return ec;
-                }).collect(Collectors.toList())
-                ;
-                */
     }
 }
