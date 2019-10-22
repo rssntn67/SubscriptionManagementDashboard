@@ -150,6 +150,8 @@ public class EstrattoContoEditor
         destinatario.setReadOnly(persisted);
         invio.setReadOnly(persisted);
         invioSpedizione.setReadOnly(persisted);
+        numero.setReadOnly(obj.getStorico() == null);
+        tipoEstrattoconto.setReadOnly(obj.getStorico() == null);
         meseInizio.setReadOnly(persisted);
         meseFine.setReadOnly(persisted);
         annoInizio.setReadOnly(persisted);

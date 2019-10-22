@@ -282,16 +282,17 @@ public class SmdServiceImpl implements SmdService {
                 ) {
             return;
         }
-        Abbonamento abbonamento =
-                abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa()); 
-        if (abbonamento == null) {
+        EstrattoConto ec = getByStorico(campagna, storico);
+        
+        if (ec == null) {
             genera(campagna, storico, note);
             return;
-        } 
-        
-        //FIXME
-        //EstrattoConto estrattoContoNew = getByStorico(campagna, storico);
-
+        }
+        //Only updates are Numero and EstrattoConto other changes
+        ec.setNumero(storico.getNumero());
+        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+        save(storico, note);
+        aggiorna(ec);
     }
 
     @Override
@@ -636,6 +637,9 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb) {
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
+        if (abb.getId() == null) {
+            return spedizioni;
+        }
         for (Spedizione sped: spedizioneDao.findByAbbonamento(abb)) {
             SpedizioneWithItems swit = new SpedizioneWithItems(sped);
             swit.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));

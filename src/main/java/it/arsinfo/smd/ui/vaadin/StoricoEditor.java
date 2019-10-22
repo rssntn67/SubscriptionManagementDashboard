@@ -95,7 +95,13 @@ public class StoricoEditor
 
     @Override
     public void focus(boolean persisted, Storico obj) {
+        intestatario.setReadOnly(persisted);
+        cassa.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
+        destinatario.setReadOnly(persisted);
+        invio.setReadOnly(persisted);
+        invioSpedizione.setReadOnly(persisted);
+        
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);
         } else {

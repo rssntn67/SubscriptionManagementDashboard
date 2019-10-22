@@ -3,6 +3,8 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -48,6 +50,8 @@ public class CampagnaUI extends SmdUI {
     @Autowired
     private AbbonamentoDao abbonamentoDao; 
 
+    private static final Logger log = LoggerFactory.getLogger(CampagnaUI.class);
+
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
@@ -78,6 +82,7 @@ public class CampagnaUI extends SmdUI {
                 try {
                     smdService.delete(get());
                 } catch (Exception e) {
+                    log.error("delete failed {} : {}", get(), e.getMessage(),e);
                     Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -111,6 +116,7 @@ public class CampagnaUI extends SmdUI {
                 try {
                     smdService.genera(get(), attivi);
                 } catch (Exception e) {
+                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show("Non è possibile generare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
