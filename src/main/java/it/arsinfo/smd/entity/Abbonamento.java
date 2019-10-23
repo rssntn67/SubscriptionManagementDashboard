@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
@@ -270,7 +271,7 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return importo.add(spese).add(pregresso);
+        return importo.add(pregresso);
     }
 
     public BigDecimal getImporto() {
@@ -346,7 +347,7 @@ public class Abbonamento implements SmdEntity {
 
     @Transient
     public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = dataPagamento;
+        this.dataPagamento = Smd.getStandardDate(dataPagamento);
     }
 
     @Transient
@@ -356,7 +357,7 @@ public class Abbonamento implements SmdEntity {
 
     @Transient
     public void setDataContabile(Date dataContabile) {
-        this.dataContabile = dataContabile;
+        this.dataContabile = Smd.getStandardDate(dataContabile);
     }
 
     @Transient

@@ -711,10 +711,14 @@ public class SmdServiceImpl implements SmdService {
             return;
         }
 
-        Incasso incasso = incassoDao.findByDataContabileAndCassaAndCcpAndCuas(abbonamento.getDataContabile(),
-                                                                              abbonamento.getCassa(),
-                                                                              abbonamento.getCcp(),
-                                                                              abbonamento.getCuas());
+        Incasso incasso = 
+                incassoDao
+                    .findByDataContabileAndCassaAndCcpAndCuas(
+                                abbonamento.getDataContabile(),
+                                abbonamento.getCassa(),
+                                abbonamento.getCcp(),
+                                abbonamento.getCuas()
+                            );
         if (incasso == null) {
             incasso = new Incasso();
             incasso.setDataContabile(abbonamento.getDataContabile());
@@ -724,7 +728,7 @@ public class SmdServiceImpl implements SmdService {
             incassoDao.save(incasso);
         }
         Versamento versamento = new Versamento(incasso,
-                                               abbonamento.getImporto());
+               abbonamento.getImporto().add(abbonamento.getPregresso()));
         versamento.setCodeLine(abbonamento.getCodeLine());
         versamento.setOperazione(abbonamento.getOperazione());
         versamentoDao.save(versamento);

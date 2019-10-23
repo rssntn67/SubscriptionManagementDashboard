@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -744,7 +745,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
-        abb.setSpese(new BigDecimal(10.0));
+        abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));
         
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -780,7 +781,7 @@ public class SmdApplicationTests {
         
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
-        abb.setSpese(new BigDecimal(10.0));
+        abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
@@ -837,7 +838,7 @@ public class SmdApplicationTests {
         
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
-        abb.setSpese(new BigDecimal(10.0));
+        abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
@@ -882,7 +883,7 @@ public class SmdApplicationTests {
         pubblicazioneDao.save(lodare);
 
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
-        abb.setSpese(new BigDecimal(10.0));
+        abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
@@ -1631,7 +1632,108 @@ public class SmdApplicationTests {
         anagraficaDao.deleteAll();
         
     }
-    
+
+    @Test
+    public void testIncassaAbbonamento() throws Exception {
+        log.info("----------------->testIncassaAbbonamento<----------------");
+
+        Anagrafica davidePalma = SmdHelper.getDP();
+        anagraficaDao.save(davidePalma);
+        Anagrafica antonioRusso = SmdHelper.getAR();
+        anagraficaDao.save(antonioRusso);
+
+        Pubblicazione b = SmdHelper.getBlocchetti();
+        pubblicazioneDao.save(b);
+        
+        SmdHelper.getSpeseSpedizione().forEach(ss -> spesaSpedizioneDao.save(ss));
+        
+        Abbonamento abb1 = SmdHelper.getAbbonamentoBy(
+                                                     davidePalma, 
+                                                     Anno.getAnnoCorrente(), 
+                                                     Cassa.Ccp
+                                                     );
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setPubblicazione(b);
+        ec1.setNumero(2);
+        ec1.setAbbonamento(abb1);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(Anno.getAnnoProssimo());
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(Anno.getAnnoProssimo());
+        ec1.setDestinatario(davidePalma);
+
+        smdService.genera(abb1, ec1);
+
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(1, estrattoContoDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+
+
+        Abbonamento abb2 = SmdHelper.getAbbonamentoBy(
+                                                      antonioRusso, 
+                                                      Anno.getAnnoCorrente(), 
+                                                      Cassa.Ccp
+                                                      );
+        EstrattoConto ec2 = new EstrattoConto();
+        ec2.setPubblicazione(b);
+        ec2.setNumero(2);
+        ec2.setAbbonamento(abb1);
+        ec2.setMeseInizio(Mese.GENNAIO);
+        ec2.setAnnoInizio(Anno.getAnnoProssimo());
+        ec2.setMeseFine(Mese.DICEMBRE);
+        ec2.setAnnoFine(Anno.getAnnoProssimo());
+        ec2.setDestinatario(antonioRusso);
+
+        smdService.genera(abb2, ec2);
+
+        assertEquals(2, abbonamentoDao.findAll().size());
+        assertEquals(2, estrattoContoDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+
+        Date date = new Date();
+        abb1.setDataPagamento(date);
+        abb1.setDataContabile(date);
+        assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
+        smdService.incassa(abb1);
+        assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
+        assertEquals(1, incassoDao.count());
+        assertEquals(1, versamentoDao.count());
+        
+        Incasso inc1 = incassoDao.findAll().iterator().next();
+        System.out.println(inc1.getDataContabile());
+        System.out.println(Smd.getStandardDate(abb1.getDataContabile()));
+    Incasso incasso = 
+        incassoDao
+        .findByDataContabileAndCassaAndCcpAndCuas(
+              abb1.getDataContabile(),
+              abb1.getCassa(), 
+              abb1.getCcp(), 
+              abb1.getCuas());
+
+        assertNotNull(incasso);
+        abb2.setDataPagamento(date);
+        abb2.setDataContabile(date);
+        assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
+        smdService.incassa(abb2);
+        assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
+        assertEquals(1, incassoDao.count());
+        assertEquals(2, versamentoDao.count());
+
+        
+
+        spedizioneItemDao.deleteAll();
+        spedizioneDao.deleteAll();
+        estrattoContoDao.deleteAll();
+        abbonamentoDao.deleteAll();
+        incassoDao.deleteAll();
+        pubblicazioneDao.deleteAll();
+        spesaSpedizioneDao.deleteAll();
+        anagraficaDao.deleteAll();
+        
+    }
+
     @Test
     public void testSmdLoadSampleData() {
         
