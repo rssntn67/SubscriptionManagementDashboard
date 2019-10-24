@@ -1,5 +1,6 @@
 package it.arsinfo.smd;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import it.arsinfo.smd.data.Anno;
@@ -62,7 +63,7 @@ public interface SmdService {
     
     void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
     void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
-    void incassa(Abbonamento abbonamento) throws Exception;
+    void incassa(Abbonamento abbonamento, BigDecimal incassato) throws Exception;
     
     
     

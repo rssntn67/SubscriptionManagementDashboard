@@ -225,7 +225,11 @@ public abstract class SmdUI extends UI {
             layout.addComponents(smdChangeHandler.getComponents());
         }
     }
-
+    
+    protected void addComponents(Component...components) {
+        layout.addComponents(components);s
+    }
+    
     public Link getHomePageLink() {
         return new Link("Home",new ExternalResource(HOME));        
     }

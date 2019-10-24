@@ -133,7 +133,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void invia(Campagna campagna) throws Exception {
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
-            if (abb.getStatoIncasso() ==  Incassato.Omaggio) {
+            if (Smd.getStatoIncasso(abb) ==  Incassato.Omaggio) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
             } else {
                 abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
@@ -148,7 +148,7 @@ public class SmdServiceImpl implements SmdService {
     public void estratto(Campagna campagna) throws Exception {
         for (Abbonamento abbonamento :abbonamentoDao.findByAnno(campagna.getAnno())) {
             if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Proposto ) {
-                switch (abbonamento.getStatoIncasso()) {
+                switch (Smd.getStatoIncasso(abbonamento)) {
                 case Si:
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
                     break;
@@ -467,7 +467,7 @@ public class SmdServiceImpl implements SmdService {
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
             
-        switch (abbonamento.getStatoIncasso()) {
+        switch (Smd.getStatoIncasso(abbonamento)) {
         case No:
             break;
         case Omaggio:
@@ -529,10 +529,15 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public List<Abbonamento> getAssociati(Versamento versamento) {
+        List<Abbonamento> associati = new ArrayList<>();
         if (versamento == null) {
-            return new ArrayList<>();
+            return associati;
+        }        
+        associati.addAll(abbonamentoDao.findByVersamento(versamento));
+        if (versamento.getCodeLine() != null) {
+            associati.addAll(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
         }
-        return abbonamentoDao.findByVersamento(versamento);
+        return associati;
     }
 
     @Override
@@ -544,7 +549,7 @@ public class SmdServiceImpl implements SmdService {
                 .findByVersamento(null)
                 .stream()
                 .filter(abb -> 
-                    abb.getStatoIncasso() == Incassato.No 
+                    Smd.getStatoIncasso(abb) == Incassato.No 
                     )
                 .collect(Collectors.toList());
     }
@@ -705,11 +710,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void incassa(Abbonamento abbonamento) throws Exception {
-
-        if (abbonamento.getStatoIncasso() != Incassato.No) {
-            return;
-        }
+    public void incassa(Abbonamento abbonamento, BigDecimal incassato) throws Exception {
 
         Incasso incasso = 
                 incassoDao
@@ -727,8 +728,7 @@ public class SmdServiceImpl implements SmdService {
             incasso.setCuas(abbonamento.getCuas());
             incassoDao.save(incasso);
         }
-        Versamento versamento = new Versamento(incasso,
-               abbonamento.getImporto().add(abbonamento.getPregresso()));
+        Versamento versamento = new Versamento(incasso,incassato);
         versamento.setCodeLine(abbonamento.getCodeLine());
         versamento.setOperazione(abbonamento.getOperazione());
         versamentoDao.save(versamento);

@@ -30,6 +30,7 @@ import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -69,6 +70,23 @@ public class Smd {
             return new BCryptPasswordEncoder();
     }
     
+    //FIXME
+    public static Incassato getStatoIncasso(Abbonamento abbonamento) {
+        if (abbonamento.getTotale().signum() == 0) {
+            return Incassato.Omaggio;
+        }
+        if (abbonamento.getVersamento() == null || abbonamento.getIncassato() == BigDecimal.ZERO) {
+            return Incassato.No;
+        }        
+        if (abbonamento.getResiduo().signum() == 0) {
+            return Incassato.Si;
+        } 
+        if (abbonamento.getResiduo().compareTo(new BigDecimal(3)) <= 0) {
+            return Incassato.SiConDebito;
+        }
+        return Incassato.Parzialmente;
+    }
+
     public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese meseInizio, Anno annoInizio, Mese meseFine, Anno annoFine, Pubblicazione p) throws UnsupportedOperationException {
         if (annoInizio.getAnno() > annoFine.getAnno()) {
             throw new UnsupportedOperationException("data inizio maggiore di data fine");

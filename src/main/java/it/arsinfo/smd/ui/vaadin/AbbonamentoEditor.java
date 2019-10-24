@@ -13,6 +13,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -30,7 +31,8 @@ import it.arsinfo.smd.repository.VersamentoDao;
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     private boolean noOmaggio;
-    private boolean hasVersamento;
+    private boolean hasResiduo;
+
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
     private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
@@ -177,7 +179,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
         statoIncasso.setVisible(persisted);
 
-        noOmaggio = abbonamento.getStatoIncasso() != Incassato.Omaggio;
+        noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
 
         importo.setVisible(noOmaggio);
         spese.setVisible(noOmaggio);
@@ -194,19 +196,18 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         cuas.setVisible(noOmaggio);
         operazione.setVisible(noOmaggio);
         
-        hasVersamento = abbonamento.getVersamento() != null;
-        
-        spese.setReadOnly(hasVersamento);
-        pregresso.setReadOnly(hasVersamento);
-        dataContabile.setReadOnly(hasVersamento);
-        dataPagamento.setReadOnly(hasVersamento); 
+        hasResiduo = abbonamento.getResiduo().signum() > 0; 
+        spese.setReadOnly(!hasResiduo);
+        pregresso.setReadOnly(!hasResiduo);
+        dataContabile.setReadOnly(!hasResiduo);
+        dataPagamento.setReadOnly(!hasResiduo); 
 
-        cassa.setReadOnly(hasVersamento);
-        ccp.setReadOnly(hasVersamento);
-        cuas.setReadOnly(hasVersamento);
-        operazione.setReadOnly(hasVersamento);
+        cassa.setReadOnly(!hasResiduo);
+        ccp.setReadOnly(!hasResiduo);
+        cuas.setReadOnly(!hasResiduo);
+        operazione.setReadOnly(!hasResiduo);
 
-        if (hasVersamento) {
+        if (!hasResiduo && abbonamento.getVersamento().getId() != null) {
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
             abbonamento.setDataContabile(versamento.getDataContabile());
             abbonamento.setDataPagamento(versamento.getDataPagamento());
@@ -259,6 +260,6 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     }
     
     public boolean incassare() {
-        return noOmaggio && !hasVersamento;
+        return noOmaggio && hasResiduo;
     }
 }

@@ -1616,7 +1616,7 @@ public class SmdApplicationTests {
 
         assertEquals(0, abb.getResiduo().doubleValue(),0);
         assertEquals(0, incasso.getResiduo().doubleValue(),0);
-        assertEquals(Incassato.Si, abb.getStatoIncasso());
+        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
         
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         List<Abbonamento> abbonamenti = abbonamentoDao.findByVersamento(versamento);
@@ -1624,7 +1624,7 @@ public class SmdApplicationTests {
         Abbonamento abbonamento = abbonamenti.iterator().next();
         assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
         assertEquals(StatoAbbonamento.Nuovo, abbonamento.getStatoAbbonamento());
-        assertEquals(Incassato.Si, abbonamento.getStatoIncasso());
+        assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));
         estrattoContoDao.deleteAll();
         abbonamentoDao.deleteAll();
         incassoDao.deleteAll();
@@ -1696,7 +1696,7 @@ public class SmdApplicationTests {
         abb1.setDataPagamento(date);
         abb1.setDataContabile(date);
         assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
-        smdService.incassa(abb1);
+        smdService.incassa(abb1,abb1.getTotale());
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
@@ -1716,7 +1716,7 @@ public class SmdApplicationTests {
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
         assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
-        smdService.incassa(abb2);
+        smdService.incassa(abb2,abb2.getTotale());
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(2, versamentoDao.count());

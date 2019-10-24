@@ -25,7 +25,6 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -112,7 +111,7 @@ public class Abbonamento implements SmdEntity {
     public String toString() {
         return String.format("Abbonamento[id=%d, %s , Intestatario='%d', Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s",
                                    id, 
-                                   getStatoIncasso(), 
+                                   Smd.getStatoIncasso(this), 
                                    intestatario.getId(), 
                                    importo,
                                    spese,
@@ -185,23 +184,6 @@ public class Abbonamento implements SmdEntity {
     }
     
     @Transient
-    public Incassato getStatoIncasso() {
-        if (getTotale().signum() == 0) {
-            return Incassato.Omaggio;
-        }
-        if (versamento == null || incassato == BigDecimal.ZERO) {
-            return Incassato.No;
-        }        
-        if (getResiduo().signum() == 0) {
-            return Incassato.Si;
-        } 
-        if (getResiduo().compareTo(new BigDecimal(3)) <= 0) {
-            return Incassato.SiConDebito;
-        }
-        return Incassato.Parzialmente;
-    }
-    
-    @Transient
     public BigDecimal getResiduo() {
         return getTotale().subtract(incassato);
     }
@@ -271,7 +253,7 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return importo.add(pregresso);
+        return importo.add(pregresso).add(spese);
     }
 
     public BigDecimal getImporto() {
