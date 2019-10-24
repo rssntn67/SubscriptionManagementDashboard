@@ -17,6 +17,7 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
@@ -61,9 +62,10 @@ public interface SmdService {
     void save(Versamento versamento);
     void delete(Versamento versamento);
     
-    void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception;
-    void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception;    
-    void incassa(Abbonamento abbonamento, BigDecimal incassato) throws Exception;
+    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception;
+    void reverti(Abbonamento abbonamento, Versamento versamento,UserInfo user) throws Exception;    
+    void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
+    void incassaCodeLine(Versamento versamento,UserInfo user) throws Exception;
     
     
     

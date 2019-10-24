@@ -2,7 +2,6 @@ package it.arsinfo.smd.ui.vaadin;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +15,12 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringUI(path = SmdUI.URL_INCASSI)
 @Title("Incassi ADP")
-public class IncassoUI extends IncassoAbstractUI {
+public class IncassoUI extends SmdUI {
     /**
      * 
      */
@@ -213,17 +210,20 @@ public class IncassoUI extends IncassoAbstractUI {
         search.setChangeHandler(() ->grid.populate(search.find()));
 
         incassa.setChangeHandler(() -> {
-            for (Incasso iiii : search.find()) {
-                versamentoDao.findByIncasso(iiii)
+            search.find().forEach(incass -> {
+                versamentoDao.findByIncasso(incass)
                     .stream()
-                    .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCodeLine() != null)
+                    .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
                     .forEach(v-> {
-                    getAssociabili(v)
-                    .stream()
-                    .filter(abb -> abb.getCodeLine() != null && abb.getCodeLine().equals(v.getCodeLine()))
-                    .forEach(abb -> incassa(abb, v));                        
+                    	v.setOperazione("Incassato con CodeLine da: '" + getLoggedInUser().getUsername()+"'"+ new Date() + v.getOperazione());
+                        try {
+                            smdService.incassaCodeLine(v,getLoggedInUser());
+                        } catch (Exception e) {
+                            log.error("Incassa failed for : {}.", editor.get(),e);
+                            return;
+                        }
                     });
-            }
+            });
             grid.populate(search.find());                
         });
 
@@ -241,17 +241,15 @@ public class IncassoUI extends IncassoAbstractUI {
             }
             versamentoDao.findByIncasso(grid.getSelected())
                 .stream()
-                .filter(v -> v.getResiduo().doubleValue() > 0 && v.getCodeLine() != null)
+                .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
                 .forEach(v-> {
-                    List<Abbonamento> associabili = getAssociabili(v);
-                    
-                    if (associabili.size() == 1 ) {
-                        Abbonamento associabile = associabili.iterator().next();
-                        if (v.getImporto().subtract(associabile.getTotale()).signum() == 0) {
-                            incassa(associabile, v);
-                        }
+                    try {
+                        smdService.incassaCodeLine(v,getLoggedInUser());
+                    } catch (Exception e) {
+                        log.error("Incassa failed for : {}.", editor.get(),e);
+                        return;
                     }
-                });
+            });
             grid.populate(search.find());
             grid.getGrid().select(editor.get());
         });

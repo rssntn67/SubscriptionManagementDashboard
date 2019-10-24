@@ -299,7 +299,7 @@ public class AbbonamentoUI extends SmdUI {
 
         incassa.setChangeHandler(() -> {
             try {
-                smdService.incassa(editor.get(), new BigDecimal(incassa.getValue()));
+                smdService.incassa(editor.get(), new BigDecimal(incassa.getValue()),getLoggedInUser());
                 incassa.setVisible(false);
                 incassaResiduo.setVisible(false);
                 editor.edit(editor.get());
@@ -311,7 +311,7 @@ public class AbbonamentoUI extends SmdUI {
 
         incassaResiduo.setChangeHandler(() -> {
             try {
-                smdService.incassa(editor.get(), editor.get().getResiduo());
+                smdService.incassa(editor.get(), editor.get().getResiduo(),getLoggedInUser());
                 incassa.setVisible(false);
                 incassaResiduo.setVisible(false);
                 editor.edit(editor.get());

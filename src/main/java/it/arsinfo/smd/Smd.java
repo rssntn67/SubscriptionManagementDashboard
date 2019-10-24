@@ -792,7 +792,7 @@ public class Smd {
             log.error("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
             throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
         }
-        if (versamento.getResiduo().compareTo(BigDecimal.ZERO) == 0) {
+        if (versamento.getResiduo().signum() == 0) {
             log.error("incassa: Versamento con residuo 0, abbonamento non incassato");
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }

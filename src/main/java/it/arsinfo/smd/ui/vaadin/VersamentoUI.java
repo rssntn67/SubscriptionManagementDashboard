@@ -21,7 +21,7 @@ import it.arsinfo.smd.repository.VersamentoDao;
 
 @SpringUI(path = SmdUI.URL_VERSAMENTI)
 @Title("Versamenti")
-public class VersamentoUI extends IncassoAbstractUI {
+public class VersamentoUI extends SmdUI {
 
     /**
      * 
@@ -108,10 +108,10 @@ public class VersamentoUI extends IncassoAbstractUI {
         grid.setChangeHandler(() -> {
             if (grid.getSelected() != null) {
                 editor.edit(grid.getSelected());
-                abbonamentiAssociatiGrid.populate(getAssociati(grid.getSelected()));
+                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
                 
                 if (grid.getSelected().getResiduo().signum() > 0) {
-                    abbSearch.setItems(getAssociabili(grid.getSelected()));
+                    abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
                     abbSearch.setVisible(true);
                 }
@@ -138,12 +138,19 @@ public class VersamentoUI extends IncassoAbstractUI {
         });
         
         abbonamentiAssociatiGrid.addComponentColumn(abbonamento -> {
-            Button button = new Button("Dissocia");
+            Button button = new Button("Reverti");
             button.addClickListener(click -> {
-                dissocia(abbonamento, editor.get());
+                try {
+                    smdService.reverti(abbonamento, editor.get(),getLoggedInUser());
+                } catch (Exception e) {
+                    log.warn("Reverti failed for : {}.", editor.get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+                }
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(getAssociati(editor.get()));
-                abbSearch.setItems(getAssociabili(editor.get()));
+                abbonamentiAssociatiGrid.populate(smdService.getAssociati(editor.get()));
+                abbSearch.setItems(smdService.getAssociabili(editor.get()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
             });
@@ -153,11 +160,18 @@ public class VersamentoUI extends IncassoAbstractUI {
         abbonamentiAssociabiliGrid.addComponentColumn(abbonamento -> {
             Button button = new Button("Incassa");
             button.addClickListener(click -> {
-                incassa(abbonamento, editor.get());
+                try {
+                    smdService.incassa(abbonamento, editor.get(),getLoggedInUser());
+                } catch (Exception e) {
+                    log.warn("Incassa failed for : {}.", editor.get(),e);
+                    Notification.show(e.getMessage(),
+                                      Notification.Type.ERROR_MESSAGE);
+                    return;
+               }
                 editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(getAssociati(editor.get()));
+                abbonamentiAssociatiGrid.populate(smdService.getAssociati(editor.get()));
                 if (grid.getSelected().getResiduo().signum() > 0) {
-                    abbSearch.setItems(getAssociabili(editor.get()));
+                    abbSearch.setItems(smdService.getAssociabili(editor.get()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
                     abbSearch.setVisible(true);
                 } else {

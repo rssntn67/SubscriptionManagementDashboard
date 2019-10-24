@@ -1735,7 +1735,7 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testSmdLoadSampleData() {
+    public void testSmdLoadSampleData() throws Exception {
         
         log.info("----------------->testSmdLoadSampleData<----------------");
 
@@ -1785,9 +1785,43 @@ public class SmdApplicationTests {
 
         assertEquals(29, spedizioneDao.findAll().size());
         assertEquals(0, operazioneDao.findAll().size());
+        
+        for (Versamento versamento: versamentoDao.findAll()) {
+            if (versamento.getCodeLine() == null) {
+                continue;
+            }
+            System.out.println(versamento);
+            Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+            if (abbonamento == null) {
+                continue;
+            }
+            System.out.println(abbonamento);
+            assertNull(abbonamento.getVersamento());
+            assertEquals(0, versamento.getIncassato().doubleValue(),0);
+            assertEquals(0, abbonamento.getIncassato().doubleValue(),0);
+            smdService.incassaCodeLine(versamento);
+            assertEquals(0, versamento.getResiduo().doubleValue(),0);
+        }
+
+        for (Abbonamento abbonamento: abbonamentoDao.findByAnno(Anno.ANNO2017)) {
+            assertEquals(0, abbonamento.getResiduo().doubleValue(),0);
+            assertNotNull(abbonamento.getVersamento());
+            abbonamento.setPregresso(new BigDecimal("10.50"));
+            abbonamentoDao.save(abbonamento);
+            assertEquals(abbonamento.getPregresso().doubleValue(), abbonamento.getResiduo().doubleValue(),0);
+        }
+        
+        for (Versamento versamento: versamentoDao.findAll()) {
+            System.out.println(versamento);
+            smdService.incassaCodeLine(versamento);
+        }
+        
+        for (Abbonamento abbonamento: abbonamentoDao.findByAnno(Anno.ANNO2017)) {
+            assertNotNull(abbonamento.getVersamento());
+            assertEquals(abbonamento.getPregresso().doubleValue(), abbonamento.getResiduo().doubleValue(),0);
+        }
 
         operazioneDao.deleteAll();
-
         spedizioneItemDao.deleteAll();
         spedizioneDao.deleteAll();
         estrattoContoDao.deleteAll();

@@ -2,6 +2,7 @@ package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -461,9 +463,10 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void incassa(Abbonamento abbonamento, Versamento versamento) throws Exception {
+    public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
         Incasso incasso = versamento.getIncasso();
         Smd.incassa(incasso,versamento, abbonamento);
+        versamento.setOperazione("Inc:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
             
@@ -496,9 +499,10 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void reverti(Abbonamento abbonamento, Versamento versamento) throws Exception {
+    public void reverti(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
         Incasso incasso = versamento.getIncasso();
         Smd.dissocia(incasso, versamento, abbonamento);
+        versamento.setOperazione("Rev:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
@@ -535,14 +539,14 @@ public class SmdServiceImpl implements SmdService {
         }        
         associati.addAll(abbonamentoDao.findByVersamento(versamento));
         if (versamento.getCodeLine() != null) {
-            associati.addAll(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
+            associati.add(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
         }
         return associati;
     }
 
     @Override
     public List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null || versamento.getResiduo().compareTo(BigDecimal.ZERO) <= 0) {
+        if (versamento == null || versamento.getResiduo().signum() <= 0) {
             return new ArrayList<>();
         }
         return abbonamentoDao
@@ -710,7 +714,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void incassa(Abbonamento abbonamento, BigDecimal incassato) throws Exception {
+    public void incassa(Abbonamento abbonamento, BigDecimal incassato, UserInfo user) throws Exception {
 
         Incasso incasso = 
                 incassoDao
@@ -735,7 +739,20 @@ public class SmdServiceImpl implements SmdService {
         Smd.calcoloImportoIncasso(incasso,
                                   versamentoDao.findByIncasso(incasso));
         incassoDao.save(incasso);
-        incassa(abbonamento, versamento);
+        incassa(abbonamento, versamento,user);
+    }
+    
+    @Override
+    public void incassaCodeLine(Versamento versamento, UserInfo user) throws Exception {
+        if (versamento == null 
+                || versamento.getCodeLine() == null
+                || versamento.getResiduo().signum() == 0) {
+            return;
+        }
+        final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+        if (abbonamento != null && abbonamento.getVersamento() == null)
+            incassa(abbonamento,versamento,user);
+
     }
 
 }

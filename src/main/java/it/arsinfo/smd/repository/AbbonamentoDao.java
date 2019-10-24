@@ -19,7 +19,7 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 	List<Abbonamento> findByCampagna(Campagna campagna);
         List<Abbonamento> findByIntestatarioAndCampagna(Anagrafica intestatario, Campagna campagna);
 	List<Abbonamento> findByVersamento(Versamento versamento);
-	List<Abbonamento> findByCodeLine(String codeLine);
+	Abbonamento findByCodeLine(String codeLine);
         List<Abbonamento> findByCassa(Cassa cassa);
         List<Abbonamento> findByAnno(Anno anno);
 	Long deleteByCampagna(Campagna campagna);
