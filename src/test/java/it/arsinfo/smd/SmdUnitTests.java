@@ -988,26 +988,26 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
-        assertEquals(Incassato.Omaggio, abb.getStatoIncasso());
+        assertEquals(Incassato.Omaggio, Smd.getStatoIncasso(abb));
        
         abb.setImporto(new BigDecimal(10));
-        assertEquals(Incassato.No, abb.getStatoIncasso());
+        assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
         
         Versamento versamento = new Versamento();
         abb.setVersamento(versamento);
-        assertEquals(Incassato.No, abb.getStatoIncasso());
+        assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(10));
-        assertEquals(Incassato.Si, abb.getStatoIncasso());
+        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(7));
-        assertEquals(Incassato.SiConDebito, abb.getStatoIncasso());
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(8));
-        assertEquals(Incassato.SiConDebito, abb.getStatoIncasso());
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(6));
-        assertEquals(Incassato.Parzialmente, abb.getStatoIncasso());        
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));        
         
     }
     

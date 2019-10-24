@@ -227,7 +227,7 @@ public abstract class SmdUI extends UI {
     }
     
     protected void addComponents(Component...components) {
-        layout.addComponents(components);s
+        layout.addComponents(components);
     }
     
     public Link getHomePageLink() {

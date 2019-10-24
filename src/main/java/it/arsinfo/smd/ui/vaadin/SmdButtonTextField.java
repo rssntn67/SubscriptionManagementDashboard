@@ -19,8 +19,6 @@ public class SmdButtonTextField extends SmdChangeHandler {
         });
         button = new Button(bcaption, bicon);
         button.addClickListener(e -> onChange());
-        setComponents(button);
-
         setComponents(new HorizontalLayout(button,textField));
 
     }

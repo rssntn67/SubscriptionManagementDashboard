@@ -22,7 +22,6 @@ public class SmdButtonComboBox<T> extends SmdChangeHandler {
         });
         button = new Button(bcaption, bicon);
         button.addClickListener(e -> onChange());
-        setComponents(button);
 
         setComponents(new HorizontalLayout(button,tComboBox));
 

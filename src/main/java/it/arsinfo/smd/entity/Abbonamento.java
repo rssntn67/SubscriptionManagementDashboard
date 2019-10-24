@@ -25,6 +25,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -362,5 +363,10 @@ public class Abbonamento implements SmdEntity {
         this.operazione = operazione;
     }
 
+    @Transient
+    public Incassato getStatoIncasso() {
+        return Smd.getStatoIncasso(this);
+    }
+    
 
 }

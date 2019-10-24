@@ -12,6 +12,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -203,14 +204,17 @@ public class AbbonamentoUI extends SmdUI {
         };
 
         addSmdComponents(estrattoContoEditor,editor);
-        HorizontalLayout incassaLayer = new HorizontalLayout();
-        incassaLayer.addComponents(incassaResiduo.getComponents());
-        incassaLayer.addComponents(incassa.getComponents());
-        addComponents(incassaLayer);
-        addSmdComponents(estrattoContoAdd,estrattoContoGrid, add,search, grid);
+        HorizontalLayout lay = new HorizontalLayout(estrattoContoAdd.getComponents());
+        lay.addComponents(new Label("     "));
+        lay.addComponents(incassaResiduo.getComponents());
+        lay.addComponents(new Label(" "));
+        lay.addComponents(incassa.getComponents());
+        addComponents(lay);
+        addSmdComponents(estrattoContoGrid, add,search, grid);
 
         editor.setVisible(false);
         incassa.setVisible(false);
+        incassaResiduo.setVisible(false);
         estrattoContoEditor.setVisible(false);
         estrattoContoAdd.setVisible(false);
         estrattoContoGrid.setVisible(false);
@@ -237,7 +241,8 @@ public class AbbonamentoUI extends SmdUI {
             add.setVisible(false);
             search.setVisible(false);
             editor.edit(grid.getSelected());
-            incassaLayer.setVisible(editor.incassare());
+            incassa.setVisible(editor.incassare());
+            incassaResiduo.setVisible(editor.incassare());
             estrattoContoAdd.setVisible(grid.getSelected().getCampagna() == null);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.populate(findByAbbonamento(grid.getSelected()));               
@@ -245,7 +250,8 @@ public class AbbonamentoUI extends SmdUI {
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            incassaLayer.setVisible(false);
+            incassa.setVisible(false);
+            incassaResiduo.setVisible(false);
             estrattoContoAdd.setVisible(false);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.setVisible(false);
@@ -294,7 +300,8 @@ public class AbbonamentoUI extends SmdUI {
         incassa.setChangeHandler(() -> {
             try {
                 smdService.incassa(editor.get(), new BigDecimal(incassa.getValue()));
-                incassaLayer.setVisible(false);
+                incassa.setVisible(false);
+                incassaResiduo.setVisible(false);
                 editor.edit(editor.get());
             } catch (Exception e) {
                 Notification.show(e.getMessage(),
@@ -305,7 +312,8 @@ public class AbbonamentoUI extends SmdUI {
         incassaResiduo.setChangeHandler(() -> {
             try {
                 smdService.incassa(editor.get(), editor.get().getResiduo());
-                incassaLayer.setVisible(false);
+                incassa.setVisible(false);
+                incassaResiduo.setVisible(false);
                 editor.edit(editor.get());
             } catch (Exception e) {
                 Notification.show(e.getMessage(),
