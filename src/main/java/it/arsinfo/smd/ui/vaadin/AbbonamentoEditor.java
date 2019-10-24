@@ -78,8 +78,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento);
 
-        HorizontalLayout deta = new HorizontalLayout(cassa,ccp,cuas,operazione);
-
+        HorizontalLayout deta = new HorizontalLayout(cassa,ccp,cuas);
+        deta.addComponentsAndExpand(operazione);
         setComponents(getActions(),anag, status,imp, incss,deta);
 
         intestatario.setItems(anagrafica);
@@ -96,6 +96,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         anno.setEmptySelectionAllowed(false);
 
         
+        operazione.setReadOnly(true);
         importo.setReadOnly(true);
         totale.setReadOnly(true);
         
@@ -205,9 +206,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         cassa.setReadOnly(!hasResiduo);
         ccp.setReadOnly(!hasResiduo);
         cuas.setReadOnly(!hasResiduo);
-        operazione.setReadOnly(!hasResiduo);
+        operazione.setVisible(false);
 
         if (!hasResiduo && abbonamento.getVersamento().getId() != null) {
+            operazione.setVisible(true);
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
             abbonamento.setDataContabile(versamento.getDataContabile());
             abbonamento.setDataPagamento(versamento.getDataPagamento());
@@ -216,9 +218,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             cuas.setValue(abbonamento.getCuas());
             dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            if (abbonamento.getOperazione() != null) {
-                operazione.setValue(abbonamento.getOperazione());
-            }
+            operazione.setValue(abbonamento.getOperazione());
         }
         intestatario.focus();
 

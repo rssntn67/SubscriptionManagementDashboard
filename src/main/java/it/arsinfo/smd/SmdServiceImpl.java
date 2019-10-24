@@ -539,8 +539,18 @@ public class SmdServiceImpl implements SmdService {
         }        
         associati.addAll(abbonamentoDao.findByVersamento(versamento));
         if (versamento.getCodeLine() != null) {
-            associati.add(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
+            Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+            if (abbonamento != null) {
+            	for (Abbonamento abb: associati) {
+            		if (abb.equals(abbonamento)) {
+            			return associati;
+            		}
+            	}
+            	associati.add(abbonamento);
+            }
         }
+        
+        
         return associati;
     }
 
@@ -734,7 +744,7 @@ public class SmdServiceImpl implements SmdService {
         }
         Versamento versamento = new Versamento(incasso,incassato);
         versamento.setCodeLine(abbonamento.getCodeLine());
-        versamento.setOperazione(abbonamento.getOperazione());
+        versamento.setOperazione("Abb.");
         versamentoDao.save(versamento);
         Smd.calcoloImportoIncasso(incasso,
                                   versamentoDao.findByIncasso(incasso));
@@ -750,8 +760,10 @@ public class SmdServiceImpl implements SmdService {
             return;
         }
         final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        if (abbonamento != null && abbonamento.getVersamento() == null)
-            incassa(abbonamento,versamento,user);
+        if (abbonamento != null && abbonamento.getVersamento() == null) {
+            versamento.setOperazione("CodeLine");
+        	incassa(abbonamento,versamento,user);
+        }
 
     }
 

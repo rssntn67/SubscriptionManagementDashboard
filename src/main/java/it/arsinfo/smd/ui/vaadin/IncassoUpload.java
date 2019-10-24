@@ -18,13 +18,11 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Incasso;
@@ -40,8 +38,6 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
 
     private File file;
         
-    private Label avviso = new Label();
-
     private final List<Incasso> incassi = new ArrayList<>();
 
     public IncassoUpload(String caption) {
@@ -49,12 +45,10 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
 
         Upload upload = new Upload("",this);
         upload.setImmediateMode(true);
-        upload.setButtonCaption("+Download Poste");
+        upload.setButtonCaption("Upload File Poste");
         upload.addSucceededListener(this);
-        avviso.addStyleName(ValoTheme.LABEL_H3);
-        avviso.setVisible(false);
         
-        setComponents(new HorizontalLayout(upload,avviso));
+        setComponents(new HorizontalLayout(upload));
 
     }
 
@@ -65,7 +59,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         try {
             fstream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            avviso.setValue("Incasso Cancellato: errore ->"+e.getMessage());
+            Notification.show("Incasso Cancellato: "+e.getMessage(),Notification.Type.ERROR_MESSAGE);
             log.error("Incasso Cancellato: " + e.getMessage());
             return;
         }
@@ -86,14 +80,14 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
                     incassi.add(Smd.generaIncasso(versamenti, strLine));
                     versamenti.clear();                    
                 } else {
-                    avviso.setValue("Incasso Cancellato: Valore non riconosciuto->" + strLine);
+                    Notification.show("Incasso Cancellato: Valore non riconosciuto: " + strLine,Notification.Type.ERROR_MESSAGE);
                     log.error("Incasso Cancellato: Valore non riconosciuto->" +strLine);
                     errorFound=true;
                     break;
                 }
             }
         } catch (Exception e) {
-            avviso.setValue("Incasso Cancellato: errore ->"+e.getMessage());
+            Notification.show("Incasso Cancellato: "+e.getMessage(),Notification.Type.ERROR_MESSAGE);
             log.error("Incasso Cancellato: " + e.getMessage());
             errorFound = true;
         }
@@ -102,24 +96,23 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         try {
             br.close();
         } catch (IOException e) {
-            avviso.setValue("Incasso Cancellato: errore ->"+e.getMessage());
-            log.error("Incasso Cancellato: " + e.getMessage());
+            Notification.show("Incasso Non completato: "+e.getMessage(),Notification.Type.ERROR_MESSAGE);
+            log.error("Incasso Non completato: " + e.getMessage());
             return;
         }
         
         if (errorFound) {
             return;
         }
-        avviso.setValue("Incasso Eseguito");
+        Notification.show("Incasso Eseguito!",Notification.Type.HUMANIZED_MESSAGE);
         onChange();
 
     }
 
     @Override
     public OutputStream receiveUpload(String filename, String mimeType) {
-        avviso.setValue("Uploading");
-        avviso.setVisible(true);
-
+        Notification.show("Uploading......",Notification.Type.HUMANIZED_MESSAGE);
+        
         FileOutputStream fos = null; // Stream to write to
         try {
             // Open the file for writing.

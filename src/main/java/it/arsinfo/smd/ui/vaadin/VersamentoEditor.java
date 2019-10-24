@@ -66,13 +66,19 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         bollettino.setItemCaptionGenerator(Bollettino::getBollettino);
         accettazione.setItemCaptionGenerator(Accettazione::getDescr);
         sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);
+        HorizontalLayout lay0 = new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento);
+        HorizontalLayout lay1 = new HorizontalLayout(ccp,cassa,cuas);
+        HorizontalLayout lay2 = new HorizontalLayout(codeLine,progressivo);
+        lay2.addComponentsAndExpand(operazione);
+        HorizontalLayout lay3 = new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina);
+        HorizontalLayout lay4 = new HorizontalLayout(bollettino,accettazione,sostitutivo);
         setComponents(
                       getActions(),
-                      new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento),
-                      new HorizontalLayout(ccp,cassa,cuas),
-                      new HorizontalLayout(operazione,codeLine,progressivo),
-                      new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina),
-                      new HorizontalLayout(bollettino,accettazione,sostitutivo)
+                      lay0,
+                      lay1,
+                      lay2,
+                      lay3,
+                      lay4
                   );
 
         getBinder().forField(importo)

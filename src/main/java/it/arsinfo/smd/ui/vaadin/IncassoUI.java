@@ -11,6 +11,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.Smd;
@@ -43,7 +44,6 @@ public class IncassoUI extends SmdUI {
         IncassoUpload upload = new IncassoUpload("Incasso da Poste");
         IncassoSearch search = new IncassoSearch(incassoDao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
-        SmdButton incassaSingolo = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("Incassi");
 
         IncassoEditor editor = new IncassoEditor(incassoDao) {
@@ -117,22 +117,21 @@ public class IncassoUI extends SmdUI {
             }              
         };
 
-        addSmdComponents(
-                         upload,
-                         add,                          
+        HorizontalLayout buttons = new HorizontalLayout();
+        buttons.addComponents(add.getComponents());
+        buttons.addComponents(incassa.getComponents());
+        addComponents(buttons);
+        addSmdComponents(upload,
                          search,
-                         incassa,
                          editor,
                          versAdd,
                          versEditor,
-                         incassaSingolo,
                          versGrid,
                          grid
                          );
 
         editor.setVisible(false);
         versAdd.setVisible(false);
-        incassaSingolo.setVisible(false);
         versGrid.setVisible(false);
 
         versEditor.setVisible(false);
@@ -144,11 +143,9 @@ public class IncassoUI extends SmdUI {
                 upload.setVisible(true);
                 add.setVisible(true);
                 search.setVisible(true);
-                incassa.setVisible(true);
 
                 editor.setVisible(false);
                 versAdd.setVisible(false);
-                incassaSingolo.setVisible(false);
                 versGrid.setVisible(false);
             } else {
                 hideMenu();
@@ -156,12 +153,10 @@ public class IncassoUI extends SmdUI {
                 editor.edit(grid.getSelected());
                 versAdd.setVisible(true);
                 versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
-                incassaSingolo.setVisible(true);
 
                 upload.setVisible(false);
                 add.setVisible(false);
                 search.setVisible(false);
-                incassa.setVisible(false);
                 grid.setVisible(false);
             }
         });
@@ -172,13 +167,11 @@ public class IncassoUI extends SmdUI {
             upload.setVisible(true);
             add.setVisible(true);
             search.setVisible(true);
-            incassa.setVisible(true);
             grid.populate(search.find());
 
             editor.setVisible(false);
             versAdd.setVisible(false);
             versGrid.setVisible(false);
-            incassaSingolo.setVisible(false);
         });
 
         add.setChangeHandler(() -> {
@@ -187,7 +180,6 @@ public class IncassoUI extends SmdUI {
             add.setVisible(false);
             upload.setVisible(false);
             search.setVisible(false);
-            incassa.setVisible(false);
             grid.setVisible(false);
             
             editor.edit(add.generate());     
@@ -209,24 +201,6 @@ public class IncassoUI extends SmdUI {
         
         search.setChangeHandler(() ->grid.populate(search.find()));
 
-        incassa.setChangeHandler(() -> {
-            search.find().forEach(incass -> {
-                versamentoDao.findByIncasso(incass)
-                    .stream()
-                    .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
-                    .forEach(v-> {
-                    	v.setOperazione("Incassato con CodeLine da: '" + getLoggedInUser().getUsername()+"'"+ new Date() + v.getOperazione());
-                        try {
-                            smdService.incassaCodeLine(v,getLoggedInUser());
-                        } catch (Exception e) {
-                            log.error("Incassa failed for : {}.", editor.get(),e);
-                            return;
-                        }
-                    });
-            });
-            grid.populate(search.find());                
-        });
-
         versAdd.setChangeHandler(() -> {
             setHeader(String.format("%s:Versamento:Aggiungi",editor.get().getHeader()));
             hideMenu();
@@ -234,11 +208,9 @@ public class IncassoUI extends SmdUI {
             editor.setVisible(false);
             versAdd.setVisible(false);
         });
-        
-        incassaSingolo.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
+
+        incassa.setChangeHandler(() -> {
+            if (grid.getSelected() != null) {
             versamentoDao.findByIncasso(grid.getSelected())
                 .stream()
                 .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
@@ -252,8 +224,25 @@ public class IncassoUI extends SmdUI {
             });
             grid.populate(search.find());
             grid.getGrid().select(editor.get());
-        });
- 
+            return;
+            }
+
+            search.find().forEach(incass -> {
+                    versamentoDao.findByIncasso(incass)
+                        .stream()
+                        .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
+                        .forEach(v-> {
+                            try {
+                                smdService.incassaCodeLine(v,getLoggedInUser());
+                            } catch (Exception e) {
+                                log.error("Incassa failed for : {}.", editor.get(),e);
+                                return;
+                            }
+                        });
+                });
+                grid.populate(search.find());                
+            });
+
         versEditor.setChangeHandler(() -> {
             setHeader("Incasso");
             if (editor.get().getId() != null) {
@@ -279,5 +268,6 @@ public class IncassoUI extends SmdUI {
         });
         
         grid.populate(search.findAll());
-    }    
+    }  
+    
 }
