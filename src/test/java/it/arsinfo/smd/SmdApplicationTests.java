@@ -1696,7 +1696,7 @@ public class SmdApplicationTests {
         abb1.setDataPagamento(date);
         abb1.setDataContabile(date);
         assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
-        smdService.incassa(abb1,abb1.getTotale());
+        smdService.incassa(abb1,abb1.getTotale(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
@@ -1716,7 +1716,7 @@ public class SmdApplicationTests {
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
         assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
-        smdService.incassa(abb2,abb2.getTotale());
+        smdService.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(2, versamentoDao.count());
@@ -1799,7 +1799,7 @@ public class SmdApplicationTests {
             assertNull(abbonamento.getVersamento());
             assertEquals(0, versamento.getIncassato().doubleValue(),0);
             assertEquals(0, abbonamento.getIncassato().doubleValue(),0);
-            smdService.incassaCodeLine(versamento);
+            smdService.incassaCodeLine(versamento,userInfoDao.findByUsername("admin"));
             assertEquals(0, versamento.getResiduo().doubleValue(),0);
         }
 
@@ -1813,7 +1813,7 @@ public class SmdApplicationTests {
         
         for (Versamento versamento: versamentoDao.findAll()) {
             System.out.println(versamento);
-            smdService.incassaCodeLine(versamento);
+            smdService.incassaCodeLine(versamento,userInfoDao.findByUsername("admin"));
         }
         
         for (Abbonamento abbonamento: abbonamentoDao.findByAnno(Anno.ANNO2017)) {
