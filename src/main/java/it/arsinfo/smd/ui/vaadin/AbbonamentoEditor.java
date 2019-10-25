@@ -218,7 +218,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             cuas.setValue(abbonamento.getCuas());
             dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            operazione.setValue(abbonamento.getOperazione());
+            if (abbonamento.getOperazione() != null)
+            	operazione.setValue(abbonamento.getOperazione());
         }
         intestatario.focus();
 
