@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo</groupId>
 	<artifactId>smd</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>smd</name>
