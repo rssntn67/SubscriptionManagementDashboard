@@ -790,12 +790,22 @@ public class SmdUnitTests {
                                      spese
                                      );
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec).forEach(item -> items.add(item)));
+        spedizioni
+        .stream()
+        .forEach(sped -> sped.getSpedizioneItems()
+        		.stream()
+        		.filter(item -> item.getEstrattoConto() == ec)
+        		.forEach(item -> items.add(item))
+        		);
 
+        BigDecimal speseSped = BigDecimal.ZERO;
+        for (SpedizioneWithItems sped: spedizioni) {
+        	speseSped = speseSped.add(sped.getSpedizione().getSpesePostali());
+    	}
         assertEquals(p.getMesiPubblicazione().size(), items.size());
         assertTrue(ec.isAbbonamentoAnnuale());
         
-        assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(p.getAbbonamento().add(speseSped).doubleValue(), abb.getImporto().doubleValue(),0);
         assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
         
         SpesaSpedizione spesa = 
@@ -810,7 +820,7 @@ public class SmdUnitTests {
             assertEquals(spesa.getSpese().doubleValue(), sped.getSpedizione().getSpesePostali().doubleValue(),0);
             sped.getSpedizioneItems().stream().forEach( item -> log.info(item.toString()));
         });
-        assertEquals(spesa.getSpese().doubleValue()*p.getMesiPubblicazione().size(), abb.getSpese().doubleValue(),0);
+        assertEquals(0, abb.getSpese().doubleValue(),0);
         log.info(abb.toString());
     }
     
@@ -1001,12 +1011,13 @@ public class SmdUnitTests {
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(7));
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+
+        abb.setSpese(new BigDecimal(3));
+        abb.setIncassato(new BigDecimal(11));
         assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
-        abb.setIncassato(new BigDecimal(8));
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
-
-        abb.setIncassato(new BigDecimal(6));
+        abb.setIncassato(new BigDecimal(9));
         assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));        
         
     }
