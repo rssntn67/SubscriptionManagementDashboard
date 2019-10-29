@@ -939,7 +939,75 @@ public class SmdUnitTests {
         assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
         
     }
-    
+    @Test 
+    public void testRicondizionaBlocchetti() {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        Anagrafica tizio = SmdHelper.getAR();
+        Pubblicazione blocchetti = SmdHelper.getBlocchetti();
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(blocchetti);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(15);
+        Smd.genera(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdHelper.getSpeseSpedizione());
+        
+        assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
+        
+        abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(12)));
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        
+		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
+		assertEquals(blocchetti.getAbbonamento().doubleValue(), costoUno,0);
+		assertEquals(3*costoUno, abb.getResiduo().doubleValue(),0);
+
+    	
+    }
+
+    @Test 
+    public void testRicondizionaMessaggio() {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        Anagrafica tizio = SmdHelper.getAR();
+        Pubblicazione messaggio = SmdHelper.getMessaggio();
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        
+        EstrattoConto ec1 = new EstrattoConto();
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(messaggio);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(14);
+        Smd.genera(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdHelper.getSpeseSpedizione());
+        
+        assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
+        
+        abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(12)));
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        
+		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
+		
+		assertEquals(messaggio.getAbbonamento().doubleValue(), costoUno,0);
+		assertEquals(2*costoUno, abb.getResiduo().doubleValue(),0);
+		assertTrue(2*costoUno == abb.getResiduo().doubleValue());
+
+    	
+    }
 
     @Test
     public void testGeneraCampagnaAR() {
