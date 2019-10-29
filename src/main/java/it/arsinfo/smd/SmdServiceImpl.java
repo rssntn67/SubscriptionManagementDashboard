@@ -155,8 +155,6 @@ public class SmdServiceImpl implements SmdService {
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
                     break;
                 case No:
-//                    sospendiSpedizioni(abbonamento);
-//                    sospendiStorico(abbonamento);
                     break;
                 case Omaggio:
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
@@ -186,6 +184,7 @@ public class SmdServiceImpl implements SmdService {
                 case Si:
                     break;
                 case No:
+                    sospendiSpedizioni(abbonamento);
                     sospendiStorico(abbonamento);
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
                     rimuovi(abbonamento);
