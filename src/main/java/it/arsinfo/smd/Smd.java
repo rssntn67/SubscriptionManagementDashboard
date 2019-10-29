@@ -70,18 +70,17 @@ public class Smd {
             return new BCryptPasswordEncoder();
     }
     
-    //FIXME
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
         if (abbonamento.getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }
-        if (abbonamento.getVersamento() == null || abbonamento.getIncassato() == BigDecimal.ZERO) {
+        if (abbonamento.getIncassato().signum() == 0) {
             return Incassato.No;
-        }        
+        }
         if (abbonamento.getResiduo().signum() == 0) {
             return Incassato.Si;
         } 
-        if (abbonamento.getResiduo().compareTo(new BigDecimal(3)) <= 0) {
+        if (abbonamento.getImporto().compareTo(abbonamento.getIncassato()) <= 0) {
             return Incassato.SiConDebito;
         }
         return Incassato.Parzialmente;
@@ -461,19 +460,21 @@ public class Smd {
                 if( sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede 
                     && !sped.getSpedizioniPosticipate().isEmpty()) {
                     calcolaSpesePostali(sped.getSpedizione(), spese);
+                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
                 }
                 break;
             case EuropaBacinoMediterraneo:
                 calcolaSpesePostali(sped.getSpedizione(), spese);
+                abb.setImporto(abb.getImporto().add(sped.getSpedizione().getSpesePostali()));
                 break;
 
             case AmericaAfricaAsia:
                 calcolaSpesePostali(sped.getSpedizione(), spese);
+                abb.setImporto(abb.getImporto().add(sped.getSpedizione().getSpesePostali()));
                 break;
             default:
                 break;
             }
-            abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
         }
         if (abb.getCassa() == Cassa.Contrassegno) {
             abb.setSpese(abb.getSpese().add(contrassegno));                
