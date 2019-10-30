@@ -29,7 +29,6 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private String searchCodeLine;
-    private String searchCap;
     private Anagrafica customer;
     private Anno anno;
     private Campagna campagna;
@@ -55,11 +54,10 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
         
         TextField filterCodeLine = new TextField();
-        TextField filterCap = new TextField();
 
-        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterAnno,filterCassa);
+        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterCassa);
         anag.addComponentsAndExpand(filterAnagrafica);
-        HorizontalLayout tipo = new HorizontalLayout(filterCap,filterCodeLine,filterCampagna,filterCcp);
+        HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCodeLine,filterCampagna,filterCcp);
         tipo.addComponentsAndExpand(filterTipoEstrattoConto);
         
         setComponents(anag,tipo);
@@ -67,13 +65,6 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
         filterCodeLine.addValueChangeListener(e -> {
             searchCodeLine = e.getValue();
-            onChange();
-        });
-
-        filterCap.setPlaceholder("Inserisci CAP");
-        filterCap.setValueChangeMode(ValueChangeMode.LAZY);
-        filterCap.addValueChangeListener(e -> {
-            searchCap = e.getValue();
             onChange();
         });
 
@@ -181,30 +172,6 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
          return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
      }
 
-    private List<Abbonamento> findByCap(List<Abbonamento> abbonamenti) {
-        List<Long> approved = abbonamenti
-                 .stream()
-                 .filter(
-                         abb -> 
-                     abb.getIntestatario().getCap() != null &&    
-                     abb.getIntestatario().getCap().toLowerCase()
-                     .contains(searchCap.toLowerCase()))
-                 .map(abb -> abb.getId())
-                 .collect(Collectors.toList());
-         
-      approved.addAll(estrattoContoDao
-             .findAll()
-             .stream()
-             .filter(ec -> 
-                 ec.getDestinatario().getCap() != null &&
-                 ec.getDestinatario().getCap().toLowerCase()
-                 .contains(searchCap.toLowerCase()))
-             .map( ec -> 
-                 ec.getAbbonamento().getId()).collect(Collectors.toList())
-             );        
-      return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
-     }
-
     @Override
     public List<Abbonamento> find() {
         if (campagna == null && customer == null && anno == null) {
@@ -258,9 +225,6 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
         if (filterTipoEstrattoConto.getValue() != null) {
             abbonamenti = findByTipoEstrattoConto(abbonamenti, filterTipoEstrattoConto.getValue());
-        }
-        if (!StringUtils.isEmpty(searchCap)) {
-            abbonamenti = findByCap(abbonamenti);
         }
         if (pubblicazione != null) {
             abbonamenti = findByPubblicazione(abbonamenti);

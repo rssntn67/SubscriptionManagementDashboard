@@ -33,7 +33,7 @@ public class AnagraficaEditor extends SmdEditor<Anagrafica> {
     private final ComboBox<TitoloAnagrafica> titolo = new ComboBox<TitoloAnagrafica>("Titolo",
                                                                                      EnumSet.allOf(TitoloAnagrafica.class));
     private final ComboBox<Anagrafica> co = new ComboBox<Anagrafica>("c/o");
-    private final TextField codeLineBase = new TextField("Identificativo ccp");
+    private final TextField codeLineBase = new TextField("Code Line Base");
     private final TextField nome = new TextField("Nome");
     private final TextField descr = new TextField("Descr");
     private final TextField indirizzo = new TextField("Indirizzo");

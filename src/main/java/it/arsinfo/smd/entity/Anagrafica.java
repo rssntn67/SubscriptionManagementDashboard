@@ -321,8 +321,13 @@ public class Anagrafica implements SmdEntity {
     }
 
     @Transient
-    public String getCaption() {
+    public String getCaptionBrief() {
         return String.format("'%s %s %s'", titolo.getIntestazione(), nome, denominazione);
+    }
+
+    @Transient
+    public String getCaption() {
+        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), nome, denominazione,citta,cap,codeLineBase);
     }
 
     @Transient

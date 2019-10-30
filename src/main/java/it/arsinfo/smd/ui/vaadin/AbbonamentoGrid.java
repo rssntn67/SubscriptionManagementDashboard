@@ -14,8 +14,8 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
 
     public AbbonamentoGrid(String gridName) {
         super(new Grid<>(Abbonamento.class),gridName);
-        setColumns("intestatario.denominazione","codeLine","spese","importo","pregresso","totale","incassato","residuo","statoAbbonamento","statoIncasso","cassa", "anno","campagnaAsString");
-        setColumnCaption("intestatario.denominazione", "Intestatario");
+        setColumns("intestatario.captionBrief","codeLine","spese","importo","pregresso","totale","incassato","residuo","statoAbbonamento","statoIncasso","cassa", "anno","campagnaAsString");
+        setColumnCaption("intestatario.captionBrief", "Intestatario");
         setColumnCaption("statoAbbonamento", "Stato");
         setColumnCaption("campagnaAsString", "Campagna");
         gridfooter = getGrid().prependFooterRow();
