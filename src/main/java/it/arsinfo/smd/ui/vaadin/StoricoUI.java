@@ -157,12 +157,9 @@ public class StoricoUI extends SmdUI {
                 if (editor.get().getNumero() <= 0) {
                     Nota[] note = getUNote(editor, update.getValue(), "rimuovi");
                     smdService.rimuovi(update.getValue(),editor.get(),note);
-                } else if (editor.get().getId() != null){
+                } else {
                     Nota[] note = getUNote(editor, update.getValue(), "aggiorna");
                     smdService.aggiorna(update.getValue(),editor.get(),note);
-                } else {
-                    Nota[] note = getUNote(editor, update.getValue(), "genera");
-                    smdService.genera(update.getValue(), editor.get(), note);
                 }
                 editor.onChange();
             } catch (Exception e) {

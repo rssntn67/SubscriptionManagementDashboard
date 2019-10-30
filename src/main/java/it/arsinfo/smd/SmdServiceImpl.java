@@ -184,7 +184,6 @@ public class SmdServiceImpl implements SmdService {
                 case Si:
                     break;
                 case No:
-                    sospendiSpedizioni(abbonamento);
                     sospendiStorico(abbonamento);
                     abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
                     rimuovi(abbonamento);
@@ -192,7 +191,7 @@ public class SmdServiceImpl implements SmdService {
                 case Omaggio:
                     break;
                 case Parzialmente:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
                     sospendiSpedizioni(abbonamento);
                     sospendiStorico(abbonamento);
                     break;
@@ -249,6 +248,9 @@ public class SmdServiceImpl implements SmdService {
 
         if (ecs.size() > 1 ) {
             throw new Exception("Un solo Estratto Conto per storico ogni anno");
+        }        
+        if (ecs.size()  == 0) {
+        	return null;
         }        
         return ecs.iterator().next();
         
@@ -332,7 +334,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(EstrattoConto estrattoConto) {
+    public void aggiorna(EstrattoConto estrattoConto) throws Exception {
         // quantita -> spedizioneItem Importo Abbonamento
         // Tipo -> ordinario -> Importo Abbonamento
         Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
@@ -356,19 +358,20 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         estrattoContoDao.save(estrattoConto);        
+        aggiornaStatoAbbonamento(abbonamento);
         abbonamentoDao.save(abbonamento);
     }
 
     @Override
-    public void rimuovi(Abbonamento abbonamento) {
+    public void rimuovi(Abbonamento abbonamento) throws Exception {
         if (abbonamento == null) return;
-        estrattoContoDao
-            .findByAbbonamento(abbonamento)
-            .forEach(ec -> rimuovi(abbonamento,ec));
+        for (EstrattoConto ec: estrattoContoDao.findByAbbonamento(abbonamento)) {
+            rimuovi(abbonamento,ec);
+        }
     }
 
     @Override
-    public void rimuovi(EstrattoConto estrattoConto) {
+    public void rimuovi(EstrattoConto estrattoConto) throws Exception {
         if (estrattoConto == null)
             return;
         Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
@@ -376,7 +379,7 @@ public class SmdServiceImpl implements SmdService {
         rimuovi(abbonamento,estrattoConto);
     }
     
-    private void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) {
+    private void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
@@ -405,6 +408,7 @@ public class SmdServiceImpl implements SmdService {
         } else {
             estrattoContoDao.save(estrattoConto);
         }
+        aggiornaStatoAbbonamento(abbonamento);
         abbonamentoDao.save(abbonamento);
     }
 
@@ -508,14 +512,7 @@ public class SmdServiceImpl implements SmdService {
     	}
     }
     
-    @Override
-    public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
-        Incasso incasso = versamento.getIncasso();
-        Smd.incassa(incasso,versamento, abbonamento);
-        versamento.setOperazione("Inc:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
-        versamentoDao.save(versamento);
-        incassoDao.save(incasso);
-            
+    private void aggiornaStatoAbbonamento(Abbonamento abbonamento) throws Exception {
         switch (Smd.getStatoIncasso(abbonamento)) {
         case No:
             break;
@@ -538,6 +535,17 @@ public class SmdServiceImpl implements SmdService {
             break;
         
         }
+    	
+    }
+    @Override
+    public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
+        Incasso incasso = versamento.getIncasso();
+        Smd.incassa(incasso,versamento, abbonamento);
+        versamento.setOperazione("Inc:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+            
+        aggiornaStatoAbbonamento(abbonamento);
         abbonamento.setCassa(incasso.getCassa());
         abbonamento.setCcp(incasso.getCcp());
         abbonamento.setCuas(incasso.getCuas());
@@ -552,28 +560,7 @@ public class SmdServiceImpl implements SmdService {
         versamento.setOperazione("Rev:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
-        if (campagna == null) {
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
-        } else if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Annullato) {
-            switch (campagna.getStatoCampagna()) {
-            case Generata:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
-                break;
-            case Chiusa:
-                break;
-            case Inviata:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
-                break;
-            case InviatoEC:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-                sospendiSpedizioni(abbonamento);
-                sospendiStorico(abbonamento);
-                break;
-            default:
-                break;                                
-            }
-        }
+        aggiornaStatoAbbonamento(abbonamento);
         abbonamentoDao.save(abbonamento);        
 
     }
@@ -581,7 +568,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public List<Abbonamento> getAssociati(Versamento versamento) {
         List<Abbonamento> associati = new ArrayList<>();
-        if (versamento == null) {
+        if (versamento == null || versamento.getIncassato().signum() == 0) {
             return associati;
         }        
         associati.addAll(abbonamentoDao.findByVersamento(versamento));
@@ -593,7 +580,8 @@ public class SmdServiceImpl implements SmdService {
             			return associati;
             		}
             	}
-            	associati.add(abbonamento);
+            	if (abbonamento.getIncassato().signum() > 0)
+            		associati.add(abbonamento);
             }
         }
         
