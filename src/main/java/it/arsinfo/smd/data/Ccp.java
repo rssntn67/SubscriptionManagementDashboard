@@ -1,23 +1,30 @@
 package it.arsinfo.smd.data;
 
 public enum Ccp {
-    UNO("000063470009"),
-    DUE("000063470010"),
-    TRE("000063470011");
+    UNO("000063470009","Poste"),
+    DUE("000063470010","Mps"),
+    TRE("000063470011","Cassa");
     private String ccp; 
+    private String cc; 
     
-    public static Ccp getByCcp(String ccp) {
+    public static Ccp getByCc(String cc) {
         for (Ccp l : Ccp.values()) {
-            if (l.ccp.equals(ccp)) return l;
+            if (l.cc.equals(cc)) return l;
         }
         throw new IllegalArgumentException("Ccp not found.");
     }
 
-    private Ccp(String ccp) {
+    private Ccp(String cc, String ccp) {
+        this.cc =cc;
         this.ccp = ccp;
     }
     
     public String getCcp() {
         return ccp;
     }
+    
+    public String getCc() {
+        return cc;
+    }
+
 }

@@ -789,15 +789,13 @@ public class Smd {
             log.error(String.format("incassa: Incasso e Versamento non sono associati. Incasso=%s, Versamento=%s",incasso.toString(),versamento.toString()));
             throw new UnsupportedOperationException("incassa: Incasso e Versamento non sono associati");               
         }
-        if (abbonamento.getVersamento() != null) {
-            log.error("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
-            throw new UnsupportedOperationException("incassa: Abbonamento e Versamento non sono associabili, abbonamento incassato");
-        }
         if (versamento.getResiduo().signum() == 0) {
             log.error("incassa: Versamento con residuo 0, abbonamento non incassato");
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }
-        abbonamento.setVersamento(versamento);
+        if (abbonamento.getVersamento() == null) {
+            abbonamento.setVersamento(versamento);
+        }
         if ((versamento.getResiduo()).compareTo(abbonamento.getTotale()) < 0) {
             abbonamento.setIncassato(versamento.getResiduo());
             versamento.setIncassato(versamento.getIncassato().add(versamento.getResiduo()));
@@ -859,7 +857,7 @@ public class Smd {
         final Incasso incasso = new Incasso();
         incasso.setCassa(Cassa.Ccp);
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
-        incasso.setCcp(Ccp.getByCcp(riepilogo.substring(1,13)));
+        incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
         incasso.setDataContabile(Smd.getStandardDate(riepilogo.substring(13,19)));
 //          String filler = riepilogo.substring(19,33);
 //          String idriepilogo = riepilogo.substring(33,36);
