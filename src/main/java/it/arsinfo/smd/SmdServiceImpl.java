@@ -780,6 +780,7 @@ public class SmdServiceImpl implements SmdService {
         Versamento versamento = new Versamento(incasso,incassato);
         versamento.setCodeLine(abbonamento.getCodeLine());
         versamento.setOperazione("Abb.");
+        versamento.setDataPagamento(abbonamento.getDataPagamento());
         versamentoDao.save(versamento);
         Smd.calcoloImportoIncasso(incasso,
                                   versamentoDao.findByIncasso(incasso));

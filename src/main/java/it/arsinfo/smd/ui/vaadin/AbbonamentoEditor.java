@@ -154,6 +154,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder().forField(dataContabile)
         .withConverter(new LocalDateToDateConverter())
         .bind("dataContabile");
+        
         getBinder().forField(dataPagamento)
         .withConverter(new LocalDateToDateConverter())
         .bind("dataPagamento");
