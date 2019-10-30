@@ -208,7 +208,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         cuas.setReadOnly(!hasResiduo);
         operazione.setVisible(false);
 
-        if (!hasResiduo && abbonamento.getVersamento().getId() != null) {
+        if (!hasResiduo && abbonamento.getVersamento() != null) {
             operazione.setVisible(true);
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
             abbonamento.setDataContabile(versamento.getDataContabile());
