@@ -129,15 +129,11 @@ public class Incasso implements SmdEntity {
     @Transient
     public String getDettagli() {
         StringBuffer sb = new StringBuffer("");
-        if (ccp != null) {
-            sb.append("cc:");
-            sb.append(ccp.getCcp());
-        }
-        if (cuas != null)
-            sb.append(", ");
-            sb.append(cuas.getDenominazione());
-            sb.append(", ");        
-            sb.append(cuas.getNote());
+        sb.append(cassa.name());
+        sb.append(", ");
+        sb.append(ccp.getCcp());
+        sb.append(", ");
+        sb.append(cuas.getDenominazione());
         return sb.toString();
     }
 

@@ -86,7 +86,7 @@ public class IncassoUI extends SmdUI {
                     return;
                 } 
                 try {
-                    smdService.save(get());
+                    smdService.save(get(), getLoggedInUser());
                     log.info("save: {}", get());
                     onChange();
                 } catch (Exception e) {
@@ -106,7 +106,7 @@ public class IncassoUI extends SmdUI {
                 } 
                 
                 try {
-                    smdService.delete(get());
+                    smdService.delete(get(),getLoggedInUser());
                     log.info("delete: {}", get());
                     onChange();
                 } catch (Exception e) {

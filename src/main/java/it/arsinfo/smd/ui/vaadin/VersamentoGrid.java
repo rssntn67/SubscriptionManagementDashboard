@@ -16,12 +16,13 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
     private final FooterRow gridfooter;
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
-        setColumns("incasso.dettagli",                  
+        setColumns(                  
+                "codeLine",
                    "importo",
                    "incassato",
                    "residuo",
-                   "codeLine",
                    "progressivo",
+                   "operazione",
                    "dataPagamento",
                    "dataContabile"
                   );
@@ -32,13 +33,11 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
     @Override
     public void populate(List<Versamento> items) {
         super.populate(items);
-        gridfooter.getCell("incasso.dettagli").setHtml("<strong>"+getLastDate(items)+" Totali:</strong>");
+        gridfooter.getCell("codeLine").setHtml("<strong>"+getLastDate(items)+" Totali:</strong>");
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>");
         gridfooter.getCell("incassato").setHtml("<b>"+getIncassatoTotale(items).toString()+"</b>");
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduoTotale(items).toString()+"</b>");
-        gridfooter.getCell("codeLine").setHtml("-------");
-        gridfooter.getCell("dataContabile").setHtml("-------");
-
+ 
     }
     
     private BigDecimal getImportoTotale(List<Versamento> incassi) {

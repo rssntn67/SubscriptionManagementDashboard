@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.util.StringUtils;
-
-import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -18,8 +14,6 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 
 public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
 
-    private String searchCodeLine;
-    private String searchCap;
     private Anagrafica customer;
     private Campagna campagna;
     
@@ -33,26 +27,11 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Cerca Abbonamento per Intestatario");
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>("Cerca Abbonamento per Campagna");
         
-        TextField filterCodeLine = new TextField("Cerca abbonamento per Codeline");
-        TextField filterCap = new TextField("Cerca Abbonamento per Cap");
 
-        HorizontalLayout anag = new HorizontalLayout(filterCap,filterCodeLine,filterCampagna);
+        HorizontalLayout anag = new HorizontalLayout(filterCampagna);
         anag.addComponentsAndExpand(filterAnagrafica);
         
         setComponents(anag);
-        filterCodeLine.setPlaceholder("Inserisci Code Line");
-        filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
-        filterCodeLine.addValueChangeListener(e -> {
-            searchCodeLine = e.getValue();
-            onChange();
-        });
-
-        filterCap.setPlaceholder("Inserisci CAP");
-        filterCap.setValueChangeMode(ValueChangeMode.LAZY);
-        filterCap.addValueChangeListener(e -> {
-            searchCap = e.getValue();
-            onChange();
-        });
 
         filterCampagna.setEmptySelectionAllowed(true);
         filterCampagna.setPlaceholder("Seleziona Campagna");
@@ -87,28 +66,6 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
                 .filter(abb -> abb.getIntestatario().getId().longValue() == customer.getId().longValue()).collect(Collectors.toList());
     }
     
-    private List<Abbonamento> findByCap(List<Abbonamento> abbonamenti) {
-        return abbonamenti
-                 .stream()
-                 .filter(
-                         abb -> 
-                     abb.getIntestatario().getCap() != null &&    
-                     abb.getIntestatario().getCap().toLowerCase()
-                     .contains(searchCap.toLowerCase()))
-                 .collect(Collectors.toList());         
-    }
-
-    private List<Abbonamento> findByCodeline(List<Abbonamento> abbonamenti) {
-        return abbonamenti
-                 .stream()
-                 .filter(
-                         abb -> 
-                     abb.getCodeLine() != null &&    
-                     abb.getCodeLine().toLowerCase()
-                     .contains(searchCodeLine.toLowerCase()))
-                 .collect(Collectors.toList());         
-    }
-
     private List<Abbonamento> findByCampagna(List<Abbonamento> abbonamenti) {
         return abbonamenti
                 .stream()
@@ -129,12 +86,6 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
         }
         if (campagna!= null) {
             abbs = findByCampagna(abbs);
-        }
-        if (!StringUtils.isEmpty(searchCap)) {
-            abbs = findByCap(abbs);
-        }
-        if (!StringUtils.isEmpty(searchCodeLine)) {
-            abbs=findByCodeline(abbs);                  
         }
         return abbs;
     }

@@ -23,7 +23,7 @@ public abstract class SmdGrid<T extends SmdEntity>
     private T selected;
     private final String gridName;
     Label itemNumber = new Label();
-    
+    private Integer size = 0;
     public SmdGrid(Grid<T> grid, String gridName) {
         Button downloadAsExcel = new Button("Download As Excel");
         Button downloadAsCSV = new Button("Download As CSV");
@@ -71,12 +71,14 @@ public abstract class SmdGrid<T extends SmdEntity>
     
     public void populate(List<T> items) {
         if (items == null || items.size() == 0) {
+        	size = 0;
             itemNumber.setValue("");
             setVisible(false);
         } else {
             itemNumber.setValue("Trovati " + items.size() + " Record");
             grid.setItems(items);
             setVisible(true);
+            size = items.size();
         }
     }
 
@@ -96,4 +98,14 @@ public abstract class SmdGrid<T extends SmdEntity>
     public Grid<T> getGrid() {
         return grid;
     }
+
+
+	public Label getItemNumber() {
+		return itemNumber;
+	}
+
+
+	public Integer getSize() {
+		return size;
+	}
 }

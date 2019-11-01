@@ -1,7 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,53 +51,18 @@ public class VersamentoUI extends SmdUI {
             new AbbonamentoVersamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
-        VersamentoEditor editor = new VersamentoEditor(versamentoDao) {
-            @Override
-            public void save() {
-                if (get().getImporto().compareTo(BigDecimal.ZERO) <= 0) {
-                    Notification.show("Importo non deve essere ZERO",Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                if (get().getDataPagamento().after(get().getDataContabile())) {
-                    Notification.show("La data di pagamento deve  essere anteriore alla data contabile",Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                try {
-                    smdService.save(get());
-                    log.info("save: {}", get());
-                    onChange();
-                } catch (Exception e) {
-                    log.warn("save failed for : {}.", get(),e);
-                    Notification.show(e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            }
-            
-            @Override
-            public void delete() {
-                try {
-                    smdService.delete(get());
-                    log.info("delete: {}", get());
-                    onChange();
-                } catch (Exception e) {
-                    log.warn("delete failed for : {}.", get(),e);
-                    Notification.show(e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            }
-        };
         
         AbbonamentoGrid abbonamentiAssociatiGrid = new AbbonamentoGrid("Abbonamenti Associati");
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         
-        addSmdComponents(search,editor,abbSearch,abbonamentiAssociabiliGrid,abbonamentiAssociatiGrid,grid);
+        addSmdComponents(search,grid,abbSearch,abbonamentiAssociabiliGrid,abbonamentiAssociatiGrid);
         
         abbSearch.setVisible(false);
         abbonamentiAssociatiGrid.setVisible(false);
         abbonamentiAssociabiliGrid.setVisible(false);
-        editor.setVisible(false);
 
+        grid.getGrid().setHeight("300px");
         abbonamentiAssociabiliGrid.getGrid().setHeight("300px");
         abbonamentiAssociatiGrid.getGrid().setHeight("300px");
 
@@ -107,30 +70,19 @@ public class VersamentoUI extends SmdUI {
 
         grid.setChangeHandler(() -> {
             if (grid.getSelected() != null) {
-                editor.edit(grid.getSelected());
                 abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
-                
-                if (grid.getSelected().getResiduo().signum() > 0) {
-                    abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
-                    abbonamentiAssociabiliGrid.populate(abbSearch.find());
-                    abbSearch.setVisible(true);
-                }
-
+                abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
+                abbonamentiAssociabiliGrid.populate(abbSearch.find());
+                abbSearch.setVisible(abbonamentiAssociabiliGrid.getSize() > 0);
                 search.setVisible(false);
-                grid.setVisible(false);
+            } else {
+            	search.setVisible(true);
+                abbSearch.setVisible(false);
+                abbonamentiAssociatiGrid.setVisible(false);
+                abbonamentiAssociabiliGrid.setVisible(false);
             }
         });
         
-        editor.setChangeHandler(() -> {
-            search.setVisible(true);
-            grid.populate(search.find());
-            
-            abbSearch.setVisible(false);
-            abbonamentiAssociatiGrid.setVisible(false);
-            abbonamentiAssociabiliGrid.setVisible(false);
-            editor.setVisible(false);
-        });
-
         abbonamentiAssociabiliGrid.setChangeHandler(() -> {
         });
         
@@ -141,16 +93,15 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Dissocia");
             button.addClickListener(click -> {
                 try {
-                    smdService.dissocia(abbonamento, editor.get(),getLoggedInUser());
+                    smdService.dissocia(abbonamento, grid.getSelected(),getLoggedInUser());
                 } catch (Exception e) {
-                    log.warn("Reverti failed for : {}.", editor.get(),e);
+                    log.warn("Reverti failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(editor.get()));
-                abbSearch.setItems(smdService.getAssociabili(editor.get()));
+                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
+                abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
             });
@@ -161,17 +112,16 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Incassa");
             button.addClickListener(click -> {
                 try {
-                    smdService.incassa(abbonamento, editor.get(),getLoggedInUser());
+                    smdService.incassa(abbonamento, grid.getSelected(),getLoggedInUser());
                 } catch (Exception e) {
-                    log.warn("Incassa failed for : {}.", editor.get(),e);
+                    log.warn("Incassa failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                }
-                editor.edit(versamentoDao.findById(editor.get().getId()).get());
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(editor.get()));
+                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
                 if (grid.getSelected().getResiduo().signum() > 0) {
-                    abbSearch.setItems(smdService.getAssociabili(editor.get()));
+                    abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
                     abbSearch.setVisible(true);
                 } else {

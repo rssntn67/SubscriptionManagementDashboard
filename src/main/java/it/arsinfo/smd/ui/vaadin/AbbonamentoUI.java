@@ -78,10 +78,11 @@ public class AbbonamentoUI extends SmdUI {
         } else {
             add.setPrimoIntestatario(anagrafica.iterator().next());
         }
+        VersamentoGrid versamentoGrid = new VersamentoGrid("Versamenti Associati");
         EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,estrattoContoDao,pubblicazioni,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
-        AbbonamentoEditor editor = new AbbonamentoEditor(versamentoDao,abbonamentoDao,anagrafica,campagne) {
+        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
             @Override
             public void delete() {
                 if (get().getId() == null) {
@@ -207,12 +208,13 @@ public class AbbonamentoUI extends SmdUI {
         lay.addComponents(new Label("     "));
         lay.addComponents(incassa.getComponents());
         addComponents(lay);
-        addSmdComponents(estrattoContoGrid, add,search, grid);
+        addSmdComponents(versamentoGrid,estrattoContoGrid, add,search, grid);
 
         editor.setVisible(false);
         incassa.setVisible(false);
         estrattoContoEditor.setVisible(false);
         estrattoContoAdd.setVisible(false);
+        versamentoGrid.setVisible(false);
         estrattoContoGrid.setVisible(false);
         
         add.setChangeHandler(() -> {
@@ -240,7 +242,9 @@ public class AbbonamentoUI extends SmdUI {
             incassa.setVisible(editor.incassare());
             estrattoContoAdd.setVisible(grid.getSelected().getCampagna() == null);
             estrattoContoEditor.setVisible(false);
-            estrattoContoGrid.populate(findByAbbonamento(grid.getSelected()));               
+            versamentoGrid.populate(smdService.getAssociati(editor.get()));
+            estrattoContoGrid.populate(estrattoContoDao.findByAbbonamento(
+                    grid.getSelected()));               
         });
 
         editor.setChangeHandler(() -> {
@@ -249,6 +253,7 @@ public class AbbonamentoUI extends SmdUI {
             estrattoContoAdd.setVisible(false);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.setVisible(false);
+            versamentoGrid.setVisible(false);
             setHeader("Abbonamento");
             showMenu();
             add.setVisible(true);
@@ -262,6 +267,7 @@ public class AbbonamentoUI extends SmdUI {
             estrattoContoEditor.edit(estrattoContoAdd.generate());
             incassa.setVisible(false);
             editor.setVisible(false);
+            versamentoGrid.setVisible(false);
             estrattoContoAdd.setVisible(false);
         });
         
@@ -273,11 +279,17 @@ public class AbbonamentoUI extends SmdUI {
             if (estrattoContoEditor.get().getId() == null) {
                 estrattoContoGrid.populate(editor.getEstrattiConto());
             } else {
-                estrattoContoGrid.populate(findByAbbonamento(editor.get()));
+                estrattoContoGrid.populate(estrattoContoDao.findByAbbonamento(
+                        editor.get()));
             }
+            versamentoGrid.populate(smdService.getAssociati(editor.get()));
             
         });
         
+        versamentoGrid.setChangeHandler(() -> {
+        	
+        });
+
         estrattoContoGrid.setChangeHandler(() -> {
             if (estrattoContoGrid.getSelected() == null) {
                 return;
@@ -323,6 +335,7 @@ public class AbbonamentoUI extends SmdUI {
                 smdService.incassa(editor.get(), new BigDecimal(incassa.getValue()),getLoggedInUser());
                 incassa.setVisible(false);
                 editor.edit(editor.get());
+                versamentoGrid.populate(smdService.getAssociati(editor.get()));
             } catch (Exception e) {
                 log.error("incassa failed {} : {}", editor.get(), e.getMessage(),e);
                 Notification.show(e.getMessage(),
@@ -334,8 +347,4 @@ public class AbbonamentoUI extends SmdUI {
 
     }
 
-    public List<EstrattoConto> findByAbbonamento(Abbonamento abbonamento) {
-        return estrattoContoDao.findByAbbonamento(
-                                                  abbonamento);
-    }
 }

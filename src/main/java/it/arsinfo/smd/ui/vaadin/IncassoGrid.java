@@ -17,7 +17,7 @@ public class IncassoGrid extends SmdGrid<Incasso> {
     public IncassoGrid(String gridname) {
         super(new Grid<>(Incasso.class),gridname);
 
-        setColumns("dettagli","importo","incassato","residuo","cassa", 
+        setColumns("dettagli","importo","incassato","residuo", 
                    "dataContabile");
         gridfooter = getGrid().prependFooterRow();
     }
@@ -28,9 +28,6 @@ public class IncassoGrid extends SmdGrid<Incasso> {
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>");
         gridfooter.getCell("incassato").setHtml("<b>"+getIncassatoTotale(items).toString()+"</b>");
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduoTotale(items).toString()+"</b>");
-        gridfooter.getCell("cassa").setHtml("-------");
-        gridfooter.getCell("dataContabile").setHtml("-------");
-
     }
     
     private BigDecimal getImportoTotale(List<Incasso> incassi) {

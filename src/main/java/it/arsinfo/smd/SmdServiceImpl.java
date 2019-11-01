@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -601,22 +603,36 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public List<Versamento> getAssociati(Abbonamento abbonamento) {
-    	return new ArrayList<>();
+    	Map<Long,Versamento> associati = new HashMap<Long,Versamento>();
+    	if (abbonamento.getVersamento() != null ) {
+    		Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
+    		associati.put(versamento.getId(),versamento);
+    	}
+    	for (Versamento versamento: versamentoDao.findByCodeLineContainingIgnoreCase(abbonamento.getCodeLine())) {
+    		if (versamento.getIncassato().signum() > 0 ) {
+    			associati.put(versamento.getId(),versamento);
+    		}
+    	}
+    	return associati.values().stream().collect(Collectors.toList());
     }
 
     @Override
     public List<Abbonamento> getAssociati(Versamento versamento) {
-        List<Abbonamento> associati = new ArrayList<>();
         if (versamento == null || versamento.getIncassato().signum() == 0) {
-            return associati;
+            return new ArrayList<>();
         }        
-        associati.addAll(abbonamentoDao.findByVersamento(versamento));
-        if (versamento.getCodeLine() != null) {
-        	associati.add(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
+        Map<Long,Abbonamento> associati = new HashMap<>();
+        for (Abbonamento abbonamento: abbonamentoDao.findByVersamento(versamento)) {
+        	associati.put(abbonamento.getId(), abbonamento);
         }
-        
-        
-        return associati;
+
+        if (versamento.getCodeLine() != null) {
+            Abbonamento associato = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+            if (associato != null ) {
+            	associati.put(associato.getId(),associato);
+            }
+        }
+        return associati.values().stream().collect(Collectors.toList());
     }
 
     @Override
@@ -626,10 +642,11 @@ public class SmdServiceImpl implements SmdService {
         	return associabili;
         }
         Abbonamento associabile = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        if (associabile != null) {
+        if (associabile != null && versamento.getIncassato().signum() == 0) {
         	associabili.add(associabile);
         	return associabili;
         }
+        
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
@@ -765,7 +782,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void save(Versamento versamento) {
+    public void save(Versamento versamento, UserInfo user) throws Exception {
         if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
             return;
         }
@@ -773,15 +790,21 @@ public class SmdServiceImpl implements SmdService {
         Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
         Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
         incassoDao.save(incasso);
+        for (Abbonamento abbonamento: getAssociati(versamento)) {
+        	incassa(abbonamento, versamento, user);
+        }
         
     }
 
     @Override
-    public void delete(Versamento versamento) {
+    public void delete(Versamento versamento, UserInfo user) throws Exception{
         if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
             return;
         }
         Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
+        for (Abbonamento abbonamento: getAssociati(versamento)) {
+        	dissocia(abbonamento, versamento, user);
+        }
         versamentoDao.delete(versamento);
         List<Versamento> versamenti = versamentoDao.findByIncasso(incasso);
         if (versamenti.size() == 0) {
