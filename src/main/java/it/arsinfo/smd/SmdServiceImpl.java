@@ -134,6 +134,8 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void invia(Campagna campagna) throws Exception {
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata )
+    		return;
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
             if (Smd.getStatoIncasso(abb) ==  Incassato.Omaggio) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
@@ -148,27 +150,13 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void estratto(Campagna campagna) throws Exception {
-        for (Abbonamento abbonamento :abbonamentoDao.findByAnno(campagna.getAnno())) {
+    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
+    		return;
+        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Proposto ) {
-                switch (Smd.getStatoIncasso(abbonamento)) {
-                case Si:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    break;
-                case No:
-                    break;
-                case Omaggio:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    break;
-                case Parzialmente:
-                    break;
-                case SiConDebito:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-                    break;
-                default:
-                    break;
-                }
+            	aggiornaStatoAbbonamento(abbonamento);
+                abbonamentoDao.save(abbonamento);
             }
-            abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         campagnaDao.save(campagna);
@@ -178,28 +166,31 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void chiudi(Campagna campagna) throws Exception {
-        for (Abbonamento abbonamento :abbonamentoDao.findByAnno(campagna.getAnno())) {
-            if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Proposto ) {
-                switch (Smd.getStatoIncasso(abbonamento)) {
-                case Si:
-                    break;
-                case No:
-                    sospendiStorico(abbonamento);
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-                    rimuovi(abbonamento);
-                    break;
-                case Omaggio:
-                    break;
-                case Parzialmente:
-                    abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-                    sospendiSpedizioni(abbonamento);
-                    sospendiStorico(abbonamento);
-                    break;
-                case SiConDebito:
-                    break;
-                default:
-                    break;
-                }
+    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
+    		return;
+        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
+            switch (Smd.getStatoIncasso(abbonamento)) {
+            case Si:
+            	attiva(abbonamento);
+                break;
+            case No:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+                annulla(abbonamento);
+                break;
+            case Omaggio:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+            	attiva(abbonamento);
+                break;
+            case Parzialmente:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+                sospendi(abbonamento);
+                break;
+            case SiConDebito:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+                break;
+            default:
+            	attiva(abbonamento);
+                break;
             }
             abbonamentoDao.save(abbonamento);
         }
@@ -504,8 +495,6 @@ public class SmdServiceImpl implements SmdService {
 						aggiorna(campagna, storico, nota);								
 					}
 					abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-					riattivaSpedizioniAbbonamento(abbonamento);
-					riattivaStorico(abbonamento);
 					return;
 				}					
     		}
@@ -515,21 +504,20 @@ public class SmdServiceImpl implements SmdService {
     private void aggiornaStatoAbbonamento(Abbonamento abbonamento) throws Exception {
         switch (Smd.getStatoIncasso(abbonamento)) {
         case No:
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
             break;
         case Omaggio:
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
             break;
         case Parzialmente:
+    		abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
         	ricondiziona(abbonamento);
             break;
         case Si:
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            riattivaSpedizioniAbbonamento(abbonamento);
-            riattivaStorico(abbonamento);
             break;
         case SiConDebito:
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            riattivaSpedizioniAbbonamento(abbonamento);
-            riattivaStorico(abbonamento);
             break;
         default:
             break;
@@ -539,9 +527,29 @@ public class SmdServiceImpl implements SmdService {
     }
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
+    	boolean identifiedByCodeline = abbonamento.getCodeLine().equals(versamento.getCodeLine());
+    	if (!identifiedByCodeline
+			&& abbonamentoDao.findByCodeLine(versamento.getCodeLine()) != null ) {
+            log.warn("incassa: Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento {} {}", abbonamento,versamento);
+    		throw new UnsupportedOperationException("Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento");
+    	}
+        if (versamento.getResiduo().signum() == 0) {
+            log.warn("incassa: Versamento con residuo 0, non incassabile {} {}", abbonamento,versamento);
+            throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
+        }
+        if (   !identifiedByCodeline 
+    		&& abbonamento.getVersamento() != null 
+    		&&  abbonamento.getVersamento().getId().longValue() != versamento.getId()) {
+            log.warn("incassa: Abbonamento già incassato da versamento senza matching Codeline, {} {}", abbonamento,versamento);
+            throw new UnsupportedOperationException("incassa: Abbonamento già incassato da versamento senza matching Codeline");            
+        }
+        
         Incasso incasso = versamento.getIncasso();
-        Smd.incassa(incasso,versamento, abbonamento);
-        versamento.setOperazione("Inc:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
+        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
+        if (incassato.signum() <= 0) {
+        	return;
+        }
+        versamento.setOperazione(versamento.getOperazione() +"incasso : operatore='"+user.getUsername()+"', " + new Date());
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
             
@@ -549,20 +557,51 @@ public class SmdServiceImpl implements SmdService {
         abbonamento.setCassa(incasso.getCassa());
         abbonamento.setCcp(incasso.getCcp());
         abbonamento.setCuas(incasso.getCuas());
+        if (abbonamento.getVersamento() == null && !identifiedByCodeline) {
+            abbonamento.setVersamento(versamento);
+        }
         abbonamentoDao.save(abbonamento);        
-        log.info("incassato {} {}",abbonamento,versamento);
+        log.info("incassato: {} by {} {} {}", incassato,user.getUsername(),abbonamento,versamento);
     }
 
     @Override
-    public void reverti(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
+    public void dissocia(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
+    	boolean identifiedByCodeline = abbonamento.getCodeLine().equals(versamento.getCodeLine());
+    	if (!identifiedByCodeline
+			&& abbonamentoDao.findByCodeLine(versamento.getCodeLine()) != null ) {
+            log.warn("dissocia: Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento {} {}", abbonamento,versamento);
+    		throw new UnsupportedOperationException("Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento");
+    	}
+        if (versamento.getIncassato().signum() == 0) {
+            log.warn("dissocia: Versamento con Incasso 0, non dissociabile {} {}", abbonamento,versamento);
+            throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
+        }
+        if (   !identifiedByCodeline 
+    		&& abbonamento.getVersamento() == null ) {
+            log.warn("dissocia: Abbonamento non associato a versamento, {} {}", abbonamento,versamento);
+            throw new UnsupportedOperationException("dissocia: Abbonamento non associato a Versamento");            
+        }
         Incasso incasso = versamento.getIncasso();
-        Smd.dissocia(incasso, versamento, abbonamento);
-        versamento.setOperazione("Rev:'"+user.getUsername()+"'" + new Date() + ":" + versamento.getOperazione());
+        BigDecimal dissociato = Smd.dissocia(incasso, versamento, abbonamento);
+        if (dissociato.signum() <= 0) {
+        	return;
+        }
+        versamento.setOperazione(versamento.getOperazione() +"dissocia incasso : operatore='"+user.getUsername()+"', " + new Date());
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
+        
         aggiornaStatoAbbonamento(abbonamento);
+        if (!identifiedByCodeline) {
+        	abbonamento.setVersamento(null);
+        }
         abbonamentoDao.save(abbonamento);        
+        log.info("dissociato: {} by {} {} {}", dissociato,user.getUsername(),abbonamento,versamento);
 
+    }
+
+    @Override
+    public List<Versamento> getAssociati(Abbonamento abbonamento) {
+    	return new ArrayList<>();
     }
 
     @Override
@@ -573,16 +612,7 @@ public class SmdServiceImpl implements SmdService {
         }        
         associati.addAll(abbonamentoDao.findByVersamento(versamento));
         if (versamento.getCodeLine() != null) {
-            Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-            if (abbonamento != null) {
-            	for (Abbonamento abb: associati) {
-            		if (abb.equals(abbonamento)) {
-            			return associati;
-            		}
-            	}
-            	if (abbonamento.getIncassato().signum() > 0)
-            		associati.add(abbonamento);
-            }
+        	associati.add(abbonamentoDao.findByCodeLine(versamento.getCodeLine()));
         }
         
         
@@ -591,14 +621,20 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null || versamento.getResiduo().signum() <= 0) {
-            return new ArrayList<>();
+        List<Abbonamento> associabili = new ArrayList<>();
+        if (versamento == null || versamento.getResiduo().signum() == 0) {
+        	return associabili;
+        }
+        Abbonamento associabile = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+        if (associabile != null) {
+        	associabili.add(associabile);
+        	return associabili;
         }
         return abbonamentoDao
                 .findByVersamento(null)
                 .stream()
                 .filter(abb -> 
-                    Smd.getStatoIncasso(abb) == Incassato.No 
+                    abb.getResiduo().signum() > 0 
                     )
                 .collect(Collectors.toList());
     }
@@ -613,7 +649,7 @@ public class SmdServiceImpl implements SmdService {
         });
     }
 
-    public void riattivaSpedizioniAbbonamento(Abbonamento abbonamento) throws Exception {
+    public void riattivaSpedizioni(Abbonamento abbonamento) throws Exception {
         spedizioneDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(sped -> sped.getStatoSpedizione() == StatoSpedizione.SOSPESA)
@@ -779,7 +815,8 @@ public class SmdServiceImpl implements SmdService {
         }
         Versamento versamento = new Versamento(incasso,incassato);
         versamento.setCodeLine(abbonamento.getCodeLine());
-        versamento.setOperazione("Abb.");
+        versamento.setOperazione("Incassato da Abbonamento");
+        versamento.setProgressivo(abbonamento.getProgressivo());
         versamento.setDataPagamento(abbonamento.getDataPagamento());
         versamentoDao.save(versamento);
         Smd.calcoloImportoIncasso(incasso,
@@ -789,18 +826,41 @@ public class SmdServiceImpl implements SmdService {
     }
     
     @Override
-    public void incassaCodeLine(Versamento versamento, UserInfo user) throws Exception {
-        if (versamento == null 
-                || versamento.getCodeLine() == null
-                || versamento.getResiduo().signum() == 0) {
-            return;
-        }
-        final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        if (abbonamento != null && abbonamento.getVersamento() == null) {
-            versamento.setOperazione("CodeLine");
-        	incassa(abbonamento,versamento,user);
-        }
+    public void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception {
+    	for (Incasso incasso:incassi) {
+    		if (incasso.getResiduo().signum() == 0) {
+    			continue;
+    		}
+    		for (Versamento v: versamentoDao.findByIncasso(incasso)) {
+    			if (v.getIncassato().signum() != 0 || v.getCodeLine() == null) {
+    				continue;
+    			}
+    			final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(v.getCodeLine());
+    			if (abbonamento != null && abbonamento.getVersamento() == null) {
+    				v.setOperazione("Incassato con CodeLine");
+    				incassa(abbonamento,v,user);
+    			}
+    		}
+		}
 
     }
+
+	@Override
+	public void sospendi(Abbonamento abbonamento) throws Exception{
+        sospendiSpedizioni(abbonamento);
+        sospendiStorico(abbonamento);		
+	}
+
+	@Override
+	public void attiva(Abbonamento abbonamento) throws Exception{
+		riattivaSpedizioni(abbonamento);
+		riattivaStorico(abbonamento);		
+	}
+
+	@Override
+	public void annulla(Abbonamento abbonamento) throws Exception{
+        sospendiStorico(abbonamento);
+        rimuovi(abbonamento);		
+	}
 
 }

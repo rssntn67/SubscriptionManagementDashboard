@@ -37,6 +37,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -1124,4 +1125,160 @@ public class SmdUnitTests {
         SmdImportAdp.getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
     }
     
+    @Test
+    public void testIncassaEsatto() throws Exception {
+    	Abbonamento abbonamento = new Abbonamento();
+    	abbonamento.setImporto(new BigDecimal("200.00"));
+    	Incasso incasso = new Incasso();
+    	incasso.setImporto(new BigDecimal("200.00"));
+    	
+    	Versamento versamento1 = new Versamento(incasso);
+    	versamento1.setImporto(new BigDecimal("200.00"));
+    	
+    	BigDecimal incassato = Smd.incassa(incasso, versamento1, abbonamento);
+    	assertEquals(200.00,incassato.doubleValue(),0);
+    	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(200.00,versamento1.getIncassato().doubleValue(),0);
+    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+
+    	BigDecimal dissociato = Smd.dissocia(incasso, versamento1, abbonamento);
+    	assertEquals(200.00,dissociato.doubleValue(),0);
+    	assertEquals(0.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,incasso.getIncassato().doubleValue(),0);
+
+    	
+    }
+
+    @Test
+    public void testIncassaMultipli() throws Exception {
+    	Abbonamento abbonamento = new Abbonamento();
+    	abbonamento.setImporto(new BigDecimal("200.00"));
+    	Incasso incasso = new Incasso();
+    	incasso.setImporto(new BigDecimal("215.00"));
+    	
+    	Versamento versamento1 = new Versamento(incasso);
+    	versamento1.setImporto(new BigDecimal("180.00"));
+    	Versamento versamento2 = new Versamento(incasso);
+    	versamento2.setImporto(new BigDecimal("35.00"));
+    	
+    	BigDecimal incasso1 = Smd.incassa(incasso, versamento1, abbonamento);
+    	assertEquals(180.00,incasso1.doubleValue(),0);    	
+    	assertEquals(180.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
+    	assertEquals(180.00,incasso.getIncassato().doubleValue(),0);
+           	
+    	BigDecimal incasso2 = Smd.incassa(incasso, versamento2, abbonamento);
+    	assertEquals(20.00,incasso2.doubleValue(),0);    	
+    	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+    	
+    	BigDecimal incasso3 = Smd.incassa(incasso, versamento1, abbonamento);
+    	BigDecimal incasso4 = Smd.incassa(incasso, versamento2, abbonamento);
+    	assertEquals(0.00,incasso3.doubleValue(),0);    	
+       	assertEquals(0.00,incasso4.doubleValue(),0);    	
+       	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+
+    	BigDecimal revertito1 = Smd.dissocia(incasso, versamento1, abbonamento);;
+       	assertEquals(180.00,revertito1.doubleValue(),0);    	
+       	assertEquals(20.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(20.00,incasso.getIncassato().doubleValue(),0);
+    	
+    	BigDecimal incasso5 = Smd.incassa(incasso, versamento2, abbonamento);
+       	assertEquals(15.00,incasso5.doubleValue(),0);    	
+       	assertEquals(35.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(35.00,incasso.getIncassato().doubleValue(),0);
+    	
+    	BigDecimal incasso6 = Smd.incassa(incasso, versamento1, abbonamento);
+       	assertEquals(165.00,incasso6.doubleValue(),0);    	
+       	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	assertEquals(165.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+
+    }
+    
+    @Test
+    public void testDissocia() throws Exception {
+    	Abbonamento abbonamento1 = new Abbonamento();
+    	abbonamento1.setImporto(new BigDecimal("180.00"));
+    	Abbonamento abbonamento2 = new Abbonamento();
+    	abbonamento2.setImporto(new BigDecimal("225.00"));
+
+    	Incasso incasso = new Incasso();
+    	
+    	Versamento versamento1 = new Versamento(incasso);
+    	versamento1.setImporto(new BigDecimal("100.00"));
+    	Versamento versamento2 = new Versamento(incasso);
+    	versamento2.setImporto(new BigDecimal("135.00"));
+    	Versamento versamento3 = new Versamento(incasso);
+    	versamento3.setImporto(new BigDecimal("170.00"));
+       	incasso.setImporto(new BigDecimal("405.00"));
+           	
+    	BigDecimal incassato1 = Smd.incassa(incasso, versamento1, abbonamento1);
+    	assertEquals(100.00,incassato1.doubleValue(),0);
+    	assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,incasso.getIncassato().doubleValue(),0);
+           	
+    	BigDecimal incassato2=  Smd.incassa(incasso, versamento2, abbonamento2);
+    	assertEquals(135.00,incassato2.doubleValue(),0);
+    	assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
+    	
+    	BigDecimal incassato3 =  Smd.incassa(incasso, versamento3, abbonamento1);
+    	assertEquals(80.00,incassato3.doubleValue(),0);
+    	assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(80.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(315.00,incasso.getIncassato().doubleValue(),0);
+
+    	BigDecimal incassato4 =  Smd.incassa(incasso, versamento3, abbonamento2);
+    	assertEquals(90.00,incassato4.doubleValue(),0);
+    	assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(170.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(405.00,incasso.getIncassato().doubleValue(),0);
+
+    	BigDecimal revertito1 = Smd.dissocia(incasso, versamento3, abbonamento1);
+    	assertEquals(170.00, revertito1.longValue(),0);
+    	assertEquals(10.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
+
+    	BigDecimal revertito2 = Smd.dissocia(incasso, versamento2, abbonamento1);
+    	assertEquals(10.00, revertito2.longValue(),0);
+    	assertEquals(0.00,abbonamento1.getIncassato().doubleValue(),0);
+    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	assertEquals(125.00,versamento2.getIncassato().doubleValue(),0);
+    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	assertEquals(225.00,incasso.getIncassato().doubleValue(),0);
+
+    	
+    }
+    
+
 }

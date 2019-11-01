@@ -772,7 +772,7 @@ public class Smd {
         return op;        
     }
             
-    public static void incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static BigDecimal incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
             throw new UnsupportedOperationException("incassa: Incasso null");
@@ -785,28 +785,21 @@ public class Smd {
             log.error("incassa: Abbonamento null");
             throw new UnsupportedOperationException("incassa: Abbonamento null");
         }
-        if (versamento.getIncasso().getId().longValue() != incasso.getId().longValue()) {
-            log.error(String.format("incassa: Incasso e Versamento non sono associati. Incasso=%s, Versamento=%s",incasso.toString(),versamento.toString()));
-            throw new UnsupportedOperationException("incassa: Incasso e Versamento non sono associati");               
-        }
-        if (versamento.getResiduo().signum() == 0) {
-            log.error("incassa: Versamento con residuo 0, abbonamento non incassato");
-            throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
-        }
-        if (abbonamento.getVersamento() == null) {
-            abbonamento.setVersamento(versamento);
-        }
-        if ((versamento.getResiduo()).compareTo(abbonamento.getTotale()) < 0) {
-            abbonamento.setIncassato(versamento.getResiduo());
-            versamento.setIncassato(versamento.getIncassato().add(versamento.getResiduo()));
+ 
+        BigDecimal incassato = BigDecimal.ZERO;
+        if ((versamento.getResiduo()).compareTo(abbonamento.getResiduo()) < 0) {
+        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
         } else {
-            abbonamento.setIncassato(abbonamento.getTotale());
-            versamento.setIncassato(versamento.getIncassato().add(abbonamento.getTotale()));
+        	incassato = new BigDecimal(abbonamento.getResiduo().doubleValue());
         }
-        incasso.setIncassato(incasso.getIncassato().add(abbonamento.getIncassato()));
+        
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        abbonamento.setIncassato(abbonamento.getIncassato().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
     }
 
-    public static void dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static BigDecimal dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("dissocia: Incasso null");
             throw new UnsupportedOperationException("dissocia: Incasso null");
@@ -819,22 +812,16 @@ public class Smd {
             log.error("dissocia: Abbonamento null");
             throw new UnsupportedOperationException("dissocia: Abbonamento null");
         }
-        if (abbonamento.getVersamento() == null ) {
-            log.error("dissocia: Abbonamento non incassato");
-            throw new UnsupportedOperationException("dissocia: Abbonamento non incassato");
+        BigDecimal dissociato = BigDecimal.ZERO;
+        if ((versamento.getIncassato()).compareTo(abbonamento.getIncassato()) < 0) {
+        	dissociato = new BigDecimal(versamento.getIncassato().doubleValue());
+        } else {
+        	dissociato = new BigDecimal(abbonamento.getIncassato().doubleValue());
         }
-        if (versamento.getIncasso().getId().longValue() != incasso.getId().longValue()) {
-            log.error(String.format("dissocia: Incasso e Versamento non sono associati. Incasso=%s, Versamento=%s",incasso.toString(),versamento.toString()));
-            throw new UnsupportedOperationException("incassa: Incasso e Versamento non sono associati");               
-        }
-        if (abbonamento.getVersamento().getId().longValue() != versamento.getId().longValue() ) {
-            log.error(String.format("dissocia: Abbonamento e Versamento non sono associati. Abbonamento=%s, Versamento=%s",abbonamento.toString(),versamento.toString()));
-            throw new UnsupportedOperationException("dissocia: Abbonamento e Versamento non sono associati");
-        }
-        versamento.setIncassato(versamento.getIncassato().subtract(abbonamento.getIncassato()));
-        incasso.setIncassato(incasso.getIncassato().subtract(abbonamento.getIncassato()));
-        abbonamento.setIncassato(BigDecimal.ZERO);
-        abbonamento.setVersamento(null);
+        versamento.setIncassato(versamento.getIncassato().subtract(dissociato));
+        abbonamento.setIncassato(abbonamento.getIncassato().subtract(dissociato));
+        incasso.setIncassato(incasso.getIncassato().subtract(dissociato));
+        return dissociato;
     }
     
     public static boolean isVersamento(String versamento) {   

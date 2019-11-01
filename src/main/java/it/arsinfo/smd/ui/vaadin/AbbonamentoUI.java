@@ -140,7 +140,6 @@ public class AbbonamentoUI extends SmdUI {
         };
 
         SmdButtonTextField incassa = new SmdButtonTextField("Inserisci Importo da Incassare","Incassa", VaadinIcons.CASH);
-        SmdButton incassaResiduo = new SmdButton("Incassa Residuo", VaadinIcons.CASH);
         
         EstrattoContoAdd estrattoContoAdd = new EstrattoContoAdd("Aggiungi EC");
         EstrattoContoEditor estrattoContoEditor = new EstrattoContoEditor(estrattoContoDao, pubblicazioni, anagrafica) {
@@ -206,15 +205,12 @@ public class AbbonamentoUI extends SmdUI {
         addSmdComponents(estrattoContoEditor,editor);
         HorizontalLayout lay = new HorizontalLayout(estrattoContoAdd.getComponents());
         lay.addComponents(new Label("     "));
-        lay.addComponents(incassaResiduo.getComponents());
-        lay.addComponents(new Label(" "));
         lay.addComponents(incassa.getComponents());
         addComponents(lay);
         addSmdComponents(estrattoContoGrid, add,search, grid);
 
         editor.setVisible(false);
         incassa.setVisible(false);
-        incassaResiduo.setVisible(false);
         estrattoContoEditor.setVisible(false);
         estrattoContoAdd.setVisible(false);
         estrattoContoGrid.setVisible(false);
@@ -242,7 +238,6 @@ public class AbbonamentoUI extends SmdUI {
             search.setVisible(false);
             editor.edit(grid.getSelected());
             incassa.setVisible(editor.incassare());
-            incassaResiduo.setVisible(editor.incassare());
             estrattoContoAdd.setVisible(grid.getSelected().getCampagna() == null);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.populate(findByAbbonamento(grid.getSelected()));               
@@ -251,7 +246,6 @@ public class AbbonamentoUI extends SmdUI {
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
             incassa.setVisible(false);
-            incassaResiduo.setVisible(false);
             estrattoContoAdd.setVisible(false);
             estrattoContoEditor.setVisible(false);
             estrattoContoGrid.setVisible(false);
@@ -298,28 +292,44 @@ public class AbbonamentoUI extends SmdUI {
         });
 
         incassa.setChangeHandler(() -> {
+        	if (incassa.getValue() == null) {
+                Notification.show("Devi inserire l'importo da incassare",
+                        Notification.Type.ERROR_MESSAGE);
+                return;
+        	}
+            try {
+            	new BigDecimal(incassa.getValue());
+            } catch (Exception e) {
+                Notification.show("Errore di conversione del valore dell'incasso: " +incassa.getValue(),
+                                  Notification.Type.ERROR_MESSAGE);
+                return;
+            }
+        	if (editor.get().getDataContabile() == null) {
+                Notification.show("Devi inserire la data contabile",
+                        Notification.Type.ERROR_MESSAGE);
+                return;
+        	}
+        	if (editor.get().getDataPagamento() == null) {
+                Notification.show("Devi inserire la data pagamento",
+                        Notification.Type.ERROR_MESSAGE);
+                return;
+        	}
+        	if (editor.get().getProgressivo() == null) {
+                Notification.show("Aggiungere Riferimento al Campo Progressivo",
+                        Notification.Type.ERROR_MESSAGE);
+                return;
+        	}
             try {
                 smdService.incassa(editor.get(), new BigDecimal(incassa.getValue()),getLoggedInUser());
                 incassa.setVisible(false);
-                incassaResiduo.setVisible(false);
                 editor.edit(editor.get());
             } catch (Exception e) {
+                log.error("incassa failed {} : {}", editor.get(), e.getMessage(),e);
                 Notification.show(e.getMessage(),
                                   Notification.Type.ERROR_MESSAGE);
             }
         });
 
-        incassaResiduo.setChangeHandler(() -> {
-            try {
-                smdService.incassa(editor.get(), editor.get().getResiduo(),getLoggedInUser());
-                incassa.setVisible(false);
-                incassaResiduo.setVisible(false);
-                editor.edit(editor.get());
-            } catch (Exception e) {
-                Notification.show(e.getMessage(),
-                                  Notification.Type.ERROR_MESSAGE);
-            }
-        });
         grid.populate(search.findAll());
 
     }

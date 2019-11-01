@@ -41,7 +41,7 @@ public class IncassoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
         IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
-        IncassoUpload upload = new IncassoUpload("Incasso da Poste");
+        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
         IncassoSearch search = new IncassoSearch(incassoDao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("Incassi");
@@ -139,7 +139,7 @@ public class IncassoUI extends SmdUI {
         grid.setChangeHandler(() -> {
             if (grid.getSelected() == null) {
                 showMenu();
-                
+                incassa.setVisible(true);
                 upload.setVisible(true);
                 add.setVisible(true);
                 search.setVisible(true);
@@ -155,6 +155,7 @@ public class IncassoUI extends SmdUI {
                 versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
 
                 upload.setVisible(false);
+                incassa.setVisible(false);
                 add.setVisible(false);
                 search.setVisible(false);
                 grid.setVisible(false);
@@ -165,6 +166,7 @@ public class IncassoUI extends SmdUI {
             showMenu();
             setHeader("Incassi");
             upload.setVisible(true);
+            incassa.setVisible(true);
             add.setVisible(true);
             search.setVisible(true);
             grid.populate(search.find());
@@ -178,6 +180,7 @@ public class IncassoUI extends SmdUI {
             setHeader("Incasso:Aggiungi");
             hideMenu();
             add.setVisible(false);
+            incassa.setVisible(false);
             upload.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
@@ -210,38 +213,15 @@ public class IncassoUI extends SmdUI {
         });
 
         incassa.setChangeHandler(() -> {
-            if (grid.getSelected() != null) {
-            versamentoDao.findByIncasso(grid.getSelected())
-                .stream()
-                .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
-                .forEach(v-> {
-                    try {
-                        smdService.incassaCodeLine(v,getLoggedInUser());
-                    } catch (Exception e) {
-                        log.error("Incassa failed for : {}.", editor.get(),e);
-                        return;
-                    }
-            });
-            grid.populate(search.find());
-            grid.getGrid().select(editor.get());
-            return;
+            try {
+                smdService.incassaCodeLine(search.find(),getLoggedInUser());
+            } catch (Exception e) {
+                log.error("Incassa con Code Line in errore: {}.", e.getMessage(),e);
+                Notification.show("Incassa con Code Line. Errore: " +e.getMessage()+  ".",Notification.Type.ERROR_MESSAGE);
+                return;
             }
-
-            search.find().forEach(incass -> {
-                    versamentoDao.findByIncasso(incass)
-                        .stream()
-                        .filter(v -> v.getResiduo().signum() > 0 && v.getCodeLine() != null)
-                        .forEach(v-> {
-                            try {
-                                smdService.incassaCodeLine(v,getLoggedInUser());
-                            } catch (Exception e) {
-                                log.error("Incassa failed for : {}.", editor.get(),e);
-                                return;
-                            }
-                        });
-                });
-                grid.populate(search.find());                
-            });
+            grid.populate(search.find());
+        });
 
         versEditor.setChangeHandler(() -> {
             setHeader("Incasso");

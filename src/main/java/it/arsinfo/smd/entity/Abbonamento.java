@@ -77,6 +77,8 @@ public class Abbonamento implements SmdEntity {
 
     @Transient
     private String operazione;
+    @Transient
+    private String progressivo;
 
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
@@ -110,10 +112,9 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Intestatario='%d', Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, %s , Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s",
                                    id, 
                                    Smd.getStatoIncasso(this), 
-                                   intestatario.getId(), 
                                    importo,
                                    spese,
                                    pregresso,
@@ -361,6 +362,16 @@ public class Abbonamento implements SmdEntity {
     @Transient
     public void setOperazione(String operazione) {
         this.operazione = operazione;
+    }
+
+    @Transient
+    public String getProgressivo() {
+        return progressivo;
+    }
+
+    @Transient
+    public void setProgressivo(String progressivo) {
+        this.progressivo= progressivo;
     }
 
     @Transient

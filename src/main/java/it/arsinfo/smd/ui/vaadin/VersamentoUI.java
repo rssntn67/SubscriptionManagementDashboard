@@ -138,10 +138,10 @@ public class VersamentoUI extends SmdUI {
         });
         
         abbonamentiAssociatiGrid.addComponentColumn(abbonamento -> {
-            Button button = new Button("Reverti");
+            Button button = new Button("Dissocia");
             button.addClickListener(click -> {
                 try {
-                    smdService.reverti(abbonamento, editor.get(),getLoggedInUser());
+                    smdService.dissocia(abbonamento, editor.get(),getLoggedInUser());
                 } catch (Exception e) {
                     log.warn("Reverti failed for : {}.", editor.get(),e);
                     Notification.show(e.getMessage(),

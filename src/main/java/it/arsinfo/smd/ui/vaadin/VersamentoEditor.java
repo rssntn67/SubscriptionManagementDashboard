@@ -67,8 +67,8 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         accettazione.setItemCaptionGenerator(Accettazione::getDescr);
         sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);
         HorizontalLayout lay0 = new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento);
-        HorizontalLayout lay1 = new HorizontalLayout(ccp,cassa,cuas);
-        HorizontalLayout lay2 = new HorizontalLayout(codeLine,progressivo);
+        HorizontalLayout lay1 = new HorizontalLayout(codeLine,progressivo,ccp,cassa,cuas);
+        HorizontalLayout lay2 = new HorizontalLayout();
         lay2.addComponentsAndExpand(operazione);
         HorizontalLayout lay3 = new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina);
         HorizontalLayout lay4 = new HorizontalLayout(bollettino,accettazione,sostitutivo);
@@ -81,6 +81,8 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
                       lay4
                   );
 
+        operazione.setReadOnly(true);
+        
         getBinder().forField(importo)
             .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
@@ -121,6 +123,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         ccp.setValue(versamento.getIncasso().getCcp());
         cuas.setValue(versamento.getIncasso().getCuas());
         cassa.setValue(versamento.getIncasso().getCassa());
+        operazione.setVisible(persisted);
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         

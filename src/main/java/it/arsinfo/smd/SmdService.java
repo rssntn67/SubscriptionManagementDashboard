@@ -53,6 +53,7 @@ public interface SmdService {
 
     List<Abbonamento> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
+    List<Versamento> getAssociati(Abbonamento abbonamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
@@ -63,10 +64,14 @@ public interface SmdService {
     void delete(Versamento versamento);
     
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception;
-    void reverti(Abbonamento abbonamento, Versamento versamento,UserInfo user) throws Exception;    
-    void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
-    void incassaCodeLine(Versamento versamento,UserInfo user) throws Exception;
+    void dissocia(Abbonamento abbonamento, Versamento versamento,UserInfo user) throws Exception;    
     
+    void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
+    void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
+    
+    void sospendi(Abbonamento abbonamento)throws Exception;
+    void attiva(Abbonamento abbonamento)  throws Exception;
+    void annulla(Abbonamento abbonamento) throws Exception;
     
     
 }

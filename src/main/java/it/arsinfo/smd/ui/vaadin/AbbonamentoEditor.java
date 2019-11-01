@@ -55,6 +55,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",
             EnumSet.allOf(Cuas.class));
     private final TextField operazione = new TextField("Operazione");
+    private final TextField progressivo = new TextField("Progressivo");
 
     List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
@@ -74,13 +75,13 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout status = new HorizontalLayout(campagna,
                                                      anno,statoAbbonamento,statoIncasso);
         
-        HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale);
+        HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale,incassato,residuo);
 
-        HorizontalLayout incss = new HorizontalLayout(incassato,residuo,dataContabile,dataPagamento);
+        HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
 
-        HorizontalLayout deta = new HorizontalLayout(cassa,ccp,cuas);
+        HorizontalLayout deta = new HorizontalLayout();
         deta.addComponentsAndExpand(operazione);
-        setComponents(getActions(),anag, status,imp, incss,deta);
+        setComponents(getActions(),anag, status,imp, deta,incss);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -151,18 +152,19 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
             .forField(residuo)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
-        getBinder().forField(dataContabile)
+        getBinder().forField(operazione).bind("operazione");                
+               
+        getBinder().forField(dataContabile).asRequired()
         .withConverter(new LocalDateToDateConverter())
         .bind("dataContabile");
         
-        getBinder().forField(dataPagamento)
+        getBinder().forField(dataPagamento).asRequired()
         .withConverter(new LocalDateToDateConverter())
         .bind("dataPagamento");
-        
         getBinder().forField(cassa).bind("cassa");
         getBinder().forField(ccp).bind("ccp");
         getBinder().forField(cuas).bind("cuas");                
-        getBinder().forField(operazione).bind("operazione");                
+        getBinder().forField(progressivo).asRequired().bind("progressivo");                
 
     }
 
@@ -187,40 +189,54 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         spese.setVisible(noOmaggio);
         pregresso.setVisible(noOmaggio);
         totale.setVisible(noOmaggio);
-
         incassato.setVisible(noOmaggio);
         residuo.setVisible(noOmaggio);
+        
         dataContabile.setVisible(noOmaggio);
         dataPagamento.setVisible(noOmaggio); 
-
         cassa.setVisible(noOmaggio);
         ccp.setVisible(noOmaggio);
         cuas.setVisible(noOmaggio);
+        progressivo.setVisible(noOmaggio);
         operazione.setVisible(noOmaggio);
         
         hasResiduo = abbonamento.getResiduo().signum() > 0; 
+        
         spese.setReadOnly(!hasResiduo);
         pregresso.setReadOnly(!hasResiduo);
+
         dataContabile.setReadOnly(!hasResiduo);
         dataPagamento.setReadOnly(!hasResiduo); 
-
         cassa.setReadOnly(!hasResiduo);
         ccp.setReadOnly(!hasResiduo);
         cuas.setReadOnly(!hasResiduo);
+        progressivo.setReadOnly(!hasResiduo);
+        
         operazione.setVisible(false);
 
-        if (!hasResiduo && abbonamento.getVersamento() != null) {
-            operazione.setVisible(true);
+        if (abbonamento.getVersamento() != null) {
             Versamento versamento = versamentoDao.findById(abbonamento.getVersamento().getId()).get();
-            abbonamento.setDataContabile(versamento.getDataContabile());
-            abbonamento.setDataPagamento(versamento.getDataPagamento());
-            abbonamento.setCuas(versamento.getIncasso().getCuas());
             abbonamento.setOperazione(versamento.getOperazione());
-            cuas.setValue(abbonamento.getCuas());
-            dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-            if (abbonamento.getOperazione() != null)
+            if (abbonamento.getOperazione() != null) {
             	operazione.setValue(abbonamento.getOperazione());
+            	operazione.setVisible(true);
+            }
+            if (!hasResiduo) {
+            	abbonamento.setDataContabile(versamento.getDataContabile());
+            	abbonamento.setDataPagamento(versamento.getDataPagamento());
+            	abbonamento.setCuas(versamento.getIncasso().getCuas());
+            	abbonamento.setCcp(versamento.getIncasso().getCcp());
+            	abbonamento.setCassa(versamento.getIncasso().getCassa());
+            	abbonamento.setProgressivo(versamento.getProgressivo());
+            	dataContabile.setValue(abbonamento.getDataContabile().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            	dataPagamento.setValue(abbonamento.getDataPagamento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            	cuas.setValue(abbonamento.getCuas());
+            	ccp.setValue(abbonamento.getCcp());
+            	cassa.setValue(abbonamento.getCassa());
+            	if (abbonamento.getProgressivo() != null) {
+            		progressivo.setValue(abbonamento.getProgressivo());
+            	}
+            }
         }
         intestatario.focus();
 

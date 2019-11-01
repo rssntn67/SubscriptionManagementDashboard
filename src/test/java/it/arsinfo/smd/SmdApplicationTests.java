@@ -1428,7 +1428,8 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno, Cassa.Ccp);
         
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         pubblicazioneDao.save(messaggio);
@@ -1436,9 +1437,9 @@ public class SmdApplicationTests {
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
-        ec1.setAnnoInizio(Anno.getAnnoProssimo());
+        ec1.setAnnoInizio(anno);
         ec1.setMeseFine(Mese.DICEMBRE);
-        ec1.setAnnoFine(Anno.getAnnoProssimo());
+        ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni = 
                 Smd.genera(
@@ -1604,6 +1605,7 @@ public class SmdApplicationTests {
         assertEquals(1, versamentoDao.findAll().size());
 
         incasso.getVersamenti().stream().forEach(v-> {
+        	assertEquals(abb.getCodeLine(), v.getCodeLine());
             Smd.incassa(incasso,v, abb);
             versamentoDao.save(v);
         });
@@ -1619,10 +1621,9 @@ public class SmdApplicationTests {
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
         
         Versamento versamento = versamentoDao.findAll().iterator().next();        
-        List<Abbonamento> abbonamenti = abbonamentoDao.findByVersamento(versamento);
-        assertEquals(1, abbonamenti.size());
-        Abbonamento abbonamento = abbonamenti.iterator().next();
-        assertEquals(versamento.getId().longValue(), abbonamento.getVersamento().getId().longValue());
+        Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
+        assertNotNull(abbonamento);
+        assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
         assertEquals(StatoAbbonamento.Nuovo, abbonamento.getStatoAbbonamento());
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));
         estrattoContoDao.deleteAll();
@@ -1782,9 +1783,6 @@ public class SmdApplicationTests {
                       
         assertEquals(5, incassoDao.findAll().size());
         assertEquals(24, versamentoDao.findAll().size());
-
-        assertEquals(29, spedizioneDao.findAll().size());
-        assertEquals(0, operazioneDao.findAll().size());
         
         for (Versamento versamento: versamentoDao.findAll()) {
             if (versamento.getCodeLine() == null) {
@@ -1799,25 +1797,22 @@ public class SmdApplicationTests {
             assertNull(abbonamento.getVersamento());
             assertEquals(0, versamento.getIncassato().doubleValue(),0);
             assertEquals(0, abbonamento.getIncassato().doubleValue(),0);
-            smdService.incassaCodeLine(versamento,userInfoDao.findByUsername("admin"));
+            smdService.incassa(abbonamento,versamento,userInfoDao.findByUsername("admin"));
             assertEquals(0, versamento.getResiduo().doubleValue(),0);
         }
 
         for (Abbonamento abbonamento: abbonamentoDao.findByAnno(Anno.ANNO2017)) {
             assertEquals(0, abbonamento.getResiduo().doubleValue(),0);
-            assertNotNull(abbonamento.getVersamento());
+            assertNull(abbonamento.getVersamento());
             abbonamento.setPregresso(new BigDecimal("10.50"));
             abbonamentoDao.save(abbonamento);
             assertEquals(abbonamento.getPregresso().doubleValue(), abbonamento.getResiduo().doubleValue(),0);
         }
         
-        for (Versamento versamento: versamentoDao.findAll()) {
-            System.out.println(versamento);
-            smdService.incassaCodeLine(versamento,userInfoDao.findByUsername("admin"));
-        }
+        smdService.incassaCodeLine(incassoDao.findAll(),userInfoDao.findByUsername("admin"));
         
         for (Abbonamento abbonamento: abbonamentoDao.findByAnno(Anno.ANNO2017)) {
-            assertNotNull(abbonamento.getVersamento());
+            assertNull(abbonamento.getVersamento());
             assertEquals(abbonamento.getPregresso().doubleValue(), abbonamento.getResiduo().doubleValue(),0);
         }
 
