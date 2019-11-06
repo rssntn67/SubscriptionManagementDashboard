@@ -23,7 +23,9 @@ public class SpesaSpedizioneEditor
             EnumSet.allOf(RangeSpeseSpedizione.class));
 
  
-    private final TextField speseSpedizione = new TextField("Spese Spedizione");
+    private final TextField spese = new TextField("Spese Spedizione Posta Ordinaria");
+    private final TextField cor24h = new TextField("Spese Spedizione Corriere 24h");
+    private final TextField cor3gg = new TextField("Spese Spedizione Corriere 3gg");
 
     public SpesaSpedizioneEditor(
             SpesaSpedizioneDao spesaSpedizioneDao) {
@@ -37,7 +39,7 @@ public class SpesaSpedizioneEditor
         areaSpedizione.setPlaceholder("Area Spedizione");
         
         setComponents(getActions(), 
-                      new HorizontalLayout(range,areaSpedizione,speseSpedizione)
+                      new HorizontalLayout(range,areaSpedizione,spese,cor3gg,cor24h)
                       );
  
         getBinder()
@@ -45,13 +47,22 @@ public class SpesaSpedizioneEditor
         .asRequired()
         .withValidator(p -> p != null, "Range deve essere selezionato")
         .bind(SpesaSpedizione::getRange,SpesaSpedizione::setRange);
-
-        
+       
         getBinder()
-        .forField(speseSpedizione).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .forField(spese).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
         .bind(SpesaSpedizione::getSpese,SpesaSpedizione::setSpese);
- 
+
+        getBinder()
+        .forField(cor24h).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
+        .bind(SpesaSpedizione::getCor24h,SpesaSpedizione::setCor24h);
+
+        getBinder()
+        .forField(cor3gg).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
+        .bind(SpesaSpedizione::getCor3gg,SpesaSpedizione::setCor3gg);
+
 
         getBinder()
         .forField(areaSpedizione)
@@ -63,7 +74,7 @@ public class SpesaSpedizioneEditor
 
     @Override
     public void focus(boolean persisted, SpesaSpedizione obj) {
-        speseSpedizione.focus();        
+        spese.focus();        
     }
 
 }

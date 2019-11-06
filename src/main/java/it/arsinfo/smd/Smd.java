@@ -457,11 +457,8 @@ public class Smd {
             sped.getSpedizione().setPesoStimato(pesoStimato);
             switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
             case Italia:
-                if( sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede 
-                    && !sped.getSpedizioniPosticipate().isEmpty()) {
-                    calcolaSpesePostali(sped.getSpedizione(), spese);
-                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
-                }
+                calcolaSpesePostali(sped.getSpedizione(), spese);
+                abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
                 break;
             case EuropaBacinoMediterraneo:
                 calcolaSpesePostali(sped.getSpedizione(), spese);
@@ -498,7 +495,21 @@ public class Smd {
                            sped.getDestinatario().getAreaSpedizione(), 
                            RangeSpeseSpedizione.getByPeso(sped.getPesoStimato())
                            );
-        sped.setSpesePostali(spesa.getSpese());
+        switch (sped.getInvioSpedizione()) {
+        case Spedizioniere:
+        	break;
+        case AdpSede:
+            sped.setSpesePostali(spesa.getSpese());
+        	break;
+        case AdpSedeCorriere24hh:
+            sped.setSpesePostali(spesa.getCor24h());
+        	break;
+        case AdpSedeCorriere3gg:
+            sped.setSpesePostali(spesa.getCor3gg());
+        	break;
+        default:
+        	break;        	
+        }
     }
     
     public static List<EstrattoConto> 

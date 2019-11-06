@@ -107,54 +107,71 @@ public class SmdHelper {
         ss1.setRange(RangeSpeseSpedizione.Base);
         ss1.setArea(AreaSpedizione.Italia);
         ss1.setSpese(new BigDecimal("2.00"));
+        ss1.setCor3gg(new BigDecimal("5.50"));
+        ss1.setCor24h(new BigDecimal("7.50"));
         sss.add(ss1);
     
         SpesaSpedizione ss2 = new SpesaSpedizione();
         ss2.setRange(RangeSpeseSpedizione.Da100grA200gr);
         ss2.setArea(AreaSpedizione.Italia);
         ss2.setSpese(new BigDecimal("3.00"));
+        ss2.setCor3gg(new BigDecimal("5.50"));
+        ss2.setCor24h(new BigDecimal("7.50"));
         sss.add(ss2);
     
         SpesaSpedizione ss3 = new SpesaSpedizione();
         ss3.setRange(RangeSpeseSpedizione.Da200grA350gr);
         ss3.setArea(AreaSpedizione.Italia);
         ss3.setSpese(new BigDecimal("3.00"));
+        ss3.setCor3gg(new BigDecimal("5.50"));
+        ss3.setCor24h(new BigDecimal("7.50"));
         sss.add(ss3);
     
         SpesaSpedizione ss4 = new SpesaSpedizione();
         ss4.setRange(RangeSpeseSpedizione.Da350grA1Kg);
         ss4.setArea(AreaSpedizione.Italia);
         ss4.setSpese(new BigDecimal("5.00"));
+        ss4.setCor3gg(new BigDecimal("5.50"));
         sss.add(ss4);
     
         SpesaSpedizione ss5 = new SpesaSpedizione();
         ss5.setRange(RangeSpeseSpedizione.Da1KgA2Kg);
         ss5.setArea(AreaSpedizione.Italia);
         ss5.setSpese(new BigDecimal("5.50"));
+        ss5.setCor3gg(new BigDecimal("5.50"));
+        ss5.setCor24h(new BigDecimal("7.50"));
         sss.add(ss5);
     
         SpesaSpedizione ss6 = new SpesaSpedizione();
         ss6.setRange(RangeSpeseSpedizione.Da2KgA5Kg);
         ss6.setArea(AreaSpedizione.Italia);
         ss6.setSpese(new BigDecimal("7.00"));
+        ss6.setCor3gg(new BigDecimal("7.00"));
+        ss6.setCor24h(new BigDecimal("9.00"));
         sss.add(ss6);
     
         SpesaSpedizione ss7 = new SpesaSpedizione();
         ss7.setRange(RangeSpeseSpedizione.Da5KgA10Kg);
         ss7.setArea(AreaSpedizione.Italia);
         ss7.setSpese(new BigDecimal("8.00"));
+        ss7.setCor3gg(new BigDecimal("8.00"));
+        ss7.setCor24h(new BigDecimal("10.50"));
         sss.add(ss7);
         
         SpesaSpedizione ss8 = new SpesaSpedizione();
         ss8.setRange(RangeSpeseSpedizione.Da10KgA20Kg);
         ss8.setArea(AreaSpedizione.Italia);
         ss8.setSpese(new BigDecimal("9.00"));
+        ss8.setCor3gg(new BigDecimal("9.00"));
+        ss8.setCor24h(new BigDecimal("11.50"));
         sss.add(ss8);
     
         SpesaSpedizione ss9 = new SpesaSpedizione();
         ss9.setRange(RangeSpeseSpedizione.Da20KgA30Kg);
         ss9.setArea(AreaSpedizione.Italia);
         ss9.setSpese(new BigDecimal("10.00"));
+        ss9.setCor3gg(new BigDecimal("10.00"));
+        ss9.setCor24h(new BigDecimal("13.00"));
         sss.add(ss9);
     
         SpesaSpedizione ss9bis = new SpesaSpedizione();
