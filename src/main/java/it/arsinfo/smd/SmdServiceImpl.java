@@ -642,7 +642,7 @@ public class SmdServiceImpl implements SmdService {
         	return associabili;
         }
         Abbonamento associabile = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        if (associabile != null && versamento.getIncassato().signum() == 0) {
+        if (associabile != null && versamento.getResiduo().signum() > 0) {
         	associabili.add(associabile);
         	return associabili;
         }
