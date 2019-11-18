@@ -8,7 +8,10 @@ public class SpesaSpedizioneGrid extends SmdGrid<SpesaSpedizione> {
 
     public SpesaSpedizioneGrid(String gridname) {
         super(new Grid<>(SpesaSpedizione.class),gridname);
-        setColumns("range","area","spese");
+        setColumns("rangeSpeseSpedizione","areaSpedizione","spese","cor24h","cor3gg");
+        setColumnCaption("spese","Spese Postali");
+        setColumnCaption("cor24h","Corriere 24h");
+        setColumnCaption("cor3gg","Corriere 3gg");
     }
 
 }

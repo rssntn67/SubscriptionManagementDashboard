@@ -46,7 +46,7 @@ public class SpesaSpedizioneEditor
         .forField(range)
         .asRequired()
         .withValidator(p -> p != null, "Range deve essere selezionato")
-        .bind(SpesaSpedizione::getRange,SpesaSpedizione::setRange);
+        .bind(SpesaSpedizione::getRangeSpeseSpedizione,SpesaSpedizione::setRangeSpeseSpedizione);
        
         getBinder()
         .forField(spese).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
@@ -68,7 +68,7 @@ public class SpesaSpedizioneEditor
         .forField(areaSpedizione)
         .asRequired()
         .withValidator(p -> p != null, "Area Spedizione deve essere selezionato")
-        .bind(SpesaSpedizione::getArea,SpesaSpedizione::setArea);
+        .bind(SpesaSpedizione::getAreaSpedizione,SpesaSpedizione::setAreaSpedizione);
         
     }
 

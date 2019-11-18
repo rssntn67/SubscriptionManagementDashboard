@@ -49,24 +49,8 @@ public class SpesaSpedizione implements SmdEntity {
         return spese;
     }
 
-    public void setSpese(BigDecimal speseSpedizione) {
-        this.spese = speseSpedizione;
-    }
-
-    public AreaSpedizione getArea() {
-        return areaSpedizione;
-    }
-
-    public void setArea(AreaSpedizione areaSpedizione) {
-        this.areaSpedizione = areaSpedizione;
-    }
-
-    public RangeSpeseSpedizione getRange() {
-        return rangeSpeseSpedizione;
-    }
-
-    public void setRange(RangeSpeseSpedizione range) {
-        this.rangeSpeseSpedizione = range;
+    public void setSpese(BigDecimal spese) {
+        this.spese = spese;
     }
 
 	public RangeSpeseSpedizione getRangeSpeseSpedizione() {

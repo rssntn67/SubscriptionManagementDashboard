@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.repository.AbbonamentoDao;
@@ -38,6 +39,9 @@ public class SmdApplication {
 
     @Value("${load.sample.data}")
     private String loadSampleData;
+
+    @Value("${update.spesa.spedizione}")
+    private String updateSpesaSpedizione;
 
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
@@ -81,6 +85,9 @@ public class SmdApplication {
             log.info("loadSampleData {}",loadSampleData);
             boolean loadADP = loadAnagraficaAdp != null && loadAnagraficaAdp.equals("true");
             log.info("loadAnagraficaAdp {}",loadAnagraficaAdp);
+            boolean updateSSADP = updateSpesaSpedizione != null && updateSpesaSpedizione.equals("true");
+            log.info("updateSpesaSpedizione {}",updateSpesaSpedizione);
+            
             if (loadSD ) {
                 new Thread(
                    new SmdLoadSampleData(
@@ -119,6 +126,15 @@ public class SmdApplication {
                      operazioneDao
                    )
                 ).start();
+            } else if (updateSSADP) {
+            	SmdHelper.getSpeseSpedizione().forEach(ss -> {
+            		SpesaSpedizione spesaSpedizione = 
+            				spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(ss.getAreaSpedizione(), ss.getRangeSpeseSpedizione());
+            		
+            		spesaSpedizione.setCor24h(ss.getCor24h());
+            		spesaSpedizione.setCor3gg(ss.getCor3gg());
+            		spesaSpedizioneDao.save(spesaSpedizione);
+            	});
             }
 
         };

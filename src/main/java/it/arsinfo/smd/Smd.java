@@ -481,7 +481,7 @@ public class Smd {
     
     public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
         for (SpesaSpedizione s: ss) {
-            if (s.getArea() == area && s.getRange() == range) {
+            if (s.getAreaSpedizione() == area && s.getRangeSpeseSpedizione() == range) {
                 return s;
             }
         }

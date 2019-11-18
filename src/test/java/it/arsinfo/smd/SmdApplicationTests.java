@@ -343,8 +343,8 @@ public class SmdApplicationTests {
         assertNotNull(spedizioneItaliaDa1a2Kg);
         
         SpesaSpedizione duplicato=new SpesaSpedizione();
-        duplicato.setArea(AreaSpedizione.Italia);
-        duplicato.setRange(RangeSpeseSpedizione.Da1KgA2Kg);
+        duplicato.setAreaSpedizione(AreaSpedizione.Italia);
+        duplicato.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da1KgA2Kg);
         duplicato.setSpese(new BigDecimal(10.88));
         
         try {
