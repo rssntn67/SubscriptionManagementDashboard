@@ -25,21 +25,28 @@ public abstract class SmdGrid<T extends SmdEntity>
     Label itemNumber = new Label();
     private Integer size = 0;
     public SmdGrid(Grid<T> grid, String gridName) {
+
         Button downloadAsExcel = new Button("Download As Excel");
         Button downloadAsCSV = new Button("Download As CSV");
 
-        StreamResource excelStreamResource = 
+        downloadAsExcel.setHeight("22px");
+        downloadAsExcel.setWidth("200px");
+        downloadAsCSV.setHeight("22px");
+        downloadAsCSV.setWidth("200px");
+
+
+    	StreamResource excelStreamResource = 
                 new StreamResource((StreamResource.StreamSource) () -> 
                     Exporter.exportAsExcel(grid), "smd"+gridName+".xls");
         FileDownloader excelFileDownloader = 
                 new FileDownloader(excelStreamResource);
-                    excelFileDownloader.extend(downloadAsExcel);
 
         StreamResource csvStreamResource = 
                 new StreamResource((StreamResource.StreamSource) () -> 
                     Exporter.exportAsCSV(grid), "smd"+gridName+".csv");
         
         FileDownloader csvFileDownloader = new FileDownloader(csvStreamResource);
+        excelFileDownloader.extend(downloadAsExcel);
         csvFileDownloader.extend(downloadAsCSV);
 
         this.grid = grid;
@@ -50,6 +57,7 @@ public abstract class SmdGrid<T extends SmdEntity>
             selected = e.getValue();
             onChange();
         });
+
         
         setComponents(this.grid,new HorizontalLayout(this.itemNumber,downloadAsExcel,downloadAsCSV));
     }
