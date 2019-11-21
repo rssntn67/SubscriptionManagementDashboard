@@ -56,7 +56,7 @@ public class VersamentoUI extends SmdUI {
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         
-        addSmdComponents(search,grid,abbSearch,abbonamentiAssociabiliGrid,abbonamentiAssociatiGrid);
+        addSmdComponents(search,grid,abbonamentiAssociatiGrid,abbSearch,abbonamentiAssociabiliGrid);
         
         abbSearch.setVisible(false);
         abbonamentiAssociatiGrid.setVisible(false);
@@ -74,9 +74,7 @@ public class VersamentoUI extends SmdUI {
                 abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(abbonamentiAssociabiliGrid.getSize() > 0);
-                search.setVisible(false);
             } else {
-            	search.setVisible(true);
                 abbSearch.setVisible(false);
                 abbonamentiAssociatiGrid.setVisible(false);
                 abbonamentiAssociabiliGrid.setVisible(false);
