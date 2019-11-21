@@ -1,6 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdService;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
@@ -99,7 +101,7 @@ public class StoricoUI extends SmdUI {
         notaGrid.getGrid().setHeight("200px");
 
         SmdButtonComboBox<Campagna> update = 
-            new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll(),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
+            new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll().stream().filter(c -> c.getStatoCampagna() != StatoCampagna.Chiusa).collect(Collectors.toList()),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
         update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
         update.getComboBox().setEmptySelectionAllowed(false);
