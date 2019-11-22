@@ -40,6 +40,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
     private final TextField importo = new TextField("Importo");
     private final TextField spese = new TextField("Spese");
+    private final TextField speseEstero = new TextField("Spese Estero");
     private final TextField pregresso = new TextField("Pregresso");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
@@ -69,7 +70,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout status = new HorizontalLayout(campagna,
                                                      anno,statoAbbonamento,statoIncasso);
         
-        HorizontalLayout imp = new HorizontalLayout(importo,spese,pregresso,totale,incassato,residuo);
+        HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,totale,incassato,residuo);
 
         HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
 
@@ -126,6 +127,10 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         .forField(spese)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .bind("spese");
+        getBinder()
+        .forField(speseEstero)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("speseEstero");
         getBinder()
         .forField(pregresso)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))

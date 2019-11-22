@@ -58,6 +58,7 @@ public class Abbonamento implements SmdEntity {
     private BigDecimal pregresso=BigDecimal.ZERO;
     private BigDecimal importo=BigDecimal.ZERO;
     private BigDecimal spese=BigDecimal.ZERO;
+    private BigDecimal speseEstero=BigDecimal.ZERO;
     private BigDecimal incassato=BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
@@ -112,11 +113,12 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Imp. '%.2f', Spese '%.2f',Preg '%.2f', %s,'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, %s , Imp. '%.2f', Spese '%.2f', Estero '%.2f', 'Preg '%.2f', %s,'%s', Anno=%s",
                                    id, 
                                    Smd.getStatoIncasso(this), 
                                    importo,
                                    spese,
+                                   speseEstero,
                                    pregresso,
                                    cassa,
                                    codeLine,
@@ -255,7 +257,7 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return importo.add(pregresso).add(spese);
+        return importo.add(pregresso).add(spese).add(speseEstero);
     }
 
     public BigDecimal getImporto() {
@@ -403,6 +405,14 @@ public class Abbonamento implements SmdEntity {
 		} else if (!codeLine.equals(other.codeLine))
 			return false;
 		return true;
+	}
+
+	public BigDecimal getSpeseEstero() {
+		return speseEstero;
+	}
+
+	public void setSpeseEstero(BigDecimal speseEstero) {
+		this.speseEstero = speseEstero;
 	}
     
 

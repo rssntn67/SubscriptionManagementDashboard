@@ -806,7 +806,8 @@ public class SmdUnitTests {
         assertEquals(p.getMesiPubblicazione().size(), items.size());
         assertTrue(ec.isAbbonamentoAnnuale());
         
-        assertEquals(p.getAbbonamento().add(speseSped).doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(speseSped.doubleValue(), abb.getSpeseEstero().doubleValue(),0);
         assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
         
         SpesaSpedizione spesa = 
