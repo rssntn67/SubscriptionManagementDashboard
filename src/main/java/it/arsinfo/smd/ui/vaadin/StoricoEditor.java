@@ -68,20 +68,28 @@ public class StoricoEditor
         invioSpedizione.setEmptySelectionAllowed(false);
 
         statoStorico.setReadOnly(true);
-        HorizontalLayout pri = new HorizontalLayout();
-        pri.addComponentsAndExpand(intestatario);
-        pri.addComponentsAndExpand(destinatario);
-        pri.addComponent(pubblicazione);
-        pri.addComponent(numero);
-        pri.addComponents(statoStorico);
         
-        HorizontalLayout hhh = new HorizontalLayout();
-        hhh.addComponentsAndExpand(tipoEstrattoConto);
-        hhh.addComponents(cassa,invio,invioSpedizione);
+        HorizontalLayout intestatarioHL = new HorizontalLayout();
+        intestatarioHL.addComponentsAndExpand(intestatario);
+        
+        HorizontalLayout destinatarioHL = new HorizontalLayout();
+        destinatarioHL.addComponentsAndExpand(destinatario);
 
-        HorizontalLayout sec = new HorizontalLayout();
-        sec.addComponentsAndExpand(nota);
-        setComponents(getActions(),pri,hhh,sec);
+        HorizontalLayout tipoECHL = new HorizontalLayout();
+        tipoECHL.addComponentsAndExpand(tipoEstrattoConto);
+
+        HorizontalLayout dati1HL = new HorizontalLayout();
+        dati1HL.addComponent(pubblicazione);
+        dati1HL.addComponent(numero);
+        dati1HL.addComponents(statoStorico);
+        
+        HorizontalLayout dati2HL = new HorizontalLayout();
+        dati2HL.addComponents(cassa,invio,invioSpedizione);
+
+        HorizontalLayout noteHL = new HorizontalLayout();
+        noteHL.addComponentsAndExpand(nota);
+
+        setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL,noteHL);
          
         getBinder()
             .forField(numero)
