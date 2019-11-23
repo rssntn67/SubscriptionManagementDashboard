@@ -641,23 +641,23 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public List<Abbonamento> getAssociabili(Versamento versamento) {
-        List<Abbonamento> associabili = new ArrayList<>();
         if (versamento == null || versamento.getResiduo().signum() == 0) {
-        	return associabili;
+        	return new ArrayList<>();
         }
+        Map<Long,Abbonamento> associabili = new HashMap<>();
         Abbonamento associabile = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
         if (associabile != null && versamento.getResiduo().signum() > 0) {
-        	associabili.add(associabile);
-        	return associabili;
+        	associabili.put(associabile.getId(),associabile);
         }
-        
-        return abbonamentoDao
-                .findByVersamento(null)
-                .stream()
-                .filter(abb -> 
-                    abb.getResiduo().signum() > 0 
-                    )
-                .collect(Collectors.toList());
+
+        abbonamentoDao
+        .findByVersamento(null)
+        .stream()
+        .filter(abb -> 
+            abb.getResiduo().signum() > 0 
+            ).forEach(abb -> associabili.put(abb.getId(), abb));
+       
+        return associabili.values().stream().collect(Collectors.toList());
     }
 
     public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
