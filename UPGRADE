@@ -1,0 +1,82 @@
+# smd-releases
+
+to update from 1.0 release:
+
+go to smd database and fix versamento:
+
+update abbonamento set versamento_id = null where id in (select a.id from abbonamento a left join versamento v on v.id = a.versamento_id where a.code_line = v.code_line );
+
+Then . add columns to spesa_spedizione:
+
+alter table spesa_spedizione add column cor24h numeric(19,2);
+
+update spesa_spedizione set cor24h = 0.00;
+
+ alter table spesa_spedizione add column cor3gg numeric(19,2);
+
+update spesa_spedizione set cor3gg  = 0.00;
+
+
+----populating the table spesaspedizione with predefined value .... start application:
+
+java -Dupdate.spesa.spedizione=true -jar smd-1.1.0.jar
+
+
+
+upgrade to 1.2.7
+
+Update database…
+
+alter table abbonamento add column spese_estero numeric(19,2);
+update table abbonamento set spese_estero = 0.0;
+
+
+select abb.id, a.code_line_base,abb.importo as imp_abb ,ec.importo as imp_ec,abb.spese,abb.spese_estero, p.nome,numero,a.area_spedizione from estratto_conto ec left join anagrafica a on a.id = ec.destinatario_id left join pubblicazione p on p.id = ec.pubblicazione_id left join abbonamento abb on abb.id = ec.abbonamento_id where a.area_spedizione != 'Italia' order by abb.id;
+
+
+update abbonamento set spese = 0.00, spese_estero = 10.00 where id = 38207;
+update abbonamento set spese = 0.00,spese_estero = 17.50 where id = 46782;
+update abbonamento set importo=35.00 spese = 0.00,spese_estero = 18.00 where id = 50096;
+update abbonamento set importo=24.00, spese = 0.00,spese_estero = 31.50 where id = 50588;
+update abbonamento set  spese = 0.00,spese_estero = 13.00 where id = 80892;
+update abbonamento set  importo=28.00, spese = 0.00,spese_estero = 18.00 where id = 80904;
+update abbonamento set  spese = 0.00,spese_estero = 17.50 where id = 80916;
+update abbonamento set  spese = 0.00,spese_estero = 18.00 where id = 83455;
+update abbonamento set  importo = 180,spese = 0.00,spese_estero = 55.00 where id =86390;
+update abbonamento set  spese = 0.00,spese_estero = 106.00 where id =96865;
+update abbonamento set  spese = 0.00,spese_estero = 95.00 where id =132014;
+update abbonamento set  importo = 105.00, spese = 0.00,spese_estero = 110.00 where id =135007;
+update abbonamento set   spese = 0.00,spese_estero = 182.00 where id =141696;
+update abbonamento set   spese = 0.00,spese_estero = 18.00 where id =142730;
+update abbonamento set   spese = 0.00,spese_estero = 80.00 where id =149907;
+update abbonamento set   spese = 0.00,spese_estero = 10.00 where id =160808;
+ update abbonamento set   spese = 0.00,spese_estero = 112.00 where id =183687;
+update abbonamento set  importo = 14.00, spese = 0.00,spese_estero = 17.50  where id =193449;
+update abbonamento set  importo = 42.00, spese = 0.00,spese_estero = 27.00  where id =194907;
+
+
+
+Aggiorno omaggi da AdpSede
+
+update storico set invio_spedizione = 'AdpSedeNoSpese' where tipo_estratto_conto like 'Omaggio%' and invio_spedizione = 'AdpSede';
+
+
+select abb.id, a.code_line_base,abb.importo as imp_abb ,ec.importo as imp_ec,abb.spese,abb.spese_estero, p.nome,numero,a.area_spedizione from estratto_conto ec left join anagrafica a on a.id = ec.destinatario_id left join pubblicazione p on p.id = ec.pubblicazione_id left join abbonamento abb on abb.id = ec.abbonamento_id where ec.invio_spedizione like 'Sped%' and abb.spese > 0 order by abb.id;
+
+
+
+
+Gli omaggi devono avere 0 spese
+
+smd=# select abb.id, a.code_line_base,abb.importo as imp_abb ,ec.importo as imp_ec,abb.spese,abb.spese_estero, p.nome,numero,a.area_spedizione from estratto_conto ec left join anagrafica a on a.id = ec.destinatario_id left join pubblicazione p on p.id = ec.pubblicazione_id left join abbonamento abb on abb.id = ec.abbonamento_id where ec.tipo_estratto_conto like 'Omaggio%' and abb.spese > 0 order by abb.id;
+
+Spediti dallo spedizioniere devono avere 0 spese
+
+select abb.id, a.code_line_base,abb.importo as imp_abb ,ec.importo as imp_ec,abb.spese,abb.spese_estero, p.nome,numero,a.area_spedizione from estratto_conto ec left join anagrafica a on a.id = ec.destinatario_id left join pubblicazione p on p.id = ec.pubblicazione_id left join abbonamento abb on abb.id = ec.abbonamento_id where ec.invio_spedizione like 'Sped%' and abb.spese > 0 order by abb.id;
+
+smd=# update abbonamento set spese = 0.00 where id in (select abb.id from estratto_conto ec left join anagrafica a on a.id = ec.destinatario_id left join pubblicazione p on p.id = ec.pubblicazione_id left join abbonamento abb on abb.id = ec.abbonamento_id where ec.invio_spedizione like 'Spedizioniere' and abb.spese > 0 );
+
+
+
+
+
