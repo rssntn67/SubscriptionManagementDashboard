@@ -402,7 +402,11 @@ public class SmdServiceImpl implements SmdService {
             estrattoContoDao.save(estrattoConto);
         }
         aggiornaStatoAbbonamento(abbonamento);
-        abbonamentoDao.save(abbonamento);
+        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && estrattoContoDao.findByAbbonamento(abbonamento).isEmpty()) {
+        	abbonamentoDao.delete(abbonamento);
+        } else {
+        	abbonamentoDao.save(abbonamento);
+        }
     }
 
     @Override
