@@ -533,29 +533,31 @@ public class SmdServiceImpl implements SmdService {
     }
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
+        log.info("incassa:  by:{} {} {}", user.getUsername(),abbonamento,versamento);
     	boolean identifiedByCodeline = abbonamento.getCodeLine().equals(versamento.getCodeLine());
-    	if (!identifiedByCodeline
-			&& abbonamentoDao.findByCodeLine(versamento.getCodeLine()) != null ) {
-            log.warn("incassa: Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento {} {}", abbonamento,versamento);
-    		throw new UnsupportedOperationException("Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento");
-    	}
         if (versamento.getResiduo().signum() == 0) {
             log.warn("incassa: Versamento con residuo 0, non incassabile {} {}", abbonamento,versamento);
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }
-        if (   !identifiedByCodeline 
+        if (!identifiedByCodeline 
     		&& abbonamento.getVersamento() != null 
-    		&&  abbonamento.getVersamento().getId().longValue() != versamento.getId()) {
+    		) {
             log.warn("incassa: Abbonamento già incassato da versamento senza matching Codeline, {} {}", abbonamento,versamento);
             throw new UnsupportedOperationException("incassa: Abbonamento già incassato da versamento senza matching Codeline");            
         }
         
         Incasso incasso = versamento.getIncasso();
         BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
+        
         if (incassato.signum() <= 0) {
+            log.warn("incassa: failure: incassato: {} by {} {} {}", incassato,user.getUsername(),abbonamento,versamento);
         	return;
         }
-        versamento.setOperazione(versamento.getOperazione() +"incasso : operatore='"+user.getUsername()+"', " + new Date());
+        if (versamento.getOperazione() != null) {
+        	versamento.setOperazione(versamento.getOperazione() +" incassato:'"+new Date() + " "+ incassato+"Eur by:"+user.getUsername()+" " +  "'");
+        } else {
+        	versamento.setOperazione("incassato:'"+new Date() + " "+ incassato+"Eur by:"+user.getUsername()+" " +  "'");        	
+        }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
             
@@ -567,17 +569,12 @@ public class SmdServiceImpl implements SmdService {
             abbonamento.setVersamento(versamento);
         }
         abbonamentoDao.save(abbonamento);        
-        log.info("incassato: {} by {} {} {}", incassato,user.getUsername(),abbonamento,versamento);
+        log.info("incassa: incassato:'{}' by:{} {} {}", incassato,user.getUsername(),abbonamento,versamento);
     }
 
     @Override
     public void dissocia(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception {
     	boolean identifiedByCodeline = abbonamento.getCodeLine().equals(versamento.getCodeLine());
-    	if (!identifiedByCodeline
-			&& abbonamentoDao.findByCodeLine(versamento.getCodeLine()) != null ) {
-            log.warn("dissocia: Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento {} {}", abbonamento,versamento);
-    		throw new UnsupportedOperationException("Abbonamento e Versamento non associabili, esiste un abbonamento con la codeLine del Versamento");
-    	}
         if (versamento.getIncassato().signum() == 0) {
             log.warn("dissocia: Versamento con Incasso 0, non dissociabile {} {}", abbonamento,versamento);
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
@@ -590,9 +587,14 @@ public class SmdServiceImpl implements SmdService {
         Incasso incasso = versamento.getIncasso();
         BigDecimal dissociato = Smd.dissocia(incasso, versamento, abbonamento);
         if (dissociato.signum() <= 0) {
+            log.warn("dissocia: failed: dissociato: {} by {} {} {}", dissociato,user.getUsername(),abbonamento,versamento);
         	return;
         }
-        versamento.setOperazione(versamento.getOperazione() +"dissocia incasso : operatore='"+user.getUsername()+"', " + new Date());
+        if (versamento.getOperazione() != null) {
+            versamento.setOperazione(versamento.getOperazione() +" dissociato:'"+new Date() + " "+ dissociato+"Eur by:"+user.getUsername()+" " +  "'");        	
+        } else {
+            versamento.setOperazione("dissociato:'"+new Date() + " "+ dissociato+"Eur by:"+user.getUsername()+" " +  "'");        	
+        }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         
@@ -601,7 +603,7 @@ public class SmdServiceImpl implements SmdService {
         	abbonamento.setVersamento(null);
         }
         abbonamentoDao.save(abbonamento);        
-        log.info("dissociato: {} by {} {} {}", dissociato,user.getUsername(),abbonamento,versamento);
+        log.info("dissocia: dissociato: {} by {} {} {}", dissociato,user.getUsername(),abbonamento,versamento);
 
     }
 
