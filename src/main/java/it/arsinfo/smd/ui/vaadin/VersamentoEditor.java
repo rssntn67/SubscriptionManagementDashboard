@@ -86,6 +86,7 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         getBinder().forField(importo)
             .asRequired()
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withValidator(imp -> imp != null, "Importo non può essere null")
             .bind(Versamento::getImporto,Versamento::setImporto);
         getBinder().forField(incassato)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))

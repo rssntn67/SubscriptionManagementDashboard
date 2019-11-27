@@ -126,14 +126,17 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         getBinder()
         .forField(spese)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(sp -> sp != null, "Spese non può essere null")
         .bind("spese");
         getBinder()
         .forField(speseEstero)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(sp -> sp != null, "Spese Estero non può essere null")
         .bind("speseEstero");
         getBinder()
         .forField(pregresso)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(sp -> sp != null, "Pregresso non può essere null")
         .bind("pregresso");
         getBinder()
         .forField(totale)

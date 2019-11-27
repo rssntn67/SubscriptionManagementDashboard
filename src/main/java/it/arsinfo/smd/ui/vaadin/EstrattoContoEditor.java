@@ -96,15 +96,14 @@ public class EstrattoContoEditor
   
         getBinder()
             .forField(numero)
-            .withValidator(str -> str != null, "Inserire un numero")
-            .withConverter(new StringToIntegerConverter(""))
+            .withConverter(new StringToIntegerConverter("Deve essere un numero"))
             .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
             .bind(EstrattoConto::getNumero, EstrattoConto::setNumero);
 
         getBinder()
         .forField(numeroTotaleRiviste)
-        .withConverter(new StringToIntegerConverter(""))
-        .withValidator(num -> num != null && num >= 0,"deve essere maggiore o uguale 0")
+        .withConverter(new StringToIntegerConverter("Deve essere un numero"))
+        .withValidator(num -> num != null && num >= 0,"essere maggiore o uguale 0")
         .bind(EstrattoConto::getNumeroTotaleRiviste, EstrattoConto::setNumeroTotaleRiviste);
 
         getBinder()

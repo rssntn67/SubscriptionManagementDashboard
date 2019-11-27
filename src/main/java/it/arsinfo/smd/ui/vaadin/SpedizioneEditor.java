@@ -87,8 +87,7 @@ public class SpedizioneEditor
   
         getBinder()
             .forField(pesoStimato)
-            .withValidator(str -> str != null, "Inserire un numero")
-            .withConverter(new StringToIntegerConverter(""))
+            .withConverter(new StringToIntegerConverter("Inserire un Numero"))
             .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
             .bind(Spedizione::getPesoStimato, Spedizione::setPesoStimato);
         

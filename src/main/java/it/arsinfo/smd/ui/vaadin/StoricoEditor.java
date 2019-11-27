@@ -93,8 +93,7 @@ public class StoricoEditor
          
         getBinder()
             .forField(numero)
-            .withValidator(str -> str != null, "Inserire un numero")
-            .withConverter(new StringToIntegerConverter(""))
+            .withConverter(new StringToIntegerConverter("Inserire un numero"))
             .withValidator(num -> num >= 0,"deve essere maggiore o uguale a 0")
             .bind(Storico::getNumero, Storico::setNumero);
         getBinder().bindInstanceFields(this);
