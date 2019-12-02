@@ -748,47 +748,53 @@ public class SmdServiceImpl implements SmdService {
         && inc.getCuas() == incasso.getCuas() 
         && inc.getImporto().compareTo(incasso.getImporto()) == 0)
         .collect(Collectors.toList());
-        if (found.isEmpty()) {
-            incassoDao.save(incasso);
-            incasso.getVersamenti().forEach(vers -> versamentoDao.save(vers));
+        if (!found.isEmpty()) {
+        	log.warn("save: Incasso esistente, {} ", incasso);
+            throw new UnsupportedOperationException("save: Non posso Salvare: Incasso esistente ");
         }
+        incassoDao.save(incasso);
+        incasso.getVersamenti().forEach(vers -> versamentoDao.save(vers));
     }
 
     @Override
-    public void save(Versamento versamento, UserInfo user) throws Exception {
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
-            return;
+    public void save(Versamento versamento) throws Exception {
+        log.info("save: {}", versamento);
+        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
+        	log.warn("save: Versamento: incasso non esistente, {} ", versamento);
+            throw new UnsupportedOperationException("save: Versamento: incasso non esistente" );
+        	
+    	}
+    	if (versamento.getIncassato().signum() != 0) {
+        	log.warn("save: Versamento: non posso aggiornare un versamento incassato, {} ", versamento);
+            throw new UnsupportedOperationException("save: Versamento: non posso aggiornare un versamento incassato");
         }
         versamentoDao.save(versamento);
         Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
         Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
-        incassoDao.save(incasso);
-        //FIXME
-        for (Abbonamento abbonamento: getAssociati(versamento)) {
-        	incassa(abbonamento, versamento, user,"da Save Versamento");
-        }
-        
+        incassoDao.save(incasso);        
     }
 
     @Override
-    public void delete(Versamento versamento, UserInfo user) throws Exception{
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null) {
-            return;
-        }
-        Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
-        for (Abbonamento abbonamento: getAssociati(versamento)) {
-        	dissocia(abbonamento, versamento, user,"da delete Versamento");
+    public void delete(Versamento versamento) throws Exception{
+        log.info("delete: {}", versamento);
+        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
+        	log.warn("delete: Versamento: incasso non esistente, {} ", versamento);
+            throw new UnsupportedOperationException("delete: Versamento: incasso non esistente" );
+        	
+    	}
+    	if (versamento.getIncassato().signum() != 0) {
+        	log.warn("delete: Versamento: non posso cancellare un versamento incassato, {} ", versamento);
+            throw new UnsupportedOperationException("delete: Versamento: non posso calcellare un versamento incassato");
         }
         versamentoDao.delete(versamento);
+    	Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
         List<Versamento> versamenti = versamentoDao.findByIncasso(incasso);
         if (versamenti.size() == 0) {
             incassoDao.delete(incasso);
         } else {
             Smd.calcoloImportoIncasso(incasso,versamenti);
             incassoDao.save(incasso);
-        }
-        
-        
+        }                
     }
 
     @Override

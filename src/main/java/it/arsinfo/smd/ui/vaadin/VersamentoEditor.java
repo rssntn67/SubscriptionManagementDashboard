@@ -108,12 +108,11 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     @Override
     public void focus(boolean persisted, Versamento versamento) {
         
-        if (persisted && versamento.getIncassato().signum() == 0) {
-            importo.setReadOnly(false);            
-            getDelete().setEnabled(true);
-            getSave().setEnabled(true);
-            getCancel().setEnabled(true);
-        }
+    	boolean inn = versamento.getIncassato().signum() == 0;
+        importo.setReadOnly(!inn);            
+        getDelete().setEnabled(inn);
+        getSave().setEnabled(inn);
+        getCancel().setEnabled(inn);
         
         ccp.setValue(versamento.getIncasso().getCcp());
         cuas.setValue(versamento.getIncasso().getCuas());

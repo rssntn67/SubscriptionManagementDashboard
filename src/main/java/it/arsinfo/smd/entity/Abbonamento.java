@@ -75,8 +75,6 @@ public class Abbonamento implements SmdEntity {
     private Cuas cuas = Cuas.NOCCP;
 
     @Transient
-    private String operazione;
-    @Transient
     private String progressivo;
 
     @Transient
@@ -343,16 +341,6 @@ public class Abbonamento implements SmdEntity {
     @Transient
     public void setCuas(Cuas cuas) {
         this.cuas = cuas;
-    }
-
-    @Transient
-    public String getOperazione() {
-        return operazione;
-    }
-
-    @Transient
-    public void setOperazione(String operazione) {
-        this.operazione = operazione;
     }
 
     @Transient

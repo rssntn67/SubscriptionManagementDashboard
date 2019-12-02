@@ -3,8 +3,6 @@ package it.arsinfo.smd.ui.vaadin;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -35,7 +33,7 @@ public class IncassoUI extends SmdUI {
     @Autowired 
     private SmdService smdService;
     
-    private static final Logger log = LoggerFactory.getLogger(Smd.class);
+//    private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
     @Override
     protected void init(VaadinRequest request) {
@@ -86,11 +84,9 @@ public class IncassoUI extends SmdUI {
                     return;
                 } 
                 try {
-                    smdService.save(get(), getLoggedInUser());
-                    log.info("save: {}", get());
+                    smdService.save(get());
                     onChange();
                 } catch (Exception e) {
-                    log.warn("save failed for : {}.", get(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -106,11 +102,9 @@ public class IncassoUI extends SmdUI {
                 } 
                 
                 try {
-                    smdService.delete(get(),getLoggedInUser());
-                    log.info("delete: {}", get());
+                    smdService.delete(get());
                     onChange();
                 } catch (Exception e) {
-                    log.warn("delete failed for : {}.", get(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -216,7 +210,6 @@ public class IncassoUI extends SmdUI {
             try {
                 smdService.incassaCodeLine(search.find(),getLoggedInUser());
             } catch (Exception e) {
-                log.error("Incassa con Code Line in errore: {}.", e.getMessage(),e);
                 Notification.show("Incassa con Code Line. Errore: " +e.getMessage()+  ".",Notification.Type.ERROR_MESSAGE);
                 return;
             }

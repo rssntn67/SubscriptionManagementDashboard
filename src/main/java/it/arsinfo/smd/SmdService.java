@@ -59,9 +59,9 @@ public interface SmdService {
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
     List<Spedizione> findSpedizioneAll();    
     
-    void save(Incasso incasso);
-    void save(Versamento versamento, UserInfo info) throws Exception;
-    void delete(Versamento versamento, UserInfo info) throws Exception;
+    void save(Incasso incasso) throws Exception;
+    void save(Versamento versamento) throws Exception;
+    void delete(Versamento versamento) throws Exception;
     
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;
     void dissocia(Abbonamento abbonamento, Versamento versamento,UserInfo user, String description) throws Exception;    

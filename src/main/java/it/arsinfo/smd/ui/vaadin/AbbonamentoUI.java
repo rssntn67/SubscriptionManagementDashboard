@@ -327,7 +327,7 @@ public class AbbonamentoUI extends SmdUI {
                 return;
         	}
         	if (editor.get().getProgressivo() == null) {
-                Notification.show("Aggiungere Riferimento al Campo Progressivo",
+                Notification.show("Aggiungere Riferimento nel Campo Progressivo",
                         Notification.Type.ERROR_MESSAGE);
                 return;
         	}

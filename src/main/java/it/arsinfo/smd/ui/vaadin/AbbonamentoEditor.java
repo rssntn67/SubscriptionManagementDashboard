@@ -73,8 +73,9 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,totale,incassato,residuo);
 
         HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
-
-        setComponents(getActions(),anag, status,imp,incss);
+        HorizontalLayout detai = new HorizontalLayout();
+        detai.addComponentsAndExpand(progressivo);
+        setComponents(getActions(),anag, status,imp,incss,detai);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
