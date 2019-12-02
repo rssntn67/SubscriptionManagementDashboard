@@ -101,7 +101,7 @@ public class OperazioneIncasso {
 
 	@Override
 	public String toString() {
-		return "OperazioneIncasso [id=" + id + ", abbonamento=" + abbonamento + ", versamento=" + versamento
+		return "OperazioneIncasso [id=" + id + ", abbonamento_id=" + abbonamento.getId() + ", versamento_id=" + versamento.getId()
 				+ ", statoOperazioneIncasso=" + statoOperazioneIncasso + ", description=" + description + ", operatore="
 				+ operatore + ", importo=" + importo + ", data=" + data + "]";
 	}

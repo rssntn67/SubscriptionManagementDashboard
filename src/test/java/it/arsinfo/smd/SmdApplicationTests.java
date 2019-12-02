@@ -43,6 +43,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -54,6 +55,7 @@ import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -1629,29 +1631,55 @@ public class SmdApplicationTests {
 
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
+        assertEquals(0, operazioneIncassoDao.findAll().size());
 
-        incasso.getVersamenti().stream().forEach(v-> {
+        BigDecimal incassato = BigDecimal.ZERO;
+        for (Versamento v: incasso.getVersamenti()) {
         	assertEquals(abb.getCodeLine(), v.getCodeLine());
-            Smd.incassa(incasso,v, abb);
+            incassato = incassato.add(Smd.incassa(incasso,v, abb));
             versamentoDao.save(v);
-        });
-        incassoDao.save(incasso);
-        abbonamentoDao.save(abb);
+            incassoDao.save(incasso);
+            abb.setStatoAbbonamento(StatoAbbonamento.Valido);
+            abbonamentoDao.save(abb);
+            OperazioneIncasso operazione = new OperazioneIncasso();
+            operazione.setAbbonamento(abb);
+            operazione.setVersamento(v);
+            operazione.setStatoOperazioneIncasso(StatoOperazioneIncasso.Incasso);
+            operazione.setOperatore("Test");
+            operazione.setDescription("Test Incasso code");
+            operazione.setImporto(incassato);
+            operazioneIncassoDao.save(operazione);            
+        }
 
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
+        assertEquals(1, operazioneIncassoDao.findAll().size());
 
         assertEquals(0, abb.getResiduo().doubleValue(),0);
         assertEquals(0, incasso.getResiduo().doubleValue(),0);
+        assertEquals(incassato.doubleValue(), abb.getIncassato().doubleValue(),0);
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
-        
+        assertEquals(StatoAbbonamento.Valido, abb.getStatoAbbonamento());
+
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
         assertNotNull(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
-        assertEquals(StatoAbbonamento.Nuovo, abbonamento.getStatoAbbonamento());
+        assertEquals(StatoAbbonamento.Valido, abbonamento.getStatoAbbonamento());
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));        
+        assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
+        assertEquals(0, versamento.getResiduo().doubleValue(),0);
+   
+        OperazioneIncasso operazione = 
+        		operazioneIncassoDao
+        		.findByAbbonamentoAndVersamentoAndStatoOperazioneIncasso(abbonamento, versamento, StatoOperazioneIncasso.Incasso).iterator().next();
+        assertNotNull(operazione);
+        assertEquals(abbonamento.getId(), operazione.getAbbonamento().getId());
+        assertEquals(versamento.getId(), operazione.getVersamento().getId());
+        assertEquals(incassato.doubleValue(), operazione.getImporto().doubleValue(),0);
+        assertEquals(StatoOperazioneIncasso.Incasso, operazione.getStatoOperazioneIncasso());
+        
     }
 
     @Test
@@ -1718,11 +1746,11 @@ public class SmdApplicationTests {
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
+        assertEquals(1, operazioneIncassoDao.count());
         
         Incasso inc1 = incassoDao.findAll().iterator().next();
-        System.out.println(inc1.getDataContabile());
-        System.out.println(Smd.getStandardDate(abb1.getDataContabile()));
-    Incasso incasso = 
+        assertEquals(Smd.getStandardDate(inc1.getDataContabile()), Smd.getStandardDate(abb1.getDataContabile()));
+        Incasso incasso = 
         incassoDao
         .findByDataContabileAndCassaAndCcpAndCuas(
               abb1.getDataContabile(),
@@ -1737,7 +1765,12 @@ public class SmdApplicationTests {
         smdService.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
-        assertEquals(2, versamentoDao.count());        
+        assertEquals(2, versamentoDao.count());  
+        assertEquals(2, operazioneIncassoDao.count());
+        for (OperazioneIncasso op: operazioneIncassoDao.findAll()) {
+        	assertEquals(StatoOperazioneIncasso.Incasso, op.getStatoOperazioneIncasso());
+        	assertEquals("adp", op.getOperatore());
+        }
     }
 
 }

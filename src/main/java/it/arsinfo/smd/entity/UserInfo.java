@@ -99,4 +99,9 @@ public class UserInfo implements SmdEntity {
     public void setData(Date data) {
         this.data = data;
     }
+
+	@Override
+	public String toString() {
+		return "UserInfo [id=" + id + ", username=" + username + ", role=" + role + "]";
+	}
 }

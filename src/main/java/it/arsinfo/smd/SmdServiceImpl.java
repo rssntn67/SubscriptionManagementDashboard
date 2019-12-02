@@ -540,19 +540,16 @@ public class SmdServiceImpl implements SmdService {
     }
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {
-        log.info("incassa:  by:{} {} {}", user.getUsername(),abbonamento,versamento);
+        log.info("incassa: {}", user);
+        log.info("incassa: {}", abbonamento);
+        log.info("incassa: {}", versamento);
         if (versamento.getResiduo().signum() == 0) {
-            log.warn("incassa: Versamento con residuo 0, non incassabile {} {}", abbonamento,versamento);
+            log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {}", abbonamento,versamento,user);
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }
         
         Incasso incasso = versamento.getIncasso();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
-        
-        if (incassato.signum() <= 0) {
-            log.warn("incassa: failure: incassato: {} by {} {} {}", incassato,user.getUsername(),abbonamento,versamento);
-        	return;
-        }
+        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);        
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         aggiornaStatoAbbonamento(abbonamento);
