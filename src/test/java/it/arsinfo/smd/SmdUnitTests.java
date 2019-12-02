@@ -1073,10 +1073,6 @@ public class SmdUnitTests {
         abb.setImporto(new BigDecimal(10));
         assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
         
-        Versamento versamento = new Versamento();
-        abb.setVersamento(versamento);
-        assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
-
         abb.setIncassato(new BigDecimal(10));
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
 

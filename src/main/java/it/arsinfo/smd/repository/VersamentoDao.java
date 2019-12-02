@@ -12,9 +12,9 @@ import it.arsinfo.smd.entity.Versamento;
 public interface VersamentoDao extends JpaRepository<Versamento, Long> {
 
 	List<Versamento> findByIncasso(Incasso incasso);
-        List<Versamento> findByDataContabile(Date data);
-        List<Versamento> findByDataPagamento(Date data);
-        List<Versamento> findByImporto(BigDecimal importo);
-        List<Versamento> findByCodeLineContainingIgnoreCase(String codeLine);
+    List<Versamento> findByDataContabile(Date data);
+    List<Versamento> findByDataPagamento(Date data);
+    List<Versamento> findByImporto(BigDecimal importo);
+    List<Versamento> findByCodeLineContainingIgnoreCase(String codeLine);
 	
 }

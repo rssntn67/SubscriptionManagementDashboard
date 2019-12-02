@@ -94,7 +94,6 @@ public class SmdHelper {
         Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
         versamentoIncasso5.setCodeLine(codeLine);
         versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
-        versamentoIncasso5.setOperazione("Assegno n.0002889893819813 Banca Popolare di Chiavari");
         incasso5.addVersamento(versamentoIncasso5);
         Smd.calcoloImportoIncasso(incasso5);
         return incasso5;

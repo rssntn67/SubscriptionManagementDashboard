@@ -63,8 +63,8 @@ public interface SmdService {
     void save(Versamento versamento, UserInfo info) throws Exception;
     void delete(Versamento versamento, UserInfo info) throws Exception;
     
-    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user) throws Exception;
-    void dissocia(Abbonamento abbonamento, Versamento versamento,UserInfo user) throws Exception;    
+    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;
+    void dissocia(Abbonamento abbonamento, Versamento versamento,UserInfo user, String description) throws Exception;    
     
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;

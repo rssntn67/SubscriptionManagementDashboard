@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -52,20 +51,13 @@ public class Abbonamento implements SmdEntity {
     @ManyToOne
     private Campagna campagna;
     
-    @OneToOne
-    private Versamento versamento;
-
     private BigDecimal pregresso=BigDecimal.ZERO;
     private BigDecimal importo=BigDecimal.ZERO;
     private BigDecimal spese=BigDecimal.ZERO;
     private BigDecimal speseEstero=BigDecimal.ZERO;
     private BigDecimal incassato=BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING)
-    private Cassa cassa = Cassa.Ccp;
     private String codeLine;
-    @Enumerated(EnumType.STRING)
-    private Ccp ccp = Ccp.UNO;
 
     @Enumerated(EnumType.STRING)
     private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
@@ -73,6 +65,12 @@ public class Abbonamento implements SmdEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
 
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa = Cassa.Ccp;
+
+    @Transient
+    @Enumerated(EnumType.STRING)
+    private Ccp ccp = Ccp.UNO;
     @Transient
     private Cuas cuas = Cuas.NOCCP;
 
@@ -113,14 +111,13 @@ public class Abbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Imp. '%.2f', Spese '%.2f', Estero '%.2f', 'Preg '%.2f', %s,'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, %s , Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
                                    id, 
-                                   Smd.getStatoIncasso(this), 
+                                   statoAbbonamento, 
                                    importo,
                                    spese,
                                    speseEstero,
                                    pregresso,
-                                   cassa,
                                    codeLine,
                                    anno);
     }
@@ -139,14 +136,6 @@ public class Abbonamento implements SmdEntity {
 
     public void setCampagna(Campagna campagna) {
         this.campagna = campagna;
-    }
-
-    public Versamento getVersamento() {
-        return versamento;
-    }
-
-    public void setVersamento(Versamento versamento) {
-        this.versamento = versamento;
     }
 
     public String getCodeLine() {

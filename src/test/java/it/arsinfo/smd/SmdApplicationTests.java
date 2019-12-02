@@ -71,6 +71,7 @@ import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
+import it.arsinfo.smd.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
@@ -109,6 +110,8 @@ public class SmdApplicationTests {
     private VersamentoDao versamentoDao;
     @Autowired
     private OperazioneDao operazioneDao;
+    @Autowired
+    private OperazioneIncassoDao operazioneIncassoDao;
     @Autowired
     private NotaDao notaDao;
     @Autowired
@@ -151,6 +154,7 @@ public class SmdApplicationTests {
         assertNotNull(versamentoDao);
         assertNotNull(incassoDao);
         assertNotNull(operazioneDao);
+        assertNotNull(operazioneIncassoDao);
         assertNotNull(userInfoDao);
         assertNotNull(spedizioneDao);
         assertNotNull(spedizioneItemDao);
@@ -181,6 +185,7 @@ public class SmdApplicationTests {
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, versamentoDao.findAll().size());
         assertEquals(0, operazioneDao.findAll().size());
+        assertEquals(0, operazioneIncassoDao.findAll().size());
         assertEquals(2, userInfoDao.findAll().size());
         for (SpesaSpedizione ss : SmdHelper.getSpeseSpedizione()) {
             spesaSpedizioneDao.save(ss);
@@ -214,6 +219,7 @@ public class SmdApplicationTests {
 	        spedizioneItemDao.deleteAll();
 	        spedizioneDao.deleteAll();
 	        estrattoContoDao.deleteAll();
+	        operazioneIncassoDao.deleteAll();
 	        abbonamentoDao.deleteAll();
 	        campagnaItemDao.deleteAll();
 	        campagnaDao.deleteAll();

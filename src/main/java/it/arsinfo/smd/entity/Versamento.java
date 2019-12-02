@@ -45,8 +45,6 @@ public class Versamento implements SmdEntity {
     private BigDecimal importo = BigDecimal.ZERO;
     private BigDecimal incassato =BigDecimal.ZERO;
     
-    private String operazione;
-
     private String provincia;
     private String ufficio;
     private String sportello;
@@ -185,14 +183,34 @@ public class Versamento implements SmdEntity {
         return incassato;
     }
 
-    public String getOperazione() {
-        return operazione;
-    }
-    public void setOperazione(String operazione) {
-        this.operazione = operazione;
-    }
-
     public void setDataPagamento(Date dataPagamento) {
         this.dataPagamento = Smd.getStandardDate(dataPagamento);
     }
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Versamento other = (Versamento) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 }

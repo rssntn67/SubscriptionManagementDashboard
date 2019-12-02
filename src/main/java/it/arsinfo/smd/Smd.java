@@ -39,7 +39,6 @@ import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -49,6 +48,7 @@ import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
+import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -64,12 +64,57 @@ public class Smd {
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
 
+    
     public static final BigDecimal contrassegno=new BigDecimal(4.50);
     @Bean
     public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
     }
-    
+
+    public static Map<Versamento, BigDecimal> getVersamentoMap(List<OperazioneIncasso> operazioni) {
+    	Map<Versamento, BigDecimal> versamentoMap = new HashMap<>();
+    	for (OperazioneIncasso oi: operazioni ) {
+        	BigDecimal saldo = BigDecimal.ZERO;
+    		if (versamentoMap.containsKey(oi.getVersamento())) {
+    			saldo = versamentoMap.get(oi.getVersamento());
+    		}
+    		switch (oi.getStatoOperazioneIncasso()) {
+			case Incasso:
+				saldo=saldo.add(oi.getImporto());
+				break;
+			case Storno:
+				saldo=saldo.subtract(oi.getImporto());
+				break;
+			default:
+				break;
+    		}
+    		versamentoMap.put(oi.getVersamento(), saldo);
+    	}
+    	return versamentoMap;
+    }
+
+    public static Map<Abbonamento, BigDecimal> getAbbonamentoMap(List<OperazioneIncasso> operazioni) {
+    	Map<Abbonamento, BigDecimal> abbonamentoMap = new HashMap<>();
+    	for (OperazioneIncasso oi: operazioni ) {
+        	BigDecimal saldo = BigDecimal.ZERO;
+    		if (abbonamentoMap.containsKey(oi.getAbbonamento())) {
+    			saldo = abbonamentoMap.get(oi.getAbbonamento());
+    		}
+    		switch (oi.getStatoOperazioneIncasso()) {
+			case Incasso:
+				saldo=saldo.add(oi.getImporto());
+				break;
+			case Storno:
+				saldo=saldo.subtract(oi.getImporto());
+				break;
+			default:
+				break;
+    		}
+    		abbonamentoMap.put(oi.getAbbonamento(), saldo);
+    	}
+    	return abbonamentoMap;
+    }
+
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
         if (abbonamento.getTotale().signum() == 0) {
             return Incassato.Omaggio;
@@ -680,61 +725,7 @@ public class Smd {
         }          
         ec.setImporto(costo);
     }
-   
-    public static StatoStorico getStatoStorico(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estratticonto) {
-        StatoStorico pagamentoRegolare = StatoStorico.Valido;
-        switch (storico.getTipoEstrattoConto()) {
-        case Ordinario:
-            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
-            break;
-        case Scontato:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
-            break;
-        case Sostenitore:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
-        case Web:    
-            pagamentoRegolare = checkVersamento(storico, abbonamenti,estratticonto);
-        case OmaggioCuriaDiocesiana:
-            break;
-        case OmaggioCuriaGeneralizia:
-            break;
-        case OmaggioGesuiti:
-            break;
-        case OmaggioDirettoreAdp:
-            break;
-        case OmaggioEditore:
-            break;
-        default:
-            break;
-        }
-        return pagamentoRegolare;
-    }
-    
-    private static StatoStorico checkVersamento(Storico storico, List<Abbonamento> abbonamenti, List<EstrattoConto> estrattiConto) {
-        for (Abbonamento abb: abbonamenti) {
-            if (abb.getIntestatario().getId().longValue() != storico.getIntestatario().getId().longValue() 
-                    || abb.getCampagna() == null
-                    || abb.getAnno().getAnno() != Anno.getAnnoCorrente().getAnno()) {
-                continue;
-            }
-            for (EstrattoConto sped: estrattiConto) {
-                if (sped.getStorico().getId() != storico.getId()) {
-                    continue;
-                }
-                if (abb.getTotale().signum() == 0 ) {
-                    return StatoStorico.Valido;
-                }
-                if (abb.getTotale().signum() > 0 &&  abb.getVersamento() == null) {
-                    return StatoStorico.Sospeso;
-                }
-                if (abb.getTotale().signum() > 0 &&  abb.getVersamento() != null) {
-                    return StatoStorico.Valido;
-                }
-            }
-        }
-        return StatoStorico.Sospeso;
-    }
-        
+           
     public static Date getStandardDate(LocalDate localDate) {
         return getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
     }

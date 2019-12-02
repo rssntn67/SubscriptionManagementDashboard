@@ -6,5 +6,5 @@ public enum Cassa {
         Paypal,
         Bonifico,
         Ccp,  
-	Contrassegno;
+        Contrassegno;
 }

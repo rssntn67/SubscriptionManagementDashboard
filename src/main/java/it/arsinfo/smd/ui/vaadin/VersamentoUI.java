@@ -91,7 +91,7 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Dissocia");
             button.addClickListener(click -> {
                 try {
-                    smdService.dissocia(abbonamento, grid.getSelected(),getLoggedInUser());
+                    smdService.dissocia(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     log.warn("Reverti failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),
@@ -110,7 +110,7 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Incassa");
             button.addClickListener(click -> {
                 try {
-                    smdService.incassa(abbonamento, grid.getSelected(),getLoggedInUser());
+                    smdService.incassa(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     log.warn("Incassa failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),

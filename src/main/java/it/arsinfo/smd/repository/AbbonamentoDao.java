@@ -9,7 +9,6 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Versamento;
 
 public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
 
@@ -18,7 +17,6 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
         List<Abbonamento> findByIntestatarioAndAnnoAndCassa(Anagrafica intestatario, Anno anno, Cassa cassa);
 	List<Abbonamento> findByCampagna(Campagna campagna);
         List<Abbonamento> findByIntestatarioAndCampagna(Anagrafica intestatario, Campagna campagna);
-	List<Abbonamento> findByVersamento(Versamento versamento);
 	Abbonamento findByCodeLine(String codeLine);
         List<Abbonamento> findByCassa(Cassa cassa);
         List<Abbonamento> findByAnno(Anno anno);

@@ -26,7 +26,6 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
     private final TextField  residuo = new TextField("residuo");    
     private final TextField  codeLine = new TextField("CodeLine");
     private final TextField  progressivo = new TextField("Progressivo");
-    private final TextField  operazione = new TextField("Operazione");
     
     private final TextField  provincia = new TextField("Identificativo Provincia");
     private final TextField  ufficio = new TextField("Identificativo Ufficio");
@@ -68,20 +67,15 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);
         HorizontalLayout lay0 = new HorizontalLayout(importo,incassato,residuo,dataContabile,dataPagamento);
         HorizontalLayout lay1 = new HorizontalLayout(codeLine,progressivo,ccp,cassa,cuas);
-        HorizontalLayout lay2 = new HorizontalLayout();
-        lay2.addComponentsAndExpand(operazione);
         HorizontalLayout lay3 = new HorizontalLayout(provincia,ufficio,sportello,bobina,progressivoBobina);
         HorizontalLayout lay4 = new HorizontalLayout(bollettino,accettazione,sostitutivo);
         setComponents(
                       getActions(),
                       lay0,
                       lay1,
-                      lay2,
                       lay3,
                       lay4
                   );
-
-        operazione.setReadOnly(true);
         
         getBinder().forField(importo)
             .asRequired()
@@ -124,11 +118,9 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         ccp.setValue(versamento.getIncasso().getCcp());
         cuas.setValue(versamento.getIncasso().getCuas());
         cassa.setValue(versamento.getIncasso().getCassa());
-        operazione.setVisible(persisted);
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         
-        operazione.setReadOnly(persisted);
         codeLine.setReadOnly(persisted);
         progressivo.setReadOnly(persisted);
         
