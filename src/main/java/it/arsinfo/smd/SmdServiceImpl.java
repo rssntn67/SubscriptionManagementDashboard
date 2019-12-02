@@ -215,6 +215,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void delete(Abbonamento abbonamento) {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
+        	log.warn("Non si può cancellare un abbonamento nello stato Nuovo: {}", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
         }
         spedizioneDao
@@ -232,6 +233,9 @@ public class SmdServiceImpl implements SmdService {
     }
 
     private EstrattoConto getByStorico(Campagna campagna,Storico storico) throws Exception{
+    	if (campagna == null) {
+            throw new Exception("Campagna is null");    		
+    	}
         List<EstrattoConto> ecs = 
                 estrattoContoDao
                 .findByStorico(storico)
@@ -268,7 +272,8 @@ public class SmdServiceImpl implements SmdService {
         if (campagna == null  || storico == null
                 || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
                 ) {
-            return;
+        	log.warn("genera: Non è possibile generare la campagna {}, {}",campagna,storico);
+            throw new UnsupportedOperationException("Non è possibile agenerare la campagna");
         }
         storico.setStatoStorico(StatoStorico.Valido);
         save(storico, note);        
@@ -285,10 +290,10 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void aggiorna(Campagna campagna, Storico storico, Nota...note) throws Exception {
-        if (campagna == null  || storico == null
-                || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
+        if (campagna != null && campagna.getStatoCampagna() == StatoCampagna.Chiusa 
                 ) {
-            return;
+        	log.warn("aggiorna: Non è possibile aggiornare la campagna {}, {}",campagna,storico);
+            throw new UnsupportedOperationException("Non è possibile aggiornare la campagna");
         }
         EstrattoConto ec = getByStorico(campagna, storico);
         
@@ -440,20 +445,19 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione) {
-        operazioneDao.findByAnnoAndMese(annoSpedizione, meseSpedizione).forEach( operazione -> {
-            if (operazione.getStatoOperazione() != StatoOperazione.Inviata) {
-                throw new UnsupportedOperationException("Bisogna inviare tutti le pubblicazione del mese");
-            }
-        });
-
-        operazioneDao.findByAnnoAndMese(annoSpedizione, meseSpedizione).forEach( operazione -> {
+        operazioneDao
+        .findByAnnoAndMese(annoSpedizione, meseSpedizione)
+        .stream()
+        .filter(operazione -> operazione.getStatoOperazione() == StatoOperazione.Inviata)
+        .forEach( operazione -> {
             operazione.setStatoOperazione(StatoOperazione.Spedita);
             operazioneDao.save(operazione);
         });
 
         spedizioneDao
         .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione,annoSpedizione)
-        .stream().filter(sped -> sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere)
+        .stream()
+        .filter(sped -> sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere)
         .forEach(sped -> {
             sped.setStatoSpedizione(StatoSpedizione.INVIATA);
             spedizioneDao.save(sped);
@@ -705,6 +709,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void save(Storico storico, Nota...note) {
+        log.info("save: {}" + storico);
         if (storico.getNumero() <= 0) {
             storico.setNumero(0);
             storico.setStatoStorico(StatoStorico.Sospeso);

@@ -1,7 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.vaadin.data.Binder;
@@ -17,8 +15,6 @@ public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {
 
     private final JpaRepository<T, Long> repositoryDao;
-
-    private static final Logger log = LoggerFactory.getLogger(SmdEditor.class);
 
     private T smdObj;
 
@@ -57,10 +53,8 @@ public abstract class SmdEditor<T extends SmdEntity>
     public void delete() {
         try {
             repositoryDao.delete(smdObj);
-            log.info("delete: {}", smdObj);
             onChange();
         } catch (Exception e) {
-            log.warn("delete failed for : {}.",smdObj.toString(),e);
             Notification.show(e.getMessage(),
                               Notification.Type.ERROR_MESSAGE);
         }
@@ -69,10 +63,8 @@ public abstract class SmdEditor<T extends SmdEntity>
     public void save() {
         try {
             repositoryDao.save(smdObj);
-            log.info("save: {}" , smdObj);
             onChange();
         } catch (Exception e) {
-            log.warn("save failed for : {}.",smdObj.toString(),e);
             Notification.show(e.getMessage(),
                               Notification.Type.ERROR_MESSAGE);
         }

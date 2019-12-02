@@ -1,5 +1,12 @@
 package it.arsinfo.smd;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,6 +18,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +79,57 @@ public class Smd {
             return new BCryptPasswordEncoder();
     }
 
+    public static OutputStream getFileOutputStream(File file) throws Exception {
+        try {
+            log.info("Loading file: {}" , file.getName());
+            return new FileOutputStream(file);
+        } catch (final java.io.FileNotFoundException e) {
+        	log.error("Cannot open file {}", e.getMessage());
+        	throw e;
+        }
+    }
+    public static File getIncassoFile(String filename) {
+    	return new File("data/" + filename);
+    }
+    
+    public static List<Incasso> uploadIncasso(File file) throws Exception {
+    	List<Incasso> incassi = new ArrayList<>();
+        FileInputStream fstream;
+        try {
+            fstream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            log.error("Incasso Cancellato: " + e.getMessage());
+            throw e;
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+        String strLine;
+
+        //Read File Line By Line
+        try {
+            Set<String> versamenti = new HashSet<>();
+            while ((strLine = br.readLine()) != null)   {
+                if (strLine.trim().equals("")) {
+                    log.debug("Riga vuota!");
+                } else if (isVersamento(strLine)) {
+                    versamenti.add(strLine);
+                } else if (isRiepilogo(strLine)) {
+                    incassi.add(Smd.generaIncasso(versamenti, strLine));
+                    versamenti.clear();                    
+                } else {
+                    log.error("Incasso Cancellato: Valore non riconosciuto->" +strLine);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Incasso Cancellato: " + e.getMessage());
+            throw e;
+        } finally {
+            br.close();
+    	}
+    	return incassi;
+    }
+    
     public static Map<Versamento, BigDecimal> getVersamentoMap(List<OperazioneIncasso> operazioni) {
     	Map<Versamento, BigDecimal> versamentoMap = new HashMap<>();
     	for (OperazioneIncasso oi: operazioni ) {
@@ -193,6 +252,7 @@ public class Smd {
             List<SpesaSpedizione> spese)
     throws UnsupportedOperationException {      
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
+            log.warn("aggiornaEC failed {} {} : Aggiorna EC non consentita per Abbonamenti Annullati",abb,ec);
             throw new UnsupportedOperationException("Aggiorna EC non consentita per Abbonamenti Annullati");
         }
         log.info("aggiornaEC: start: abb: intestatario: {}", abb.getIntestatario().getCaption());
@@ -227,6 +287,7 @@ public class Smd {
                     }
                     oldItems.get(sped.hashCode()).add(item);
                 } else {
+                    log.warn("aggiornaEC failed {} {} : Aggiorna EC non consente di modificare la pubblicazione",abb,ec);
                     throw new UnsupportedOperationException("Aggiorna EC non consente di modificare la pubblicazione");
                 }
             });

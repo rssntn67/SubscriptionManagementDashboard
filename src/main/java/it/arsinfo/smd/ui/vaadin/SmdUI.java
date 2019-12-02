@@ -3,8 +3,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.server.ExternalResource;
@@ -54,12 +52,9 @@ public abstract class SmdUI extends UI {
     public final static String URL_USER = "/user";
     public final static String URL_RESET = "/reset";
 
-    private static final Logger log = LoggerFactory.getLogger(SmdUI.class);
-
     private UserInfo loggedInUser;
     protected void init(VaadinRequest request, String head) {
 
-        log.info("init: " + request.getPathInfo());
         loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         header.setValue(head);
         layout.addComponent(menu);

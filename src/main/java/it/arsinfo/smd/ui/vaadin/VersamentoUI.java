@@ -1,7 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -10,7 +8,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
@@ -41,8 +38,6 @@ public class VersamentoUI extends SmdUI {
     @Autowired
     private SmdService smdService;
     
-    private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
@@ -93,7 +88,6 @@ public class VersamentoUI extends SmdUI {
                 try {
                     smdService.dissocia(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
-                    log.warn("Reverti failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
@@ -112,7 +106,6 @@ public class VersamentoUI extends SmdUI {
                 try {
                     smdService.incassa(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
-                    log.warn("Incassa failed for : {}.", grid.getSelected(),e);
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;

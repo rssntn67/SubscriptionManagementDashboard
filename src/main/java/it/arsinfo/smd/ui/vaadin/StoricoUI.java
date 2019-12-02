@@ -3,8 +3,6 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
@@ -38,8 +36,6 @@ public class StoricoUI extends SmdUI {
      * 
      */
     private static final long serialVersionUID = 7884064928998716106L;
-
-    private static final Logger log = LoggerFactory.getLogger(StoricoUI.class);
 
     @Autowired
     private CampagnaDao campagnaDao;
@@ -81,9 +77,7 @@ public class StoricoUI extends SmdUI {
                 try {
                     smdService.save(get(), getNote(this));
                     onChange();
-                    log.info("save: {}" + get());
                 } catch (Exception e) {
-                    log.warn("save failed for : {} ", get(),e);
                     Notification.show("Non è possibile salvare questo record: ",
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -151,7 +145,6 @@ public class StoricoUI extends SmdUI {
 
         update.setChangeHandler(() -> {
             if (update.getValue() == null) {
-                log.warn("La Campagna da aggiornare deve essere valorizzata");
                 Notification.show("La Campagna da aggiornare deve essere valorizzato", Type.WARNING_MESSAGE);                 
                 return;
             }
@@ -165,7 +158,6 @@ public class StoricoUI extends SmdUI {
                 }
                 editor.onChange();
             } catch (Exception e) {
-                log.warn("aggiorna failed for :" + editor.get().toString() +". Error log: " + e.getMessage(),e);
                 Notification.show("Campagna ed Abbonamento non aggiornati:" + e.getMessage(), Type.ERROR_MESSAGE);
                 return;                    
             }

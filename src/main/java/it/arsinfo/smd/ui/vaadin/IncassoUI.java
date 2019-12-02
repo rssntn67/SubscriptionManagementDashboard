@@ -33,8 +33,6 @@ public class IncassoUI extends SmdUI {
     @Autowired 
     private SmdService smdService;
     
-//    private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");

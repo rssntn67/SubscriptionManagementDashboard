@@ -3,8 +3,6 @@ package it.arsinfo.smd.ui.vaadin;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -39,8 +37,6 @@ public class AbbonamentoUI extends SmdUI {
      * 
      */
     private static final long serialVersionUID = 3429323584726379968L;
-
-    private static final Logger log = LoggerFactory.getLogger(AbbonamentoUI.class);
 
     @Autowired
     AbbonamentoDao abbonamentoDao;
@@ -101,7 +97,6 @@ public class AbbonamentoUI extends SmdUI {
                     smdService.delete(get());
                     onChange();
                 } catch (Exception e) {
-                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);
                     return;                    
                 }
@@ -132,7 +127,6 @@ public class AbbonamentoUI extends SmdUI {
                     abbonamentoDao.save(get());
                     smdService.genera(get(), getEstrattiConto().toArray(new EstrattoConto[getEstrattiConto().size()]));
                 } catch (Exception e) {
-                    log.warn("save failed {} : {}",get(),e.getMessage(),e);
                     Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
                                       Notification.Type.ERROR_MESSAGE);
                 }
@@ -167,7 +161,6 @@ public class AbbonamentoUI extends SmdUI {
                       onChange();
                       return;
                     } catch (Exception e) {
-                        log.error("save failed {} : {}", get(), e.getMessage(),e);
                         Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                         return;
                     }
@@ -176,7 +169,6 @@ public class AbbonamentoUI extends SmdUI {
                     smdService.aggiorna(get());
                     onChange();
                 } catch (Exception e) {
-                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
                     return;
                 }
@@ -196,7 +188,6 @@ public class AbbonamentoUI extends SmdUI {
                     smdService.rimuovi(get());
                     onChange();
                 } catch (Exception e) {
-                    log.error("save failed {} : {}", get(), e.getMessage(),e);
                     Notification.show(e.getMessage(),Notification.Type.WARNING_MESSAGE);
                 }
                 
@@ -337,7 +328,6 @@ public class AbbonamentoUI extends SmdUI {
                 editor.edit(editor.get());
                 versamentoGrid.populate(smdService.getAssociati(editor.get()));
             } catch (Exception e) {
-                log.error("incassa failed {} : {}", editor.get(), e.getMessage(),e);
                 Notification.show(e.getMessage(),
                                   Notification.Type.ERROR_MESSAGE);
             }
