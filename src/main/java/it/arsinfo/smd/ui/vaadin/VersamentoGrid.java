@@ -22,7 +22,6 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
                    "incassato",
                    "residuo",
                    "progressivo",
-                   "operazione",
                    "dataPagamento",
                    "dataContabile"
                   );
