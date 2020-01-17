@@ -4,7 +4,7 @@ public enum Ccp {
     UNO("000063470009","Poste"),
     DUE("000063470010","Mps"),
     TRE("000063470011","Cassa"),
-    QUATTRO("000063470011","BPE");
+    QUATTRO("000063470011","BPER");
     private String ccp; 
     private String cc; 
     
