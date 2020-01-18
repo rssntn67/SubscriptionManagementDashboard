@@ -567,17 +567,20 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void dissocia(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {
+    public void dissocia(OperazioneIncasso operazioneIncasso, UserInfo user, String description) throws Exception {
+    	if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
+            log.warn("dissocia: tipo Storno, non dissociabile {}", operazioneIncasso);
+            throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
+    	}
+    	Versamento versamento = operazioneIncasso.getVersamento();
+    	Abbonamento abbonamento = operazioneIncasso.getAbbonamento();
         if (versamento.getIncassato().signum() == 0) {
-            log.warn("dissocia: Versamento con Incasso 0, non dissociabile {} {}", abbonamento,versamento);
+            log.warn("dissocia: Versamento con Incasso 0, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
         Incasso incasso = versamento.getIncasso();
-        BigDecimal dissociato = Smd.dissocia(incasso, versamento, abbonamento);
-        if (dissociato.signum() <= 0) {
-            log.warn("dissocia: failed: dissociato: {} by {} {} {}", dissociato,user.getUsername(),abbonamento,versamento);
-        	return;
-        }
+        Smd.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
+        
         versamentoDao.save(versamento);
         incassoDao.save(incasso);        
         aggiornaStatoAbbonamento(abbonamento);
@@ -588,32 +591,20 @@ public class SmdServiceImpl implements SmdService {
         operStorno.setStatoOperazioneIncasso(StatoOperazioneIncasso.Storno);
         operStorno.setDescription(description);
         operStorno.setOperatore(user.getUsername());
-        operStorno.setImporto(dissociato);
+        operStorno.setImporto(operazioneIncasso.getImporto());
         operazioneIncassoDao.save(operStorno);
         log.info("dissocia: {}",operStorno );
 
     }
 
     @Override
-    public List<Versamento> getAssociati(Abbonamento abbonamento) {
-    	return
-    			Smd.getVersamentoMap(operazioneIncassoDao.findByAbbonamento(abbonamento))
-    			.entrySet()
-    			.stream()
-    			.filter(abm -> abm.getValue().signum() > 0)
-    			.map(abm -> abm.getKey())
-    			.collect(Collectors.toList());
+    public List<OperazioneIncasso> getAssociati(Abbonamento abbonamento) {
+    	return operazioneIncassoDao.findByAbbonamento(abbonamento);
    }
 
     @Override
-    public List<Abbonamento> getAssociati(Versamento versamento) {
-    	return 
-		Smd.getAbbonamentoMap(operazioneIncassoDao.findByVersamento(versamento))
-			.entrySet()
-			.stream()
-			.filter(abm -> abm.getValue().signum() > 0)
-			.map(abm -> abm.getKey())
-			.collect(Collectors.toList());
+    public List<OperazioneIncasso> getAssociati(Versamento versamento) {
+    	return operazioneIncassoDao.findByVersamento(versamento);
     }
 
     @Override

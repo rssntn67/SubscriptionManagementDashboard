@@ -14,19 +14,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 
 @Entity
-public class OperazioneIncasso {
+public class OperazioneIncasso implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Abbonamento abbonamento;
     
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Versamento versamento;
     
     @Enumerated(EnumType.STRING)

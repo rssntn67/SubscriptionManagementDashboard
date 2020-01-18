@@ -12,6 +12,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -51,9 +52,10 @@ public interface SmdService {
     List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
-    List<Abbonamento> getAssociati(Versamento versamento);
+    List<OperazioneIncasso> getAssociati(Versamento versamento);
+    List<OperazioneIncasso> getAssociati(Abbonamento abbonamento);
+
     List<Abbonamento> getAssociabili(Versamento versamento);
-    List<Versamento> getAssociati(Abbonamento abbonamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
@@ -64,7 +66,7 @@ public interface SmdService {
     void delete(Versamento versamento) throws Exception;
     
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;
-    void dissocia(Abbonamento abbonamento, Versamento versamento,UserInfo user, String description) throws Exception;    
+    void dissocia(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
     
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;

@@ -896,29 +896,31 @@ public class Smd {
         return incassato;
     }
 
-    public static BigDecimal dissocia(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static void storna(Incasso incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
-            log.error("dissocia: Incasso null");
-            throw new UnsupportedOperationException("dissocia: Incasso null");
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
         }
         if (versamento == null ) {
-            log.error("dissocia: Versamento null");
-            throw new UnsupportedOperationException("dissocia: Versamento null");
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
         }
         if (abbonamento == null ) {
-            log.error("dissocia: Abbonamento null");
-            throw new UnsupportedOperationException("dissocia: Abbonamento null");
+            log.error("storna: Abbonamento null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
         }
-        BigDecimal dissociato = BigDecimal.ZERO;
-        if ((versamento.getIncassato()).compareTo(abbonamento.getIncassato()) < 0) {
-        	dissociato = new BigDecimal(versamento.getIncassato().doubleValue());
-        } else {
-        	dissociato = new BigDecimal(abbonamento.getIncassato().doubleValue());
+        if (versamento.getImporto().compareTo(importo) < 0) {
+            log.error("storna: importo Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        	
         }
-        versamento.setIncassato(versamento.getIncassato().subtract(dissociato));
-        abbonamento.setIncassato(abbonamento.getIncassato().subtract(dissociato));
-        incasso.setIncassato(incasso.getIncassato().subtract(dissociato));
-        return dissociato;
+        if (abbonamento.getTotale().compareTo(importo) < 0) {
+            log.error("storna: totale Abbonamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale Abbonamento minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        abbonamento.setIncassato(abbonamento.getIncassato().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
     }
     
     public static boolean isVersamento(String versamento) {   

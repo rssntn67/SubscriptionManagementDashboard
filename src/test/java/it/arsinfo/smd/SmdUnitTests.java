@@ -1138,8 +1138,7 @@ public class SmdUnitTests {
     	assertEquals(200.00,versamento1.getIncassato().doubleValue(),0);
     	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
-    	BigDecimal dissociato = Smd.dissocia(incasso, versamento1, abbonamento);
-    	assertEquals(200.00,dissociato.doubleValue(),0);
+    	Smd.storna(incasso, versamento1, abbonamento, incassato);
     	assertEquals(0.00,abbonamento.getIncassato().doubleValue(),0);
     	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
     	assertEquals(0.00,incasso.getIncassato().doubleValue(),0);
@@ -1180,8 +1179,7 @@ public class SmdUnitTests {
       	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
     	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
-    	BigDecimal revertito1 = Smd.dissocia(incasso, versamento1, abbonamento);;
-       	assertEquals(180.00,revertito1.doubleValue(),0);    	
+    	Smd.storna(incasso, versamento1, abbonamento,versamento1.getImporto());
        	assertEquals(20.00,abbonamento.getIncassato().doubleValue(),0);
     	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
       	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
@@ -1256,8 +1254,7 @@ public class SmdUnitTests {
     	assertEquals(170.00,versamento3.getIncassato().doubleValue(),0);
     	assertEquals(405.00,incasso.getIncassato().doubleValue(),0);
 
-    	BigDecimal revertito1 = Smd.dissocia(incasso, versamento3, abbonamento1);
-    	assertEquals(170.00, revertito1.longValue(),0);
+    	Smd.storna(incasso, versamento3, abbonamento1, new BigDecimal("170.00"));
     	assertEquals(10.00,abbonamento1.getIncassato().doubleValue(),0);
     	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
     	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
@@ -1265,8 +1262,7 @@ public class SmdUnitTests {
     	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
     	assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
 
-    	BigDecimal revertito2 = Smd.dissocia(incasso, versamento2, abbonamento1);
-    	assertEquals(10.00, revertito2.longValue(),0);
+    	Smd.storna(incasso, versamento2, abbonamento1,new BigDecimal("10.00"));
     	assertEquals(0.00,abbonamento1.getIncassato().doubleValue(),0);
     	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
     	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);

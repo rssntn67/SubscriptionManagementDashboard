@@ -74,7 +74,7 @@ public class AbbonamentoUI extends SmdUI {
         } else {
             add.setPrimoIntestatario(anagrafica.iterator().next());
         }
-        VersamentoGrid versamentoGrid = new VersamentoGrid("Versamenti Associati");
+        OperazioneIncassoVersamentoGrid versamentoGrid = new OperazioneIncassoVersamentoGrid("Operazioni su Versamenti Associate");
         EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
         AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,estrattoContoDao,pubblicazioni,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");

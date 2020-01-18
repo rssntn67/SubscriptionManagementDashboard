@@ -9,6 +9,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.SmdService;
+import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
@@ -47,10 +48,9 @@ public class VersamentoUI extends SmdUI {
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         
-        AbbonamentoGrid abbonamentiAssociatiGrid = new AbbonamentoGrid("Abbonamenti Associati");
+        OperazioneIncassoAbbonamentoGrid abbonamentiAssociatiGrid = new OperazioneIncassoAbbonamentoGrid("Operazioni Incasso Associate");
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
-        
         addSmdComponents(search,grid,abbonamentiAssociatiGrid,abbSearch,abbonamentiAssociabiliGrid);
         
         abbSearch.setVisible(false);
@@ -82,11 +82,11 @@ public class VersamentoUI extends SmdUI {
         abbonamentiAssociatiGrid.setChangeHandler(() -> {
         });
         
-        abbonamentiAssociatiGrid.addComponentColumn(abbonamento -> {
-            Button button = new Button("Dissocia");
+        abbonamentiAssociatiGrid.addComponentColumn(operazioneIncasso -> {
+            Button button = new Button("Storna");
             button.addClickListener(click -> {
                 try {
-                    smdService.dissocia(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
+                    smdService.dissocia(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
@@ -97,6 +97,10 @@ public class VersamentoUI extends SmdUI {
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
             });
+            if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
+                button.setCaption("Non Attivo");
+                button.setEnabled(false);
+            }
             return button;
         });
         
