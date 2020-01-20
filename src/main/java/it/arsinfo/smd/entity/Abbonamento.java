@@ -192,8 +192,13 @@ public class Abbonamento implements SmdEntity {
     }
     
     @Transient
-    public String getIntestazione() {
+    public String getCaption() {
         return intestatario.getCaption();
+    }
+
+    @Transient
+    public String getCaptionBrief() {
+        return intestatario.getCaptionBrief();
     }
 
     @Transient
@@ -201,7 +206,7 @@ public class Abbonamento implements SmdEntity {
         if (intestatario.getCo() == null) {
             return "";
         } 
-        return "c/o" + intestatario.getCo().getCaption();
+        return "c/o" + intestatario.getCo().getCaptionBrief();
     }
     
     @Transient

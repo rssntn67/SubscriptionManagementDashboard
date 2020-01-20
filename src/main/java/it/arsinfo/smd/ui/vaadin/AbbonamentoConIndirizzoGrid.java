@@ -8,13 +8,20 @@ import com.vaadin.ui.components.grid.FooterRow;
 
 import it.arsinfo.smd.entity.Abbonamento;
 
-public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
+public class AbbonamentoConIndirizzoGrid extends SmdGrid<Abbonamento> {
 
     private final FooterRow gridfooter;
 
-    public AbbonamentoGrid(String gridName) {
+    public AbbonamentoConIndirizzoGrid(String gridName) {
         super(new Grid<>(Abbonamento.class),gridName);
-        setColumns("captionBrief","importo","spese","speseEstero","pregresso","totale","incassato","residuo","anno");
+        setColumns("captionBrief",
+        		"sottoIntestazione",
+        		"indirizzo",
+        		"citta",
+        		"cap",
+        		"provincia",
+        		"paese",
+                "importo","spese","speseEstero","pregresso","totale","incassato","residuo","anno");
         setColumnCaption("captionBrief", "Intestatario");
         gridfooter = getGrid().prependFooterRow();
     }

@@ -119,7 +119,7 @@ public class CampagnaUI extends SmdUI {
             }
 
         };
-        AbbonamentoGrid abbonamentoGrid = new AbbonamentoGrid("Abbonamenti Associati");
+        AbbonamentoConIndirizzoGrid abbonamentoGrid = new AbbonamentoConIndirizzoGrid("Abbonamenti");
 
         addSmdComponents(campagnaItemEditor, editor, abbonamentoGrid, add,
                          search, grid);
