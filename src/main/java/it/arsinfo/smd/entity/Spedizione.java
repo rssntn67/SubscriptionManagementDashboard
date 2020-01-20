@@ -116,7 +116,7 @@ public class Spedizione implements SmdEntity {
     
     @Transient
     public String getIntestazione() {
-        return destinatario.getCaption();
+        return destinatario.getCaptionBrief();
     }
 
     @Transient

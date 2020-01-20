@@ -120,7 +120,6 @@ public class CampagnaUI extends SmdUI {
 
         };
         AbbonamentoConIndirizzoGrid abbonamentoGrid = new AbbonamentoConIndirizzoGrid("Abbonamenti");
-
         addSmdComponents(campagnaItemEditor, editor, abbonamentoGrid, add,
                          search, grid);
         editor.setVisible(false);
