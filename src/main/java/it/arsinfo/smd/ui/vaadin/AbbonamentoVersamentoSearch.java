@@ -16,18 +16,16 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
 
     private Anagrafica customer;
     private Campagna campagna;
-    
+    private ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Cerca Abbonamento per Intestatario");
+    private ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>("Cerca Abbonamento per Campagna");
+
     private ArrayList<Abbonamento> abbonamenti = new ArrayList<>();
     
     public AbbonamentoVersamentoSearch(AbbonamentoDao abbonamentoDao, 
             List<Anagrafica> anagrafica, 
             List<Campagna> campagne) {
         super(abbonamentoDao);
-
-        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>("Cerca Abbonamento per Intestatario");
-        ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>("Cerca Abbonamento per Campagna");
         
-
         HorizontalLayout anag = new HorizontalLayout(filterCampagna);
         anag.addComponentsAndExpand(filterAnagrafica);
         
@@ -92,5 +90,12 @@ public class AbbonamentoVersamentoSearch extends SmdSearch<Abbonamento> {
     
     public void setItems(List<Abbonamento> abbonamenti) {
         this.abbonamenti = new ArrayList<>(abbonamenti);        
+    }
+    
+    public void reset() {
+    	customer = null;
+    	campagna = null;
+    	filterAnagrafica.setSelectedItem(null);
+    	filterCampagna.setSelectedItem(null);
     }
 }

@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -24,6 +26,8 @@ public class VersamentoUI extends SmdUI {
      */
     private static final long serialVersionUID = 6407425404499250763L;
 
+    private static final Logger log = LoggerFactory.getLogger(VersamentoUI.class);
+
     @Autowired
     private VersamentoDao versamentoDao;
 
@@ -44,7 +48,7 @@ public class VersamentoUI extends SmdUI {
         super.init(request, "Versamenti");
         
         AbbonamentoVersamentoSearch abbSearch = 
-            new AbbonamentoVersamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
+        new AbbonamentoVersamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         
@@ -68,7 +72,7 @@ public class VersamentoUI extends SmdUI {
                 abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
                 abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
-                abbSearch.setVisible(abbonamentiAssociabiliGrid.getSize() > 0);
+                abbSearch.setVisible(true);
             } else {
                 abbSearch.setVisible(false);
                 abbonamentiAssociatiGrid.setVisible(false);
@@ -114,15 +118,18 @@ public class VersamentoUI extends SmdUI {
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                }
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
-                if (grid.getSelected().getResiduo().signum() > 0) {
+                
+               abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
+               abbSearch.reset();
+               log.info("Incassa: {}", grid.getSelected());
+               if (grid.getSelected().getResiduo().signum() > 0) {
                     abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
                     abbSearch.setVisible(true);
-                } else {
+               } else {
                     abbSearch.setVisible(false);
                     abbonamentiAssociabiliGrid.setVisible(false);
-                }
+               }
             });
             return button;
         });
