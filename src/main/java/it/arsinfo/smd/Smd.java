@@ -175,6 +175,9 @@ public class Smd {
     }
 
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
+    	if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Valido && abbonamento.getTotale().signum() == 0) {
+    		return Incassato.Annullato;
+    	}
         if (abbonamento.getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }

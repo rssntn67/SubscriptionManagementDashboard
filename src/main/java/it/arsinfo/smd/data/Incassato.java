@@ -1,7 +1,8 @@
 package it.arsinfo.smd.data;
 
 public enum Incassato {
-        Si,
+    	Annullato,
+		Si,
         No,
         Omaggio,
         SiConDebito,

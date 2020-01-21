@@ -142,7 +142,7 @@ public class SmdServiceImpl implements SmdService {
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata )
     		return;
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
-            if (Smd.getStatoIncasso(abb) ==  Incassato.Omaggio) {
+            if (abb.getTotale().signum() == 0) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
             } else {
                 abb.setStatoAbbonamento(StatoAbbonamento.Proposto);

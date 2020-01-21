@@ -185,8 +185,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
         campagna.setVisible(persisted);
         anno.setReadOnly(persisted);
-        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
         statoIncasso.setVisible(persisted);
+        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
         noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
         hasResiduo = abbonamento.getResiduo().signum() > 0; 

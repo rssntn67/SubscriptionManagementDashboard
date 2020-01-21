@@ -29,6 +29,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -1068,8 +1069,12 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
+        assertEquals(Incassato.Annullato, Smd.getStatoIncasso(abb));
+        
+        abb.setStatoAbbonamento(StatoAbbonamento.Valido);
         assertEquals(Incassato.Omaggio, Smd.getStatoIncasso(abb));
        
+        abb.setStatoAbbonamento(StatoAbbonamento.Nuovo);
         abb.setImporto(new BigDecimal(10));
         assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
         
