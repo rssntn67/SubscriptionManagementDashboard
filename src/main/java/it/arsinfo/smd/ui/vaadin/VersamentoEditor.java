@@ -60,8 +60,10 @@ public class VersamentoEditor extends SmdEditor<Versamento> {
         cassa.setReadOnly(true);
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
+        dataContabile.setDateFormat("dd/MM/yyyy");
         dataContabile.setReadOnly(true);
 
+        dataPagamento.setDateFormat("dd/MM/yyyy");
         bollettino.setItemCaptionGenerator(Bollettino::getBollettino);
         accettazione.setItemCaptionGenerator(Accettazione::getDescr);
         sostitutivo.setItemCaptionGenerator(Sostitutivo::getDescr);

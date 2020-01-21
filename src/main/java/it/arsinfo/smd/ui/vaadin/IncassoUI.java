@@ -143,6 +143,7 @@ public class IncassoUI extends SmdUI {
                 hideMenu();
                 
                 editor.edit(grid.getSelected());
+                versAdd.setIncasso(grid.getSelected());
                 versAdd.setVisible(true);
                 versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
 
