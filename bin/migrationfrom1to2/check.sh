@@ -94,7 +94,7 @@ echo "------------------"
 echo
 
 echo check versamenti with null code_line
-psql smd -tAX -c "select * from temp_operazione_incasso where vercode is null;"
+psql smd -tAX -c "select * from versamento where code_line is null;"
 echo "------------------"
 echo
 
