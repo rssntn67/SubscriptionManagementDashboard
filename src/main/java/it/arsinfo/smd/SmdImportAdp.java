@@ -68,22 +68,22 @@ public class SmdImportAdp extends SmdLoadSampleData {
     }
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    public static final String CAMPAGNA_2020 = "data/CA2020COMPLETA.xls";
+    public static final String CAMPAGNA_2020 = "dataadp/CA2020COMPLETA.xls";
 
-    public static final String ARCHIVIO_CLIENTI = "data/ARCHIVIOCLIENTI2020.xls";
-    public static final String ELENCO_ABBONATI = "data/ELENCOABBONATI2020.xls";
-    public static final String ELENCO_BENEFICIARI_2020 = "data/BENEFICIARI2020.xls";
-    public static final String ELENCO_ABBONATI_ESTERO = "data/ABBONATIESTERO2020.xls";
-    public static final String ELENCO_ABBONATI_ITA_ESTERO = "data/ABBONATITALIABENEFESTERO2020.xls";
+    public static final String ARCHIVIO_CLIENTI = "dataadp/ARCHIVIOCLIENTI2020.xls";
+    public static final String ELENCO_ABBONATI = "dataadp/ELENCOABBONATI2020.xls";
+    public static final String ELENCO_BENEFICIARI_2020 = "dataadp/BENEFICIARI2020.xls";
+    public static final String ELENCO_ABBONATI_ESTERO = "dataadp/ABBONATIESTERO2020.xls";
+    public static final String ELENCO_ABBONATI_ITA_ESTERO = "dataadp/ABBONATITALIABENEFESTERO2020.xls";
     
-    public static final String ELENCO_OMAGGIO_MESSAGGIO = "data/ELENCOOMAGGIOMESSAGGIO2020.xls";
-    public static final String ELENCO_OMAGGIO_GESUITI_MESSAGGIO = "data/ELENCOOMAGGIOGESUITIMESSAGGIO2020.xls";
-    public static final String ELENCO_OMAGGIO_BLOCCHETTI = "data/ELENCOOMAGGIOBLOCCHETTI2020.xls";
-    public static final String ELENCO_OMAGGIO_GESUITI_BLOCCHETTI = "data/ELENCOOMAGGIOGESUITIBLOCCHETTI2020.xls";
-    public static final String ELENCO_OMAGGIO_LODARE = "data/ELENCOOMAGGIOLODARE2020.xls";
-    public static final String ELENCO_OMAGGIO_GESUITI_MANIFESTI = "data/ELENCOOMAGGIOGESUITIMANIFESTI2020.xls";
+    public static final String ELENCO_OMAGGIO_MESSAGGIO = "dataadp/ELENCOOMAGGIOMESSAGGIO2020.xls";
+    public static final String ELENCO_OMAGGIO_GESUITI_MESSAGGIO = "dataadp/ELENCOOMAGGIOGESUITIMESSAGGIO2020.xls";
+    public static final String ELENCO_OMAGGIO_BLOCCHETTI = "dataadp/ELENCOOMAGGIOBLOCCHETTI2020.xls";
+    public static final String ELENCO_OMAGGIO_GESUITI_BLOCCHETTI = "dataadp/ELENCOOMAGGIOGESUITIBLOCCHETTI2020.xls";
+    public static final String ELENCO_OMAGGIO_LODARE = "dataadp/ELENCOOMAGGIOLODARE2020.xls";
+    public static final String ELENCO_OMAGGIO_GESUITI_MANIFESTI = "dataadp/ELENCOOMAGGIOGESUITIMANIFESTI2020.xls";
     
-    public static final String CATEGORIA_BM_CASSA = "data/CATEGORIABMCASSA.xls";
+    public static final String CATEGORIA_BM_CASSA = "dataadp/CATEGORIABMCASSA.xls";
 
     public static List<Storico> getStoriciFromOmaggio(List<Row> omaggiorows,
                 Map<String,Anagrafica> anagraficaMap,
@@ -104,7 +104,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
                 }
             }
             if (intestatario == null) {
-                throw new UnsupportedOperationException("Intestatario non trovato");
+            	throw new UnsupportedOperationException("Intestatario non trovato");
             }
             int qnt = getQuantitaFromOmaggioRow(row);
             storici.add(SmdHelper.getStoricoBy(intestatario, intestatario, p, qnt, Cassa.Ccp, tipo, Invio.Destinatario, invioSped));
