@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -158,10 +157,28 @@ public class SmdServiceImpl implements SmdService {
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
     		return;
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-            if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.Proposto ) {
-            	aggiornaStatoAbbonamento(abbonamento);
-                abbonamentoDao.save(abbonamento);
-            }
+        	aggiornaStatoAbbonamento(abbonamento);
+        	switch (abbonamento.getStatoAbbonamento()) {
+				case Sospeso:
+					if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
+						sospendi(abbonamento);
+						abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
+						abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+						log.info("EC {}", abbonamento);
+					} else {
+						abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+						log.info("estratto: Valido {}", abbonamento);
+					}
+					break;					
+				case Annullato:
+					annulla(abbonamento);
+					log.info("estratto: Annullato {}", abbonamento);
+					break;
+				default:
+					attiva(abbonamento);
+					break;
+			}
+            abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         campagnaDao.save(campagna);
@@ -171,7 +188,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void chiudi(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
+    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC )
     		return;
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             switch (Smd.getStatoIncasso(abbonamento)) {
@@ -181,6 +198,10 @@ public class SmdServiceImpl implements SmdService {
             case No:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
                 annulla(abbonamento);
+                break;
+            case Zero:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+            	annulla(abbonamento);
                 break;
             case Omaggio:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
@@ -358,7 +379,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        estrattoContoDao.save(estrattoConto);        
+        estrattoContoDao.save(estrattoConto);
         aggiornaStatoAbbonamento(abbonamento);
         abbonamentoDao.save(abbonamento);
     }
@@ -532,6 +553,9 @@ public class SmdServiceImpl implements SmdService {
         case SiConDebito:
             abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
             break;
+        case Zero:
+            abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+            break;
         default:
             break;
         
@@ -623,9 +647,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
-        spedizioneDao.findByAbbonamento(abbonamento)
-        .stream()
-        .filter(sped -> sped.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA)
+        spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento, StatoSpedizione.PROGRAMMATA)
         .forEach(sped -> {
             sped.setStatoSpedizione(StatoSpedizione.SOSPESA);
             spedizioneDao.save(sped);
@@ -633,9 +655,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     public void riattivaSpedizioni(Abbonamento abbonamento) throws Exception {
-        spedizioneDao.findByAbbonamento(abbonamento)
-        .stream()
-        .filter(sped -> sped.getStatoSpedizione() == StatoSpedizione.SOSPESA)
+        spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento,StatoSpedizione.SOSPESA)
         .forEach(sped -> {
             sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
             spedizioneDao.save(sped);

@@ -1,9 +1,13 @@
 package it.arsinfo.smd.ui.vaadin;
 
-public class AbbonamentoConIndirizzoGrid extends AbbonamentoGrid {
+public class AbbonamentoConIndirizzoGrid extends AbbonamentoAbstractGrid {
 
     public AbbonamentoConIndirizzoGrid(String gridName) {
         super(gridName);
+    }
+
+	@Override
+	public void setAbbonamentoGridColums() {
         setColumns("captionBrief",
         		"sottoIntestazione",
         		"indirizzo",
@@ -20,7 +24,7 @@ public class AbbonamentoConIndirizzoGrid extends AbbonamentoGrid {
                 "incassato",
                 "residuo",
                 "anno");
-        setColumnCaption("captionBrief", "Intestatario");
-    }
+        setColumnCaption("captionBrief", "Intestatario");		
+	}
 
 }

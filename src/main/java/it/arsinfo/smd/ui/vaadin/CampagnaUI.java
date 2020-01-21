@@ -267,7 +267,7 @@ public class CampagnaUI extends SmdUI {
                 button.setCaption("Visualizza Ccp Abbonamenti Inviati");
                 break;
             case InviatoEC:
-                button.setCaption("Visualizza Abbonamenti Sospesi");
+                button.setCaption("Visualizza Abbonamenti Inviato EC");
                 break;
             case Chiusa:
                 button.setCaption("Visualizza Abbonamenti Annullati");
@@ -301,9 +301,9 @@ public class CampagnaUI extends SmdUI {
                     .populate(
                       abbonamentoDao.findByCampagna(campagna)
                           .stream()
-                          .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Sospeso)
+                          .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC)
                           .collect(Collectors.toList()));
-                    setHeader("Campagna::Abbonamenti Sospesi");
+                    setHeader("Campagna::Abbonamenti Inviato EC");
                     break;
                 case Chiusa:
                     abbonamentoGrid

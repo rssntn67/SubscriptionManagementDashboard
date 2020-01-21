@@ -1069,7 +1069,7 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
-        assertEquals(Incassato.Annullato, Smd.getStatoIncasso(abb));
+        assertEquals(Incassato.Zero, Smd.getStatoIncasso(abb));
         
         abb.setStatoAbbonamento(StatoAbbonamento.Valido);
         assertEquals(Incassato.Omaggio, Smd.getStatoIncasso(abb));
