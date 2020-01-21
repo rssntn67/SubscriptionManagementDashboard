@@ -1,3 +1,11 @@
+alter table abbonamento 
+	add column spese_estratto_conto numeric(19,2);
+
+update abbonamento set spese_estratto_conto = 0.00;
+
+update abbonamento set stato_abbonamento = 'Proposto' where stato_abbonamento = 'Sospeso'
+
+update spedizione set stato_spedizione = 'PROGRAMMATA' where stato_spedizione = 'SOSPESA';
 create table operazione_incasso (
   id bigint not null,
   data timestamp without time zone,

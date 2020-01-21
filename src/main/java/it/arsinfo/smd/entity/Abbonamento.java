@@ -55,6 +55,7 @@ public class Abbonamento implements SmdEntity {
     private BigDecimal importo=BigDecimal.ZERO;
     private BigDecimal spese=BigDecimal.ZERO;
     private BigDecimal speseEstero=BigDecimal.ZERO;
+    private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
     private BigDecimal incassato=BigDecimal.ZERO;
 
     private String codeLine;
@@ -249,7 +250,7 @@ public class Abbonamento implements SmdEntity {
     }
 
     public BigDecimal getTotale() {
-        return importo.add(pregresso).add(spese).add(speseEstero);
+        return importo.add(pregresso).add(spese).add(speseEstero).add(speseEstrattoConto);
     }
 
     public BigDecimal getImporto() {
@@ -395,6 +396,14 @@ public class Abbonamento implements SmdEntity {
 
 	public void setSpeseEstero(BigDecimal speseEstero) {
 		this.speseEstero = speseEstero;
+	}
+
+	public BigDecimal getSpeseEstrattoConto() {
+		return speseEstrattoConto;
+	}
+
+	public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
+		this.speseEstrattoConto = speseEstrattoConto;
 	}
     
 

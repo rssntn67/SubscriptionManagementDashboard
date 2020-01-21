@@ -14,7 +14,16 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
 
     public AbbonamentoGrid(String gridName) {
         super(new Grid<>(Abbonamento.class),gridName);
-        setColumns("captionBrief","importo","spese","speseEstero","pregresso","totale","incassato","residuo","anno");
+        setColumns("captionBrief",
+        		"importo",
+        		"spese",
+        		"speseEstero",
+        		"speseEstrattoConto",
+        		"pregresso",
+        		"totale",
+        		"incassato",
+        		"residuo",
+        		"anno");
         setColumnCaption("captionBrief", "Intestatario");
         gridfooter = getGrid().prependFooterRow();
     }
@@ -24,6 +33,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         super.populate(items);
         gridfooter.getCell("spese").setHtml("<b>"+getSpese(items).toString()+"</b>");
         gridfooter.getCell("speseEstero").setHtml("<b>"+getSpeseEstero(items).toString()+"</b>");
+        gridfooter.getCell("speseEstrattoConto").setHtml("<b>"+getSpeseEstrattoConto(items).toString()+"</b>");
         gridfooter.getCell("importo").setHtml("<b>"+getImporto(items).toString()+"</b>");
         gridfooter.getCell("pregresso").setHtml("<b>"+getPregresso(items).toString()+"</b>");
         gridfooter.getCell("totale").setHtml("<b>"+getTotale(items).toString()+"</b>");
@@ -60,6 +70,14 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         BigDecimal importo = BigDecimal.ZERO;
         for (Abbonamento abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getSpeseEstero());
+        }
+        return importo;
+    }
+
+    private BigDecimal getSpeseEstrattoConto(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpeseEstrattoConto());
         }
         return importo;
     }

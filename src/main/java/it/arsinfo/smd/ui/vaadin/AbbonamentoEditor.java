@@ -41,6 +41,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final TextField importo = new TextField("Importo");
     private final TextField spese = new TextField("Spese");
     private final TextField speseEstero = new TextField("Spese Estero");
+    private final TextField speseEstrattoConto = new TextField("Spese Estratto Conto");
     private final TextField pregresso = new TextField("Pregresso");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
@@ -70,12 +71,13 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         HorizontalLayout status = new HorizontalLayout(campagna,
                                                      anno,statoAbbonamento,statoIncasso);
         
-        HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,totale,incassato,residuo);
+        HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
+        HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
 
         HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
         HorizontalLayout detai = new HorizontalLayout();
         detai.addComponentsAndExpand(progressivo);
-        setComponents(getActions(),anag, status,imp,incss,detai);
+        setComponents(getActions(),anag, status,imp,res,incss,detai);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -96,6 +98,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
+        speseEstrattoConto.setReadOnly(true);
 
         cassa.setEmptySelectionAllowed(false);
         ccp.setEmptySelectionAllowed(false);
@@ -134,6 +137,11 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .withValidator(sp -> sp != null, "Spese Estero non può essere null")
         .bind("speseEstero");
+        getBinder()
+        .forField(speseEstrattoConto)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withValidator(sp -> sp != null, "Spese Estratto conto non può essere null")
+        .bind("speseEstrattoConto");
         getBinder()
         .forField(pregresso)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
@@ -185,6 +193,8 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 
         importo.setVisible(noOmaggio);
         spese.setVisible(noOmaggio);
+        speseEstero.setVisible(noOmaggio);
+        speseEstrattoConto.setVisible(noOmaggio);
         pregresso.setVisible(noOmaggio);
         totale.setVisible(noOmaggio);
         incassato.setVisible(noOmaggio);
