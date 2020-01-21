@@ -70,7 +70,7 @@ id=`echo $line | cut -d '|' -f1`
 inc=`echo $line | cut -d '|' -f2`; 
 ver=`echo $line | cut -d '|' -f3`; 
 if [ "$ver" != "$inc" ]
- then echo "incasso errato $line"
+ then echo "fixing incasso errato $line"
 psql smd -c "update incasso set incassato = $ver where id = $id;" 
 fi
 done
