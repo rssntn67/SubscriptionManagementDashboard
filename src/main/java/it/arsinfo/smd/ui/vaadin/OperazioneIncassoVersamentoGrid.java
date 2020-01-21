@@ -35,7 +35,7 @@ public class OperazioneIncassoVersamentoGrid extends SmdGrid<OperazioneIncasso> 
     public void populate(List<OperazioneIncasso> items) {
         super.populate(items);
         gridfooter.getCell("operatore").setHtml("<strong>"+getLastDate(items)+"</strong>");
-        gridfooter.getCell("statoOperazioneIncasso").setHtml("<strong>Totale:</strong>");
+        gridfooter.getCell("statoOperazioneIncasso").setHtml("<strong>Totale Incassato:</strong>");
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>"); 
     }
     
@@ -45,9 +45,6 @@ public class OperazioneIncassoVersamentoGrid extends SmdGrid<OperazioneIncasso> 
         	switch (incasso.getStatoOperazioneIncasso()) {
 			case Incasso:
         		importo=importo.add(incasso.getImporto());
-				break;
-			case Storno:
-        		importo=importo.subtract(incasso.getImporto());
 				break;
 			default:
 				break;

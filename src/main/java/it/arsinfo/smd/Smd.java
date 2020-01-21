@@ -909,13 +909,12 @@ public class Smd {
             log.error("storna: Abbonamento null");
             throw new UnsupportedOperationException("storna: Abbonamento null");
         }
-        if (versamento.getImporto().compareTo(importo) < 0) {
-            log.error("storna: importo Versamento minore importo da stornare");
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
             throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
-        	
         }
-        if (abbonamento.getTotale().compareTo(importo) < 0) {
-            log.error("storna: totale Abbonamento minore importo da stornare");
+        if (abbonamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Abbonamento minore importo da stornare");
             throw new UnsupportedOperationException("storna: totale Abbonamento minore importo da stornare");
         }
         versamento.setIncassato(versamento.getIncassato().subtract(importo));

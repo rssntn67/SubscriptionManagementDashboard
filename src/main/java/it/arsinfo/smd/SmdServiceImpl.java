@@ -580,7 +580,8 @@ public class SmdServiceImpl implements SmdService {
         }
         Incasso incasso = versamento.getIncasso();
         Smd.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
-        
+        operazioneIncasso.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
+        operazioneIncassoDao.save(operazioneIncasso);
         versamentoDao.save(versamento);
         incassoDao.save(incasso);        
         aggiornaStatoAbbonamento(abbonamento);

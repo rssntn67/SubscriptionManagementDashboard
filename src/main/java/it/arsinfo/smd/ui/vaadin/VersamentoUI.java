@@ -101,7 +101,8 @@ public class VersamentoUI extends SmdUI {
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
             });
-            if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
+            
+            if (operazioneIncasso.getStatoOperazioneIncasso() != StatoOperazioneIncasso.Incasso) {
                 button.setCaption("Non Attivo");
                 button.setEnabled(false);
             }
