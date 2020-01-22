@@ -89,7 +89,7 @@ public class Smd {
         }
     }
     public static File getIncassoFile(String filename) {
-    	return new File("/Users/ordini/runtime/fileposte/" + filename);
+    	return new File("/Users/ordini/runtime/Smd/fileposte/" + filename);
     }
     
     public static List<Incasso> uploadIncasso(File file) throws Exception {
