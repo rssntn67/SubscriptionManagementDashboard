@@ -89,7 +89,7 @@ public class Smd {
         }
     }
     public static File getIncassoFile(String filename) {
-    	return new File("/Users/ordini/runtime/Smd/fileposte/" + filename);
+    	return new File("/tmp/" + filename);
     }
     
     public static List<Incasso> uploadIncasso(File file) throws Exception {
@@ -110,10 +110,12 @@ public class Smd {
             Set<String> versamenti = new HashSet<>();
             while ((strLine = br.readLine()) != null)   {
                 if (strLine.trim().equals("")) {
-                    log.debug("Riga vuota!");
+                    log.error("Riga vuota!");
                 } else if (isVersamento(strLine)) {
                     versamenti.add(strLine);
+                    log.info("Versamento: {}", strLine);
                 } else if (isRiepilogo(strLine)) {
+                    log.info("Riepilogo: {}", strLine);
                     incassi.add(Smd.generaIncasso(versamenti, strLine));
                     versamenti.clear();                    
                 } else {

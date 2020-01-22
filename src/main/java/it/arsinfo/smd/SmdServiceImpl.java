@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -860,11 +858,13 @@ public class SmdServiceImpl implements SmdService {
     			continue;
     		}
     		for (Versamento v: versamentoDao.findByIncasso(incasso)) {
-    			if (v.getCodeLine() == null) {
+    			if (v.getResiduo().signum() == 0) {
     				continue;
     			}
     			final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(v.getCodeLine());
-				incassa(abbonamento,v,user,"Incassato con CodeLine");
+    			if (abbonamento != null && abbonamento.getResiduo().signum() > 0 ) {
+    				incassa(abbonamento,v,user,"Incassato con CodeLine");
+    			}
     		}
 		}
 

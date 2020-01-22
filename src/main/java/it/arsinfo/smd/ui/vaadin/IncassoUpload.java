@@ -48,7 +48,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
             Notification.show("Incasso Cancellato: "+e.getMessage(),Notification.Type.ERROR_MESSAGE);
             return;
         }
-        Notification.show("Incasso Eseguito!",Notification.Type.HUMANIZED_MESSAGE);
+        Notification.show("Upload Eseguito!",Notification.Type.HUMANIZED_MESSAGE);
         onChange();
     }
 
