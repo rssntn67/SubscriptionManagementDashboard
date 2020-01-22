@@ -51,7 +51,7 @@ public interface SmdService {
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione);
     
 
-    List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
+    List<SpedizioneItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
     List<OperazioneIncasso> getAssociati(Versamento versamento);

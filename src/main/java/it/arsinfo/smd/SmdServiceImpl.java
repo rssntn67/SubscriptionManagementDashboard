@@ -495,17 +495,14 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<SpedizioneItem> listItems(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped) {
-        final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioneDao
-            .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione, annoSpedizione)
-            .stream().filter(sped -> sped.getInvioSpedizione() == inviosped)
-            .forEach(sped -> {
-                Abbonamento abb = abbonamentoDao.findById(sped.getAbbonamento().getId()).get();
-                sped.setAbbonamento(abb);
-                items.addAll(spedizioneItemDao.findBySpedizione(sped));
-            });
-        return items;
+    public List<SpedizioneItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped) {
+        return spedizioneItemDao
+        	.findByPubblicazione(pubblicazione)
+        	.stream()
+        	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
+        						&& spedItem.getSpedizione().getAnnoSpedizione()== annoSpedizione
+        						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped)
+        	.collect(Collectors.toList());
     }
 
     private void ricondiziona(Abbonamento abbonamento) throws Exception {
