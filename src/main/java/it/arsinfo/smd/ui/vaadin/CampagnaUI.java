@@ -299,9 +299,8 @@ public class CampagnaUI extends SmdUI {
                 case InviatoEC:
                     abbonamentoGrid
                     .populate(
-                      abbonamentoDao.findByCampagna(campagna)
+                      abbonamentoDao.findByCampagnaAndStatoAbbonamento(campagna, StatoAbbonamento.SospesoInviatoEC)
                           .stream()
-                          .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC)
                           .collect(Collectors.toList()));
                     setHeader("Campagna::Abbonamenti Inviato EC");
                     break;
