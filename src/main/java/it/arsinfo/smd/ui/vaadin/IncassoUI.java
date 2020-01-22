@@ -57,7 +57,7 @@ public class IncassoUI extends SmdUI {
                     smdService.save(get());
                     onChange();
                 } catch (Exception e) {
-                    Notification.show("Non è possibile salvare questo record: ",
+                    Notification.show("Non è possibile salvare questo record: "+ e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                 }
             }
