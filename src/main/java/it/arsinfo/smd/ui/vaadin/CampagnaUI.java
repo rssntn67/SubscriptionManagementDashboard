@@ -183,7 +183,7 @@ public class CampagnaUI extends SmdUI {
                 search.setVisible(false);
                 editor.edit(campagna);
                 grid.setVisible(false);
-                abbonamentoGrid.populate(abbonamentoDao.findByAnno(campagna.getAnno()));
+                abbonamentoGrid.populate(smdService.get(abbonamentoDao.findByAnno(campagna.getAnno())));
                 setHeader("Campagna::Abbonamenti");
             });
             return button;
@@ -284,33 +284,34 @@ public class CampagnaUI extends SmdUI {
                 grid.setVisible(false);
                 switch (campagna.getStatoCampagna()) {
                 case Generata:
-                    abbonamentoGrid.populate(abbonamentoDao.findByCampagna(campagna));
+                    abbonamentoGrid.populate(smdService.get(abbonamentoDao.findByCampagna(campagna)));
                     setHeader("Campagna::Generata");
                     break;
                 case Inviata:
                     abbonamentoGrid
                     .populate(
-                      abbonamentoDao.findByCampagna(campagna)
+                    		smdService.get(
+            				abbonamentoDao.findByCampagna(campagna)
                           .stream()
                           .filter(a -> a.getTotale().signum() > 0)
-                          .collect(Collectors.toList()));
+                          .collect(Collectors.toList())));
                     setHeader("Campagna::CCP Inviati");
                     break;
                 case InviatoEC:
                     abbonamentoGrid
-                    .populate(
+                    .populate(smdService.get(
                       abbonamentoDao.findByCampagnaAndStatoAbbonamento(campagna, StatoAbbonamento.SospesoInviatoEC)
                           .stream()
-                          .collect(Collectors.toList()));
+                          .collect(Collectors.toList())));
                     setHeader("Campagna::Abbonamenti Inviato EC");
                     break;
                 case Chiusa:
                     abbonamentoGrid
-                    .populate(
+                    .populate(smdService.get(
                       abbonamentoDao.findByCampagna(campagna)
                           .stream()
                           .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
-                          .collect(Collectors.toList()));
+                          .collect(Collectors.toList())));
                     setHeader("Campagna::Abbonamenti Annullati");
                     break;
                 default:

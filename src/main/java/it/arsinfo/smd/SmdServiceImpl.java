@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.AbbonamentoConEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
@@ -101,6 +104,15 @@ public class SmdServiceImpl implements SmdService {
     IncassoDao incassoDao;
 
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
+
+    @Override
+    public List<AbbonamentoConEstrattoConto> get(List<Abbonamento> abbonamenti) {
+    	List<AbbonamentoConEstrattoConto> list = new ArrayList<>();
+    	for (Abbonamento abbonamento: abbonamenti) {
+    		list.add(new AbbonamentoConEstrattoConto(abbonamento, estrattoContoDao.findByAbbonamento(abbonamento)));
+    	}
+    	return list;
+    }
 
     @Override
     public void genera(Campagna campagna, List<Pubblicazione> attivi) {
