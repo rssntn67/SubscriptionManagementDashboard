@@ -107,24 +107,21 @@ public class Smd {
 
         //Read File Line By Line
         try {
-            Set<String> versamenti = new HashSet<>();
+            Set<String> versamentiLine = new HashSet<>();
             while ((strLine = br.readLine()) != null)   {
                 if (strLine.trim().equals("")) {
-                    log.error("Riga vuota!");
+                    log.warn("uploadIncasso: Riga vuota!");
                 } else if (isVersamento(strLine)) {
-                    versamenti.add(strLine);
-                    log.info("Versamento: {}", strLine);
+                    versamentiLine.add(strLine);
                 } else if (isRiepilogo(strLine)) {
-                    log.info("Riepilogo: {}", strLine);
-                    incassi.add(Smd.generaIncasso(versamenti, strLine));
-                    versamenti.clear();                    
+                    incassi.add(Smd.generaIncasso(versamentiLine, strLine));
+                    versamentiLine.clear();
                 } else {
-                    log.error("Incasso Cancellato: Valore non riconosciuto->" +strLine);
-                    break;
+                    throw new UnsupportedOperationException("Valore non riconosciuto->" +strLine);
                 }
             }
         } catch (Exception e) {
-            log.error("Incasso Cancellato: " + e.getMessage());
+            log.error("uploadIncasso:: Incasso da File Cancellato: " + e.getMessage());
             throw e;
         } finally {
             br.close();
@@ -943,7 +940,7 @@ public class Smd {
     }
     
     public static Incasso generaIncasso(Set<String> versamenti,
-            String riepilogo) {
+            String riepilogo) throws UnsupportedOperationException {
         final Incasso incasso = new Incasso();
         incasso.setCassa(Cassa.Ccp);
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
@@ -962,13 +959,25 @@ public class Smd {
         incasso.setErrati(Integer.parseInt(riepilogo.substring(76,84)));
         incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,94)
                 + "." + riepilogo.substring(94, 96)));
+        log.info("generaIncasso: {}", incasso);
 
         versamenti.
-            stream().
             forEach(s -> incasso.addVersamento(generateVersamento(incasso,s)));
+        checkIncasso(incasso);
         return incasso;
     }
 
+    private static void checkIncasso(Incasso incasso) throws UnsupportedOperationException {
+    	BigDecimal importoVersamenti = BigDecimal.ZERO;
+    	for (Versamento v: incasso.getVersamenti()) {
+    		importoVersamenti = importoVersamenti.add(v.getImporto());
+    	}
+    	if (incasso.getImporto().subtract(importoVersamenti).signum() != 0 ) {
+    		log.error("checkincasso: importo incasso {} non corrisponde a importoVersamenti {}",incasso.getImporto(),importoVersamenti);
+    		throw new UnsupportedOperationException("Importo Incasso e Versamento non corrispondono ");
+    	}
+    }
+    
     private static Versamento generateVersamento(Incasso incasso,String value)
             {
         Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
@@ -985,6 +994,7 @@ public class Smd {
         versamento.setCodeLine(value.substring(61,79));
         versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
         versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
+        log.info("generateVersamento: {}", versamento);
         return versamento;
     }
         

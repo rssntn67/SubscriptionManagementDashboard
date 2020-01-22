@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -768,16 +767,21 @@ public class SmdServiceImpl implements SmdService {
         .findByDataContabile(incasso.getDataContabile())
         .stream()
         .filter(inc -> 
-           inc.getCassa() == Cassa.Ccp 
+           inc.getCassa() == incasso.getCassa() 
         && inc.getCuas() == incasso.getCuas() 
-        && inc.getImporto().compareTo(incasso.getImporto()) == 0)
+        && inc.getCcp() == incasso.getCcp())
         .collect(Collectors.toList());
         if (!found.isEmpty()) {
         	log.warn("save: Incasso esistente, {} ", incasso);
             throw new UnsupportedOperationException("save: Non posso Salvare: Incasso esistente ");
         }
         incassoDao.save(incasso);
-        incasso.getVersamenti().forEach(vers -> versamentoDao.save(vers));
+        log.info("save: {}", incasso);
+        incasso.getVersamenti().forEach(vers -> {
+        	versamentoDao.save(vers);
+            log.info("save: {}", vers);
+        	
+        });
     }
 
     @Override
