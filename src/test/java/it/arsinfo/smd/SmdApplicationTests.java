@@ -56,6 +56,7 @@ import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.OperazioneIncasso;
+import it.arsinfo.smd.entity.OperazioneSospendi;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -74,6 +75,7 @@ import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.OperazioneDao;
 import it.arsinfo.smd.repository.OperazioneIncassoDao;
+import it.arsinfo.smd.repository.OperazioneSospendiDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
@@ -114,6 +116,8 @@ public class SmdApplicationTests {
     private OperazioneDao operazioneDao;
     @Autowired
     private OperazioneIncassoDao operazioneIncassoDao;
+    @Autowired
+    private OperazioneSospendiDao operazioneSospendiDao;
     @Autowired
     private NotaDao notaDao;
     @Autowired
@@ -157,6 +161,7 @@ public class SmdApplicationTests {
         assertNotNull(incassoDao);
         assertNotNull(operazioneDao);
         assertNotNull(operazioneIncassoDao);
+        assertNotNull(operazioneSospendiDao);
         assertNotNull(userInfoDao);
         assertNotNull(spedizioneDao);
         assertNotNull(spedizioneItemDao);
@@ -188,6 +193,7 @@ public class SmdApplicationTests {
         assertEquals(0, versamentoDao.findAll().size());
         assertEquals(0, operazioneDao.findAll().size());
         assertEquals(0, operazioneIncassoDao.findAll().size());
+        assertEquals(0, operazioneSospendiDao.findAll().size());
         assertEquals(2, userInfoDao.findAll().size());
         for (SpesaSpedizione ss : SmdHelper.getSpeseSpedizione()) {
             spesaSpedizioneDao.save(ss);
@@ -222,6 +228,7 @@ public class SmdApplicationTests {
 	        spedizioneDao.deleteAll();
 	        estrattoContoDao.deleteAll();
 	        operazioneIncassoDao.deleteAll();
+	        operazioneSospendiDao.deleteAll();
 	        abbonamentoDao.deleteAll();
 	        campagnaItemDao.deleteAll();
 	        campagnaDao.deleteAll();
@@ -275,6 +282,33 @@ public class SmdApplicationTests {
         userInfoDao.delete(user);
         assertEquals(2, userInfoDao.findAll().size());        
     }        
+    
+    @Test
+    public void testOperazioneSospendiCRUD() {
+        log.info("----------------->testOperazioneSospendiCRUD<----------------");
+        Pubblicazione estratti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti").iterator().next();
+        assertNotNull(estratti);
+        OperazioneSospendi sospendiEstratti = new OperazioneSospendi(estratti, Anno.getAnnoCorrente(), Mese.getMeseCorrente());
+        operazioneSospendiDao.save(sospendiEstratti);
+        assertEquals(1, operazioneSospendiDao.findAll().size());
+                
+        operazioneSospendiDao.findAll().stream().forEach( a -> log.info(a.toString()));
+        
+        OperazioneSospendi sospeso = operazioneSospendiDao.findUniqueByAnnoAndPubblicazione(Anno.getAnnoCorrente(), estratti);
+        assertNotNull(sospeso);
+        
+        OperazioneSospendi sospendiEstratti2 = new OperazioneSospendi(estratti, Anno.getAnnoCorrente(), Mese.APRILE);
+        
+        try {
+        	operazioneSospendiDao.save(sospendiEstratti2);
+        	assertTrue(false);
+        } catch (Exception e) {
+            log.info("Fail saving duplicate key");        	
+		}
+        
+        
+    }
+
 
     @Test
     public void testAnagraficaCRUD() {
