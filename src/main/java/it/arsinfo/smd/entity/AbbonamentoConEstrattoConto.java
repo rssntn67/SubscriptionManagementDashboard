@@ -40,6 +40,7 @@ public class AbbonamentoConEstrattoConto implements SmdEntity {
     	codeLine = abbonamento.getCodeLine();
     	anno = abbonamento.getAnno();
     	
+    	incassato= abbonamento.getIncassato();
     	pregresso = abbonamento.getPregresso();
     	importo = abbonamento.getImporto();
     	spesePostali=abbonamento.getSpese().add(abbonamento.getSpeseEstero());

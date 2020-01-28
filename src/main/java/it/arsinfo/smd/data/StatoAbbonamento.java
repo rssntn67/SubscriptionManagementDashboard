@@ -6,5 +6,6 @@ public enum StatoAbbonamento {
     Valido,
     Sospeso,
     SospesoInviatoEC,
+    ValidoInviatoEC,
     Annullato;
 }

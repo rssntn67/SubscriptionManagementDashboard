@@ -72,10 +72,5 @@ public interface SmdService {
     
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
-    
-    void sospendi(Abbonamento abbonamento)throws Exception;
-    void attiva(Abbonamento abbonamento)  throws Exception;
-    void annulla(Abbonamento abbonamento) throws Exception;
-    
-    
+            
 }
