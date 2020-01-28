@@ -87,12 +87,16 @@ public class AbbonamentoConEstrattoConto implements SmdEntity {
     }
 
     public String getCaptionBrief() {
-        return intestatario.getCaptionBrief();
+        return String.format("'%s %s'", intestatario.getTitolo().getIntestazione(), intestatario.getDenominazione());
     }
 
     public String getSottoIntestazione() {
-        if (intestatario.getCo() == null) {
-            return "";
+        if (intestatario.getCo() == null ) {
+        	if (intestatario.getNome() != null) {
+        		return intestatario.getNome();
+        	} else {
+        		return "";
+        	}
         } 
         return "c/o" + intestatario.getCo().getCaptionBrief();
     }
