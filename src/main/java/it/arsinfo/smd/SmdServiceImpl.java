@@ -170,7 +170,7 @@ public class SmdServiceImpl implements SmdService {
         	switch (abbonamento.getStatoAbbonamento()) {
 				case Sospeso:
 					if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
-						sospendi(abbonamento);
+						sospendiSpedizioni(abbonamento);
 						abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
 						abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
 						log.info("EC {}", abbonamento);
@@ -180,11 +180,11 @@ public class SmdServiceImpl implements SmdService {
 					}
 					break;					
 				case Annullato:
-					annulla(abbonamento);
+					sospendiSpedizioni(abbonamento);
 					log.info("estratto: Annullato {}", abbonamento);
 					break;
 				default:
-					attiva(abbonamento);
+					riattivaSpedizioni(abbonamento);
 					break;
 			}
             abbonamentoDao.save(abbonamento);
@@ -202,29 +202,34 @@ public class SmdServiceImpl implements SmdService {
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             switch (Smd.getStatoIncasso(abbonamento)) {
             case Si:
-            	attiva(abbonamento);
+            	riattivaSpedizioni(abbonamento);
+            	riattivaStorico(abbonamento);
                 break;
             case No:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-                annulla(abbonamento);
+                sospendiSpedizioni(abbonamento);
+                sospendiStorico(abbonamento);
                 break;
             case Zero:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-            	annulla(abbonamento);
+                sospendiSpedizioni(abbonamento);
+                sospendiStorico(abbonamento);
                 break;
             case Omaggio:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            	attiva(abbonamento);
+            	riattivaSpedizioni(abbonamento);
+            	riattivaStorico(abbonamento);
                 break;
             case Parzialmente:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-                sospendi(abbonamento);
+                sospendiSpedizioni(abbonamento);
+                sospendiStorico(abbonamento);
                 break;
             case SiConDebito:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+            	riattivaStorico(abbonamento);
+            	riattivaStorico(abbonamento);
                 break;
             default:
-            	attiva(abbonamento);
                 break;
             }
             abbonamentoDao.save(abbonamento);
@@ -389,7 +394,6 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         estrattoContoDao.save(estrattoConto);
-        aggiornaStatoAbbonamento(abbonamento);
         abbonamentoDao.save(abbonamento);
     }
 
@@ -439,7 +443,6 @@ public class SmdServiceImpl implements SmdService {
         } else {
             estrattoContoDao.save(estrattoConto);
         }
-        aggiornaStatoAbbonamento(abbonamento);
         if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && estrattoContoDao.findByAbbonamento(abbonamento).isEmpty()) {
         	abbonamentoDao.delete(abbonamento);
         } else {
@@ -582,7 +585,19 @@ public class SmdServiceImpl implements SmdService {
         BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);        
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        aggiornaStatoAbbonamento(abbonamento);
+        if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
+        	switch (abbonamento.getStatoIncasso()) {
+			case Si:
+				riattivaSpedizioni(abbonamento);
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+				break;
+			case SiConDebito:
+				riattivaSpedizioni(abbonamento);
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+			default:
+				break;
+			}
+        }
         abbonamentoDao.save(abbonamento);        
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
@@ -614,8 +629,8 @@ public class SmdServiceImpl implements SmdService {
         operazioneIncassoDao.save(operazioneIncasso);
         versamentoDao.save(versamento);
         incassoDao.save(incasso);        
-        aggiornaStatoAbbonamento(abbonamento);
-        abbonamentoDao.save(abbonamento);        
+        abbonamentoDao.save(abbonamento); 
+        
         OperazioneIncasso operStorno = new OperazioneIncasso();
         operStorno.setAbbonamento(abbonamento);
         operStorno.setVersamento(versamento);
@@ -870,23 +885,5 @@ public class SmdServiceImpl implements SmdService {
 		}
 
     }
-
-	@Override
-	public void sospendi(Abbonamento abbonamento) throws Exception{
-        sospendiSpedizioni(abbonamento);
-        sospendiStorico(abbonamento);		
-	}
-
-	@Override
-	public void attiva(Abbonamento abbonamento) throws Exception{
-		riattivaSpedizioni(abbonamento);
-		riattivaStorico(abbonamento);		
-	}
-
-	@Override
-	public void annulla(Abbonamento abbonamento) throws Exception{
-        sospendiStorico(abbonamento);
-        rimuovi(abbonamento);		
-	}
 
 }

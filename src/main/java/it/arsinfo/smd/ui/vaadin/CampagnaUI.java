@@ -1,7 +1,9 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -300,9 +302,14 @@ public class CampagnaUI extends SmdUI {
                 case InviatoEC:
                     abbonamentoGrid
                     .populate(smdService.get(
-                      abbonamentoDao.findByCampagnaAndStatoAbbonamento(campagna, StatoAbbonamento.SospesoInviatoEC)
-                          .stream()
-                          .collect(Collectors.toList())));
+                        	Stream
+                    		.of(
+                    			abbonamentoDao.findByCampagnaAndStatoAbbonamento(campagna, StatoAbbonamento.ValidoInviatoEC),
+                    			abbonamentoDao.findByCampagnaAndStatoAbbonamento(campagna, StatoAbbonamento.SospesoInviatoEC))
+                    		.flatMap(Collection::stream)
+                    		.collect(Collectors.toList())
+                      
+                          ));
                     setHeader("Campagna::Abbonamenti Inviato EC");
                     break;
                 case Chiusa:
