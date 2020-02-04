@@ -224,6 +224,7 @@ public class IncassoUI extends SmdUI {
             }
             versEditor.setVisible(false);
             editor.edit(versEditor.get().getIncasso());
+            versAdd.setVisible(true);
         });
 
         versGrid.setChangeHandler(() -> {
