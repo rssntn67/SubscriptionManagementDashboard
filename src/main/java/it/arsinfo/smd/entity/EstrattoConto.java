@@ -42,9 +42,9 @@ public class EstrattoConto implements SmdEntity {
     private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
 
     private Mese meseInizio=Mese.GENNAIO;
-    private Anno annoInizio=Anno.getAnnoProssimo();
+    private Anno annoInizio=Anno.getAnnoCorrente();
     private Mese meseFine = Mese.DICEMBRE;
-    private Anno annoFine = Anno.getAnnoProssimo();
+    private Anno annoFine = Anno.getAnnoCorrente();
     private Integer numero = 1;
     private Integer numeroTotaleRiviste = 0;
     

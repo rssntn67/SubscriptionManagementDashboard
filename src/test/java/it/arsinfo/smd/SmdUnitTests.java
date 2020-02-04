@@ -1278,5 +1278,9 @@ public class SmdUnitTests {
     	
     }
     
+   @Test
+   public void testGetAnnoCorrente() throws Exception {
+	   assertEquals(Anno.ANNO2020, Anno.getAnnoCorrente());
+   }
 
 }

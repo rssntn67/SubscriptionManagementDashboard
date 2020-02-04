@@ -124,13 +124,12 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    abbonamentoDao.save(get());
                     smdService.genera(get(), getEstrattiConto().toArray(new EstrattoConto[getEstrattiConto().size()]));
+                    onChange();
                 } catch (Exception e) {
                     Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
                                       Notification.Type.ERROR_MESSAGE);
                 }
-                onChange();
             }
         };
 
@@ -274,7 +273,7 @@ public class AbbonamentoUI extends SmdUI {
                         editor.get()));
             }
             versamentoGrid.populate(smdService.getAssociati(editor.get()));
-            
+            estrattoContoAdd.setVisible(true);
         });
         
         versamentoGrid.setChangeHandler(() -> {

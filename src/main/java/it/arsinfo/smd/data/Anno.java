@@ -4,20 +4,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public enum Anno {
-        ANNO2016(2016),
-        ANNO2017(2017),
-        ANNO2018(2018),
+    ANNO2016(2016),
+    ANNO2017(2017),
+    ANNO2018(2018),
 	ANNO2019(2019),
 	ANNO2020(2020),
 	ANNO2021(2021),
-        ANNO2022(2022),
+    ANNO2022(2022),
 	ANNO2023(2023),
-        ANNO2024(2024),
-        ANNO2025(2025),
-        ANNO2026(2026),
-        ANNO2027(2027),
-        ANNO2028(2028),
-        ANNO2029(2029),
+    ANNO2024(2024),
+    ANNO2025(2025),
+    ANNO2026(2026),
+    ANNO2027(2027),
+    ANNO2028(2028),
+    ANNO2029(2029),
 	ANNO2030(2030);
 	
 	private int anno;
