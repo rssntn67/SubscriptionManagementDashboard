@@ -775,7 +775,8 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void save(Incasso incasso) {
-        List<Incasso> found = incassoDao
+        boolean alreadyPersisted = incasso.getId() != null;
+    	List<Incasso> found = incassoDao
         .findByDataContabile(incasso.getDataContabile())
         .stream()
         .filter(inc -> 
@@ -789,6 +790,9 @@ public class SmdServiceImpl implements SmdService {
         }
         incassoDao.save(incasso);
         log.info("save: {}", incasso);
+        if (alreadyPersisted) {
+        	return;
+        }
         incasso.getVersamenti().forEach(vers -> {
         	versamentoDao.save(vers);
             log.info("save: {}", vers);

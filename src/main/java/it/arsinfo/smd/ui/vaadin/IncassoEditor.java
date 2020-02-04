@@ -101,7 +101,6 @@ public class IncassoEditor extends SmdEditor<Incasso> {
         cassa.setReadOnly(persisted);
         cuas.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
     }
 

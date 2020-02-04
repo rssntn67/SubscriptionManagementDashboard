@@ -49,12 +49,12 @@ public class IncassoUI extends SmdUI {
                     Notification.show("Aggiungere Versamenti Prima di Salvare", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
-                if (get().getId() == null && get().getDataContabile().after(Smd.getStandardDate(new Date()))) {
+                if (get().getDataContabile().after(Smd.getStandardDate(new Date()))) {
                     Notification.show("Non si può selezionare una data contabile futuro", Notification.Type.WARNING_MESSAGE);
                     return;
                 }
                 try {
-                    smdService.save(get());
+            		smdService.save(get());
                     onChange();
                 } catch (Exception e) {
                     Notification.show("Non è possibile salvare questo record: "+ e.getMessage(),
