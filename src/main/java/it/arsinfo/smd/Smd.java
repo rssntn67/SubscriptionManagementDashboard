@@ -860,10 +860,8 @@ public class Smd {
                       case  Spedizioniere: 
                           op.setStimatoSped(op.getStimatoSped()+item.getNumero());
                           break;
-                      case AdpSede:
-                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
-                          break;
                       default:
+                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
                         break;
                       }
                   })
