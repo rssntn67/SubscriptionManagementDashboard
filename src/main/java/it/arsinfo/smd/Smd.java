@@ -826,6 +826,7 @@ public class Smd {
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<SpedizioneWithItems> spedizioni,Mese mese, Anno anno) {
+    	log.info("generaOperazione {}, {}, {}", pubblicazione,mese,anno);
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
         Mese mesePubblicazione;

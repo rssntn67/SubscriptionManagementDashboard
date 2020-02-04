@@ -462,6 +462,8 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void generaStatisticheTipografia(Anno anno, Mese mese) {
+    	log.info("generaStatisticheTipografia {}, {}", mese,anno);
+    	List<SpedizioneWithItems> speditems = findByMeseSpedizioneAndAnnoSpedizione(mese, anno);
         pubblicazioneDao.findAll().forEach(p -> {
             Operazione saved = operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese,p);
             if (saved != null && saved.getStatoOperazione() != StatoOperazione.Programmata) {
@@ -471,9 +473,10 @@ public class SmdServiceImpl implements SmdService {
                 operazioneDao.deleteById(saved.getId());
             }
             Operazione op = Smd.generaOperazione(p,
-                                             findByMeseSpedizioneAndAnnoSpedizione(mese, anno), 
+            								speditems, 
                                              mese, 
                                              anno);
+    	log.info("generaStatisticheTipografia {}", op);
         if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
             operazioneDao.save(op);                               
         }
@@ -500,7 +503,9 @@ public class SmdServiceImpl implements SmdService {
         spedizioneDao
         .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione,annoSpedizione)
         .stream()
-        .filter(sped -> sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere)
+        .filter(sped -> 
+        	sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere && 
+        	sped.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA)
         .forEach(sped -> {
             sped.setStatoSpedizione(StatoSpedizione.INVIATA);
             spedizioneDao.save(sped);
@@ -508,13 +513,15 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<SpedizioneItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped) {
+    public List<SpedizioneItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped, StatoSpedizione statoSpedizione) {
         return spedizioneItemDao
         	.findByPubblicazione(pubblicazione)
         	.stream()
         	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
         						&& spedItem.getSpedizione().getAnnoSpedizione()== annoSpedizione
-        						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped)
+        						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped
+        						&& spedItem.getSpedizione().getStatoSpedizione() == statoSpedizione
+        						)
         	.collect(Collectors.toList());
     }
     
