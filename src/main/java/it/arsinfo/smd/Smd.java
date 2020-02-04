@@ -536,7 +536,7 @@ public class Smd {
 
         if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
                 || (spedAnno == Anno.getAnnoCorrente()
-                        && spedMese.getPosizione() <= Mese.getMeseCorrente().getPosizione())) {
+                        && spedMese.getPosizione() < Mese.getMeseCorrente().getPosizione())) {
             spedMese = Mese.getMeseCorrente();
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
