@@ -160,39 +160,49 @@ public class SmdServiceImpl implements SmdService {
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         campagnaDao.save(campagna);
     }
+    
 
     @Override
     public void estratto(Campagna campagna) throws Exception {
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
     		return;
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-        	aggiornaStatoAbbonamento(abbonamento);
-        	switch (abbonamento.getStatoAbbonamento()) {
-				case Sospeso:
-					if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
-						sospendiSpedizioni(abbonamento);
-						abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
-						abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-						log.info("EC {}", abbonamento);
-					} else {
-						abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-						log.info("estratto: Valido {}", abbonamento);
-					}
-					break;					
-				case Annullato:
-					sospendiSpedizioni(abbonamento);
-					log.info("estratto: Annullato {}", abbonamento);
-					break;
-				default:
-					riattivaSpedizioni(abbonamento);
-					break;
-			}
+            switch (Smd.getStatoIncasso(abbonamento)) {
+            case No:
+				if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() >=0) {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
+					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+					log.info("EC {}", abbonamento);
+				} else {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+					log.info("estratto: sospeso {}", abbonamento);
+				}
+				sospendiSpedizioni(abbonamento);
+                break;
+            case Parzialmente:
+				if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
+					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+					log.info("EC {}", abbonamento);
+				} else {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+					log.info("estratto: sospeso {}", abbonamento);
+				}
+				sospendiSpedizioni(abbonamento);
+                break;
+            case Zero:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+				sospendiSpedizioni(abbonamento);
+                break;
+            default:
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+				riattivaSpedizioni(abbonamento);
+                break;
+            }        	
             abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
-        campagnaDao.save(campagna);
-        
-        
+        campagnaDao.save(campagna);                
     }
 
     @Override
@@ -216,6 +226,7 @@ public class SmdServiceImpl implements SmdService {
                 sospendiStorico(abbonamento);
                 break;
             case Omaggio:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
             	riattivaSpedizioni(abbonamento);
             	riattivaStorico(abbonamento);
                 break;
@@ -235,8 +246,7 @@ public class SmdServiceImpl implements SmdService {
             abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
-        campagnaDao.save(campagna);
-        
+        campagnaDao.save(campagna);        
     }
 
     @Override
@@ -507,70 +517,7 @@ public class SmdServiceImpl implements SmdService {
         						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped)
         	.collect(Collectors.toList());
     }
-
-    private void ricondiziona(Abbonamento abbonamento) throws Exception {
-    	if (abbonamento.getCampagna() == null) {
-    		return;
-    	}
-    	for (EstrattoConto estrattoConto : estrattoContoDao.findByAbbonamento(abbonamento)){
-    		if (estrattoConto.getNumero()< 16 && estrattoConto.getNumero() > 0) {
-    			continue;
-    		}
-			if (estrattoConto.getStorico() != null) {
-				continue;
-			}
-			double costoUno = estrattoConto.getImporto().doubleValue() / (estrattoConto.getNumero());
-			for (int i = 1; i < 6; i++) {
-				if (i * costoUno == abbonamento.getResiduo().doubleValue()) {
-					Storico storico = storicoDao.findById(estrattoConto.getStorico().getId()).get();
-					Campagna campagna = campagnaDao.findById(abbonamento.getCampagna().getId()).get();
-					int numero = estrattoConto.getNumero() - i;
-					storico.setNumero(numero);
-					if (numero == 0) {
-						Nota nota = new Nota(storico);
-						nota.setOperatore("Sistema:Incasso");
-						nota.setDescription("Rimosso da Incasso: " + storico);
-						rimuovi(campagna, storico, nota);
-					} else {
-						Nota nota = new Nota(storico);
-						nota.setOperatore("Sistema:Incasso");
-						nota.setDescription("Aggiorna da Incasso: " + storico);
-						aggiorna(campagna, storico, nota);								
-					}
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-					return;
-				}					
-    		}
-    	}
-    }
     
-    private void aggiornaStatoAbbonamento(Abbonamento abbonamento) throws Exception {
-        switch (Smd.getStatoIncasso(abbonamento)) {
-        case No:
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-            break;
-        case Omaggio:
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            break;
-        case Parzialmente:
-    		abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-        	ricondiziona(abbonamento);
-            break;
-        case Si:
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            break;
-        case SiConDebito:
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            break;
-        case Zero:
-            abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-            break;
-        default:
-            break;
-        
-        }
-    	
-    }
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {
         log.info("incassa: {}", user);

@@ -177,7 +177,7 @@ public class Smd {
     	if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Valido && abbonamento.getTotale().signum() == 0) {
     		return Incassato.Zero;
     	}
-        if (abbonamento.getTotale().signum() == 0) {
+        if (abbonamento.getImporto().signum() == 0 && abbonamento.getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }
         if (abbonamento.getIncassato().signum() == 0) {
