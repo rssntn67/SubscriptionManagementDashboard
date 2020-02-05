@@ -1463,10 +1463,9 @@ public class SmdApplicationTests {
           assertEquals(sped.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
           sped.getSpedizione().setStatoSpedizione(StatoSpedizione.INVIATA);
           spedizioneDao.save(sped.getSpedizione());
-          log.info(sped.toString());
+          log.info(sped.getSpedizione().toString());
         });
 
-        int spedanticipate = 12 - spedizioni.size()+1;
         spedizioni=smdService.findByAbbonamento(abb);
         List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
         spedizioni.stream().forEach(sped -> {
@@ -1485,21 +1484,26 @@ public class SmdApplicationTests {
             }
         }        
         spedizioni=smdService.findByAbbonamento(abb);
-        assertEquals(1, spedizioni.size());
-        SpedizioneWithItems inviata = spedizioni.iterator().next();
-        assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
-        assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
-        assertEquals(spedanticipate, inviata.getSpedizioneItems().size());
-        inviata.getSpedizioneItems().forEach(item ->log.info(item.toString()));
-
+        assertEquals(2, spedizioni.size());
+        for (SpedizioneWithItems inviata : spedizioni) {
+        	assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
+        	assertEquals(inviata.getSpedizione().getMeseSpedizione(), Mese.getMeseCorrente());
+        	assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
+        	inviata.getSpedizioneItems().forEach(item ->log.info(item.toString()));
+            log.info(inviata.toString());
+        	if (inviata.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede) {
+        		assertEquals(3,inviata.getSpedizioneItems().size());
+        	} else {
+        		assertEquals(1,inviata.getSpedizioneItems().size());
+        	}
+            for (SpedizioneItem item: inviata.getSpedizioneItems()) {
+                spedizioneItemDao.deleteById(item.getId());
+            }
+            spedizioneDao.deleteById(inviata.getSpedizione().getId());
+        }
         log.info(abb.toString());
         log.info(ec1.toString());
-        log.info(inviata.toString());
         
-        for (SpedizioneItem item: inviata.getSpedizioneItems()) {
-            spedizioneItemDao.deleteById(item.getId());
-        }
-        spedizioneDao.deleteById(inviata.getSpedizione().getId());
         estrattoContoDao.deleteById(ec1.getId());
         abbonamentoDao.delete(abb);
     }

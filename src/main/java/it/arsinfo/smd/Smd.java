@@ -177,7 +177,7 @@ public class Smd {
     	if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Valido && abbonamento.getTotale().signum() == 0) {
     		return Incassato.Zero;
     	}
-        if (abbonamento.getTotale().signum() == 0) {
+        if (abbonamento.getImporto().signum() == 0 && abbonamento.getTotale().signum() == 0) {
             return Incassato.Omaggio;
         }
         if (abbonamento.getIncassato().signum() == 0) {
@@ -536,7 +536,7 @@ public class Smd {
 
         if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
                 || (spedAnno == Anno.getAnnoCorrente()
-                        && spedMese.getPosizione() <= Mese.getMeseCorrente().getPosizione())) {
+                        && spedMese.getPosizione() < Mese.getMeseCorrente().getPosizione())) {
             spedMese = Mese.getMeseCorrente();
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
@@ -826,6 +826,7 @@ public class Smd {
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<SpedizioneWithItems> spedizioni,Mese mese, Anno anno) {
+    	log.info("generaOperazione {}, {}, {}", pubblicazione,mese,anno);
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
         Mese mesePubblicazione;
@@ -860,10 +861,8 @@ public class Smd {
                       case  Spedizioniere: 
                           op.setStimatoSped(op.getStimatoSped()+item.getNumero());
                           break;
-                      case AdpSede:
-                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
-                          break;
                       default:
+                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
                         break;
                       }
                   })

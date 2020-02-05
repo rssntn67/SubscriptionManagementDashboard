@@ -6,6 +6,7 @@ import java.util.List;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.AbbonamentoConEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -51,7 +52,7 @@ public interface SmdService {
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione);
     
 
-    List<SpedizioneItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione);
+    List<SpedizioneItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione, StatoSpedizione statoSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
     List<OperazioneIncasso> getAssociati(Versamento versamento);

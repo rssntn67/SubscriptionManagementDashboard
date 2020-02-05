@@ -13,6 +13,7 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoOperazione;
+import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.repository.OperazioneDao;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONERE)
@@ -67,7 +68,13 @@ public class SpedizioniereUI extends SmdUI {
             button.setEnabled(op.getStatoOperazione() == StatoOperazione.Spedita);
             button.addClickListener(click -> {
                 grid.setVisible(false);
-                spedGrid.populate(smdService.listItems(op.getPubblicazione(),op.getMese(),op.getAnno(),InvioSpedizione.Spedizioniere));                
+                spedGrid.populate(
+            		smdService.listItems(
+            				op.getPubblicazione(),
+            				op.getMese(),
+            				op.getAnno(),
+            				InvioSpedizione.Spedizioniere,
+            				StatoSpedizione.INVIATA));                
             });
             return button;
         });

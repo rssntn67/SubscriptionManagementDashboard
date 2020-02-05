@@ -1,5 +1,8 @@
 package it.arsinfo.smd;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -11,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -42,6 +46,9 @@ public class SmdApplication {
 
     @Value("${update.spesa.spedizione}")
     private String updateSpesaSpedizione;
+
+    @Value("${split.spedizione}")
+    private String splitSpedizione;
 
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
@@ -87,6 +94,8 @@ public class SmdApplication {
             log.info("loadAnagraficaAdp {}",loadAnagraficaAdp);
             boolean updateSSADP = updateSpesaSpedizione != null && updateSpesaSpedizione.equals("true");
             log.info("updateSpesaSpedizione {}",updateSpesaSpedizione);
+            boolean splitSped = splitSpedizione != null && splitSpedizione.equals("true");
+            log.info("splitSpedizione {}",splitSped);
             
             if (loadSD ) {
                 new Thread(
@@ -135,6 +144,32 @@ public class SmdApplication {
             		spesaSpedizione.setCor3gg(ss.getCor3gg());
             		spesaSpedizioneDao.save(spesaSpedizione);
             	});
+            } else if (splitSped) {
+            	Set<Long> spedidswithpostitems = new HashSet<>();
+            	for (SpedizioneItem spedItem: spedizioneItemDao.findAll()) {
+            		if (spedItem.isPosticipata()) {
+            			spedidswithpostitems.add(spedItem.getSpedizione().getId());
+            			log.info("posticipata: {}",spedItem.getSpedizione());
+            			log.info("posticipata: {}",spedItem);
+            		}
+            	}
+            	Set<Long> parsed = new HashSet<>();
+            	for (SpedizioneItem spedItem: spedizioneItemDao.findAll()) {
+            		if (spedItem.isPosticipata()) {
+                		continue;
+            		}
+            		if (spedidswithpostitems.contains(spedItem.getSpedizione().getId())) {
+            			log.info("sped contains posticipata: {}",spedItem.getSpedizione());
+            			log.info("must be splitted because sped contains posticipata: {}", spedItem);
+            			continue;
+            		}
+            		if (parsed.contains(spedItem.getSpedizione().getId())) {
+            			log.info("must be splitted because sped contains two: {}", spedItem.getSpedizione());
+            			log.info("must be splitted because sped contains two: {}", spedItem);
+            			continue;
+            		}
+            		parsed.add(spedItem.getSpedizione().getId());
+            	} 
             }
 
         };

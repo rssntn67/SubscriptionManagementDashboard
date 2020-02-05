@@ -98,11 +98,9 @@ public class IncassoEditor extends SmdEditor<Incasso> {
     public void focus(boolean persisted, Incasso incasso) {
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
-        dataContabile.setReadOnly(persisted);
         cassa.setReadOnly(persisted);
         cuas.setReadOnly(persisted);
         ccp.setReadOnly(persisted);
-        getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
     }
 

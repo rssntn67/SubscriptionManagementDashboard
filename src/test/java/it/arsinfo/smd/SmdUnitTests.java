@@ -441,7 +441,7 @@ public class SmdUnitTests {
         log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
         assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
-        assertEquals(2, spedwi.size());
+        assertEquals(3, spedwi.size());
         assertEquals(numeroRiviste, items.size());
         assertEquals(3.0, abb.getSpese().doubleValue(),0);
 
@@ -451,12 +451,17 @@ public class SmdUnitTests {
             log.info(sped.toString());
             spedw.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
             
-            if (sped.getMeseSpedizione() == meseA) {
-                assertEquals((numeroRiviste-1)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRiviste-1, spedw.getSpedizioneItems().size());
+            if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
+                assertEquals((numeroRiviste-2)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(numeroRiviste-2, spedw.getSpedizioneItems().size());
                 for (SpedizioneItem item : spedw.getSpedizioneItems()) {
                     assertTrue(item.isPosticipata());
                 }
+            } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, spedw.getSpedizioneItems().size());
+                SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
+                assertTrue(!item.isPosticipata());
             } else if (sped.getMeseSpedizione() == meseB ) {
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, spedw.getSpedizioneItems().size());
@@ -480,12 +485,16 @@ public class SmdUnitTests {
         for (SpedizioneWithItems ssp:spedwi) {
             Spedizione sped= ssp.getSpedizione();
             log.info(sped.toString());
-            if (sped.getMeseSpedizione() == meseA) {
+            if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 ss = sped.getSpesePostali();
                 assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
-                assertEquals((numeroRiviste-1)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRiviste-1, ssp.getSpedizioneItems().size());            
-            } else if (sped.getMeseSpedizione() == meseB ) {
+                assertEquals((numeroRiviste-2)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(numeroRiviste-2, ssp.getSpedizioneItems().size());            
+            } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+                assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
+                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(1, ssp.getSpedizioneItems().size());            	
+        	}else if (sped.getMeseSpedizione() == meseB ) {            
                 assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
                 assertEquals(0, sped.getPesoStimato().intValue());
                 assertEquals(0, ssp.getSpedizioneItems().size());
@@ -1278,5 +1287,9 @@ public class SmdUnitTests {
     	
     }
     
+   @Test
+   public void testGetAnnoCorrente() throws Exception {
+	   assertEquals(Anno.ANNO2020, Anno.getAnnoCorrente());
+   }
 
 }
