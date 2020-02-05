@@ -5,6 +5,7 @@ public enum StatoAbbonamento {
     Proposto,
     Duplicato,
     Valido,
+    ValidoConResiduo,
     Sospeso,
     SospesoInviatoEC,
     ValidoInviatoEC,

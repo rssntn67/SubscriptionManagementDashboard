@@ -1,5 +1,6 @@
 delete from operazione;
 update abbonamento set stato_abbonamento = 'Proposto' where stato_abbonamento != 'Valido';
+update abbonamento set spese_estratto_conto=0.00;
 update campagna set stato_campagna = 'Inviata';
 update spedizione set stato_spedizione = 'PROGRAMMATA';
 

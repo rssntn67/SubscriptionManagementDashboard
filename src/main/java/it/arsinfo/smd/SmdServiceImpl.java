@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -167,15 +168,16 @@ public class SmdServiceImpl implements SmdService {
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
     		return;
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-            switch (Smd.getStatoIncasso(abbonamento)) {
+        	Incassato inc = Smd.getStatoIncasso(abbonamento);
+            switch (inc) {
             case No:
 				if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() >=0) {
 					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
 					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-					log.info("EC {}", abbonamento);
+					log.info("estratto: EC {} inc.{}", abbonamento,inc);
 				} else {
 					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-					log.info("estratto: sospeso {}", abbonamento);
+					log.info("estratto: sospeso {} inc.", abbonamento,inc);
 				}
 				sospendiSpedizioni(abbonamento);
                 break;
@@ -183,19 +185,22 @@ public class SmdServiceImpl implements SmdService {
 				if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
 					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
 					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-					log.info("EC {}", abbonamento);
-				} else {
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-					log.info("estratto: sospeso {}", abbonamento);
+					log.info("estratto: EC {} inc.{}", abbonamento,Incassato.Parzialmente);
+					sospendiSpedizioni(abbonamento);
+    			} else {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoConResiduo);
+					log.info("estratto: ValidoConResiduo {} inc.{}", abbonamento,inc);
+					riattivaSpedizioni(abbonamento);
 				}
-				sospendiSpedizioni(abbonamento);
-                break;
+	            break;
             case Zero:
                 abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+				log.info("estratto: Annullato {} inc.{}", abbonamento,inc);
 				sospendiSpedizioni(abbonamento);
                 break;
             default:
 				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+				log.info("estratto: Valido {} inc.{}", abbonamento,inc);
 				riattivaSpedizioni(abbonamento);
                 break;
             }        	
@@ -210,40 +215,20 @@ public class SmdServiceImpl implements SmdService {
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC )
     		return;
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-            switch (Smd.getStatoIncasso(abbonamento)) {
-            case Si:
-            	riattivaSpedizioni(abbonamento);
+            switch (abbonamento.getStatoAbbonamento()) {
+            case Valido:
             	riattivaStorico(abbonamento);
                 break;
-            case No:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-                sospendiSpedizioni(abbonamento);
-                sospendiStorico(abbonamento);
-                break;
-            case Zero:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-                sospendiSpedizioni(abbonamento);
-                sospendiStorico(abbonamento);
-                break;
-            case Omaggio:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            	riattivaSpedizioni(abbonamento);
+            case ValidoConResiduo:
             	riattivaStorico(abbonamento);
                 break;
-            case Parzialmente:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-                sospendiSpedizioni(abbonamento);
-                sospendiStorico(abbonamento);
-                break;
-            case SiConDebito:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-            	riattivaStorico(abbonamento);
-            	riattivaStorico(abbonamento);
+            case ValidoInviatoEC:
+               	riattivaStorico(abbonamento);
                 break;
             default:
+                sospendiStorico(abbonamento);
                 break;
             }
-            abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
         campagnaDao.save(campagna);        
@@ -548,6 +533,17 @@ public class SmdServiceImpl implements SmdService {
 			case SiConDebito:
 				riattivaSpedizioni(abbonamento);
 				abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+			default:
+				break;
+			}
+        } else if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.ValidoConResiduo) {
+        	switch (abbonamento.getStatoIncasso()) {
+			case Si:
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+				break;
+			case SiConDebito:
+				riattivaSpedizioni(abbonamento);
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
 			default:
 				break;
 			}
