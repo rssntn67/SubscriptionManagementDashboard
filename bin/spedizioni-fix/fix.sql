@@ -1,3 +1,21 @@
+delete from operazione;
+update abbonamento set stato_abbonamento = 'Proposto' where stato_abbonamento != 'Valido';
+update campagna set stato_campagna = 'Inviata';
+update spedizione set stato_spedizione = 'PROGRAMMATA';
+
+
+
+update spedizione_item set posticipata = false ;
+
+delete from spedizione_item where mese_pubblicazione = 'GENNAIO';
+delete from spedizione_item where mese_pubblicazione = 'FEBBRAIO';
+delete from spedizione_item where mese_pubblicazione = 'MARZO';
+delete from spedizione where mese_spedizione = 'OTTOBRE' and anno_spedizione = 'ANNO2019';
+delete from spedizione where mese_spedizione = 'NOVEMBRE' and anno_spedizione = 'ANNO2019';
+delete from spedizione where mese_spedizione = 'DICEMBRE' and anno_spedizione = 'ANNO2019';
+delete from spedizione where mese_spedizione = 'GENNAIO' and anno_spedizione = 'ANNO2020';
+
+
 //
 select * from spedizione_item 
 where mese_pubblicazione = 'APRILE' 
