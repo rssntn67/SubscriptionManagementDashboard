@@ -263,9 +263,6 @@ public class SmdServiceImpl implements SmdService {
     }
 
     private EstrattoConto getByStorico(Campagna campagna,Storico storico) throws Exception{
-    	if (campagna == null) {
-            throw new Exception("Campagna is null");    		
-    	}
         List<EstrattoConto> ecs = 
                 estrattoContoDao
                 .findByStorico(storico)
@@ -297,27 +294,7 @@ public class SmdServiceImpl implements SmdService {
         rimuovi(getByStorico(campagna, storico));
     }
 
-    @Override
-    public void genera(Campagna campagna, Storico storico, Nota...note) throws Exception {
-        if (campagna == null  || storico == null
-                || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
-                ) {
-        	log.warn("genera: Non è possibile generare la campagna {}, {}",campagna,storico);
-            throw new UnsupportedOperationException("Non è possibile agenerare la campagna");
-        }
-        storico.setStatoStorico(StatoStorico.Valido);
-        save(storico, note);        
-        Abbonamento abbonamento =
-                abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa()); 
-        if (abbonamento == null) {
-            Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
-            abbonamento = Smd.genera(campagna, a, storico);
-        }
-        EstrattoConto estrattoConto = Smd.genera(abbonamento, storico);
-        genera(abbonamento, estrattoConto);
-        
-    }
-
+  
     @Override
     public void aggiorna(Campagna campagna, Storico storico, Nota...note) throws Exception {
         if (campagna != null && campagna.getStatoCampagna() == StatoCampagna.Chiusa 
@@ -328,7 +305,16 @@ public class SmdServiceImpl implements SmdService {
         EstrattoConto ec = getByStorico(campagna, storico);
         
         if (ec == null) {
-            genera(campagna, storico, note);
+            storico.setStatoStorico(StatoStorico.Valido);
+            save(storico, note);        
+            Abbonamento abbonamento =
+                    abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa()); 
+            if (abbonamento == null) {
+                Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
+                abbonamento = Smd.genera(campagna, a, storico);
+            }
+            EstrattoConto estrattoConto = Smd.genera(abbonamento, storico);
+            genera(abbonamento, estrattoConto);
             return;
         }
         //Only updates are Numero and EstrattoConto other changes
