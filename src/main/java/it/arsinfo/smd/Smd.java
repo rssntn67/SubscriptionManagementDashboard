@@ -44,6 +44,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.Sostitutivo;
+import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -60,7 +61,6 @@ import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -1018,5 +1018,5 @@ public class Smd {
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
     }
-
+    
 }

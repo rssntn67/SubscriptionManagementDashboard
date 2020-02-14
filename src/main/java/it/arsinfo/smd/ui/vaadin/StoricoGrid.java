@@ -15,7 +15,16 @@ public class StoricoGrid extends SmdGrid<Storico> {
     public StoricoGrid(String gridname) {
         super(new Grid<>(Storico.class),gridname);
 
-        setColumns("numero","captionPubblicazione","captionIntestatario","captionDestinatario","tipoEstrattoConto","invioSpedizione","invio","statoStorico","cassa");
+        setColumns(
+        		"captionIntestatario",
+        		"captionDestinatario",
+        		"tipoEstrattoConto",
+        		"captionPubblicazione",
+        		"numero",
+        		"invioSpedizione",
+        		"invio",
+        		"statoStorico",
+        		"cassa");
         setColumnCaption("captionIntestatario", "Intestatario");
         setColumnCaption("captionDestinatario", "Destinatario");
         setColumnCaption("captionPubblicazione", "Pubblicazione");
@@ -28,8 +37,7 @@ public class StoricoGrid extends SmdGrid<Storico> {
     @Override
     public void populate(List<Storico> storici) {
         super.populate(storici);
-        gridfooter.getCell("numero").setHtml("<b>Totale Storici: "+getTotale(storici).toString()+"</b>");
-
+        gridfooter.getCell("numero").setHtml("<b>Totale Abbonamenti: "+getTotale(storici).toString()+"</b>");
     }
 
     private Integer getTotale(List<Storico> storici) {

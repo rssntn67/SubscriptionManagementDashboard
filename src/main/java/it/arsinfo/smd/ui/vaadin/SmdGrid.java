@@ -14,9 +14,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-import it.arsinfo.smd.SmdEntity;
-
-public abstract class SmdGrid<T extends SmdEntity>
+public abstract class SmdGrid<T>
         extends SmdChangeHandler {
 
     private final Grid<T> grid;

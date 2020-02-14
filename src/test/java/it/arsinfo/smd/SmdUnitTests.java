@@ -5,12 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +31,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
+import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
@@ -42,7 +45,6 @@ import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.SpedizioneWithItems;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
@@ -1290,6 +1292,16 @@ public class SmdUnitTests {
    @Test
    public void testGetAnnoCorrente() throws Exception {
 	   assertEquals(Anno.ANNO2020, Anno.getAnnoCorrente());
+   }
+   
+   @Test
+   public void testNumberFormat() throws Exception {
+	   NumberFormat nf = NumberFormat.getInstance(Locale.ITALIAN);
+	   nf.setMinimumFractionDigits(2);
+	   nf.setMaximumFractionDigits(2);
+	   BigDecimal alfa = new BigDecimal("10.5");
+	   
+	   assertEquals("10,50", nf.format(alfa));
    }
 
 }

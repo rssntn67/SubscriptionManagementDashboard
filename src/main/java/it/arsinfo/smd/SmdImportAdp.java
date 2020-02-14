@@ -734,6 +734,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             }
             rows.add(row);
         }
+        wbca2020.close();
         return rows;
         
     }
@@ -749,6 +750,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             }
             codici.add(ancodice);
         }
+        wbca2020.close();
         return codici;        
     }
     
@@ -861,6 +863,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             }
             rows.put(pncodcon,row);
         }
+        wbca2020.close();
         return rows;
     }
     
@@ -933,6 +936,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
         log.debug("Archivio Clienti Trovati: "
                 + anagraficaMap.size());
         
+        wbac.close();
         return anagraficaMap;
     }
 
@@ -963,7 +967,8 @@ public class SmdImportAdp extends SmdLoadSampleData {
         log.debug("Elenco Abbonati Trovati: "
                 + anagraficaMap.size());
         
-        return anagraficaMap;
+        wbac.close();
+       return anagraficaMap;
     }
     
     public static List<Row> getBeneficiari() throws IOException {
@@ -980,6 +985,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             }
             rows.add(row);
         }            
+        wbac.close();
         return rows;
     }
     
@@ -1092,6 +1098,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             rows.add(row);
         }
        
+        wbac.close();
         return rows;
     }
 
@@ -1185,6 +1192,7 @@ public class SmdImportAdp extends SmdLoadSampleData {
             }
             rowMap.put(ancodice, row);
         }
+        wbac.close();
         return rowMap;
     }
     

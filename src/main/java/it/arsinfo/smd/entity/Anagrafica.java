@@ -105,6 +105,9 @@ public class Anagrafica implements SmdEntity {
     }
 
     public String getNome() {
+    	if (nome == null) {
+    		return "";
+    	}
         return nome;
     }
 
@@ -321,13 +324,8 @@ public class Anagrafica implements SmdEntity {
     }
 
     @Transient
-    public String getCaptionBrief() {
-        return String.format("'%s %s %s'", titolo.getIntestazione(), denominazione, nome);
-    }
-
-    @Transient
     public String getCaption() {
-        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), nome, denominazione,citta,cap,codeLineBase);
+        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), denominazione,nome,citta,cap,codeLineBase);
     }
 
     @Transient
@@ -406,6 +404,11 @@ public class Anagrafica implements SmdEntity {
         return String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
     }
 
+    public static String generaIntestazione(Anagrafica a) {
+    	return String.format("%s %s %s", a.getTitolo().getIntestazione(), 
+        		a.getDenominazione(),a.getNome());
+    }
+    
     public String getIndirizzoSecondaRiga() {
         return indirizzoSecondaRiga;
     }
