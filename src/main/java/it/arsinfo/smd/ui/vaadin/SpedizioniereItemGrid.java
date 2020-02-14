@@ -4,14 +4,14 @@ import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.dto.SpedizioniereItem;
 
-public class SpedizioniereGrid extends SmdGrid<SpedizioniereItem> {
+public class SpedizioniereItemGrid extends SmdGrid<SpedizioniereItem> {
 
-    public SpedizioniereGrid(String gridname) {
+    public SpedizioniereItemGrid(String gridname) {
         super(new Grid<>(SpedizioniereItem.class),gridname);
         setColumns(
         		"spedCaption",
     			"numero",
-                "caption",
+                "pubbCaption",
                 "intestazione",
                 "sottoIntestazione",
                 "indirizzo",
@@ -21,7 +21,7 @@ public class SpedizioniereGrid extends SmdGrid<SpedizioniereItem> {
         		"paese"
            );
         setColumnCaption("spedCaption","Spedizione");
-        setColumnCaption("caption","Pubblicazione");
+        setColumnCaption("pubbCaption","Pubblicazione");
         setColumnCaption("numero","Quantità");
     }
 

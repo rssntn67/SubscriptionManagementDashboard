@@ -36,7 +36,7 @@ public class SpedizioniereUI extends SmdUI {
         super.init(request,"Spedizioniere");
         
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
-        SpedizioniereGrid spedGrid = new SpedizioniereGrid("Spedizioni");
+        SpedizioniereItemGrid spedGrid = new SpedizioniereItemGrid("Spedizioni");
         addSmdComponents(spedGrid,grid);
                 
         spedGrid.setVisible(false);
