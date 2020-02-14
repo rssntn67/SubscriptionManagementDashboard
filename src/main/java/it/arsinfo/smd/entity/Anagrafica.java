@@ -105,6 +105,9 @@ public class Anagrafica implements SmdEntity {
     }
 
     public String getNome() {
+    	if (nome == null) {
+    		return "";
+    	}
         return nome;
     }
 
@@ -327,7 +330,7 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), nome, denominazione,citta,cap,codeLineBase);
+        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), denominazione,nome,citta,cap,codeLineBase);
     }
 
     @Transient

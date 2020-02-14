@@ -21,7 +21,7 @@ import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.dto.AbbonamentoConEstrattoConto;
+import it.arsinfo.smd.dto.AbbonamentoConEC;
 import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -104,10 +104,13 @@ public class SmdServiceImpl implements SmdService {
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 
     @Override
-    public List<AbbonamentoConEstrattoConto> get(List<Abbonamento> abbonamenti) {
-    	List<AbbonamentoConEstrattoConto> list = new ArrayList<>();
+    public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {
+    	List<AbbonamentoConEC> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
-    		list.add(new AbbonamentoConEstrattoConto(abbonamento, estrattoContoDao.findByAbbonamento(abbonamento)));
+    		list.add(new 
+				AbbonamentoConEC(abbonamento, 
+						estrattoContoDao.findByAbbonamento(abbonamento),
+    					abbonamento.getIntestatario(),abbonamento.getIntestatario().getCo()));
     	}
     	return list;
     }

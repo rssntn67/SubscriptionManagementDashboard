@@ -7,7 +7,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.dto.AbbonamentoConEstrattoConto;
+import it.arsinfo.smd.dto.AbbonamentoConEC;
 import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -28,7 +28,7 @@ public interface SmdService {
     void delete(Storico storico);
     void save(Storico storico, Nota... note);
 
-    List<AbbonamentoConEstrattoConto> get(List<Abbonamento> abbonamenti);
+    List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);
     void invia(Campagna campagna) throws Exception;
     void estratto(Campagna campagna) throws Exception;
     void chiudi(Campagna campagna) throws Exception;

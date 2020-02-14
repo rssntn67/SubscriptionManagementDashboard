@@ -6,17 +6,17 @@ import java.util.List;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
-import it.arsinfo.smd.dto.AbbonamentoConEstrattoConto;
+import it.arsinfo.smd.dto.AbbonamentoConEC;
 
-public class AbbonamentoConIndirizzoGrid extends SmdGrid<AbbonamentoConEstrattoConto> {
+public class AbbonamentoConECGrid extends SmdGrid<AbbonamentoConEC> {
 
     private final FooterRow gridfooter;
 
-    public AbbonamentoConIndirizzoGrid(String gridName) {
-        super(new Grid<>(AbbonamentoConEstrattoConto.class),gridName);
+    public AbbonamentoConECGrid(String gridName) {
+        super(new Grid<>(AbbonamentoConEC.class),gridName);
         setColumns(
         		"codeLine",
-        		"captionBrief",
+        		"intestazione",
         		"sottoIntestazione",
         		"indirizzo",
         		"citta",
@@ -44,7 +44,7 @@ public class AbbonamentoConIndirizzoGrid extends SmdGrid<AbbonamentoConEstrattoC
 	}
 
     @Override
-    public void populate(List<AbbonamentoConEstrattoConto> items) {
+    public void populate(List<AbbonamentoConEC> items) {
         super.populate(items);
         gridfooter.getCell("numeroMessaggi").setHtml("<b>"+getNumeroMessaggi(items).toString()+"</b>");
         gridfooter.getCell("numeroBlocchetti").setHtml("<b>"+getNumeroBlocchetti(items).toString()+"</b>");
@@ -63,121 +63,121 @@ public class AbbonamentoConIndirizzoGrid extends SmdGrid<AbbonamentoConEstrattoC
         gridfooter.getCell("saldo").setHtml("<b>"+getSaldo(items).toString()+"</b>"); 
     }
     
-    private Integer getNumeroMessaggi(List<AbbonamentoConEstrattoConto> items) {
+    private Integer getNumeroMessaggi(List<AbbonamentoConEC> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConEstrattoConto abbec: items) {
-    		numero+=abbec.getNumeroMessaggi();
+    	for (AbbonamentoConEC abbec: items) {
+    		numero+=abbec.getTotaleMessaggi();
     	}
     	return numero;
     }
-    private Integer getNumeroLodare(List<AbbonamentoConEstrattoConto> items) {
+    private Integer getNumeroLodare(List<AbbonamentoConEC> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConEstrattoConto abbec: items) {
-    		numero+=abbec.getNumeroLodare();
+    	for (AbbonamentoConEC abbec: items) {
+    		numero+=abbec.getTotaleLodare();
     	}
     	return numero;
     }
-    private Integer getNumeroManifesti(List<AbbonamentoConEstrattoConto> items) {
+    private Integer getNumeroManifesti(List<AbbonamentoConEC> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConEstrattoConto abbec: items) {
-    		numero+=abbec.getNumeroManifesti();
+    	for (AbbonamentoConEC abbec: items) {
+    		numero+=abbec.getTotaleManifesti();
     	}
     	return numero;
     }
-    private Integer getNumeroBlocchetti(List<AbbonamentoConEstrattoConto> items) {
+    private Integer getNumeroBlocchetti(List<AbbonamentoConEC> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConEstrattoConto abbec: items) {
-    		numero+=abbec.getNumeroBlocchetti();
+    	for (AbbonamentoConEC abbec: items) {
+    		numero+=abbec.getTotaleBlocchetti();
     	}
     	return numero;
     }
 
-    private BigDecimal getImportoMessaggi(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getImportoMessaggi(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoMessaggi());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getImportoMessaggiBG());
         }
         return importo;
     }
 
-    private BigDecimal getImportoLodare(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getImportoLodare(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoLodare());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getImportoLodareBG());
         }
         return importo;
     }
 
-    private BigDecimal getImportoBlocchetti(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getImportoBlocchetti(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoBlocchetti());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getImportoBlocchettiBG());
         }
         return importo;
     }
 
-    private BigDecimal getImportoManifesti(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getImportoManifesti(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoManifesti());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getImportoManifestiBG());
         }
         return importo;
     }
 
-    private BigDecimal getPregresso(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getPregresso(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getPregresso());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getPregressoBG());
         }
         return importo;
     }
 
 
-    private BigDecimal getSpesePostali(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getSpesePostali(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getSpesePostali());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpesePostaliBG());
         }
         return importo;
     }
 
-    private BigDecimal getSpeseEstrattoConto(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getSpeseEstrattoConto(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getSpeseEstrattoConto());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpeseEstrattoContoBG());
         }
         return importo;
     }
 
-    private BigDecimal getTotaleImporti(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getTotaleImporti(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getTotaleImporti());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getTotaleImportiBG());
         }
         return importo;
     }
 
-    private BigDecimal getTotale(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getTotale(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getTotale());
+        for (AbbonamentoConEC abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getTotaleBG());
         }
         return importo;
     }
 
-    private BigDecimal getIncassato(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getIncassato(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abb:abbonamenti) {
+        for (AbbonamentoConEC abb:abbonamenti) {
             if (abb.getIncassato() != null)
-                importo=importo.add(abb.getIncassato());
+                importo=importo.add(abb.getIncassatoBG());
         }
         return importo;
     }
 
-    private BigDecimal getSaldo(List<AbbonamentoConEstrattoConto> abbonamenti) {
+    private BigDecimal getSaldo(List<AbbonamentoConEC> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConEstrattoConto abbonamneto:abbonamenti) {
-            importo=importo.add(abbonamneto.getSaldo());
+        for (AbbonamentoConEC abbonamneto:abbonamenti) {
+            importo=importo.add(abbonamneto.getSaldoBG());
         }
         return importo;
     }

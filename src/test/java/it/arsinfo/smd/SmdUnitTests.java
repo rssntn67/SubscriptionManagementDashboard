@@ -5,12 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1290,6 +1292,16 @@ public class SmdUnitTests {
    @Test
    public void testGetAnnoCorrente() throws Exception {
 	   assertEquals(Anno.ANNO2020, Anno.getAnnoCorrente());
+   }
+   
+   @Test
+   public void testNumberFormat() throws Exception {
+	   NumberFormat nf = NumberFormat.getInstance(Locale.ITALIAN);
+	   nf.setMinimumFractionDigits(2);
+	   nf.setMaximumFractionDigits(2);
+	   BigDecimal alfa = new BigDecimal("10.5");
+	   
+	   assertEquals("10,50", nf.format(alfa));
    }
 
 }
