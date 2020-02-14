@@ -8,59 +8,91 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public class Indirizzo {
 
-    private final Anagrafica intestatario;
-    private final Anagrafica co;
+    private final Anagrafica primo;
+    private final Anagrafica secondo;
+    private final Anagrafica terzo;
         
-    public Indirizzo(Anagrafica intestatario, Anagrafica co) {
-    	Assert.notNull(intestatario,"intestatario must be not null");
-    	this.intestatario=intestatario;
-    	this.co=co;
+    public Indirizzo(Anagrafica primo, Anagrafica secondo) {
+    	Assert.notNull(primo,"primo must be not null");
+    	this.primo=primo;
+    	this.secondo=secondo;
+    	this.terzo=null;
     }
-    
+
+    public Indirizzo(Anagrafica primo, Anagrafica secondo, Anagrafica terzo) {
+    	Assert.notNull(primo,"primo must be not null");
+    	Assert.notNull(secondo,"secondo must be not null");
+    	this.primo=primo;
+    	this.secondo=secondo;
+    	this.terzo=terzo;
+    }
+
     public String getIntestazione() {
-        return String.format("%s %s", intestatario.getTitolo().getIntestazione(), intestatario.getDenominazione());
+        return String.format("%s %s", primo.getTitolo().getIntestazione(), primo.getDenominazione());
     }
 
     public String getSottoIntestazione() {
-        if (co == null ) {
-    		return intestatario.getNome();
+        if (secondo == null) {
+    		return primo.getNome();
         } 
-        return String.format("c/o %s %s %s", co.getTitolo().getIntestazione(),co.getDenominazione(),co.getNome());
+        if (terzo != null) {
+        	return String.format("c/o %s %s %s", 
+        		terzo.getTitolo().getIntestazione(),
+        		terzo.getDenominazione(),terzo.getNome());
+        }
+    	return String.format("c/o %s %s %s", 
+        		secondo.getTitolo().getIntestazione(),
+        		secondo.getDenominazione(),secondo.getNome());
     }
     
     public String getIndirizzo() {
-        if (co == null) {
-            return intestatario.getIndirizzo();
+        if (secondo == null) {
+            return primo.getIndirizzo();
         }
-        return co.getIndirizzo();            
+        if (terzo != null) {
+        	return terzo.getIndirizzo();
+        }
+        return secondo.getIndirizzo();            
     }
 
     public String getCap() {
-        if (co == null) {
-            return intestatario.getCap();
+        if (secondo == null) {
+            return primo.getCap();
         }
-        return co.getCap();        
+        if (terzo != null) {
+        	return terzo.getCap();
+        }
+        return secondo.getCap();        
     }
 
     public String getCitta() {
-        if (co == null) {
-            return intestatario.getCitta();
+        if (secondo == null) {
+            return primo.getCitta();
         }
-        return co.getCitta();        
+        if (terzo != null) {
+        	return terzo.getCitta();
+        }
+        return secondo.getCitta();        
     }
 
     public Provincia getProvincia() {
-        if (co == null) {
-            return intestatario.getProvincia();
+        if (secondo == null) {
+            return primo.getProvincia();
         }
-        return co.getProvincia();        
+        if (terzo != null) {
+        	return terzo.getProvincia();
+        }
+        return secondo.getProvincia();        
     }
 
     public Paese getPaese() {
-        if (co == null) {
-            return intestatario.getPaese();
+        if (secondo == null) {
+            return primo.getPaese();
         }
-        return co.getPaese();        
+        if (terzo != null) {
+        	return terzo.getPaese();
+        }
+        return secondo.getPaese();        
     }
     
 }

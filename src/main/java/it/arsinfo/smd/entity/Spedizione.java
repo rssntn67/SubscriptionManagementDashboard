@@ -17,8 +17,6 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoSpedizione;
 
 @Entity
@@ -113,78 +111,6 @@ public class Spedizione implements SmdEntity {
         this.statoSpedizione = statoSpedizione;
     }
 
-    
-    @Transient
-    public String getIntestazione() {
-        return destinatario.getCaptionBrief();
-    }
-
-    @Transient
-    public String getSottoIntestazione() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return "";
-            } 
-            return "c/o" + destinatario.getCo().getCaption();
-        }
-        return getAbbonamento().getSottoIntestazione();
-    }
-    
-    @Transient
-    public String getIndirizzo() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getIndirizzo();
-            }
-            return destinatario.getCo().getIndirizzo();            
-        }
-        return getAbbonamento().getIndirizzo();
-    }
-
-    @Transient
-    public String getCap() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getCap();
-            }
-            return destinatario.getCo().getCap();        
-        }
-        return getAbbonamento().getCap();
-    }
-
-    @Transient
-    public String getCitta() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getCitta();
-            }
-            return destinatario.getCo().getCitta();        
-        }
-        return getAbbonamento().getCitta();
-    }
-
-    @Transient
-    public Provincia getProvincia() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getProvincia();
-            }
-            return destinatario.getCo().getProvincia();        
-        }
-        return getAbbonamento().getProvincia();
-
-    }
-    @Transient
-    public Paese getPaese() {
-        if (invio == Invio.Destinatario) {
-            if (destinatario.getCo() == null) {
-                return destinatario.getPaese();
-            }
-            return destinatario.getCo().getPaese();        
-        }
-        return getAbbonamento().getPaese();        
-    }
-
     public Anagrafica getDestinatario() {
         return destinatario;
     }
@@ -272,6 +198,11 @@ public class Spedizione implements SmdEntity {
         if (meseSpedizione != other.meseSpedizione)
             return false;
         return true;
+    }
+
+    @Transient
+    public String getIntestazione() {
+        return Anagrafica.generaIntestazione(destinatario);
     }
 
 }

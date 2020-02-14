@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dto;
+package it.arsinfo.smd.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;

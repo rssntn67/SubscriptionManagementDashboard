@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
+import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoOperazione;
@@ -22,7 +24,7 @@ import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.dto.AbbonamentoConEC;
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -487,8 +489,9 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<SpedizioneItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped, StatoSpedizione statoSpedizione) {
-        return spedizioneItemDao
+    public List<SpedizioniereItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped, StatoSpedizione statoSpedizione) {
+        final List<SpedizioniereItem> items = new ArrayList<>();
+    	spedizioneItemDao
         	.findByPubblicazione(pubblicazione)
         	.stream()
         	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
@@ -496,7 +499,15 @@ public class SmdServiceImpl implements SmdService {
         						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped
         						&& spedItem.getSpedizione().getStatoSpedizione() == statoSpedizione
         						)
-        	.collect(Collectors.toList());
+        	.forEach(spedItem -> {
+        			if (spedItem.getSpedizione().getInvio() == Invio.Destinatario) {
+        				items.add(new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo()));
+        			} else {
+        				Anagrafica intestatario = abbonamentoDao.findById(spedItem.getSpedizione().getAbbonamento().getId()).get().getIntestatario();
+        				items.add(new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), intestatario, intestatario.getCo()));
+        			}
+        						});
+    	return items;
     }
     
     @Override

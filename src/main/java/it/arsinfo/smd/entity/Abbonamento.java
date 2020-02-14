@@ -25,8 +25,6 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.StatoAbbonamento;
 
 @Entity
@@ -118,7 +116,7 @@ public class Abbonamento implements SmdEntity {
                                    speseEstero,
                                    pregresso,
                                    codeLine,
-                                   anno);
+                                   anno.getAnnoAsString());
     }
     
     public Anno getAnno() {
@@ -193,60 +191,8 @@ public class Abbonamento implements SmdEntity {
     }
     
     @Transient
-    public String getCaption() {
-        return intestatario.getCaption();
-    }
-
-    @Transient
-    public String getCaptionBrief() {
-        return intestatario.getCaptionBrief();
-    }
-
-    @Transient
-    public String getSottoIntestazione() {
-        if (intestatario.getCo() == null) {
-            return "";
-        } 
-        return "c/o" + intestatario.getCo().getCaptionBrief();
-    }
-    
-    @Transient
-    public String getIndirizzo() {
-        if (intestatario.getCo() == null) {
-            return intestatario.getIndirizzo();
-        }
-        return intestatario.getCo().getIndirizzo();            
-    }
-
-    @Transient
-    public String getCap() {
-        if (intestatario.getCo() == null) {
-            return intestatario.getCap();
-        }
-        return intestatario.getCo().getCap();        
-    }
-
-    @Transient
-    public String getCitta() {
-        if (intestatario.getCo() == null) {
-            return intestatario.getCitta();
-        }
-        return intestatario.getCo().getCitta();        
-    }
-
-    @Transient
-    public Provincia getProvincia() {
-        if (intestatario.getCo() == null) {
-            return intestatario.getProvincia();
-        }
-        return intestatario.getCo().getProvincia();        
-    }
-    @Transient
-    public Paese getPaese() {
-        if (intestatario.getCo() == null) {
-            return intestatario.getPaese();
-        }
-        return intestatario.getCo().getPaese();        
+    public String getIntestazione() {
+        return Anagrafica.generaIntestazione(intestatario);
     }
 
     public BigDecimal getTotale() {
