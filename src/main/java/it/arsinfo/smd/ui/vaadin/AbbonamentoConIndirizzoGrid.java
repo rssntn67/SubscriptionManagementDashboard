@@ -6,7 +6,7 @@ import java.util.List;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
-import it.arsinfo.smd.entity.AbbonamentoConEstrattoConto;
+import it.arsinfo.smd.dto.AbbonamentoConEstrattoConto;
 
 public class AbbonamentoConIndirizzoGrid extends SmdGrid<AbbonamentoConEstrattoConto> {
 

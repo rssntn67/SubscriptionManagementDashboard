@@ -1,10 +1,13 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.dto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpedizioneItem;
 
 public class SpedizioneWithItems {
 

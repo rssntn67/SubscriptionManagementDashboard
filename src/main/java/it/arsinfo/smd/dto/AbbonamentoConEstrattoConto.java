@@ -1,16 +1,18 @@
-package it.arsinfo.smd.entity;
+package it.arsinfo.smd.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.EstrattoConto;
 
-public class AbbonamentoConEstrattoConto implements SmdEntity {
+public class AbbonamentoConEstrattoConto {
 
     private Anagrafica intestatario;
     private String codeLine;
@@ -33,9 +35,7 @@ public class AbbonamentoConEstrattoConto implements SmdEntity {
     private BigDecimal importoLodare=BigDecimal.ZERO;
     private BigDecimal importoManifesti=BigDecimal.ZERO;
 
-    private final Long id;
     public AbbonamentoConEstrattoConto(Abbonamento abbonamento, List<EstrattoConto> estrattiConto) {
-    	id = abbonamento.getId();
     	intestatario=abbonamento.getIntestatario();
     	codeLine = abbonamento.getCodeLine();
     	anno = abbonamento.getAnno();
@@ -256,11 +256,6 @@ public class AbbonamentoConEstrattoConto implements SmdEntity {
 	
 	public BigDecimal getSaldo() {
 		return getTotale().subtract(incassato);
-	}
-
-	@Override
-	public Long getId() {
-		return id;
 	}
     
 }
