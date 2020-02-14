@@ -58,6 +58,7 @@ public class SpedizioneUI extends SmdUI {
         search.setSmdService(smdService);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
+        editor.setSmdService(smdService);
         SpedizioneItemGrid itemgrid = new SpedizioneItemGrid("Items");
         addSmdComponents(editor,itemgrid,search, grid);
         editor.setVisible(false);
@@ -82,7 +83,7 @@ public class SpedizioneUI extends SmdUI {
             grid.populate(search.find());
             showMenu();
             search.setVisible(true);
-            setHeader("Estratto Conto");
+            setHeader("Spedizioni");
             editor.setVisible(false);
             itemgrid.setVisible(false);
         });

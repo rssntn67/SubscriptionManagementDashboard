@@ -6,15 +6,22 @@ import java.util.List;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.repository.SpedizioneDao;
@@ -22,6 +29,7 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 public class SpedizioneEditor
         extends SmdEditor<Spedizione> {
 
+    private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
@@ -44,7 +52,8 @@ public class SpedizioneEditor
             SpedizioneDao spedizioneDao, List<Anagrafica> anagrafica) {
 
         super(spedizioneDao, new Binder<>(Spedizione.class) );
-
+        getActions().addComponent(stampa);
+        stampa.addClickListener(e -> stampa());
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafica);
@@ -118,6 +127,24 @@ public class SpedizioneEditor
     public void focus(boolean persisted, Spedizione obj) {
         getSave().setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA); 
         getDelete().setEnabled(false);        
+    }
+    
+    public void stampa() {
+    	Indirizzo indirizzo = getSmdService().genera(get());
+    	Window subWindow = new Window();
+    	VerticalLayout subContent = new VerticalLayout();
+    	subContent.addComponent(new Label(indirizzo.getIntestazione()));
+    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
+    		subContent.addComponent(new Label(indirizzo.getSottoIntestazione()));
+    	}
+    	subContent.addComponent(new Label(indirizzo.getIndirizzo()));
+    	subContent.addComponent(new Label(indirizzo.getCap() + " " + indirizzo.getCitta()));
+    	subContent.addComponent(new Label(indirizzo.getProvincia().name()));
+    	subContent.addComponent(new Label(indirizzo.getPaese().getNome()));
+
+    	subWindow.setContent(subContent);
+    	subWindow.center();
+    	UI.getCurrent().addWindow(subWindow);
     }
 
 }

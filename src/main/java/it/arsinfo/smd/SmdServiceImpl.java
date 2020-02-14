@@ -24,6 +24,7 @@ import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.dto.AbbonamentoConEC;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -500,16 +501,31 @@ public class SmdServiceImpl implements SmdService {
         						&& spedItem.getSpedizione().getStatoSpedizione() == statoSpedizione
         						)
         	.forEach(spedItem -> {
-        			if (spedItem.getSpedizione().getInvio() == Invio.Destinatario) {
-        				items.add(new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo()));
-        			} else {
-        				Anagrafica intestatario = abbonamentoDao.findById(spedItem.getSpedizione().getAbbonamento().getId()).get().getIntestatario();
-        				items.add(new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), intestatario, intestatario.getCo()));
-        			}
-        						});
+        		items.add(genera(spedItem));
+			});
     	return items;
     }
-    
+
+    @Override
+    public SpedizioniereItem genera(SpedizioneItem spedItem) {
+		if (spedItem.getSpedizione().getInvio() == Invio.Destinatario) {
+			return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());
+		} 
+		Anagrafica intestatario = abbonamentoDao.findById(spedItem.getSpedizione().getAbbonamento().getId()).get().getIntestatario();
+		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), intestatario, intestatario.getCo());
+	
+    }
+
+    @Override
+    public Indirizzo genera(Spedizione spedizione) {
+		if (spedizione.getInvio() == Invio.Destinatario) {
+			return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());
+		} 
+		Anagrafica intestatario = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).get().getIntestatario();
+		return new Indirizzo(spedizione.getDestinatario(), intestatario, intestatario.getCo());
+	
+    }
+
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {
         log.info("incassa: {}", user);

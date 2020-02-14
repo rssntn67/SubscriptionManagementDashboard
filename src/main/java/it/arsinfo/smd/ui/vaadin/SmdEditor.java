@@ -10,11 +10,13 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.SmdEntity;
+import it.arsinfo.smd.SmdService;
 
 public abstract class SmdEditor<T extends SmdEntity>
         extends SmdChangeHandler {
 
     private final JpaRepository<T, Long> repositoryDao;
+    private SmdService smdService;
 
     private T smdObj;
 
@@ -120,5 +122,13 @@ public abstract class SmdEditor<T extends SmdEntity>
     public JpaRepository<T, Long> getRepositoryDao() {
         return repositoryDao;
     }
+    
+	public SmdService getSmdService() {
+		return smdService;
+	}
+
+	public void setSmdService(SmdService smdService) {
+		this.smdService = smdService;
+	}
 
 }

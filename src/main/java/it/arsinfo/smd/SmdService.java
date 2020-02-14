@@ -9,6 +9,7 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.dto.AbbonamentoConEC;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -19,6 +20,7 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
@@ -72,5 +74,8 @@ public interface SmdService {
     
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
-            
+      
+    SpedizioniereItem genera(SpedizioneItem spedItem);
+    Indirizzo genera(Spedizione spedizione);
+
 }

@@ -1018,5 +1018,5 @@ public class Smd {
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
     }
-
+    
 }
