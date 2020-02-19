@@ -1,7 +1,5 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -25,8 +23,6 @@ public class VersamentoUI extends SmdUI {
      * 
      */
     private static final long serialVersionUID = 6407425404499250763L;
-
-    private static final Logger log = LoggerFactory.getLogger(VersamentoUI.class);
 
     @Autowired
     private VersamentoDao versamentoDao;
@@ -122,7 +118,6 @@ public class VersamentoUI extends SmdUI {
                 
                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
                abbSearch.reset();
-               log.info("Incassa: {}", grid.getSelected());
                if (grid.getSelected().getResiduo().signum() > 0) {
                     abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
