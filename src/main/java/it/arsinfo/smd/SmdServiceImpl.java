@@ -123,11 +123,11 @@ public class SmdServiceImpl implements SmdService {
     public UserInfo login(String userName) throws UsernameNotFoundException {
         UserInfo user = userInfoDao.findByUsername(userName);
         if (null == user) {
-        	log.debug("login: '{}' not found, access is denied.", userName);
+        	log.info("login: '{}' not found, access is denied.", userName);
             throw new UsernameNotFoundException("No user found with username: "
                 + userName);
         }
-        log.debug("login: {}",user);
+        log.info("login: {}",user);
         return user;
     }
 
@@ -139,6 +139,7 @@ public class SmdServiceImpl implements SmdService {
         WebAuthenticationDetails details
           = (WebAuthenticationDetails) auditEvent.getData().get("details");
         String requestUrl = (String)auditEvent.getData().get("requestUrl");        
+        String message = (String)auditEvent.getData().get("message");        
         String remoteAddress = "NA";
         String sessionId = "NA";
         if (details != null) {
@@ -146,19 +147,21 @@ public class SmdServiceImpl implements SmdService {
             sessionId = details.getSessionId();
         }
         if (requestUrl != null) {
-	        log.info("auditlog: '{}' {} URL {}{} SessionId {}" ,
+	        log.info("auditlog: '{}' {} URL {}{} SessionId {}: {}" ,
 	                 auditEvent.getPrincipal() ,
 	                 auditEvent.getType(),
 	                 remoteAddress,
 	                 requestUrl,
-	                 sessionId
+	                 sessionId,
+	                 message
 	                );   	
         } else {
-	        log.info("auditlog: '{}' {} URL {} SessionId {}" ,
+	        log.info("auditlog: '{}' {} URL {} SessionId {}: {}" ,
 	                 auditEvent.getPrincipal() ,
 	                 auditEvent.getType(),
 	                 remoteAddress,
-	                 sessionId
+	                 sessionId,
+	                 message
 	                );   	        	
         }
     }

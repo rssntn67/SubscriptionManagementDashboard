@@ -40,21 +40,20 @@ public class AuthorizationAuditListener
         data.put("message", event.getAccessDeniedException().getMessage());
         String requestUrl =((FilterInvocation)event.getSource()).getRequestUrl(); 
         data.put("requestUrl", requestUrl);
-         
+        String user = event.getAuthentication().getName();
         if (event.getAuthentication().getDetails() != null) {
             data.put("details", 
               event.getAuthentication().getDetails());
         }
-        if (SmdUI.HOME.equals(requestUrl)) {
-            publish(new AuditEvent(event.getAuthentication().getName(), 
-            		REDIRECTED_LOGIN, data));
-        } else if (SmdUI.URL_REDIRECT_LOGOUT.equals(requestUrl)) {
+        if (SmdUI.URL_REDIRECT_LOGOUT.equals(requestUrl) && "anonymousUser".equals(user)) {
             publish(new AuditEvent(event.getAuthentication().getName(), 
             		LOGGED_OUT, data));
+        } else if ("anonymousUser".equals(user)) {
+            publish(new AuditEvent(event.getAuthentication().getName(), 
+            		REDIRECTED_LOGIN, data));
         } else {
             publish(new AuditEvent(event.getAuthentication().getName(), 
-            		AUTHORIZATION_FAILURE, data));
-        	
+            		AUTHORIZATION_FAILURE, data));        	
         }
 	}
 }
