@@ -8,9 +8,8 @@ public class EstrattoContoGrid extends SmdGrid<EstrattoConto> {
 
     public EstrattoContoGrid(String gridname) {
         super(new Grid<>(EstrattoConto.class),gridname);
-        setColumns("numeroTotaleRiviste","numero","pubblicazione.nome","destinatario.captionBrief","importo",
+        setColumns("numeroTotaleRiviste","numero","pubblicazione.nome","beneficiario","importo",
                    "meseInizio","annoInizio","meseFine","annoFine","tipoEstrattoConto");
-        setColumnCaption("destinatario.captionBrief","Destinatario");
         setColumnCaption("pubblicazione.nome","Pubblicazione");
         setColumnCaption("numero","Quan.tà");
 

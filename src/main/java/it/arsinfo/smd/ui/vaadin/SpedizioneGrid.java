@@ -8,7 +8,7 @@ public class SpedizioneGrid extends SmdGrid<Spedizione> {
 
     public SpedizioneGrid(String gridname) {
         super(new Grid<>(Spedizione.class),gridname);
-        setColumns("intestazione",
+        setColumns("destinazione",
         		   "meseSpedizione",
         		   "annoSpedizione", 
         		   "pesoStimato",

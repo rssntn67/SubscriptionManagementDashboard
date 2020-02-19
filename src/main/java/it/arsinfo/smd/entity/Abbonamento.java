@@ -162,7 +162,7 @@ public class Abbonamento implements SmdEntity {
         
     @Transient
     public String getHeader() {
-        return String.format("Abbonamento:Edit:'%s %s'", intestatario.getCaption(), anno.getAnnoAsString());
+        return String.format("Abbonamento:Edit:%s %s", getIntestazione(), anno.getAnnoAsString());
     }
     
     @Transient

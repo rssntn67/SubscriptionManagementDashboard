@@ -212,4 +212,10 @@ public class EstrattoConto implements SmdEntity {
     public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
         this.invioSpedizione = invioSpedizione;
     }
+    
+    @Transient
+    public String getBeneficiario() {
+        return Anagrafica.generaIntestazione(destinatario);
+    }
+
 }

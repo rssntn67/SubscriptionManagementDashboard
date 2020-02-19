@@ -201,7 +201,7 @@ public class Spedizione implements SmdEntity {
     }
 
     @Transient
-    public String getIntestazione() {
+    public String getDestinazione() {
         return Anagrafica.generaIntestazione(destinatario);
     }
 

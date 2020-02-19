@@ -95,12 +95,12 @@ public class Storico implements SmdEntity {
     }
     
     @Transient
-    public String getCaptionDestinatario() {
+    public String getBeneficiario() {
         return Anagrafica.generaIntestazione(destinatario);
     }
 
     @Transient
-    public String getCaptionIntestatario() {
+    public String getIntestazione() {
         return Anagrafica.generaIntestazione(intestatario);
     }
     
@@ -114,11 +114,11 @@ public class Storico implements SmdEntity {
     
     @Transient
     public String getCaption() {
-        return String.format("Intestatario:'%s', Pubblicazione:'%s', Destinatario:'%s'", intestatario.getCaption(), pubblicazione.getNome(),destinatario.getCaption());
+        return String.format("Intestatario:'%s', Pubblicazione:'%s', Destinatario:'%s'", getIntestazione(), pubblicazione.getNome(),getBeneficiario());
     }
     @Transient
     public String getHeader() {
-        return String.format("%s:Storico:Edit", intestatario.getHeader());
+        return String.format("Storico:Edit");
     }
     
     @Override
