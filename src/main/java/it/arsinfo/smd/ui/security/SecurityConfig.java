@@ -26,10 +26,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final RedirectAuthenticationSuccessHandler successHandler;
 	private final LogoutSuccessHandler logoutHandler;
-	
 	@Autowired
-	public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
-			RedirectAuthenticationSuccessHandler successHandler, LogoutSuccessHandler logouthandler) {
+	public SecurityConfig(UserDetailsService userDetailsService, 
+			PasswordEncoder passwordEncoder,
+			RedirectAuthenticationSuccessHandler successHandler, 
+			LogoutSuccessHandler logouthandler) {
 		this.userDetailsService = userDetailsService;
 		this.passwordEncoder = passwordEncoder;
 		this.successHandler = successHandler;
@@ -72,4 +73,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.deleteCookies("JSESSIONID")
                 ;
 	}
+	
 }

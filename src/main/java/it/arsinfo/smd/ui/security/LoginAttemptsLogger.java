@@ -16,6 +16,6 @@ public class LoginAttemptsLogger {
     @EventListener
     public void auditEventHappened(
       AuditApplicationEvent auditApplicationEvent) {
-    	smdService.loginAttempt(auditApplicationEvent);
+    	smdService.auditlog(auditApplicationEvent);
     }
 }

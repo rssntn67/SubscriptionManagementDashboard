@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
@@ -115,31 +116,51 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void logout(String userName) {
-        log.info("loggedOut user: {}",userInfoDao.findByUsername(userName));
+        log.info("logout: {}",userInfoDao.findByUsername(userName));
     }
+
     @Override
-    public void loginAttempt(AuditApplicationEvent auditApplicationEvent) {
-        AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
+    public UserInfo login(String userName) throws UsernameNotFoundException {
+        UserInfo user = userInfoDao.findByUsername(userName);
+        if (null == user) {
+        	log.debug("login: '{}' not found, access is denied.", userName);
+            throw new UsernameNotFoundException("No user found with username: "
+                + userName);
+        }
+        log.debug("login: {}",user);
+        return user;
+    }
+
+    @Override
+    public void auditlog(AuditApplicationEvent auditApplicationEvent) {
         
+    	AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
         
         WebAuthenticationDetails details
           = (WebAuthenticationDetails) auditEvent.getData().get("details");
-        String requestUrl = (String)auditEvent.getData().get("requestUrl");
-        if (requestUrl != null && (requestUrl.equals("/") || requestUrl.equals("/login.html?logout"))) {
-            return;
-        }
+        String requestUrl = (String)auditEvent.getData().get("requestUrl");        
         String remoteAddress = "NA";
         String sessionId = "NA";
         if (details != null) {
             remoteAddress = details.getRemoteAddress();
             sessionId = details.getSessionId();
         }
-        log.info("'{}' {} Remote Ip Address {} SessionId {}" ,
-                 auditEvent.getPrincipal() ,
-                 auditEvent.getType(),
-                 remoteAddress,
-                 sessionId
-                );   	
+        if (requestUrl != null) {
+	        log.info("auditlog: '{}' {} URL {}{} SessionId {}" ,
+	                 auditEvent.getPrincipal() ,
+	                 auditEvent.getType(),
+	                 remoteAddress,
+	                 requestUrl,
+	                 sessionId
+	                );   	
+        } else {
+	        log.info("auditlog: '{}' {} URL {} SessionId {}" ,
+	                 auditEvent.getPrincipal() ,
+	                 auditEvent.getType(),
+	                 remoteAddress,
+	                 sessionId
+	                );   	        	
+        }
     }
     @Override
     public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {

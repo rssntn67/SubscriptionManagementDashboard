@@ -29,8 +29,10 @@ import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
 
-	void loginAttempt(AuditApplicationEvent auditApplicationEvent);
+	void auditlog(AuditApplicationEvent auditApplicationEvent);
+
 	void logout(String user);
+	UserInfo login(String user);
 
 	void delete(Storico storico);
     void save(Storico storico, Nota... note);
