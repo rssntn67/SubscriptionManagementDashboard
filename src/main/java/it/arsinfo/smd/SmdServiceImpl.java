@@ -218,8 +218,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void invia(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.Generata )
-    		return;
+        log.info("invia Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
+        	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
+
+    	}
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
             if (abb.getTotale().signum() == 0) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
@@ -230,13 +234,19 @@ public class SmdServiceImpl implements SmdService {
         }
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         campagnaDao.save(campagna);
+        log.info("invia Campagna end {}", campagna);
+
     }
     
 
     @Override
     public void estratto(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
-    		return;
+        log.info("estratto Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
+        	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'Inviata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire estratto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
+
+    	}
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
         	Incassato inc = Smd.getStatoIncasso(abbonamento);
             switch (inc) {
@@ -277,13 +287,18 @@ public class SmdServiceImpl implements SmdService {
             abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
-        campagnaDao.save(campagna);                
+        campagnaDao.save(campagna);  
+        log.info("estratto Campagna end {}", campagna);
     }
 
     @Override
     public void chiudi(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC )
-    		return;
+        log.info("chiudi Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
+        	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
+
+    	}
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             switch (abbonamento.getStatoAbbonamento()) {
             case Valido:
@@ -301,15 +316,22 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
-        campagnaDao.save(campagna);        
+        campagnaDao.save(campagna); 
+        log.info("chiudi Campagna end {}", campagna);
     }
 
     @Override
     public void delete(Campagna campagna) throws Exception {
-    	
+        log.info("delete Campagna start {}", campagna);   
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
+        	log.warn("delete: Impossibile delete campagna {}, lo stato campagna non 'Generata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire delete campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
+    	}
+
         abbonamentoDao.findByCampagna(campagna).stream().forEach(abb -> delete(abb));
         campagna.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
         campagnaDao.deleteById(campagna.getId());
+        log.info("delete Campagna end {}", campagna);    	
         
     }
 

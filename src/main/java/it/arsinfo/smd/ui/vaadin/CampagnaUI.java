@@ -17,7 +17,6 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -62,26 +61,12 @@ public class CampagnaUI extends SmdUI {
         CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
             @Override
             public void delete() {
-                if (get().getStatoCampagna() == StatoCampagna.Chiusa) {
-                    Notification.show("Non è possibile cancellare campagna che è stata chiusa",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getStatoCampagna() == StatoCampagna.InviatoEC) {
-                    Notification.show("Non è possibile cancellare campagna che è stata inviato EC",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getStatoCampagna() == StatoCampagna.Inviata) {
-                    Notification.show("Non è possibile cancellare campagna che è stata inviata",
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
                 try {
                     smdService.delete(get());
                 } catch (Exception e) {
                     Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
+                    return;
                 }
                 onChange();
             }
@@ -95,13 +80,6 @@ public class CampagnaUI extends SmdUI {
                 }
                 if (get().getAnno() == null) {
                     Notification.show("Selezionare Anno Prima di Salvare",
-                                      Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                if (campagnaDao.findByAnno(get().getAnno()) != null) {
-                    Notification.show("E' stata già generata la Campagna per Anno "
-                            + get().getAnno()
-                            + ". Solo una Campagna per Anno",
                                       Notification.Type.WARNING_MESSAGE);
                     return;
                 }
