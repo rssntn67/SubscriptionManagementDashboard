@@ -3,6 +3,8 @@ package it.arsinfo.smd;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
+
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -27,7 +29,12 @@ import it.arsinfo.smd.entity.Versamento;
 
 public interface SmdService {
 
-    void delete(Storico storico);
+	void auditlog(AuditApplicationEvent auditApplicationEvent);
+
+	void logout(String user);
+	UserInfo login(String user);
+
+	void delete(Storico storico);
     void save(Storico storico, Nota... note);
 
     List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);

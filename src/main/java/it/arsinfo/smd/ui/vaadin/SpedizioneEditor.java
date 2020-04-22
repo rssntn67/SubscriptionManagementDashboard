@@ -30,7 +30,7 @@ public class SpedizioneEditor
         extends SmdEditor<Spedizione> {
 
     private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
-    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
+    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
@@ -55,9 +55,9 @@ public class SpedizioneEditor
         getActions().addComponent(stampa);
         stampa.addClickListener(e -> stampa());
         destinatario.setEmptySelectionAllowed(false);
-        destinatario.setPlaceholder("Destinatario");
+        destinatario.setPlaceholder("Destinazione");
         destinatario.setItems(anagrafica);
-        destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
+        destinatario.setItemCaptionGenerator(Anagrafica::getIntestazione);
         destinatario.setReadOnly(true);
         
         invio.setEmptySelectionAllowed(false);
@@ -83,8 +83,11 @@ public class SpedizioneEditor
         
         spesePostali.setReadOnly(true);
         pesoStimato.setReadOnly(true);
+        HorizontalLayout dest = new HorizontalLayout();
+        dest.addComponentsAndExpand(destinatario);
         setComponents(getActions(), 
-                      new HorizontalLayout(destinatario,invio,invioSpedizione,statoSpedizione),
+        			dest,
+                      new HorizontalLayout(invio,invioSpedizione,statoSpedizione),
                       new HorizontalLayout(meseSped,annoSped),
                       new HorizontalLayout(pesoStimato,spesePostali)
                       );

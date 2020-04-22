@@ -10,13 +10,21 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 
+import it.arsinfo.smd.ui.vaadin.SmdUI;
+
 @Component
-public class ExposeAttemptedPathAuthorizationAuditListener 
+public class AuthorizationAuditListener 
   extends AbstractAuthorizationAuditListener {
  
     public static final String AUTHORIZATION_FAILURE 
       = "AUTHORIZATION_FAILURE";
- 
+
+    public static final String LOGGED_OUT 
+    = "LOGGED_OUT";
+
+    public static final String REDIRECTED_LOGIN 
+    = "REDIRECTED_LOGIN";
+
     @Override
     public void onApplicationEvent(AbstractAuthorizationEvent event) {
         if (event instanceof AuthorizationFailureEvent) {
@@ -30,14 +38,22 @@ public class ExposeAttemptedPathAuthorizationAuditListener
         data.put(
           "type", event.getAccessDeniedException().getClass().getName());
         data.put("message", event.getAccessDeniedException().getMessage());
-        data.put(
-          "requestUrl", ((FilterInvocation)event.getSource()).getRequestUrl() );
-         
+        String requestUrl =((FilterInvocation)event.getSource()).getRequestUrl(); 
+        data.put("requestUrl", requestUrl);
+        String user = event.getAuthentication().getName();
         if (event.getAuthentication().getDetails() != null) {
             data.put("details", 
               event.getAuthentication().getDetails());
         }
-        publish(new AuditEvent(event.getAuthentication().getName(), 
-          AUTHORIZATION_FAILURE, data));
-    }
+        if (SmdUI.URL_REDIRECT_LOGOUT.equals(requestUrl) && "anonymousUser".equals(user)) {
+            publish(new AuditEvent(event.getAuthentication().getName(), 
+            		LOGGED_OUT, data));
+        } else if ("anonymousUser".equals(user)) {
+            publish(new AuditEvent(event.getAuthentication().getName(), 
+            		REDIRECTED_LOGIN, data));
+        } else {
+            publish(new AuditEvent(event.getAuthentication().getName(), 
+            		AUTHORIZATION_FAILURE, data));        	
+        }
+	}
 }

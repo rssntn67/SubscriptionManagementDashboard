@@ -325,12 +325,17 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getCaption() {
-        return String.format("'%s %s %s %s %s %s'", titolo.getIntestazione(), denominazione,nome,citta,cap,codeLineBase);
+    	return Anagrafica.generaCaption(this);
+    }
+
+    @Transient
+    public String getIntestazione() {
+    	return Anagrafica.generaIntestazione(this);
     }
 
     @Transient
     public String getHeader() {
-        return String.format("Anagrafica:Edit:%s", getCaption());
+    	return generaHeader(this);
     }
 
     public Provincia getProvincia() {
@@ -408,7 +413,21 @@ public class Anagrafica implements SmdEntity {
     	return String.format("%s %s %s", a.getTitolo().getIntestazione(), 
         		a.getDenominazione(),a.getNome());
     }
-    
+
+    public static String generaCaption(Anagrafica a) {
+        return String.format("'%s %s %s %s %s %s'", 
+        		a.getTitolo().getIntestazione(), 
+        		a.getDenominazione(),
+        		a.getNome(),
+        		a.getCitta(),
+        		a.getCap(),
+        		a.getCodeLineBase());
+    }
+
+    public static String generaHeader(Anagrafica a) {
+        return String.format("Anagrafica:Edit:%s", generaIntestazione(a));
+    }
+
     public String getIndirizzoSecondaRiga() {
         return indirizzoSecondaRiga;
     }

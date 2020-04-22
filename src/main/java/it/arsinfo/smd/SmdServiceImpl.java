@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.data.Anno;
@@ -54,6 +58,7 @@ import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
+import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
 
 @Service
@@ -104,8 +109,62 @@ public class SmdServiceImpl implements SmdService {
     @Autowired
     IncassoDao incassoDao;
 
+    @Autowired
+    UserInfoDao userInfoDao;
+
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 
+    @Override
+    public void logout(String userName) {
+        log.info("logout: {}",userInfoDao.findByUsername(userName));
+    }
+
+    @Override
+    public UserInfo login(String userName) throws UsernameNotFoundException {
+        UserInfo user = userInfoDao.findByUsername(userName);
+        if (null == user) {
+        	log.info("login: '{}' not found, access is denied.", userName);
+            throw new UsernameNotFoundException("No user found with username: "
+                + userName);
+        }
+        log.info("login: {}",user);
+        return user;
+    }
+
+    @Override
+    public void auditlog(AuditApplicationEvent auditApplicationEvent) {
+        
+    	AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
+        
+        WebAuthenticationDetails details
+          = (WebAuthenticationDetails) auditEvent.getData().get("details");
+        String requestUrl = (String)auditEvent.getData().get("requestUrl");        
+        String message = (String)auditEvent.getData().get("message");        
+        String remoteAddress = "NA";
+        String sessionId = "NA";
+        if (details != null) {
+            remoteAddress = details.getRemoteAddress();
+            sessionId = details.getSessionId();
+        }
+        if (requestUrl != null) {
+	        log.info("auditlog: '{}' {} URL {}{} SessionId {}: {}" ,
+	                 auditEvent.getPrincipal() ,
+	                 auditEvent.getType(),
+	                 remoteAddress,
+	                 requestUrl,
+	                 sessionId,
+	                 message
+	                );   	
+        } else {
+	        log.info("auditlog: '{}' {} URL {} SessionId {}: {}" ,
+	                 auditEvent.getPrincipal() ,
+	                 auditEvent.getType(),
+	                 remoteAddress,
+	                 sessionId,
+	                 message
+	                );   	        	
+        }
+    }
     @Override
     public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {
     	List<AbbonamentoConEC> list = new ArrayList<>();
@@ -119,9 +178,14 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void genera(Campagna campagna, List<Pubblicazione> attivi) {
+    public void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception {
         
         log.info("genera Campagna start {}", campagna);
+        Campagna exists = campagnaDao.findByAnno(campagna.getAnno());
+        if (exists != null) {
+        	log.warn("genera: Impossibile generare campagna {}, la campagna esiste", campagna);
+        	throw new UnsupportedOperationException("Impossibile generare campagna per anno " + campagna.getAnno().getAnno() +". La campagna esiste");
+        }
         List<Abbonamento> 
             abbonamenti = 
               Smd.genera(campagna, 
@@ -154,8 +218,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void invia(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.Generata )
-    		return;
+        log.info("invia Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
+        	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
+
+    	}
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
             if (abb.getTotale().signum() == 0) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
@@ -166,13 +234,19 @@ public class SmdServiceImpl implements SmdService {
         }
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         campagnaDao.save(campagna);
+        log.info("invia Campagna end {}", campagna);
+
     }
     
 
     @Override
     public void estratto(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata )
-    		return;
+        log.info("estratto Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
+        	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'Inviata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire estratto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
+
+    	}
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
         	Incassato inc = Smd.getStatoIncasso(abbonamento);
             switch (inc) {
@@ -213,13 +287,18 @@ public class SmdServiceImpl implements SmdService {
             abbonamentoDao.save(abbonamento);
         }
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
-        campagnaDao.save(campagna);                
+        campagnaDao.save(campagna);  
+        log.info("estratto Campagna end {}", campagna);
     }
 
     @Override
     public void chiudi(Campagna campagna) throws Exception {
-    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC )
-    		return;
+        log.info("chiudi Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
+        	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
+
+    	}
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             switch (abbonamento.getStatoAbbonamento()) {
             case Valido:
@@ -237,14 +316,22 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
-        campagnaDao.save(campagna);        
+        campagnaDao.save(campagna); 
+        log.info("chiudi Campagna end {}", campagna);
     }
 
     @Override
-    public void delete(Campagna campagna) {
+    public void delete(Campagna campagna) throws Exception {
+        log.info("delete Campagna start {}", campagna);   
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
+        	log.warn("delete: Impossibile delete campagna {}, lo stato campagna non 'Generata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire delete campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
+    	}
+
         abbonamentoDao.findByCampagna(campagna).stream().forEach(abb -> delete(abb));
         campagna.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
         campagnaDao.deleteById(campagna.getId());
+        log.info("delete Campagna end {}", campagna);    	
         
     }
 
@@ -337,15 +424,6 @@ public class SmdServiceImpl implements SmdService {
         for (EstrattoConto ec: contos) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
-        abbonamentoDao
-            .findByIntestatarioAndAnnoAndCassa(
-                       abbonamento.getIntestatario(), 
-                       Anno.getAnnoPrecedente(abbonamento.getAnno()), 
-                       abbonamento.getCassa()
-                   )
-                .forEach(abb -> 
-                abbonamento.setPregresso(
-                 abbonamento.getPregresso().add(abb.getResiduo())));
         abbonamentoDao.save(abbonamento);
         for (EstrattoConto ec: contos) {
             estrattoContoDao.save(ec);
@@ -381,6 +459,20 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         estrattoContoDao.save(estrattoConto);
+        
+        abbonamentoDao
+        .findByIntestatarioAndAnnoAndCassa(
+                   abbonamento.getIntestatario(), 
+                   Anno.getAnnoPrecedente(abbonamento.getAnno()), 
+                   abbonamento.getCassa()
+               )
+        .forEach(abb -> 
+        {
+        	abbonamento.setPregresso(
+			abbonamento.getPregresso().add(abb.getResiduo()));
+        	abb.getPregresso().subtract(abb.getResiduo());
+        	abbonamentoDao.save(abb);
+        });
         abbonamentoDao.save(abbonamento);
     }
 
