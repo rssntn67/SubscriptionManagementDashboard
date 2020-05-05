@@ -4,8 +4,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import it.arsinfo.smd.dao.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.repository.UserInfoDao;
 
 /**
  * SecurityUtils takes care of all such static operations that have to do with

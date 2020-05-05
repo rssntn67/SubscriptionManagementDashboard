@@ -14,7 +14,7 @@ import org.springframework.web.context.annotation.ApplicationScope;
 
 import com.vaadin.spring.annotation.SpringComponent;
 
-import it.arsinfo.smd.ui.vaadin.SmdUI;
+import it.arsinfo.smd.ui.SmdUI;
 
 /**
  * Redirects to the application after successful authentication.

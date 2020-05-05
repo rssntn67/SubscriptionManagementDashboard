@@ -15,7 +15,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 

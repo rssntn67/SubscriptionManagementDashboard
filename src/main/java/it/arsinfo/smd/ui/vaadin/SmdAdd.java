@@ -2,7 +2,7 @@ package it.arsinfo.smd.ui.vaadin;
 
 import com.vaadin.icons.VaadinIcons;
 
-import it.arsinfo.smd.SmdEntity;
+import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdAdd<T extends SmdEntity>
         extends SmdButton {

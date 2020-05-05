@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.ui.vaadin.SmdUI;
+import it.arsinfo.smd.ui.SmdUI;
 
 @EnableWebSecurity
 @Configuration
