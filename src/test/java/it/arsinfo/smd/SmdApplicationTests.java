@@ -1454,8 +1454,6 @@ public class SmdApplicationTests {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
-        log.info(abb.toString());
-        log.info(ec1.toString());
         
         spedizioni.stream()
         .filter(sped -> Mese.getMeseCorrente() == sped.getSpedizione().getMeseSpedizione())
@@ -1463,7 +1461,7 @@ public class SmdApplicationTests {
           assertEquals(sped.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
           sped.getSpedizione().setStatoSpedizione(StatoSpedizione.INVIATA);
           spedizioneDao.save(sped.getSpedizione());
-          log.info(sped.getSpedizione().toString());
+          log.info("Setting Inviata {}", sped.getSpedizione());
         });
 
         spedizioni=smdService.findByAbbonamento(abb);
@@ -1489,10 +1487,11 @@ public class SmdApplicationTests {
         	assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
         	assertEquals(inviata.getSpedizione().getMeseSpedizione(), Mese.getMeseCorrente());
         	assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
-        	inviata.getSpedizioneItems().forEach(item ->log.info(item.toString()));
-            log.info(inviata.toString());
+        	log.info("Spedizione: {}", inviata.getSpedizione().getInvioSpedizione());
+        	log.info("Spedizione: {} {} ", inviata.getSpedizione().getMeseSpedizione().getNomeBreve(), inviata.getSpedizione().getAnnoSpedizione().getAnnoAsString());
+        	log.info("Spedizione: {} Item ", inviata.getSpedizioneItems().size());
         	if (inviata.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede) {
-        		assertEquals(3,inviata.getSpedizioneItems().size());
+        		assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()-1,inviata.getSpedizioneItems().size());
         	} else {
         		assertEquals(1,inviata.getSpedizioneItems().size());
         	}
@@ -1501,8 +1500,6 @@ public class SmdApplicationTests {
             }
             spedizioneDao.deleteById(inviata.getSpedizione().getId());
         }
-        log.info(abb.toString());
-        log.info(ec1.toString());
         
         estrattoContoDao.deleteById(ec1.getId());
         abbonamentoDao.delete(abb);
