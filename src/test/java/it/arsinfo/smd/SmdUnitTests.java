@@ -389,12 +389,19 @@ public class SmdUnitTests {
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), Cassa.Ccp);
         int numeroRiviste =0;
+        int numeroRivisteSpedizioneMeseA=0;
+        int numeroRivisteSpedizionePosticipata=0;
+        int numeroSpedizioni=1;
         Anno annoi = Anno.getAnnoCorrente();
         Anno annof = Anno.getAnnoCorrente();
         Mese meseA= Mese.getMeseCorrente();
+
         if (messaggio.getMesiPubblicazione().contains(meseA)) {
             numeroRiviste++;
-            log.info(meseA.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
+            numeroRivisteSpedizionePosticipata++;
+            log.info("Aggiunto {} {} {}: numriv {}, numSped {}, numRivSpedPost {} ",messaggio.getNome(),meseA.getNomeBreve(),annof.getAnnoAsString(),numeroRiviste,numeroSpedizioni,numeroRivisteSpedizionePosticipata);
+        } else {
+            log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseA.getNomeBreve(),annof.getAnnoAsString());        	
         }
 
         Mese meseB= Mese.getMeseSuccessivo(meseA);
@@ -403,7 +410,13 @@ public class SmdUnitTests {
         }
         if (messaggio.getMesiPubblicazione().contains(meseB)) {
             numeroRiviste++;
-            log.info(meseB.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
+            numeroRivisteSpedizionePosticipata++;
+            if (numeroSpedizioni == 0) {
+            	numeroSpedizioni++;
+            }
+            log.info("Aggiunto {} {} {}: numriv {}, numSped {}, numRivSpedPost {} ",messaggio.getNome(),meseB.getNomeBreve(),annof.getAnnoAsString(),numeroRiviste,numeroSpedizioni,numeroRivisteSpedizionePosticipata);
+        } else {
+            log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseB.getNomeBreve(),annof.getAnnoAsString());        	
         }
         
         Mese meseC= Mese.getMeseSuccessivo(meseB);
@@ -412,7 +425,11 @@ public class SmdUnitTests {
         }
         if (messaggio.getMesiPubblicazione().contains(meseC)) {
             numeroRiviste++;
-            log.info(meseC.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
+            numeroSpedizioni++;
+            numeroRivisteSpedizioneMeseA++;
+            log.info("Aggiunto {} {} {}: numriv {}, numSped {}, numRivSpedPost {} ",messaggio.getNome(),meseC.getNomeBreve(),annof.getAnnoAsString(),numeroRiviste,numeroSpedizioni,numeroRivisteSpedizionePosticipata);
+        } else {
+            log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseC.getNomeBreve(),annof.getAnnoAsString());        	
         }
 
         Mese meseD= Mese.getMeseSuccessivo(meseC);
@@ -421,7 +438,10 @@ public class SmdUnitTests {
         }
         if (messaggio.getMesiPubblicazione().contains(meseD)) {
             numeroRiviste++;
-            log.info(meseD.getNomeBreve() + annof.getAnno()+" numeroriviste: " + numeroRiviste );
+            numeroSpedizioni++;
+            log.info("Aggiunto {} {} {}: numriv {}, numSped {}, numRivSpedPost {} ",messaggio.getNome(),meseD.getNomeBreve(),annof.getAnnoAsString(),numeroRiviste,numeroSpedizioni,numeroRivisteSpedizionePosticipata);
+        } else {
+            log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseD.getNomeBreve(),annof.getAnnoAsString());        	
         }
 
         EstrattoConto ec1 = new EstrattoConto();
@@ -434,37 +454,37 @@ public class SmdUnitTests {
         ec1.setInvio(Invio.Destinatario);
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
 
-        List<SpedizioneWithItems> spedwi = 
+        List<SpedizioneWithItems> spedizioniwithitems = 
                 Smd.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedwi.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
+        spedizioniwithitems.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         log.info(abb.toString());
         log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
         assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
-        assertEquals(3, spedwi.size());
+        assertEquals(numeroSpedizioni, spedizioniwithitems.size());
         assertEquals(numeroRiviste, items.size());
         assertEquals(3.0, abb.getSpese().doubleValue(),0);
 
-        for (SpedizioneWithItems spedw:spedwi) {
+        for (SpedizioneWithItems spedw:spedizioniwithitems) {
             Spedizione sped = spedw.getSpedizione();
-            assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
-            log.info(sped.toString());
-            spedw.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
-            
-            if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
-                assertEquals((numeroRiviste-2)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRiviste-2, spedw.getSpedizioneItems().size());
+            assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());            
+            if (sped.getMeseSpedizione() == meseA  
+            		&& sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
+                assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(numeroRivisteSpedizionePosticipata, spedw.getSpedizioneItems().size());
                 for (SpedizioneItem item : spedw.getSpedizioneItems()) {
                     assertTrue(item.isPosticipata());
                 }
-            } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+            } else if (sped.getMeseSpedizione() == meseA 
+            		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
                 assertTrue(!item.isPosticipata());
-            } else if (sped.getMeseSpedizione() == meseB ) {
+            } else if (sped.getMeseSpedizione() == meseB 	
+            		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
@@ -473,25 +493,25 @@ public class SmdUnitTests {
                 assertTrue(false);
             }
         }
-        for (SpedizioneWithItems ssp:spedwi) {
+        for (SpedizioneWithItems ssp:spedizioniwithitems) {
             Spedizione sped= ssp.getSpedizione();
             if (sped.getMeseSpedizione() == meseA) {
                 sped.setStatoSpedizione(StatoSpedizione.INVIATA);
             }
         }
         
-        List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb, ec1, spedwi, SmdHelper.getSpeseSpedizione());
-        assertEquals(1, deletedItems.size());
+        List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb, ec1, spedizioniwithitems, SmdHelper.getSpeseSpedizione());
+        assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, deletedItems.size());
 
         BigDecimal ss = BigDecimal.ZERO;
-        for (SpedizioneWithItems ssp:spedwi) {
+        for (SpedizioneWithItems ssp:spedizioniwithitems) {
             Spedizione sped= ssp.getSpedizione();
             log.info(sped.toString());
             if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 ss = sped.getSpesePostali();
                 assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
-                assertEquals((numeroRiviste-2)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRiviste-2, ssp.getSpedizioneItems().size());            
+                assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                assertEquals(numeroRivisteSpedizionePosticipata, ssp.getSpedizioneItems().size());            
             } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
@@ -509,10 +529,10 @@ public class SmdUnitTests {
         log.info(ec1.toString());
         log.info(abb.toString());
         assertEquals(0, ec1.getNumero().intValue());
-        assertEquals(numeroRiviste-1, ec1.getNumeroTotaleRiviste().intValue());
+        assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(ss.doubleValue(), abb.getSpese().doubleValue(),0);
         assertEquals(ec1.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRiviste-1), ec1.getImporto().doubleValue(),0);
+        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), ec1.getImporto().doubleValue(),0);
         
 
     }
