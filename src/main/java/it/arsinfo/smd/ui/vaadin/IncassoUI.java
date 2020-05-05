@@ -12,10 +12,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.repository.IncassoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_INCASSI)
 @Title("Incassi ADP")

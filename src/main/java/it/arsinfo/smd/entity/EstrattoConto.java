@@ -14,12 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class EstrattoConto implements SmdEntity {

@@ -15,12 +15,12 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.service.Smd;
 
 public class VersamentoSearch extends SmdSearch<Versamento> {
 

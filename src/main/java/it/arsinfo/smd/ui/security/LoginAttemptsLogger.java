@@ -5,7 +5,7 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import it.arsinfo.smd.service.SmdService;
+import it.arsinfo.smd.SmdService;
 
 @Component
 public class LoginAttemptsLogger {

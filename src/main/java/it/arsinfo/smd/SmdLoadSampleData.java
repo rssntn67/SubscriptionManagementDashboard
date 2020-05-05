@@ -39,8 +39,6 @@ import it.arsinfo.smd.repository.SpedizioneItemDao;
 import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
-import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 
 public class SmdLoadSampleData implements Runnable {

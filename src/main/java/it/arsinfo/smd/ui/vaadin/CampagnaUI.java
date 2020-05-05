@@ -14,6 +14,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -23,7 +24,6 @@ import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.CampagnaItemDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_CAMPAGNA)
 @Title("Campagna Abbonamenti ADP")

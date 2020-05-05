@@ -9,6 +9,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -17,7 +18,6 @@ import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.SpedizioneDao;
 import it.arsinfo.smd.repository.SpedizioneItemDao;
-import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONI)
 @Title("Spedizioni")

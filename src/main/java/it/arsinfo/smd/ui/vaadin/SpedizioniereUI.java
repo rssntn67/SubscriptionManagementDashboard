@@ -10,11 +10,11 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.repository.OperazioneDao;
-import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONERE)
 @Title("Ordini Spedizioniere ADP")

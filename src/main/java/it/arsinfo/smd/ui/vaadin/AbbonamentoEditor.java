@@ -12,6 +12,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -23,7 +24,6 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.service.Smd;
 
 public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
 

@@ -14,6 +14,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -25,7 +26,6 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.NotaDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
-import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_STORICO)
 @Title("Storico Anagrafica Pubblicazioni ADP")

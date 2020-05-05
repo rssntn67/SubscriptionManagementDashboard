@@ -15,10 +15,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import it.arsinfo.smd.Smd;
+import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Sostitutivo;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class Versamento implements SmdEntity {
