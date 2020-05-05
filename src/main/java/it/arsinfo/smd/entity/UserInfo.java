@@ -14,8 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import it.arsinfo.smd.SmdEntity;
-
 
 @Entity
 public class UserInfo implements SmdEntity {

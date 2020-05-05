@@ -14,24 +14,29 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import it.arsinfo.smd.dao.AbbonamentoDao;
+import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.dao.CampagnaDao;
+import it.arsinfo.smd.dao.EstrattoContoDao;
+import it.arsinfo.smd.dao.IncassoDao;
+import it.arsinfo.smd.dao.NotaDao;
+import it.arsinfo.smd.dao.OperazioneDao;
+import it.arsinfo.smd.dao.PubblicazioneDao;
+import it.arsinfo.smd.dao.SpedizioneDao;
+import it.arsinfo.smd.dao.SpedizioneItemDao;
+import it.arsinfo.smd.dao.SpesaSpedizioneDao;
+import it.arsinfo.smd.dao.StoricoDao;
+import it.arsinfo.smd.dao.UserInfoDao;
+import it.arsinfo.smd.dao.VersamentoDao;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.repository.AbbonamentoDao;
-import it.arsinfo.smd.repository.AnagraficaDao;
-import it.arsinfo.smd.repository.CampagnaDao;
-import it.arsinfo.smd.repository.EstrattoContoDao;
-import it.arsinfo.smd.repository.IncassoDao;
-import it.arsinfo.smd.repository.NotaDao;
-import it.arsinfo.smd.repository.OperazioneDao;
-import it.arsinfo.smd.repository.PubblicazioneDao;
-import it.arsinfo.smd.repository.SpedizioneDao;
-import it.arsinfo.smd.repository.SpedizioneItemDao;
-import it.arsinfo.smd.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.repository.StoricoDao;
-import it.arsinfo.smd.repository.UserInfoDao;
-import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.helper.SmdHelper;
+import it.arsinfo.smd.helper.SmdImportAdp;
+import it.arsinfo.smd.helper.SmdLoadSampleData;
+import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.SmdService;
 
 @SpringBootApplication
 public class SmdApplication {

@@ -4,7 +4,7 @@ package it.arsinfo.smd.ui.vaadin;
 import java.util.List;
 import java.util.Set;
 
-import it.arsinfo.smd.SmdEntity;
+import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdBoxMapper<T extends SmdEntity, K extends SmdEntity>
         extends SmdBox<T> {

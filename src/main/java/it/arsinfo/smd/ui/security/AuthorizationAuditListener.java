@@ -10,7 +10,7 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 
-import it.arsinfo.smd.ui.vaadin.SmdUI;
+import it.arsinfo.smd.ui.SmdUI;
 
 @Component
 public class AuthorizationAuditListener 

@@ -27,6 +27,9 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.helper.SmdHelper;
+import it.arsinfo.smd.helper.SmdImportAdp;
+import it.arsinfo.smd.service.Smd;
 
 @RunWith(SpringRunner.class)
 public class SmdImportTest {

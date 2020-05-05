@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.service.SmdService;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

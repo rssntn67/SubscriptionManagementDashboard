@@ -14,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import it.arsinfo.smd.SmdEntity;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 
 @Entity
