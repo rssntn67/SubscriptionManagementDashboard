@@ -1,4 +1,4 @@
-package it.arsinfo.smd;
+package it.arsinfo.smd.service;
 
 import java.io.BufferedReader;
 import java.io.File;

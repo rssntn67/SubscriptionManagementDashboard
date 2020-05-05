@@ -1,4 +1,4 @@
-package it.arsinfo.smd;
+package it.arsinfo.smd.entity;
 
 public interface SmdEntity {
     

@@ -13,8 +13,8 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 
-import it.arsinfo.smd.Smd;
 import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.service.Smd;
 
 public class IncassoUpload extends SmdChangeHandler implements Receiver, SucceededListener {
 

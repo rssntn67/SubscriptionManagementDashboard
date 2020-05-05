@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.SmdEntity;
-import it.arsinfo.smd.SmdService;
+import it.arsinfo.smd.entity.SmdEntity;
+import it.arsinfo.smd.service.SmdService;
 
 public abstract class SmdSearch<T extends SmdEntity>
         extends SmdChangeHandler {

@@ -8,12 +8,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.repository.AbbonamentoDao;
 import it.arsinfo.smd.repository.AnagraficaDao;
 import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_VERSAMENTI)
 @Title("Versamenti")

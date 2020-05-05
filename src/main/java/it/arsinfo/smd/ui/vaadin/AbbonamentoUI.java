@@ -14,7 +14,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
-import it.arsinfo.smd.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -28,6 +27,7 @@ import it.arsinfo.smd.repository.CampagnaDao;
 import it.arsinfo.smd.repository.EstrattoContoDao;
 import it.arsinfo.smd.repository.PubblicazioneDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.service.SmdService;
 
 @SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")

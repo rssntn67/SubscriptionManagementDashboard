@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import it.arsinfo.smd.SmdService;
+import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.vaadin.SmdUI;
 
 @Component

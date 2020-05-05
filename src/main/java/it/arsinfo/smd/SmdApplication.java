@@ -32,6 +32,8 @@ import it.arsinfo.smd.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.repository.StoricoDao;
 import it.arsinfo.smd.repository.UserInfoDao;
 import it.arsinfo.smd.repository.VersamentoDao;
+import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.SmdService;
 
 @SpringBootApplication
 public class SmdApplication {
