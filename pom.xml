@@ -73,6 +73,12 @@
                 <activatedProperties>prod</activatedProperties>
             </properties>
         </profile>
+        <profile>
+            <id>demo</id>
+            <properties>
+                <activatedProperties>demo</activatedProperties>
+            </properties>
+        </profile>
     </profiles>
 	<dependencies>
 		<dependency>
