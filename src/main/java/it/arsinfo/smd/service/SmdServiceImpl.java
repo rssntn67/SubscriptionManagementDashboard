@@ -949,22 +949,18 @@ public class SmdServiceImpl implements SmdService {
     }
 
 	@Override
-	public void associaCommittente(Anagrafica committente, Versamento versamento) throws Exception {
-		if (versamento.getCommittente() != null) {
-			throw new UnsupportedOperationException("Devi rimuovere il committente prima");
-		}
+	public void associaCommittente(Anagrafica committente, Versamento versamento) {
 		versamento.setCommittente(committente);
 		versamentoDao.save(versamento);
 	}
 
 	@Override
-	public void rimuoviCommittente(Versamento versamento) throws Exception {
+	public void rimuoviCommittente(Versamento versamento) {
 		if (versamento.getCommittente() == null) {
 			return;
 		}
 		versamento.setCommittente(null);
-		versamentoDao.save(versamento);
-		
+		versamentoDao.save(versamento);		
 	}
 
 }

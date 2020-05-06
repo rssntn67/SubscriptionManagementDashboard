@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.versamento;
+package it.arsinfo.smd.ui.incasso;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -18,7 +18,6 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
         setColumns(                  
-                "associatoCommittente",
                 "codeLine",
                    "importo",
                    "incassato",

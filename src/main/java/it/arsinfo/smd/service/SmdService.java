@@ -81,8 +81,8 @@ public interface SmdService {
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
     
-    void associaCommittente(Anagrafica committente, Versamento versamento) throws Exception;
-    void rimuoviCommittente(Versamento versamento) throws Exception;
+    void associaCommittente(Anagrafica committente, Versamento versamento);
+    void rimuoviCommittente(Versamento versamento);
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
 

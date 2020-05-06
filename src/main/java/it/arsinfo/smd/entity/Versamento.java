@@ -177,6 +177,13 @@ public class Versamento implements SmdEntity {
         return importo.subtract(incassato);
     }
 
+    @Transient
+    public String getAssociatoCommittente() {
+    	if (committente != null) {
+    		return "si";
+    	}
+    	return "no";
+    }
     public void setIncassato(BigDecimal incassato) {
         this.incassato = incassato;
     }

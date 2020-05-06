@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.versamento;
+package it.arsinfo.smd.ui.incasso;
 
 import java.util.EnumSet;
 

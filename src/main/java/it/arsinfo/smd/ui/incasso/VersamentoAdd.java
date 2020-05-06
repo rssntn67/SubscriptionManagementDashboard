@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.versamento;
+package it.arsinfo.smd.ui.incasso;
 
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Versamento;

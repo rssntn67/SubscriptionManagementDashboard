@@ -18,9 +18,6 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
-import it.arsinfo.smd.ui.versamento.VersamentoAdd;
-import it.arsinfo.smd.ui.versamento.VersamentoEditor;
-import it.arsinfo.smd.ui.versamento.VersamentoGrid;
 
 @SpringUI(path = SmdUI.URL_INCASSI)
 @Title("Incassi ADP")
