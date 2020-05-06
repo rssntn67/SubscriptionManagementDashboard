@@ -1599,6 +1599,61 @@ public class SmdApplicationTests {
                 
     }
     
+    @Test 
+    public void testVersamentoCommittente() {
+        log.info("----------------->testVersamentoCommittente<----------------");
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        
+        Anagrafica ar = SmdHelper.getAR();
+        anagraficaDao.save(ar);
+        assertEquals(1, anagraficaDao.findAll().size());
+
+        Incasso incasso = SmdHelper.getIncassoTelematici();
+        incassoDao.save(incasso);
+        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+        
+        Versamento versamento = versamentoDao.findAll().iterator().next();
+        assertNotNull(versamento);
+        assertNull(versamento.getCommittente());
+        Anagrafica committente = anagraficaDao.findAll().iterator().next();
+        assertNotNull(committente);
+        
+        versamento.setCommittente(committente);
+        versamentoDao.save(versamento);
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+        
+        Versamento persisted1 = versamentoDao.findAll().iterator().next();
+        assertEquals(versamento.getId(), persisted1.getId());
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertNotNull(persisted1);
+        assertNotNull(persisted1.getCommittente());
+        
+        log.info("committente: {}", persisted1.getCommittente().getId());
+
+        persisted1.setCommittente(null);
+        versamentoDao.save(persisted1);
+
+        Versamento persisted2 = versamentoDao.findAll().iterator().next();
+        assertEquals(versamento.getId(), persisted2.getId());
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertNotNull(persisted2);
+        assertNull(persisted2.getCommittente());
+
+        incassoDao.delete(incasso);
+        anagraficaDao.delete(committente);
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+                
+    }
+
+    
     @Test
     public void testIncassa() {
         log.info("----------------->testIncassa<----------------");

@@ -70,18 +70,19 @@ public interface SmdService {
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
-    List<Spedizione> findSpedizioneAll();    
+    List<Spedizione> findSpedizioneAll();
     
     void save(Incasso incasso) throws Exception;
     void save(Versamento versamento) throws Exception;
     void delete(Versamento versamento) throws Exception;
     
-    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;
-    void dissocia(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
-    
+    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
-      
+    void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
+    
+    void associaCommittente(Anagrafica committente, Versamento versamento) throws Exception;
+    void rimuoviCommittente(Versamento versamento) throws Exception;
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
 

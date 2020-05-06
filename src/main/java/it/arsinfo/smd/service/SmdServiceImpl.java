@@ -670,7 +670,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void dissocia(OperazioneIncasso operazioneIncasso, UserInfo user, String description) throws Exception {
+    public void storna(OperazioneIncasso operazioneIncasso, UserInfo user, String description) throws Exception {
     	if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
             log.warn("dissocia: tipo Storno, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
@@ -947,5 +947,24 @@ public class SmdServiceImpl implements SmdService {
 		}
 
     }
+
+	@Override
+	public void associaCommittente(Anagrafica committente, Versamento versamento) throws Exception {
+		if (versamento.getCommittente() != null) {
+			throw new UnsupportedOperationException("Devi rimuovere il committente prima");
+		}
+		versamento.setCommittente(committente);
+		versamentoDao.save(versamento);
+	}
+
+	@Override
+	public void rimuoviCommittente(Versamento versamento) throws Exception {
+		if (versamento.getCommittente() == null) {
+			return;
+		}
+		versamento.setCommittente(null);
+		versamentoDao.save(versamento);
+		
+	}
 
 }

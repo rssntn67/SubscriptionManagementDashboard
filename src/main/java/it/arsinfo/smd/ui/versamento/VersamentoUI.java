@@ -88,7 +88,7 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Storna");
             button.addClickListener(click -> {
                 try {
-                    smdService.dissocia(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
+                    smdService.storna(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
