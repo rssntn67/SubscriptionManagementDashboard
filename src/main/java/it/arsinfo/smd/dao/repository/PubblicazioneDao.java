@@ -11,7 +11,7 @@ public interface PubblicazioneDao extends JpaRepository<Pubblicazione, Long> {
 
 	List<Pubblicazione> findByNomeStartsWithIgnoreCase(String nome);
 	List<Pubblicazione> findByTipo(TipoPubblicazione tipo);
-	List<Pubblicazione> findNotByTipo(TipoPubblicazione tipo);
+	List<Pubblicazione> findByTipoNot(TipoPubblicazione tipo);
 	List<Pubblicazione> findByTipoAndActive(TipoPubblicazione tipo,boolean isActive);
-	List<Pubblicazione> findNotByTipoAndActive(TipoPubblicazione tipo,boolean isActive);
+	List<Pubblicazione> findByTipoNotAndActive(TipoPubblicazione tipo,boolean isActive);
 }

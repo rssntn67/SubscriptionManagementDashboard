@@ -70,7 +70,7 @@ public class CampagnaUI extends SmdUI {
             grid.setVisible(false);
             editor.edit(add.generate());
             items.edit(
-            		pubblicazioneDao.findNotByTipoAndActive(TipoPubblicazione.UNICO, true).
+            		pubblicazioneDao.findByTipoNotAndActive(TipoPubblicazione.UNICO, true).
             		stream().
             		map(p -> {
 		                CampagnaItem ci = new CampagnaItem();

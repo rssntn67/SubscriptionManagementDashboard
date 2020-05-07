@@ -425,11 +425,28 @@ public class SmdApplicationTests {
         assertEquals(4, pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE).size());
         assertEquals(1, pubblicazioneDao.findByTipo(TipoPubblicazione.SEMESTRALE).size());
         assertEquals(1, pubblicazioneDao.findByTipo(TipoPubblicazione.ANNUALE).size());
+        assertEquals(0, pubblicazioneDao.findByTipo(TipoPubblicazione.UNICO).size());
+
+        assertEquals(2, pubblicazioneDao.findByTipoNot(TipoPubblicazione.MENSILE).size());
+        assertEquals(5, pubblicazioneDao.findByTipoNot(TipoPubblicazione.SEMESTRALE).size());
+        assertEquals(5, pubblicazioneDao.findByTipoNot(TipoPubblicazione.ANNUALE).size());
+        assertEquals(6, pubblicazioneDao.findByTipoNot(TipoPubblicazione.UNICO).size());
+
+        assertEquals(4, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.MENSILE,true).size());
+        assertEquals(1, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.SEMESTRALE,true).size());
+        assertEquals(1, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.ANNUALE,true).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.UNICO,true).size());
         
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.MENSILE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.SEMESTRALE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.ANNUALE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.UNICO,false).size());
+
         pubblicazioneDao.delete(p1);
         assertEquals(5, pubblicazioneDao.findAll().size());
-        pubblicazioneDao.delete(p);
+        pubblicazioneDao.delete(p);        
         assertEquals(4, pubblicazioneDao.findAll().size());
+        assertEquals(4, pubblicazioneDao.findByTipoNotAndActive(TipoPubblicazione.UNICO,true).size());
     }
 
     @Test 
