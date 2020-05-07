@@ -109,6 +109,7 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
         this.persisted = persisted;
         confirm.clear();
         username.setReadOnly(persisted);
+        role.setReadOnly(persisted && obj.getUsername().equals("admin"));
         password.setRequiredIndicatorVisible(!persisted);
     }
     

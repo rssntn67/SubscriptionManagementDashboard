@@ -26,7 +26,7 @@ public class ResetPassUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Users");
+        super.init(request,"Reset Password");
         ResetPassEditor editor = new ResetPassEditor(userInfoDao,passwordEncoder);
         
         addSmdComponents(editor);

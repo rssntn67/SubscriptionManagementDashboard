@@ -105,6 +105,6 @@ public class UserInfo implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "User";
+		return username + ":" + role;
 	}
 }
