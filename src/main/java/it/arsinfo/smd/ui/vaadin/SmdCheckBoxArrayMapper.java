@@ -6,11 +6,11 @@ import java.util.Set;
 
 import it.arsinfo.smd.entity.SmdEntity;
 
-public abstract class SmdBoxMapper<T extends SmdEntity, K extends SmdEntity>
-        extends SmdBox<T> {
+public abstract class SmdCheckBoxArrayMapper<T extends SmdEntity, K extends SmdEntity>
+        extends SmdCheckBoxArray<T> {
 
 
-    public SmdBoxMapper(List<T> provided) {
+    public SmdCheckBoxArrayMapper(List<T> provided) {
         super(provided);
     }
     

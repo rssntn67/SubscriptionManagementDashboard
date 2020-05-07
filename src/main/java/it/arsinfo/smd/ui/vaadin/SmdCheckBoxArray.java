@@ -8,13 +8,13 @@ import java.util.List;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 
-public abstract class SmdBox<T> {
+public abstract class SmdCheckBoxArray<T> {
 
     private HorizontalLayout layout= new HorizontalLayout();
     private List<T> selected = new ArrayList<>();
     private final Collection<T> provided;
 
-    public SmdBox(Collection<T> provided) {
+    public SmdCheckBoxArray(Collection<T> provided) {
         this.provided=provided;
     }
 

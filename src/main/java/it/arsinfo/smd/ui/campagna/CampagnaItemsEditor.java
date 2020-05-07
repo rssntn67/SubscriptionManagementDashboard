@@ -6,14 +6,14 @@ import java.util.stream.Collectors;
 
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.ui.vaadin.SmdBoxMapper;
+import it.arsinfo.smd.ui.vaadin.SmdCheckBoxArrayMapper;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 public class CampagnaItemsEditor extends SmdChangeHandler {
 
-    private final SmdBoxMapper<Pubblicazione, CampagnaItem> mapper;
+    private final SmdCheckBoxArrayMapper<Pubblicazione, CampagnaItem> mapper;
     public CampagnaItemsEditor(List<Pubblicazione> pubblicazioni) {
-        mapper = new SmdBoxMapper<Pubblicazione, CampagnaItem>(pubblicazioni) {
+        mapper = new SmdCheckBoxArrayMapper<Pubblicazione, CampagnaItem>(pubblicazioni) {
             
             @Override
             public Set<Long> match(List<CampagnaItem> items) {
@@ -35,7 +35,7 @@ public class CampagnaItemsEditor extends SmdChangeHandler {
         setComponents(mapper.getLayout());
         
     }
-    public SmdBoxMapper<Pubblicazione, CampagnaItem> getMapper() {
+    public SmdCheckBoxArrayMapper<Pubblicazione, CampagnaItem> getMapper() {
         return mapper;
     }
 
