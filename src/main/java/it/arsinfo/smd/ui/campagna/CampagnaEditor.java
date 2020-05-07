@@ -6,13 +6,13 @@ import com.vaadin.data.Binder;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
 
-public class CampagnaEditor extends SmdEditor<Campagna> {
+public class CampagnaEditor extends SmdServiceDaoEditor<Campagna> {
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
                                                            EnumSet.allOf(Anno.class));
@@ -22,7 +22,7 @@ public class CampagnaEditor extends SmdEditor<Campagna> {
 
     private HorizontalLayout pri = new HorizontalLayout(anno,statoCampagna);
 
-    public CampagnaEditor(CampagnaDao repo) {
+    public CampagnaEditor(CampagnaServiceDao repo) {
 
         super(repo, new Binder<>(Campagna.class));
         setComponents(getActions(),pri);

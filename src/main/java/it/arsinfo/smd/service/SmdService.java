@@ -42,7 +42,7 @@ public interface SmdService {
     void estratto(Campagna campagna) throws Exception;
     void chiudi(Campagna campagna) throws Exception;
 
-    void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
+    Campagna genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
     void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
     
     void delete(Campagna campagna) throws Exception;

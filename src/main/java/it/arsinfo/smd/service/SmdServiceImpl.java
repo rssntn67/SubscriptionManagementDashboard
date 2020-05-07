@@ -182,7 +182,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception {
+    public Campagna genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception {
         
         log.info("genera Campagna start {}", campagna);
         Campagna exists = campagnaDao.findByAnno(campagna.getAnno());
@@ -198,7 +198,7 @@ public class SmdServiceImpl implements SmdService {
                   attivi
         );
                                                            
-        campagnaDao.save(campagna);
+        Campagna tobereturned=campagnaDao.save(campagna);
         campagna.getCampagnaItems().stream().forEach(ci -> campagnaItemDao.save(ci));
 
         abbonamenti.forEach(abb -> {
@@ -217,6 +217,7 @@ public class SmdServiceImpl implements SmdService {
             }
         });
         log.info("genera Campagna end");
+        return tobereturned;
 
     }
 
@@ -336,7 +337,6 @@ public class SmdServiceImpl implements SmdService {
         campagna.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
         campagnaDao.deleteById(campagna.getId());
         log.info("delete Campagna end {}", campagna);    	
-        
     }
 
     @Override

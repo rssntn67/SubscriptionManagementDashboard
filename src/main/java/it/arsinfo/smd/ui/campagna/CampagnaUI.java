@@ -14,11 +14,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
@@ -36,7 +35,7 @@ public class CampagnaUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private CampagnaDao campagnaDao;
+    private CampagnaServiceDao campagnaDao;
 
     @Autowired
     private CampagnaItemDao campagnaItemDao;
@@ -57,49 +56,10 @@ public class CampagnaUI extends SmdUI {
                                                                                 && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
         CampagnaItemsEditor campagnaItemEditor = new CampagnaItemsEditor(attivi);
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
-        CampagnaSearch search = new CampagnaSearch(campagnaDao);
+        CampagnaSearch search = new CampagnaSearch(campagnaDao.getRepository());
         CampagnaGrid grid = new CampagnaGrid("Campagne");
-        CampagnaEditor editor = new CampagnaEditor(campagnaDao) {
-            @Override
-            public void delete() {
-                try {
-                    smdService.delete(get());
-                } catch (Exception e) {
-                    Notification.show("Non è possibile cancellare campagna:"+e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                onChange();
-            }
+        CampagnaEditor editor = new CampagnaEditor(campagnaDao);
 
-            @Override
-            public void save() {
-                if (get().getId() != null) {
-                    Notification.show("Impossibile Rigenerare Campagna",
-                                      Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                if (get().getAnno() == null) {
-                    Notification.show("Selezionare Anno Prima di Salvare",
-                                      Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                if (get().getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()) {
-                    Notification.show("Anno deve essere almeno anno successivo",
-                                      Notification.Type.WARNING_MESSAGE);
-                    return;
-                }
-                try {
-                    smdService.genera(get(), attivi);
-                } catch (Exception e) {
-                    Notification.show("Non è possibile generare campagna:"+e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                onChange();
-            }
-
-        };
         AbbonamentoConECGrid abbonamentoGrid = new AbbonamentoConECGrid("Abbonamenti");
         addSmdComponents(campagnaItemEditor, editor, abbonamentoGrid, add,
                          search, grid);
