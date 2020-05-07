@@ -6,7 +6,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
@@ -21,12 +21,12 @@ public class PubblicazioneUI extends SmdAbstractUI<Pubblicazione> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    PubblicazioneDao pubblicazionedao;
+    PubblicazioneServiceDao pubblicazionedao;
 
     @Override
     protected void init(VaadinRequest request) {
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
-        PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
+        PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao.getRepository());
         PubblicazioneGrid grid = new PubblicazioneGrid("Pubblicazioni");
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
                         

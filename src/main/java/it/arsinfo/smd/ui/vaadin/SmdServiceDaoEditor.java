@@ -115,4 +115,8 @@ public abstract class SmdServiceDaoEditor<T extends SmdEntity>
         return smdObj;
     }
 
+    public SmdServiceDao<T> getServiceDao() {
+        return repositoryDao;
+    }
+
 }

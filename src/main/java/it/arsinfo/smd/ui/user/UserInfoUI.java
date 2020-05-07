@@ -7,7 +7,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.repository.UserInfoDao;
+import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
@@ -17,7 +17,7 @@ import it.arsinfo.smd.ui.SmdUI;
 public class UserInfoUI extends SmdAbstractUI<UserInfo> {
 
     @Autowired
-    private UserInfoDao userInfoDao;
+    private UserInfoServiceDao userInfoDao;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,7 +28,7 @@ public class UserInfoUI extends SmdAbstractUI<UserInfo> {
 
     @Override
     protected void init(VaadinRequest request) {
-        UserInfoSearch search = new UserInfoSearch(userInfoDao);
+        UserInfoSearch search = new UserInfoSearch(userInfoDao.getRepository());
         UserInfoAdd add = new UserInfoAdd("Aggiungi Utente");
         UserInfoGrid grid = new UserInfoGrid("Users");
         UserInfoEditor editor = new UserInfoEditor(userInfoDao,passwordEncoder);

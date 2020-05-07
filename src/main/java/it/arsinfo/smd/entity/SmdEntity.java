@@ -4,7 +4,7 @@ import javax.persistence.Transient;
 
 public interface SmdEntity {
     
-    Long getId();
+	Long getId();
     
     @Transient
     String getHeader();

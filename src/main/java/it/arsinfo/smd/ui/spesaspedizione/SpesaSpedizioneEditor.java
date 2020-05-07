@@ -8,14 +8,14 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
+import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
 
 public class SpesaSpedizioneEditor
-        extends SmdEditor<SpesaSpedizione> {
+        extends SmdServiceDaoEditor<SpesaSpedizione> {
 
     private final ComboBox<AreaSpedizione> areaSpedizione = new ComboBox<AreaSpedizione>("AreaSpedizione",
                                                                     EnumSet.allOf(AreaSpedizione.class));
@@ -29,7 +29,7 @@ public class SpesaSpedizioneEditor
     private final TextField cor3gg = new TextField("Spese Spedizione Corriere 3gg");
 
     public SpesaSpedizioneEditor(
-            SpesaSpedizioneDao spesaSpedizioneDao) {
+            SpesaSpedizioneServiceDao spesaSpedizioneDao) {
 
         super(spesaSpedizioneDao, new Binder<>(SpesaSpedizione.class) );
 

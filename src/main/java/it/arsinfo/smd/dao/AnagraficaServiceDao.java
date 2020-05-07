@@ -1,5 +1,7 @@
 package it.arsinfo.smd.dao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,22 +12,30 @@ import it.arsinfo.smd.entity.Anagrafica;
 public class AnagraficaServiceDao implements SmdServiceDao<Anagrafica> {
 
     @Autowired
-    AnagraficaDao anagraficaDao;
+    AnagraficaDao repository;
 
 	@Override
 	public Anagrafica save(Anagrafica entity) throws Exception {
-		return anagraficaDao.save(entity);
+		return repository.save(entity);
 	}
 
 	@Override
 	public void delete(Anagrafica entity) throws Exception {
-		anagraficaDao.delete(entity);
+		repository.delete(entity);
 	}
 
 	@Override
 	public Anagrafica findById(Long id) {
-		return anagraficaDao.findById(id).get();
+		return repository.findById(id).get();
 	}
 
+	@Override
+	public List<Anagrafica> findAll() {
+		return repository.findAll();
+	}
+
+	public AnagraficaDao getRepository() {
+		return repository;
+	}
 	
 }

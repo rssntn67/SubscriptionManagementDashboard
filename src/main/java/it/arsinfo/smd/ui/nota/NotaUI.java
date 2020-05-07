@@ -8,7 +8,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
@@ -25,7 +25,7 @@ public class NotaUI extends SmdAbstractUI<Nota> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    NotaDao notaDao;
+    NotaServiceDao notaDao;
 
     @Autowired
     StoricoDao storicoDao;
@@ -33,7 +33,7 @@ public class NotaUI extends SmdAbstractUI<Nota> {
     @Override
     protected void init(VaadinRequest request) {
         List<Storico> storici = storicoDao.findAll();
-        NotaSearch search = new NotaSearch(notaDao, storici);
+        NotaSearch search = new NotaSearch(notaDao.getRepository(), storici);
         NotaAdd add = new NotaAdd("Aggiungi Nota");
         NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(notaDao, storici);

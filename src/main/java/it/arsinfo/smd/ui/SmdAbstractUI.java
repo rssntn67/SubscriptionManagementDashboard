@@ -4,9 +4,9 @@ import com.vaadin.server.VaadinRequest;
 
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.ui.vaadin.SmdAdd;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
+import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
 
 public abstract class SmdAbstractUI<T extends SmdEntity> extends SmdUI {
 
@@ -15,7 +15,7 @@ public abstract class SmdAbstractUI<T extends SmdEntity> extends SmdUI {
      */
     private static final long serialVersionUID = 7884064928998716106L;
     
-    protected void init(VaadinRequest request,SmdAdd<T> add ,SmdSearch<T> search,SmdEditor<T> editor,SmdGrid<T> grid,String header) {
+    protected void init(VaadinRequest request,SmdAdd<T> add ,SmdSearch<T> search,SmdServiceDaoEditor<T> editor,SmdGrid<T> grid,String header) {
         super.init(request, header);
         
         addSmdComponents(editor, 

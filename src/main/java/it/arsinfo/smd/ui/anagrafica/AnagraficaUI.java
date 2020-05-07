@@ -6,12 +6,12 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.AnagraficaServiceDao;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
 
-@SpringUI(path = SmdUI.URL_ANAGRAFICA+"2")
+@SpringUI(path = SmdUI.URL_ANAGRAFICA)
 @Title("Anagrafica ADP")
 public class AnagraficaUI extends SmdAbstractUI<Anagrafica> {
 
@@ -21,14 +21,14 @@ public class AnagraficaUI extends SmdAbstractUI<Anagrafica> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    AnagraficaDao anagraficaDao;
+    AnagraficaServiceDao anagraficaServiceDao;
 
     @Override
     protected void init(VaadinRequest request) {
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
-        AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
+        AnagraficaSearch search = new AnagraficaSearch(anagraficaServiceDao.getRepository());
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
-        AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
+        AnagraficaEditor editor = new AnagraficaEditor(anagraficaServiceDao);
         super.init(request,add,search,editor,grid, "Anagrafica");        
     }
     
