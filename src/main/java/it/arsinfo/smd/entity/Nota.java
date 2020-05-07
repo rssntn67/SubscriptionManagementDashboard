@@ -77,6 +77,8 @@ public class Nota implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return String.format("operatore: {}", operatore);
-	}
+		return String.format("'%s','%td %tb %tY %tR %tZ']",
+                 operatore, 
+                data, data, data, data, data);
+				}
 }

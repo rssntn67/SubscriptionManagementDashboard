@@ -204,7 +204,7 @@ public class Pubblicazione implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("Pubblicazione:Edit:'%s'", nome);
+        return String.format("'%s'", nome);
     }
 
     public Anno getAnno() {
