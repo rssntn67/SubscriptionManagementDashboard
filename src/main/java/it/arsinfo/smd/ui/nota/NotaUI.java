@@ -12,11 +12,12 @@ import it.arsinfo.smd.dao.NotaDao;
 import it.arsinfo.smd.dao.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_NOTE)
 @Title("Note Storico ADP")
-public class NotaUI extends SmdUI {
+public class NotaUI extends SmdAbstractUI<Nota> {
 
     /**
      * 
@@ -31,48 +32,12 @@ public class NotaUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Note");
         List<Storico> storici = storicoDao.findAll();
         NotaSearch search = new NotaSearch(notaDao, storici);
         NotaAdd add = new NotaAdd("Aggiungi Nota");
         NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(notaDao, storici);
-        addSmdComponents(add, search,editor, grid);
-
-        editor.setVisible(false);
-
-        search.setChangeHandler(() -> grid.populate(search.find()));
-
-        add.setChangeHandler(() -> {
-            Nota nota = add.generate();
-            nota.setOperatore(getLoggedInUser().getUsername());
-            editor.edit(nota);
-            search.setVisible(false);
-            grid.setVisible(false);
-        });
-
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
-            editor.edit(grid.getSelected());
-            search.setVisible(false);
-            add.setVisible(false);
-            setHeader("Nota:Edit");
-            hideMenu();
-        });
-
-        editor.setChangeHandler(() -> {
-            editor.setVisible(false);
-            grid.populate(search.find());
-            add.setVisible(true);
-            search.setVisible(true);
-            setHeader("Note");
-            showMenu();
-        });
-
-        grid.populate(search.findAll());
-
+        init(request,add, search,editor, grid,"Note");
     }
 
 }

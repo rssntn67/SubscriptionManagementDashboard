@@ -77,6 +77,6 @@ public class Nota implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "Nota";
+		return String.format("operatore: {}", operatore);
 	}
 }
