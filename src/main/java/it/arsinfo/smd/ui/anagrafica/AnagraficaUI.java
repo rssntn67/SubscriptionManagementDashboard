@@ -7,11 +7,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
 
-@SpringUI(path = SmdUI.URL_ANAGRAFICA)
+@SpringUI(path = SmdUI.URL_ANAGRAFICA+"2")
 @Title("Anagrafica ADP")
-public class AnagraficaUI extends SmdUI {
+public class AnagraficaUI extends SmdAbstractUI<Anagrafica> {
 
     /**
      * 
@@ -23,56 +25,11 @@ public class AnagraficaUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Anagrafica");
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
         AnagraficaSearch search = new AnagraficaSearch(anagraficaDao);
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaDao);
-        
-        
-        addSmdComponents(
-                         editor, 
-                         add,
-                         search, 
-                         grid);
-
-        editor.setVisible(false);
-        
-        add.setChangeHandler(() -> {
-            setHeader("Anagrafica:Nuova");
-            hideMenu();
-            add.setVisible(false);
-            search.setVisible(false);
-            grid.setVisible(false);
-            editor.edit(add.generate());
-        });
-
-        search.setChangeHandler(() -> {
-            grid.populate(search.find());
-        });
-        
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
-            setHeader(grid.getSelected().getHeader());
-            hideMenu();
-            add.setVisible(false);
-            search.setVisible(false);
-            editor.edit(grid.getSelected());
-        });
-
-        editor.setChangeHandler(() -> {
-            grid.populate(search.find());
-            editor.setVisible(false);
-            setHeader("Anagrafica");
-            showMenu();
-            add.setVisible(true);
-            search.setVisible(true);
-        });
-
-        grid.populate(search.findAll());
-
+        super.init(request,add,search,editor,grid, "Anagrafica");        
     }
     
 }

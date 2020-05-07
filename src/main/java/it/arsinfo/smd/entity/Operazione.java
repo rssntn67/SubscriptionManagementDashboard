@@ -203,4 +203,10 @@ public class Operazione implements SmdEntity {
         return mese.getNomeBreve()+anno.getAnnoAsString();
     }
 
+
+	@Override
+	public String getHeader() {
+		return "Operazione";
+	}
+
 }

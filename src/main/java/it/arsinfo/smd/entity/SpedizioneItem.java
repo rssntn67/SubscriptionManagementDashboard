@@ -145,5 +145,11 @@ public class SpedizioneItem implements SmdEntity {
     public String getPubbCaption() {
         return pubblicazione.getNome()+":"+mesePubblicazione.getNomeBreve()+annoPubblicazione.getAnnoAsString();
     }
+
+
+	@Override
+	public String getHeader() {
+		return "Elementi Spedizione";
+	}
     
  }

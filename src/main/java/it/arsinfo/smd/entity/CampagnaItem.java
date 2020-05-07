@@ -51,4 +51,9 @@ public class CampagnaItem
                                  id, campagna.getId(), pubblicazione.getId());
         }
 
+		@Override
+		public String getHeader() {
+			return "Elemento Campagna";
+		}
+
 }

@@ -102,4 +102,9 @@ public class Campagna implements SmdEntity {
            .filter(ci ->  ci.getPubblicazione().equals(p))
            .collect(Collectors.toList()).size() == 1;
    }
+
+	@Override
+	public String getHeader() {
+		return "Campagna";
+	}
 }

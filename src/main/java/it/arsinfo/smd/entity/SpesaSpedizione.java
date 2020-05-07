@@ -84,4 +84,9 @@ public class SpesaSpedizione implements SmdEntity {
 		this.cor24h = cor24h;
 	}
 
+	@Override
+	public String getHeader() {
+		return "Spesa Spedizione";
+	}
+
 }

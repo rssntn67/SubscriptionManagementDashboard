@@ -205,4 +205,10 @@ public class Versamento implements SmdEntity {
 	public void setCommittente(Anagrafica committente) {
 		this.committente = committente;
 	}
+
+
+	@Override
+	public String getHeader() {
+		return "Versamento";
+	}
 }

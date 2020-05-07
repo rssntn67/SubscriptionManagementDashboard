@@ -73,4 +73,10 @@ public class Nota implements SmdEntity {
     public void setOperatore(String operatore) {
         this.operatore = operatore;
     }
+
+
+	@Override
+	public String getHeader() {
+		return "Nota";
+	}
 }
