@@ -49,7 +49,6 @@ import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.helper.SmdImportAdp;
 import it.arsinfo.smd.service.Smd;
 
 @RunWith(SpringRunner.class)
@@ -1155,12 +1154,7 @@ public class SmdUnitTests {
         assertEquals(Paese.IT, paese);
         
     }
-    
-    @Test 
-    public void testGeneraCodeLineBase() {
-        SmdImportAdp.getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
-    }
-    
+        
     @Test
     public void testIncassaEsatto() throws Exception {
     	Abbonamento abbonamento = new Abbonamento();

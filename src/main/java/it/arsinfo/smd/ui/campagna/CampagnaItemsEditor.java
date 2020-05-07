@@ -9,8 +9,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdBoxMapper;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
-public class CampagnaItemsEditor
-        extends SmdChangeHandler {
+public class CampagnaItemsEditor extends SmdChangeHandler {
 
     private final SmdBoxMapper<Pubblicazione, CampagnaItem> mapper;
     public CampagnaItemsEditor(List<Pubblicazione> pubblicazioni) {

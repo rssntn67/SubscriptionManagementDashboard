@@ -182,7 +182,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public Campagna genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception {
+    public void genera(Campagna campagna) throws Exception {
         
         log.info("genera Campagna start {}", campagna);
         Campagna exists = campagnaDao.findByAnno(campagna.getAnno());
@@ -190,6 +190,9 @@ public class SmdServiceImpl implements SmdService {
         	log.warn("genera: Impossibile generare campagna {}, la campagna esiste", campagna);
         	throw new UnsupportedOperationException("Impossibile generare campagna per anno " + campagna.getAnno().getAnno() +". La campagna esiste");
         }
+        List<Pubblicazione> attivi = pubblicazioneDao.findAll().
+        		stream().filter(p -> campagna.hasPubblicazione(p)).
+        		collect(Collectors.toList()); 
         List<Abbonamento> 
             abbonamenti = 
               Smd.genera(campagna, 
@@ -198,9 +201,6 @@ public class SmdServiceImpl implements SmdService {
                   attivi
         );
                                                            
-        Campagna tobereturned=campagnaDao.save(campagna);
-        campagna.getCampagnaItems().stream().forEach(ci -> campagnaItemDao.save(ci));
-
         abbonamenti.forEach(abb -> {
             final List<EstrattoConto> estrattiConto = new ArrayList<>(); 
             storicoDao.findByIntestatarioAndCassa(
@@ -217,7 +217,6 @@ public class SmdServiceImpl implements SmdService {
             }
         });
         log.info("genera Campagna end");
-        return tobereturned;
 
     }
 

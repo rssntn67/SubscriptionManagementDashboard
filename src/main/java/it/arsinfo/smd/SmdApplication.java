@@ -27,18 +27,13 @@ import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.helper.SmdImportAdp;
 import it.arsinfo.smd.helper.SmdLoadSampleData;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 
 @SpringBootApplication
 public class SmdApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
-    @Value("${load.anagrafica.adp}")
-    private String loadAnagraficaAdp;
+    private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
 
     @Value("${load.sample.data}")
     private String loadSampleData;
@@ -83,8 +78,6 @@ public class SmdApplication {
             
             boolean loadSD = loadSampleData != null && loadSampleData.equals("true");
             log.info("loadSampleData {}",loadSampleData);
-            boolean loadADP = loadAnagraficaAdp != null && loadAnagraficaAdp.equals("true");
-            log.info("loadAnagraficaAdp {}",loadAnagraficaAdp);
             
             if (loadSD ) {
                 new Thread(
@@ -103,25 +96,6 @@ public class SmdApplication {
                       incassoDao, 
                       versamentoDao, 
                       operazioneDao
-                   )
-                ).start();
-            } else if (loadADP) {
-                new Thread(
-                   new SmdImportAdp(
-                     smdService,                                
-                     anagraficaDao, 
-                     storicoDao, 
-                     notaDao,
-                     pubblicazioneDao, 
-                     spesaSpedizioneDao,
-                     abbonamentoDao, 
-                     estrattoContoDao,
-                     spedizioneDao,
-                     spedizioneItemDao,
-                     campagnaDao, 
-                     incassoDao, 
-                     versamentoDao, 
-                     operazioneDao
                    )
                 ).start();
             }

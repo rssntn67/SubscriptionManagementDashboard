@@ -20,20 +20,16 @@ public class CampagnaEditor extends SmdServiceDaoEditor<Campagna> {
     private final ComboBox<StatoCampagna> statoCampagna = new ComboBox<StatoCampagna>("Stato",
             EnumSet.allOf(StatoCampagna.class));
 
-    private HorizontalLayout pri = new HorizontalLayout(anno,statoCampagna);
-
     public CampagnaEditor(CampagnaServiceDao repo) {
 
         super(repo, new Binder<>(Campagna.class));
+        HorizontalLayout pri = new HorizontalLayout(anno,statoCampagna);
         setComponents(getActions(),pri);
 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
         statoCampagna.setReadOnly(true);
         getBinder().bindInstanceFields(this);
-
-        setVisible(false);
-
     }
 
     @Override
@@ -43,10 +39,10 @@ public class CampagnaEditor extends SmdServiceDaoEditor<Campagna> {
         getSave().setEnabled(!persisted);
         getCancel().setEnabled(!persisted);
         getDelete().setEnabled(
-                   !persisted 
-               ||  (campagna.getStatoCampagna() == StatoCampagna.Generata && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno())
-                );
+    		campagna.getStatoCampagna() == StatoCampagna.Generata 
+         && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
+        );
+        statoCampagna.setVisible(persisted);
         anno.focus();
-
     }
 }

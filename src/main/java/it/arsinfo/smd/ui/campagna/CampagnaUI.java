@@ -1,7 +1,6 @@
 package it.arsinfo.smd.ui.campagna;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,7 +20,6 @@ import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 
@@ -52,17 +50,16 @@ public class CampagnaUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Campagna");
-        List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
-                                                                                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
-        CampagnaItemsEditor campagnaItemEditor = new CampagnaItemsEditor(attivi);
+        CampagnaItemsEditor items = new CampagnaItemsEditor(pubblicazioneDao.findAll());
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
         CampagnaSearch search = new CampagnaSearch(campagnaDao.getRepository());
         CampagnaGrid grid = new CampagnaGrid("Campagne");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao);
 
         AbbonamentoConECGrid abbonamentoGrid = new AbbonamentoConECGrid("Abbonamenti");
-        addSmdComponents(campagnaItemEditor, editor, abbonamentoGrid, add,
+        addSmdComponents(items, editor, abbonamentoGrid, add,
                          search, grid);
+        items.setVisible(false);
         editor.setVisible(false);
         abbonamentoGrid.setVisible(false);
         add.setChangeHandler(() -> {
@@ -72,11 +69,15 @@ public class CampagnaUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(add.generate());
-            campagnaItemEditor.edit(attivi.stream().map(p -> {
-                CampagnaItem ci = new CampagnaItem();
-                ci.setPubblicazione(p);
-                ci.setCampagna(editor.get());
-                return ci;
+            items.edit(
+            		pubblicazioneDao.findNotByTipoAndActive(TipoPubblicazione.UNICO, true).
+            		stream().
+            		map(p -> {
+		                CampagnaItem ci = new CampagnaItem();
+		                ci.setPubblicazione(p);
+		                ci.setCampagna(editor.get());
+		                editor.get().addCampagnaItem(ci);
+		                return ci;
             }).collect(Collectors.toList()), false);
         });
 
@@ -92,7 +93,7 @@ public class CampagnaUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(grid.getSelected());
-            campagnaItemEditor.edit(campagnaItemDao.findByCampagna(grid.getSelected()),
+            items.edit(campagnaItemDao.findByCampagna(grid.getSelected()),
                                     true);            
         });
 
@@ -105,7 +106,7 @@ public class CampagnaUI extends SmdUI {
 
         editor.setChangeHandler(() -> {
             editor.setVisible(false);
-            campagnaItemEditor.setVisible(false);
+            items.setVisible(false);
             setHeader("Campagna");
             showMenu();
             add.setVisible(true);
@@ -114,7 +115,7 @@ public class CampagnaUI extends SmdUI {
             abbonamentoGrid.setVisible(false);
         });
 
-        campagnaItemEditor.setChangeHandler(() -> {
+        items.setChangeHandler(() -> {
         });
 
         grid.addComponentColumn(campagna -> {

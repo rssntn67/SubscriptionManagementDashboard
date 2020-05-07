@@ -1,17 +1,14 @@
 package it.arsinfo.smd.dao;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
@@ -19,9 +16,9 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 	
     @Autowired
     private CampagnaDao repository;
-
+    
     @Autowired
-    private PubblicazioneDao pubblicazioneDao;
+    private CampagnaItemDao campagnaItemDao;
 
     @Autowired
     private SmdService smdService;
@@ -37,10 +34,12 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
         if (entity.getAnno().getAnno() <= Anno.getAnnoCorrente().getAnno()) {
             throw new UnsupportedOperationException("Anno deve essere almeno anno successivo");
         }
-        List<Pubblicazione> attivi = pubblicazioneDao.findAll().stream().filter(p -> p.isActive()
-                && p.getTipo() != TipoPubblicazione.UNICO).collect(Collectors.toList());
-
-        return smdService.genera(entity, attivi);
+        Campagna tobereturned=repository.save(entity);
+        entity.getCampagnaItems().
+        	stream().
+        	forEach(ci -> campagnaItemDao.save(ci));
+        smdService.genera(entity);
+        return findById(tobereturned.getId());
 	}
 
 	@Override
