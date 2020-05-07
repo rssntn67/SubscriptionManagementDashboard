@@ -86,7 +86,8 @@ public class SpesaSpedizione implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "Spesa Spedizione";
+        return String.format("%s - %s]",
+                rangeSpeseSpedizione,areaSpedizione);
 	}
 
 }

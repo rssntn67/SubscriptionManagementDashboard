@@ -7,11 +7,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.dao.SpesaSpedizioneDao;
+import it.arsinfo.smd.entity.SpesaSpedizione;
+import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_SPESESPEDIZIONE)
 @Title("Spese di Spedizione")
-public class SpesaSpedizioneUI extends SmdUI {
+public class SpesaSpedizioneUI extends SmdAbstractUI<SpesaSpedizione> {
 
     /**
      * 
@@ -23,46 +25,13 @@ public class SpesaSpedizioneUI extends SmdUI {
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Spese Spedizione");
-        
+        SpesaSpedizioneSearch search = new SpesaSpedizioneSearch(spesaSpedizioneDao);
         SpesaSpedizioneAdd add = new SpesaSpedizioneAdd("Aggiungi Spese Spedizione");
         SpesaSpedizioneEditor editor = 
                 new SpesaSpedizioneEditor(spesaSpedizioneDao);
         
         SpesaSpedizioneGrid grid = new SpesaSpedizioneGrid("Spese Spedizione");
-        
-        
-        addSmdComponents(editor,add,grid);
-        editor.setVisible(false);
-
-        add.setChangeHandler(()-> {
-            setHeader(String.format("Spesa Spedizione:Nuova"));
-            hideMenu();
-            editor.edit(add.generate());
-            add.setVisible(false);
-            grid.setVisible(false);
-        });
-                
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
-            editor.edit(grid.getSelected());
-            setHeader("Edit:SpesaSpedizione:");
-            hideMenu();
-            add.setVisible(false);
-        });
-
-        editor.setChangeHandler(() -> {
-            showMenu();
-            add.setVisible(true);
-            setHeader("Spese Spedizione");
-            editor.setVisible(false);
-            grid.populate(spesaSpedizioneDao.findAll());
-        });
-
-        grid.populate(spesaSpedizioneDao.findAll());
-
+        init(request,add, search,editor, grid, "Spese Spedizione");
     }
 
 }
