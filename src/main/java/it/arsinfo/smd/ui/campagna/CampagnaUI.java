@@ -14,10 +14,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.CampagnaDao;
-import it.arsinfo.smd.dao.CampagnaItemDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.CampagnaItemDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoPubblicazione;

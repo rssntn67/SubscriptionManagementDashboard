@@ -11,8 +11,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
-import it.arsinfo.smd.dao.OperazioneDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.OperazioneDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;

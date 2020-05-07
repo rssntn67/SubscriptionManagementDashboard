@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.dao.repository;
 
 import java.math.BigDecimal;
 import java.util.Date;

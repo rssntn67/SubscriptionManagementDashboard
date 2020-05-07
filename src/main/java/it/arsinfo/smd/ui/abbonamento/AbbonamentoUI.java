@@ -14,12 +14,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.CampagnaDao;
-import it.arsinfo.smd.dao.EstrattoContoDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
-import it.arsinfo.smd.dao.VersamentoDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;

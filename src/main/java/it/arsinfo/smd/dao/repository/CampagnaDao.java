@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.dao.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

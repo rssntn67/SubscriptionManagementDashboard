@@ -6,7 +6,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdAbstractUI;
 import it.arsinfo.smd.ui.SmdUI;

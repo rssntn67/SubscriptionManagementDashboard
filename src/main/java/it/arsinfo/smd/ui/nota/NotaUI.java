@@ -8,8 +8,8 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.NotaDao;
-import it.arsinfo.smd.dao.StoricoDao;
+import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.SmdAbstractUI;

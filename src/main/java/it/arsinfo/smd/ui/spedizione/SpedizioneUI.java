@@ -9,11 +9,11 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
-import it.arsinfo.smd.dao.SpedizioneDao;
-import it.arsinfo.smd.dao.SpedizioneItemDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.SpedizioneDao;
+import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
