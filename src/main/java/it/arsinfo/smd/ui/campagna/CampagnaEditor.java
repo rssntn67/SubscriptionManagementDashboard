@@ -37,8 +37,13 @@ public class CampagnaEditor extends SmdServiceDaoEditor<Campagna> {
 
         anno.setReadOnly(persisted);
         getSave().setEnabled(!persisted);
+        if (!persisted) {
+        	getSave().setCaption("Genera Campagna");
+        }  else {
+        	getSave().setCaption("Salva");        	
+        }
         getCancel().setEnabled(!persisted);
-        getDelete().setEnabled(
+        getDelete().setEnabled( persisted &&
     		campagna.getStatoCampagna() == StatoCampagna.Generata 
          && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
         );

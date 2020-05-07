@@ -96,7 +96,7 @@ public class AbbonamentoUI extends SmdUI {
                     return;
                 }
                 try {
-                    smdService.delete(get());
+                    smdService.cancella(get());
                     onChange();
                 } catch (Exception e) {
                     Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);

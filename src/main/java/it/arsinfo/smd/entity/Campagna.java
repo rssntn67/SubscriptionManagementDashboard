@@ -96,11 +96,14 @@ public class Campagna implements SmdEntity {
 
    @Transient
    public boolean hasPubblicazione(Pubblicazione p) {
-       return 
-           campagnaItems
-           .stream()
-           .filter(ci ->  ci.getPubblicazione().equals(p))
-           .collect(Collectors.toList()).size() == 1;
+	   System.err.println(p);
+	   for (CampagnaItem item:campagnaItems ) {
+		   System.err.println(item.toString());
+		   if (item.getPubblicazione().equals(p)) {
+			   return true;
+		   }
+	   }
+       return false;
    }
 
 	@Override

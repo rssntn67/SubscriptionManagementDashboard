@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.EstrattoContoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
@@ -67,9 +66,6 @@ public class SmdServiceImpl implements SmdService {
 
     @Autowired
     private CampagnaDao campagnaDao;
-
-    @Autowired
-    private CampagnaItemDao campagnaItemDao;
 
     @Autowired
     private SpesaSpedizioneDao spesaSpedizioneDao;
@@ -185,21 +181,11 @@ public class SmdServiceImpl implements SmdService {
     public void genera(Campagna campagna) throws Exception {
         
         log.info("genera Campagna start {}", campagna);
-        Campagna exists = campagnaDao.findByAnno(campagna.getAnno());
-        if (exists != null) {
-        	log.warn("genera: Impossibile generare campagna {}, la campagna esiste", campagna);
-        	throw new UnsupportedOperationException("Impossibile generare campagna per anno " + campagna.getAnno().getAnno() +". La campagna esiste");
-        }
-        List<Pubblicazione> attivi = pubblicazioneDao.findAll().
-        		stream().filter(p -> campagna.hasPubblicazione(p)).
-        		collect(Collectors.toList()); 
         List<Abbonamento> 
             abbonamenti = 
               Smd.genera(campagna, 
                   anagraficaDao.findAll(),
-                  storicoDao.findAll(),
-                  attivi
-        );
+                  storicoDao.findAll());
                                                            
         abbonamenti.forEach(abb -> {
             final List<EstrattoConto> estrattiConto = new ArrayList<>(); 
@@ -325,21 +311,11 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void delete(Campagna campagna) throws Exception {
-        log.info("delete Campagna start {}", campagna);   
-    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
-        	log.warn("delete: Impossibile delete campagna {}, lo stato campagna non 'Generata'", campagna);
-        	throw new UnsupportedOperationException("Impossibile eseguire delete campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
-    	}
-
-        abbonamentoDao.findByCampagna(campagna).stream().forEach(abb -> delete(abb));
-        campagna.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
-        campagnaDao.deleteById(campagna.getId());
-        log.info("delete Campagna end {}", campagna);    	
+    public void cancella(Campagna campagna) throws Exception {
     }
 
     @Override
-    public void delete(Abbonamento abbonamento) {
+    public void cancella(Abbonamento abbonamento) {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
         	log.warn("Non si può cancellare un abbonamento nello stato Nuovo: {}", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());

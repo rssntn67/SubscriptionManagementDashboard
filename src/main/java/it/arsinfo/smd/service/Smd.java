@@ -49,11 +49,9 @@ import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoEstrattoConto;
-import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
@@ -678,16 +676,7 @@ public class Smd {
         return ecs;
     }
     
-    public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici, List<Pubblicazione> pubblicazioni) {
-        pubblicazioni.stream()
-        .filter(p -> p.isActive() && p.getTipo() != TipoPubblicazione.UNICO)
-        .forEach(p -> {
-            CampagnaItem ci = new CampagnaItem();
-            ci.setCampagna(campagna);
-            ci.setPubblicazione(p);
-            campagna.addCampagnaItem(ci);
-        });
-
+    public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici) {
         final List<Abbonamento> abbonamenti = new ArrayList<>();
         anagrafiche.stream().forEach(a -> {
             abbonamenti.addAll(genera(campagna, a, storici));

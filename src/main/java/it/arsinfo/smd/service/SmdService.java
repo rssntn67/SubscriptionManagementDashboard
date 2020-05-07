@@ -45,8 +45,8 @@ public interface SmdService {
     void genera(Campagna campagna) throws Exception;
     void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
     
-    void delete(Campagna campagna) throws Exception;
-    void delete(Abbonamento abbonamento) throws Exception;
+    void cancella(Campagna campagna) throws Exception;
+    void cancella(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(EstrattoConto estrattoConto) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
