@@ -10,8 +10,6 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 
-import it.arsinfo.smd.ui.SmdUI;
-
 @Component
 public class AuthorizationAuditListener 
   extends AbstractAuthorizationAuditListener {
@@ -45,10 +43,7 @@ public class AuthorizationAuditListener
             data.put("details", 
               event.getAuthentication().getDetails());
         }
-        if (SmdUI.URL_REDIRECT_LOGOUT.equals(requestUrl) && "anonymousUser".equals(user)) {
-            publish(new AuditEvent(event.getAuthentication().getName(), 
-            		LOGGED_OUT, data));
-        } else if ("anonymousUser".equals(user)) {
+        if ("anonymousUser".equals(user)) {
             publish(new AuditEvent(event.getAuthentication().getName(), 
             		REDIRECTED_LOGIN, data));
         } else {

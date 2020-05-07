@@ -60,6 +60,7 @@ import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.ui.SmdUI;
 
 @Service
 public class SmdServiceImpl implements SmdService {
@@ -138,32 +139,35 @@ public class SmdServiceImpl implements SmdService {
         
         WebAuthenticationDetails details
           = (WebAuthenticationDetails) auditEvent.getData().get("details");
-        String requestUrl = (String)auditEvent.getData().get("requestUrl");        
+        String requestUrl = (String)auditEvent.getData().get("requestUrl"); 
+        if (requestUrl == null && auditEvent.getType().equals("AUTHENTICATION_SUCCESS")) {
+        	requestUrl = SmdUI.URL_LOGIN;
+        } else if (requestUrl == null && auditEvent.getType().equals("AUTHENTICATION_FAILURE")) {
+        	requestUrl = SmdUI.URL_LOGIN_FAILURE;        	
+        } else if (requestUrl == null) {
+        	requestUrl="NA";
+        }
         String message = (String)auditEvent.getData().get("message");        
-        String remoteAddress = "NA";
-        String sessionId = "NA";
+        String remoteAddress=null;
+        String sessionId = null;
         if (details != null) {
             remoteAddress = details.getRemoteAddress();
+            if (remoteAddress == null ) {
+            	remoteAddress = "NA";
+            }
             sessionId = details.getSessionId();
+            if (sessionId == null) {
+            	sessionId="NA";
+            }
         }
-        if (requestUrl != null) {
-	        log.info("auditlog: '{}' {} URL {}{} SessionId {}: {}" ,
-	                 auditEvent.getPrincipal() ,
+        log.info("auditlog: {} '{} from {}'   URL {}, SessionId {}: {}" ,
 	                 auditEvent.getType(),
+	                 auditEvent.getPrincipal() ,
 	                 remoteAddress,
 	                 requestUrl,
 	                 sessionId,
 	                 message
 	                );   	
-        } else {
-	        log.info("auditlog: '{}' {} URL {} SessionId {}: {}" ,
-	                 auditEvent.getPrincipal() ,
-	                 auditEvent.getType(),
-	                 remoteAddress,
-	                 sessionId,
-	                 message
-	                );   	        	
-        }
     }
     @Override
     public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {

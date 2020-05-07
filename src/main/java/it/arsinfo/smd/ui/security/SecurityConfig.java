@@ -45,20 +45,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		// Not using Spring CSRF here to be able to use plain HTML for the login
-		// page
+		
 		http.csrf().disable();
 
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry reg = http
 				.authorizeRequests();
 
-		// Allow access to static resources ("/VAADIN/**")
-                reg = reg.antMatchers("/adp.png").permitAll();
-                reg = reg.antMatchers("/favicon.ico").permitAll();
-                	reg = reg.antMatchers("/VAADIN/**").permitAll();
-		// Require authentication for all URLS ("/**")
+		reg = reg.antMatchers("/adp.png").permitAll();
+		reg = reg.antMatchers("/favicon.ico").permitAll();
+		reg = reg.antMatchers("/VAADIN/**").permitAll();
+		
 		reg = reg.antMatchers(SmdUI.URL_USER).hasAnyAuthority(Role.ADMIN.name());
-                reg = reg.antMatchers(SmdUI.URL_RESET).hasAnyAuthority(Role.USER.name(),Role.ADMIN.name());
+		reg = reg.antMatchers(SmdUI.URL_RESET).hasAnyAuthority(Role.USER.name(), Role.ADMIN.name());
 		reg = reg.antMatchers("/**").hasAnyAuthority(UserInfo.getRoleNames());
 		HttpSecurity sec = reg.and();
 
@@ -66,12 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		FormLoginConfigurer<HttpSecurity> login = sec.formLogin().permitAll();
 		login = login.loginPage(SmdUI.URL_LOGIN).loginProcessingUrl(SmdUI.URL_LOGIN_PROCESSING)
 				.failureUrl(SmdUI.URL_LOGIN_FAILURE).successHandler(successHandler);
-		login.and().logout()
-		.logoutSuccessUrl(SmdUI.URL_REDIRECT_LOGOUT)
-                .logoutSuccessHandler(logoutHandler)
-		.invalidateHttpSession(true)
-		.deleteCookies("JSESSIONID")
-                ;
+		login.and().logout().logoutSuccessHandler(logoutHandler)
+				.invalidateHttpSession(true).deleteCookies("JSESSIONID")                ;
 	}
 	
 }
