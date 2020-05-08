@@ -108,6 +108,6 @@ public class Campagna implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "Campagna";
+        return String.format("'%d' %s", id,anno.getAnno(),statoCampagna);
 	}
 }
