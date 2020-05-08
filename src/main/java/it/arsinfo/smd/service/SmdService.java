@@ -38,15 +38,15 @@ public interface SmdService {
     void save(Storico storico, Nota... note);
 
     List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);
-    void invia(Campagna campagna) throws Exception;
-    void estratto(Campagna campagna) throws Exception;
-    void chiudi(Campagna campagna) throws Exception;
 
     void genera(Campagna campagna) throws Exception;
     void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
     
-    void cancella(Campagna campagna) throws Exception;
     void cancella(Abbonamento abbonamento) throws Exception;
+    void sospendiSpedizioni(Abbonamento abbonamento) throws Exception;
+    void riattivaSpedizioni(Abbonamento abbonamento) throws Exception;
+    void sospendiStorico(Abbonamento abbonamento) throws Exception;
+    void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(EstrattoConto estrattoConto) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;

@@ -1,5 +1,6 @@
 package it.arsinfo.smd.dao;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -24,6 +26,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
@@ -141,16 +144,103 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
                 .collect(Collectors.toList()));
 	}
 	
-	public void invia(Campagna entity) throws Exception {
-		smdService.invia(entity);
+	public void invia(Campagna campagna) throws Exception {
+        log.info("invia Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
+        	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
+
+    	}
+        for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
+            if (abb.getTotale().signum() == 0) {
+                abb.setStatoAbbonamento(StatoAbbonamento.Valido);
+            } else {
+                abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
+            }
+            abbonamentoDao.save(abb);
+        }
+        campagna.setStatoCampagna(StatoCampagna.Inviata);
+        repository.save(campagna);
+        log.info("invia Campagna end {}", campagna);
 	}
 
-	public void estratto(Campagna entity) throws Exception{
-		smdService.estratto(entity);
+	public void estratto(Campagna campagna) throws Exception{
+        log.info("estratto Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
+        	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'Inviata'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire estratto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
+
+    	}
+        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
+        	Incassato inc = Smd.getStatoIncasso(abbonamento);
+            switch (inc) {
+            case No:
+				if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() >=0) {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
+					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+					log.info("estratto: EC {} inc.{}", abbonamento,inc);
+				} else {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
+					log.info("estratto: sospeso {} inc.", abbonamento,inc);
+				}
+				smdService.sospendiSpedizioni(abbonamento);
+                break;
+            case Parzialmente:
+				if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
+					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+					log.info("estratto: EC {} inc.{}", abbonamento,Incassato.Parzialmente);
+					smdService.sospendiSpedizioni(abbonamento);
+    			} else {
+					abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoConResiduo);
+					log.info("estratto: ValidoConResiduo {} inc.{}", abbonamento,inc);
+					smdService.riattivaSpedizioni(abbonamento);
+				}
+	            break;
+            case Zero:
+                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
+				log.info("estratto: Annullato {} inc.{}", abbonamento,inc);
+				smdService.sospendiSpedizioni(abbonamento);
+                break;
+            default:
+				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+				log.info("estratto: Valido {} inc.{}", abbonamento,inc);
+				smdService.riattivaSpedizioni(abbonamento);
+                break;
+            }        	
+            abbonamentoDao.save(abbonamento);
+        }
+        campagna.setStatoCampagna(StatoCampagna.InviatoEC);
+        repository.save(campagna);  
+        log.info("estratto Campagna end {}", campagna);
 	}
 	
-	public void chiudi(Campagna entity) throws Exception{
-		smdService.chiudi(entity);
+	public void chiudi(Campagna campagna) throws Exception{
+        log.info("chiudi Campagna start {}", campagna);
+    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
+        	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
+        	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
+
+    	}
+        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
+            switch (abbonamento.getStatoAbbonamento()) {
+            case Valido:
+            	smdService.riattivaStorico(abbonamento);
+                break;
+            case ValidoConResiduo:
+            	smdService.riattivaStorico(abbonamento);
+                break;
+            case ValidoInviatoEC:
+            	smdService.riattivaStorico(abbonamento);
+                break;
+            default:
+            	smdService.sospendiStorico(abbonamento);
+                break;
+            }
+        }
+        campagna.setStatoCampagna(StatoCampagna.Chiusa);
+        repository.save(campagna); 
+        log.info("chiudi Campagna end {}", campagna);
 	}
 
 }

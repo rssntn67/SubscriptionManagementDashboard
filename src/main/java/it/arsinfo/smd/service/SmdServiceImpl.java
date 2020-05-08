@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.EstrattoContoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
@@ -31,7 +30,6 @@ import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -63,9 +61,6 @@ import it.arsinfo.smd.ui.SmdUI;
 
 @Service
 public class SmdServiceImpl implements SmdService {
-
-    @Autowired
-    private CampagnaDao campagnaDao;
 
     @Autowired
     private SpesaSpedizioneDao spesaSpedizioneDao;
@@ -205,114 +200,6 @@ public class SmdServiceImpl implements SmdService {
         });
         log.info("genera Campagna end");
 
-    }
-
-    @Override
-    public void invia(Campagna campagna) throws Exception {
-        log.info("invia Campagna start {}", campagna);
-    	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
-        	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
-        	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
-
-    	}
-        for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
-            if (abb.getTotale().signum() == 0) {
-                abb.setStatoAbbonamento(StatoAbbonamento.Valido);
-            } else {
-                abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
-            }
-            abbonamentoDao.save(abb);
-        }
-        campagna.setStatoCampagna(StatoCampagna.Inviata);
-        campagnaDao.save(campagna);
-        log.info("invia Campagna end {}", campagna);
-
-    }
-    
-
-    @Override
-    public void estratto(Campagna campagna) throws Exception {
-        log.info("estratto Campagna start {}", campagna);
-    	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
-        	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'Inviata'", campagna);
-        	throw new UnsupportedOperationException("Impossibile eseguire estratto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
-
-    	}
-        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-        	Incassato inc = Smd.getStatoIncasso(abbonamento);
-            switch (inc) {
-            case No:
-				if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() >=0) {
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
-					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-					log.info("estratto: EC {} inc.{}", abbonamento,inc);
-				} else {
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.Sospeso);
-					log.info("estratto: sospeso {} inc.", abbonamento,inc);
-				}
-				sospendiSpedizioni(abbonamento);
-                break;
-            case Parzialmente:
-				if (abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() >=0) {
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.SospesoInviatoEC);
-					abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-					log.info("estratto: EC {} inc.{}", abbonamento,Incassato.Parzialmente);
-					sospendiSpedizioni(abbonamento);
-    			} else {
-					abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoConResiduo);
-					log.info("estratto: ValidoConResiduo {} inc.{}", abbonamento,inc);
-					riattivaSpedizioni(abbonamento);
-				}
-	            break;
-            case Zero:
-                abbonamento.setStatoAbbonamento(StatoAbbonamento.Annullato);
-				log.info("estratto: Annullato {} inc.{}", abbonamento,inc);
-				sospendiSpedizioni(abbonamento);
-                break;
-            default:
-				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-				log.info("estratto: Valido {} inc.{}", abbonamento,inc);
-				riattivaSpedizioni(abbonamento);
-                break;
-            }        	
-            abbonamentoDao.save(abbonamento);
-        }
-        campagna.setStatoCampagna(StatoCampagna.InviatoEC);
-        campagnaDao.save(campagna);  
-        log.info("estratto Campagna end {}", campagna);
-    }
-
-    @Override
-    public void chiudi(Campagna campagna) throws Exception {
-        log.info("chiudi Campagna start {}", campagna);
-    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
-        	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
-        	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
-
-    	}
-        for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-            switch (abbonamento.getStatoAbbonamento()) {
-            case Valido:
-            	riattivaStorico(abbonamento);
-                break;
-            case ValidoConResiduo:
-            	riattivaStorico(abbonamento);
-                break;
-            case ValidoInviatoEC:
-               	riattivaStorico(abbonamento);
-                break;
-            default:
-                sospendiStorico(abbonamento);
-                break;
-            }
-        }
-        campagna.setStatoCampagna(StatoCampagna.Chiusa);
-        campagnaDao.save(campagna); 
-        log.info("chiudi Campagna end {}", campagna);
-    }
-
-    @Override
-    public void cancella(Campagna campagna) throws Exception {
     }
 
     @Override
@@ -705,6 +592,7 @@ public class SmdServiceImpl implements SmdService {
             ).collect(Collectors.toList());       
     }
 
+    @Override
     public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
         spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento, StatoSpedizione.PROGRAMMATA)
         .forEach(sped -> {
@@ -713,6 +601,7 @@ public class SmdServiceImpl implements SmdService {
         });
     }
 
+    @Override
     public void riattivaSpedizioni(Abbonamento abbonamento) throws Exception {
         spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento,StatoSpedizione.SOSPESA)
         .forEach(sped -> {
@@ -721,6 +610,7 @@ public class SmdServiceImpl implements SmdService {
         });
     }
 
+    @Override
     public void sospendiStorico(Abbonamento abbonamento) throws Exception {
         estrattoContoDao.findByAbbonamento(abbonamento)
         .stream()
@@ -732,6 +622,7 @@ public class SmdServiceImpl implements SmdService {
         });
     }
 
+    @Override
     public void riattivaStorico(Abbonamento abbonamento) throws Exception {
         estrattoContoDao.findByAbbonamento(abbonamento)
         .stream()
