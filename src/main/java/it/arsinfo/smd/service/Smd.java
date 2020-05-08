@@ -243,6 +243,7 @@ public class Smd {
         ec.setInvio(storico.getInvio());
         ec.setInvioSpedizione(storico.getInvioSpedizione());
         ec.setDestinatario(storico.getDestinatario());
+        abb.addEstrattoConto(ec);
         return ec;
     }
 

@@ -1,10 +1,7 @@
 package it.arsinfo.smd.dao;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
@@ -39,7 +35,7 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 	private CampagnaItemDao campagnaItemDao;
 
 	@Autowired
-	private AbbonamentoDao abbonamentoDao;
+	private AbbonamentoServiceDao abbonamentoDao;
 
 	@Autowired
 	private PubblicazioneDao pubblicazioneDao;
@@ -89,7 +85,7 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 					+ entity.getAnno().getAnno() + ". La campagna non è nello stato 'Generata'");
 		}
 		for (Abbonamento abbonamento : abbonamentoDao.findByCampagna(entity)) {
-			smdService.cancella(abbonamento);
+			abbonamentoDao.delete(abbonamento);
 		}
 		entity.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
 		repository.deleteById(entity.getId());
@@ -123,25 +119,16 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 	}
 
 	public List<AbbonamentoConEC> findAbbonamentoInviati(Campagna entity) {
-		return smdService.get(abbonamentoDao.findByCampagna(entity).stream().filter(a -> a.getTotale().signum() > 0)
-				.collect(Collectors.toList()));
+		return smdService.get(abbonamentoDao.findInviatiByCampagna(entity));
 	}
 
 	public List<AbbonamentoConEC> findAbbonamentoConEcInviati(Campagna entity) {
 		return smdService
-				.get(Stream
-						.of(abbonamentoDao.findByCampagnaAndStatoAbbonamento(entity, StatoAbbonamento.ValidoInviatoEC),
-								abbonamentoDao.findByCampagnaAndStatoAbbonamento(entity,
-										StatoAbbonamento.SospesoInviatoEC))
-						.flatMap(Collection::stream).collect(Collectors.toList()));
+				.get(abbonamentoDao.findEstrattoContoByCampagna(entity));
 	}
 
 	public List<AbbonamentoConEC> findAbbonamentoAnnullati(Campagna entity) {
-		return smdService.get(
-                abbonamentoDao.findByCampagna(entity)
-                .stream()
-                .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
-                .collect(Collectors.toList()));
+		return smdService.get(abbonamentoDao.findAnnullatiByCampagna(entity));
 	}
 	
 	public void invia(Campagna campagna) throws Exception {
@@ -157,7 +144,7 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
             } else {
                 abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
             }
-            abbonamentoDao.save(abb);
+            abbonamentoDao.getRepository().save(abb);
         }
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         repository.save(campagna);

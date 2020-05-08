@@ -3,10 +3,12 @@ package it.arsinfo.smd.dao;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.entity.Nota;
 
+@Service
 public class NotaServiceDao implements SmdServiceDao<Nota> {
 
 	@Autowired

@@ -40,7 +40,7 @@ public interface SmdService {
     List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);
 
     void genera(Campagna campagna) throws Exception;
-    void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
+    void genera(Abbonamento abbonamento) throws Exception;
     
     void cancella(Abbonamento abbonamento) throws Exception;
     void sospendiSpedizioni(Abbonamento abbonamento) throws Exception;

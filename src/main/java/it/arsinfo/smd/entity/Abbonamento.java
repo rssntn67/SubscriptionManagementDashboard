@@ -1,7 +1,9 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.Entity;
@@ -75,6 +77,8 @@ public class Abbonamento implements SmdEntity {
     @Transient
     private String progressivo;
 
+    @Transient
+    private List<EstrattoConto> estrattiConto = new ArrayList<EstrattoConto>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -350,6 +354,22 @@ public class Abbonamento implements SmdEntity {
 	public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
 		this.speseEstrattoConto = speseEstrattoConto;
 	}
+
+	public List<EstrattoConto> getEstrattiConto() {
+		return estrattiConto;
+	}
+
+	public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
+		this.estrattiConto = estrattiConto;
+	}
+	
+	public void addEstrattoConto(EstrattoConto ec) {
+		estrattiConto.add(ec);
+	}
     
+	public void deleteEstrattoConto(EstrattoConto ec) {
+		estrattiConto.remove(ec);
+	}
+
 
 }

@@ -175,7 +175,6 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void genera(Campagna campagna) throws Exception {
-        
         log.info("genera Campagna start {}", campagna);
         List<Abbonamento> 
             abbonamenti = 
@@ -184,18 +183,17 @@ public class SmdServiceImpl implements SmdService {
                   storicoDao.findAll());
                                                            
         abbonamenti.forEach(abb -> {
-            final List<EstrattoConto> estrattiConto = new ArrayList<>(); 
             storicoDao.findByIntestatarioAndCassa(
                   abb.getIntestatario(),abb.getCassa())
                 .stream()
                 .filter(s -> s.attivo())
                 .forEach(storico -> {
-                    estrattiConto.add(Smd.genera(abb, storico));
+                   Smd.genera(abb, storico);
                    storico.setStatoStorico(StatoStorico.Valido);
                    storicoDao.save(storico);
             });
-            if (estrattiConto.size() >= 1) {
-                genera(abb, estrattiConto.toArray(new EstrattoConto[estrattiConto.size()]));
+            if (abb.getEstrattiConto().size() >= 1) {
+                genera(abb);
             }
         });
         log.info("genera Campagna end");
@@ -219,7 +217,6 @@ public class SmdServiceImpl implements SmdService {
             }
         );
         estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> estrattoContoDao.deleteById(ec.getId()));
-        abbonamentoDao.delete(abbonamento);
     }
 
     private EstrattoConto getByStorico(Campagna campagna,Storico storico) throws Exception{
@@ -273,8 +270,8 @@ public class SmdServiceImpl implements SmdService {
                 Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
                 abbonamento = Smd.genera(campagna, a, storico);
             }
-            EstrattoConto estrattoConto = Smd.genera(abbonamento, storico);
-            genera(abbonamento, estrattoConto);
+            Smd.genera(abbonamento, storico);
+            genera(abbonamento);
             return;
         }
         //Only updates are Numero and EstrattoConto other changes
@@ -285,14 +282,13 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void genera(Abbonamento abbonamento,
-            EstrattoConto... contos) {
+    public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        for (EstrattoConto ec: contos) {
+        for (EstrattoConto ec: abbonamento.getEstrattiConto()) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
-        for (EstrattoConto ec: contos) {
+        for (EstrattoConto ec: abbonamento.getEstrattiConto()) {
             estrattoContoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {

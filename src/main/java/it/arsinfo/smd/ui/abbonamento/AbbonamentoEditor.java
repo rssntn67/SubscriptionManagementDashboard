@@ -12,7 +12,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -24,9 +24,9 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
 
-public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
+public class AbbonamentoEditor extends SmdServiceDaoEditor<Abbonamento> {
 
     private boolean noOmaggio;
     private boolean hasResiduo;
@@ -62,7 +62,7 @@ public class AbbonamentoEditor extends SmdEditor<Abbonamento> {
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
 
-    public AbbonamentoEditor(AbbonamentoDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    public AbbonamentoEditor(AbbonamentoServiceDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(abbonamentoDao,new Binder<>(Abbonamento.class));
         

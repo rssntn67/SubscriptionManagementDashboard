@@ -1021,7 +1021,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSede);
-        smdService.genera(abb, ec1);
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.AdpSede, InvioSpedizione.AdpSede);
     }
 
@@ -1044,8 +1045,9 @@ public class SmdApplicationTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
-        ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);        
-        smdService.genera(abb, ec1);
+        ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);
         EstrattoConto estrattoConto = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoEstrattoConto.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         
         estrattoConto.setNumero(4);
@@ -1077,7 +1079,8 @@ public class SmdApplicationTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
-        smdService.genera(abb, ec1);        
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);        
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.Spedizioniere);
     }
 
@@ -1101,7 +1104,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSede);
-        smdService.genera(abb, ec1);
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.AdpSede, InvioSpedizione.AdpSede);
                 
     }
@@ -1127,7 +1131,8 @@ public class SmdApplicationTests {
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSedeNoSpese);
         ec1.setTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp);
-        smdService.genera(abb, ec1);
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.OmaggioDirettoreAdp,InvioSpedizione.AdpSedeNoSpese, InvioSpedizione.AdpSedeNoSpese);
      }
 
@@ -1151,7 +1156,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp);
-        smdService.genera(abb, ec1);
+        abb.addEstrattoConto(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.OmaggioDirettoreAdp,InvioSpedizione.Spedizioniere, InvioSpedizione.Spedizioniere);
     }
 
@@ -1175,6 +1181,7 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
+        abb.addEstrattoConto(ec1);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
@@ -1183,7 +1190,8 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
         ec2.setDestinatario(tizio);
-        smdService.genera(abb, ec1,ec2);
+        abb.addEstrattoConto(ec2);
+        smdService.genera(abb);
         assertEquals(2, estrattoContoDao.findAll().size());
         assertEquals(6, spedizioneDao.findAll().size());
         assertEquals(12, spedizioneItemDao.findAll().size());
@@ -1784,8 +1792,8 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoProssimo());
         ec1.setDestinatario(davidePalma);
-
-        smdService.genera(abb1, ec1);
+        abb1.addEstrattoConto(ec1);
+        smdService.genera(abb1);
 
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findAll().size());
@@ -1807,8 +1815,8 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.DICEMBRE);
         ec2.setAnnoFine(Anno.getAnnoProssimo());
         ec2.setDestinatario(antonioRusso);
-
-        smdService.genera(abb2, ec2);
+        abb2.addEstrattoConto(ec2);
+        smdService.genera(abb2);
 
         assertEquals(2, abbonamentoDao.findAll().size());
         assertEquals(2, estrattoContoDao.findAll().size());

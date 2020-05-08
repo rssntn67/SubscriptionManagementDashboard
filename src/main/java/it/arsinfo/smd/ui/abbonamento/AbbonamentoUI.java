@@ -14,6 +14,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
@@ -41,7 +42,7 @@ public class AbbonamentoUI extends SmdUI {
     private static final long serialVersionUID = 3429323584726379968L;
 
     @Autowired
-    AbbonamentoDao abbonamentoDao;
+    AbbonamentoServiceDao abbonamentoDao;
 
     @Autowired
     EstrattoContoDao estrattoContoDao;
@@ -78,62 +79,9 @@ public class AbbonamentoUI extends SmdUI {
         }
         OperazioneIncassoGrid versamentoGrid = new OperazioneIncassoGrid("Operazioni su Versamenti Associate");
         EstrattoContoGrid estrattoContoGrid = new EstrattoContoGrid("Estratti Conto");
-        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao,estrattoContoDao,pubblicazioni,anagrafica,campagne);
+        AbbonamentoSearch search = new AbbonamentoSearch(abbonamentoDao.getRepository(),estrattoContoDao,pubblicazioni,anagrafica,campagne);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
-        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne) {
-            @Override
-            public void delete() {
-                if (get().getId() == null) {
-                    Notification.show("Abbonamento non Salvato", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getCampagna() != null) {
-                    Notification.show("Abbonamento associato a Campagna va gestito da Storico", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-                    Notification.show("Stato Abbonamento diverso da Nuovo va gestito da Campagna", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                try {
-                    smdService.cancella(get());
-                    onChange();
-                } catch (Exception e) {
-                    Notification.show("Abbonamento non eliminato:" + e.getMessage(), Type.ERROR_MESSAGE);
-                    return;                    
-                }
-            }
-            
-            @Override
-            public void save() {                
-                if (get().getId() == null && get().getAnno() == null) {
-                    Notification.show("Selezionare Anno Prima di Salvare", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null && get().getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()) {
-                    Notification.show("Anno deve essere anno corrente o successivi", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null && getEstrattiConto().size() == 0) {
-                    Notification.show("Aggiungere Estratto Conto Prima di Salvare", Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                if (get().getId() == null) {
-                    get().setCodeLine(Abbonamento.generaCodeLine(get().getAnno()));
-                }
-                if (get().getId() != null ) {
-                    super.save();
-                    return;
-                }
-                try {
-                    smdService.genera(get(), getEstrattiConto().toArray(new EstrattoConto[getEstrattiConto().size()]));
-                    onChange();
-                } catch (Exception e) {
-                    Notification.show("Non è possibile salvare questo recordo è utilizzato da altri elementi.",
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            }
-        };
+        AbbonamentoEditor editor = new AbbonamentoEditor(abbonamentoDao,anagrafica,campagne);
 
         SmdButtonTextField incassa = new SmdButtonTextField("Inserisci Importo da Incassare","Incassa", VaadinIcons.CASH);
         
@@ -158,7 +106,7 @@ public class AbbonamentoUI extends SmdUI {
                 if (get().getId() == null ) {
                     editor.addEstrattoConto(get());
                     try {
-                      smdService.genera(editor.get(), get());  
+                      smdService.genera(editor.get());  
                       onChange();
                       return;
                     } catch (Exception e) {
