@@ -165,6 +165,7 @@ public class SmdServiceImpl implements SmdService {
 	                 message
 	                );   	
     }
+
     @Override
     public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {
     	List<AbbonamentoConEC> list = new ArrayList<>();
