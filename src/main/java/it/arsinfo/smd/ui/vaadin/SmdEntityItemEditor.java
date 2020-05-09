@@ -1,6 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.SmdServiceItemDao;
@@ -11,12 +12,11 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
         extends SmdEditor<T> {
 
     private final SmdAdd<I> itemAdd;
-    private final SmdButton itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
-    private final SmdButton itemSave = new SmdButton("Salva Item", VaadinIcons.TRASH);
+    private final SmdButton itemDel;  
+    private final SmdButton itemSave; 
     private final SmdGrid<I> itemGrid;
     private final SmdItemEditor<I> itemEditor;
-    private final SmdEntityEditor<T> editor;
-	private final VerticalLayout layout = new VerticalLayout();
+    private final SmdEntityEditor<T> editor;    
     private final SmdServiceItemDao<T,I> dao;
 
     public SmdEntityItemEditor(SmdServiceItemDao<T,I> dao,SmdAdd<I> itemAdd, SmdGrid<I> itemGrid,
@@ -26,12 +26,16 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 		this.itemGrid = itemGrid;
 		this.itemEditor = itemEditor;
 		this.editor = editor;
+		itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
+		itemSave = new SmdButton("Salva Item", VaadinIcons.TRASH);
 		editor.getActions().addComponents(itemSave.getComponents());
 		editor.getActions().addComponents(itemDel.getComponents());
 		editor.getActions().addComponents(itemAdd.getComponents());
-		addSmd(editor);
-		addSmd(itemGrid);
-		addSmd(itemEditor);
+
+		VerticalLayout layout = new VerticalLayout();
+		layout.addComponents(editor.getComponents());
+		layout.addComponents(itemGrid.getComponents());
+		layout.addComponents(itemEditor.getComponents());
 				
         itemEditor.setVisible(false);
         itemDel.disable();
@@ -41,15 +45,15 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
             itemEditor.setVisible(false);
             itemDel.disable();
             itemSave.disable();
-        	onChange();
+        	this.onChange();
         });
 
         itemDel.setChangeHandler(() -> {
         	try {
 				edit(dao.deleteItem(editor.get(), itemEditor.get()));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	            Notification.show(e.getMessage(),
+                        Notification.Type.ERROR_MESSAGE);
 			}        	
         });
         
@@ -57,9 +61,8 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
         	try {
 				edit(dao.saveItem(editor.get(), itemEditor.get()));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}        	
+				Notification.show(e.getMessage(),
+                        Notification.Type.ERROR_MESSAGE);			}        	
         });
         
         itemAdd.setChangeHandler(() -> {
@@ -90,12 +93,6 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
         itemDel.disable();
         itemSave.disable();
 	}
-
-
-    public void addSmd(SmdChangeHandler... smdhandlers) {
-    	for (SmdChangeHandler smdhandler :smdhandlers)
-    		layout.addComponents(smdhandler.getComponents());
-    }
 
     public SmdAdd<I> getItemAdd() {
 		return itemAdd;

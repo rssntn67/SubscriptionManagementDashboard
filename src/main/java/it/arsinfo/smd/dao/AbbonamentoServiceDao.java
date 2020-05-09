@@ -149,7 +149,6 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
             smdService.rimuovi(t,item);        	
         }
         Abbonamento abbonamento = findById(t.getId());
-        abbonamento.setItems(getItems(abbonamento));
         return abbonamento;
 	}
 
@@ -172,9 +171,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
         } else {
         	smdService.aggiorna(item);
         }
-        Abbonamento abbonamento = findById(t.getId());
-        abbonamento.setItems(getItems(abbonamento));
-        return abbonamento;
+        return findById(t.getId());
 	}
 
 	public List<EstrattoConto> findByTipoEstrattoConto(TipoEstrattoConto tec) {

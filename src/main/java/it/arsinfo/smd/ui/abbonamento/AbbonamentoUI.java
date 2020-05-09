@@ -36,7 +36,6 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         List<Anagrafica> anagrafica = dao.getAnagrafica();
         List<Pubblicazione> pubblicazioni = dao.getPubblicazioni();
         List<Campagna> campagne = dao.getCampagne();
-
         AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
         if (anagrafica.size() == 0) {
             add.setVisible(false);
@@ -45,11 +44,12 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         }
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
-        AbbonamentoEditor editor = new AbbonamentoEditor(dao,anagrafica,campagne);
         
+        AbbonamentoEditor editor = new AbbonamentoEditor(dao,anagrafica,campagne);
         EstrattoContoGrid itemGrid = new EstrattoContoGrid("Estratti Conto");
         EstrattoContoAdd itemAdd = new EstrattoContoAdd("Aggiungi EC");
         EstrattoContoEditor itemEditor = new EstrattoContoEditor(pubblicazioni, anagrafica);
+
         AbbonamentoEstrattoContoEditor abbeditor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemGrid, itemEditor, editor);
         init(request, add, search, abbeditor, grid, "Abbonamento");
     }
