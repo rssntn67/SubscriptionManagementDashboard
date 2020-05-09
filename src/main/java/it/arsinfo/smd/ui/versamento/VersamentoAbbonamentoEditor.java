@@ -1,28 +1,35 @@
-package it.arsinfo.smd.ui.abbonamento;
+package it.arsinfo.smd.ui.versamento;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.LocalDateToDateConverter;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
+import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
+public class VersamentoAbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     private boolean noOmaggio;
+    private boolean hasResiduo;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
@@ -43,10 +50,19 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
             EnumSet.allOf(Cassa.class));
     private final TextField codeLine = new TextField("Code Line");
+    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Conto Corrente",
+            EnumSet.allOf(Ccp.class));
+    private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",
+            EnumSet.allOf(Cuas.class));
+    private final TextField progressivo = new TextField("Progressivo");
 
+    List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
-        
-    public AbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    
+    private final DateField dataContabile = new DateField("Data contabile");
+    private final DateField dataPagamento = new DateField("Data pagamento");
+    
+    public VersamentoAbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(dao,new Binder<>(Abbonamento.class));
         
@@ -54,12 +70,15 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         anag.addComponentsAndExpand(intestatario);
 
         HorizontalLayout status = new HorizontalLayout(campagna,
-                                                     anno,cassa,statoAbbonamento,statoIncasso);
+                                                     anno,statoAbbonamento,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
 
-        setComponents(getActions(),anag, status,imp,res);
+        HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
+        HorizontalLayout detai = new HorizontalLayout();
+        detai.addComponentsAndExpand(progressivo);
+        setComponents(getActions(),anag, status,imp,res,incss,detai);
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
@@ -83,6 +102,13 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         speseEstrattoConto.setReadOnly(true);
 
         cassa.setEmptySelectionAllowed(false);
+        ccp.setEmptySelectionAllowed(false);
+        ccp.setItemCaptionGenerator(Ccp::getCcp);
+        cuas.setEmptySelectionAllowed(false);
+        cuas.setItemCaptionGenerator(Cuas::getDenominazione);
+
+        dataContabile.setDateFormat("dd/MM/yyyy");
+        dataPagamento.setDateFormat("dd/MM/yyyy");
 
         getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
                 "Deve essere definito").bind(Abbonamento::getCodeLine,
@@ -136,7 +162,17 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
                
+        getBinder().forField(dataContabile).asRequired()
+        .withConverter(new LocalDateToDateConverter())
+        .bind("dataContabile");
+        
+        getBinder().forField(dataPagamento).asRequired()
+        .withConverter(new LocalDateToDateConverter())
+        .bind("dataPagamento");
         getBinder().forField(cassa).bind("cassa");
+        getBinder().forField(ccp).bind("ccp");
+        getBinder().forField(cuas).bind("cuas");                
+        getBinder().forField(progressivo).asRequired().bind("progressivo");  
         
     }
 
@@ -154,6 +190,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
         noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
+        hasResiduo = abbonamento.getResiduo().signum() > 0; 
 
         importo.setVisible(noOmaggio);
         spese.setVisible(noOmaggio);
@@ -164,10 +201,53 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         incassato.setVisible(noOmaggio);
         residuo.setVisible(noOmaggio);
         
-        cassa.setVisible(!persisted || noOmaggio);
+        dataContabile.setVisible(noOmaggio && hasResiduo);
+        dataPagamento.setVisible(noOmaggio && hasResiduo); 
+        cassa.setVisible(noOmaggio && hasResiduo);
+        ccp.setVisible(noOmaggio && hasResiduo);
+        cuas.setVisible(noOmaggio && hasResiduo);
+        progressivo.setVisible(noOmaggio && hasResiduo);
                 
         intestatario.focus();
 
     }
-            
+
+    public void addEstrattoConto(EstrattoConto estrattoConto) {
+        if (estrattiConto.contains(estrattoConto)) {
+            estrattiConto.remove(estrattoConto);
+        }
+        estrattiConto.add(estrattoConto);
+    }
+    
+    public boolean remove(EstrattoConto estrattoconto) {
+        if (estrattoconto.getId() != null) {
+            return removeEstrattoContoById(estrattoconto.getId());
+        }
+        return estrattiConto.remove(estrattoconto);
+    }
+    
+    private boolean removeEstrattoContoById(Long id) {
+        List<EstrattoConto> ecs = new ArrayList<>();
+        boolean match = false;
+        for (EstrattoConto ec : estrattiConto) {
+            if (ec.getId() != null && ec.getId().longValue() == id.longValue()) {
+                match=true;
+                continue;
+            }
+            ecs.add(ec);
+        }
+        
+        return match;
+    }
+    public List<EstrattoConto> getEstrattiConto() {
+        return estrattiConto;
+    }
+
+    public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
+        this.estrattiConto = estrattiConto;
+    }
+    
+    public boolean incassare() {
+        return noOmaggio && hasResiduo;
+    }
 }

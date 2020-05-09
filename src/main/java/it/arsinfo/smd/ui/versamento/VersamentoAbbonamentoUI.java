@@ -19,7 +19,6 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.abbonamento.AbbonamentoEditor;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoSearch;
 import it.arsinfo.smd.ui.vaadin.SmdButtonTextField;
@@ -51,7 +50,7 @@ public class VersamentoAbbonamentoUI extends SmdUI {
         
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
-        AbbonamentoEditor editor = new AbbonamentoEditor(dao,anagrafica,campagne);
+        VersamentoAbbonamentoEditor editor = new VersamentoAbbonamentoEditor(dao,anagrafica,campagne);
 
         SmdButtonTextField incassa = new SmdButtonTextField("Inserisci Importo da Incassare","Incassa", VaadinIcons.CASH);
         
