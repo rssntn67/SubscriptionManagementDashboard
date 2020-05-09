@@ -24,7 +24,7 @@ import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoSearch;
 import it.arsinfo.smd.ui.vaadin.SmdButtonTextField;
 
-@SpringUI(path = SmdUI.URL_ABBONAMENTI)
+@SpringUI(path = SmdUI.URL_INCASSA_ABB)
 @Title("Incassa da Abbonamenti ADP")
 public class VersamentoAbbonamentoUI extends SmdUI {
 
