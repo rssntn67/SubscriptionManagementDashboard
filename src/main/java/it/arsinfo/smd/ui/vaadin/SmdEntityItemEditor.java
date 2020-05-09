@@ -3,6 +3,7 @@ package it.arsinfo.smd.ui.vaadin;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.dao.SmdServiceItemDao;
 import it.arsinfo.smd.entity.SmdEntity;
@@ -27,7 +28,9 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 		this.itemEditor = itemEditor;
 		this.editor = editor;
 		itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
-		itemSave = new SmdButton("Salva Item", VaadinIcons.TRASH);
+        itemDel.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+		itemSave = new SmdButton("Salva Item", VaadinIcons.CHECK);
+        itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
 		editor.getActions().addComponents(itemSave.getComponents());
 		editor.getActions().addComponents(itemDel.getComponents());
 		editor.getActions().addComponents(itemAdd.getComponents());
@@ -108,5 +111,13 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 
 	public SmdEntityEditor<T> getEditor() {
 		return editor;
+	}
+
+	public SmdButton getItemDel() {
+		return itemDel;
+	}
+
+	public SmdButton getItemSave() {
+		return itemSave;
 	}
 }
