@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
@@ -25,6 +26,7 @@ public class AbbonamentoServiceDao implements SmdServiceDao<Abbonamento> {
 	private SmdService smdService;
 
 	@Override
+	@Transactional
 	public Abbonamento save(Abbonamento entity) throws Exception {
         if (entity.getId() == null && entity.getAnno() == null) {
         	throw new UnsupportedOperationException("Selezionare Anno Prima di Salvare");
@@ -46,6 +48,7 @@ public class AbbonamentoServiceDao implements SmdServiceDao<Abbonamento> {
 	}
 
 	@Override
+	@Transactional
 	public void delete(Abbonamento entity) throws Exception {
         if (entity.getId() == null) {
 			throw new UnsupportedOperationException("Abbonamento non Salvato");
