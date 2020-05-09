@@ -10,17 +10,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class AbbonamentoServiceDao implements SmdServiceDao<Abbonamento> {
+public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,EstrattoConto> {
 
     @Autowired
-    AbbonamentoDao repository;
+    private AbbonamentoDao repository;
+
+    @Autowired
+    private EstrattoContoDao itemRepository;
+
+    @Autowired
+    private PubblicazioneDao pubblicazioneDao;
+
+    @Autowired
+    private AnagraficaDao anagraficaDao;
+
+    @Autowired
+    private CampagnaDao campagnaDao;
 
 	@Autowired
 	private SmdService smdService;
@@ -34,7 +54,7 @@ public class AbbonamentoServiceDao implements SmdServiceDao<Abbonamento> {
         if (entity.getId() == null && entity.getAnno().getAnno() < Anno.getAnnoCorrente().getAnno()) {
         	throw new UnsupportedOperationException("Anno deve essere anno corrente o successivi");
         }
-        if (entity.getId() == null && entity.getEstrattiConto().size() == 0) {
+        if (entity.getId() == null && entity.getItems().size() == 0) {
         	throw new UnsupportedOperationException("Aggiungere Estratto Conto Prima di Salvare");
         }
         if (entity.getId() == null) {
@@ -102,5 +122,79 @@ public class AbbonamentoServiceDao implements SmdServiceDao<Abbonamento> {
                 .collect(Collectors.toList());
 	}
 
+	public List<Anagrafica> getAnagrafica() {
+		return anagraficaDao.findAll();
+	}
+
+	public List<Pubblicazione> getPubblicazioni() {
+		return pubblicazioneDao.findAll();
+	}
+
+	public List<Campagna> getCampagne() {
+		return campagnaDao.findAll();
+	}
+
+	@Override
+	public List<EstrattoConto> getItems(Abbonamento t) {
+		return itemRepository.findByAbbonamento(t);
+	}
+
+	@Override
+	public Abbonamento deleteItem(Abbonamento t, EstrattoConto item) throws Exception{
+		if (item.getId() == null ) {
+            if (!t.removeItem(item)) {
+            	throw new UnsupportedOperationException("Non posso rimuovere EC");
+            }
+        } else {
+            smdService.rimuovi(t,item);        	
+        }
+        Abbonamento abbonamento = findById(t.getId());
+        abbonamento.setItems(getItems(abbonamento));
+        return abbonamento;
+	}
+
+	@Override
+	public Abbonamento saveItem(Abbonamento t, EstrattoConto item) throws Exception {
+        if (item.getDestinatario() == null) {
+        	throw new UnsupportedOperationException("Selezionare il Destinatario");
+        }
+        if (item.getPubblicazione() == null) {
+        	throw new UnsupportedOperationException("Selezionare la Pubblicazione");
+        }
+        if (item.getId() == null && item.getAbbonamento().getId() == null) {
+            t.addItem(item);
+            return t;
+        }
+        if (item.getId() == null ) {
+            t.getItems().clear();
+            t.addItem(item);
+            smdService.genera(t);
+        } else {
+        	smdService.aggiorna(item);
+        }
+        Abbonamento abbonamento = findById(t.getId());
+        abbonamento.setItems(getItems(abbonamento));
+        return abbonamento;
+	}
+
+	public List<EstrattoConto> findByTipoEstrattoConto(TipoEstrattoConto tec) {
+		return itemRepository.findByTipoEstrattoConto(tec);
+	}
+
+	public List<EstrattoConto> findByDestinatario(Anagrafica customer) {
+		return itemRepository.findByDestinatario(customer);
+	}
+
+	public List<Abbonamento> findByIntestatario(Anagrafica customer) {
+		return repository.findByIntestatario(customer);
+	}
+
+	public List<EstrattoConto> findByPubblicazione(Pubblicazione pubblicazione) {
+		return itemRepository.findByPubblicazione(pubblicazione);
+	}
+
+	public List<EstrattoConto> findAllItems() {
+		return itemRepository.findAll();
+	}
 
 }

@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.SpesaSpedizione;
 public class SpesaSpedizioneServiceDao implements SmdServiceDao<SpesaSpedizione> {
 
     @Autowired
-    SpesaSpedizioneDao repository;
+    private SpesaSpedizioneDao repository;
 
 	@Override
 	public SpesaSpedizione save(SpesaSpedizione entity) throws Exception {

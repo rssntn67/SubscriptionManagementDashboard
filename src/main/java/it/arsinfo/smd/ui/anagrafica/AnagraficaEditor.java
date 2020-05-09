@@ -18,9 +18,9 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class AnagraficaEditor extends SmdServiceDaoEditor<Anagrafica> {
+public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
 
     private final TextField denominazione = new TextField("Denominazione");
     private final ComboBox<Diocesi> diocesi = new ComboBox<Diocesi>("Diocesi",

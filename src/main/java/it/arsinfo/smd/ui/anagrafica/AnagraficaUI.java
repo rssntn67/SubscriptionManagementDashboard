@@ -8,12 +8,12 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.dao.AnagraficaServiceDao;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.ui.SmdAbstractUI;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_ANAGRAFICA)
 @Title("Anagrafica ADP")
-public class AnagraficaUI extends SmdAbstractUI<Anagrafica> {
+public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
 
     /**
      * 

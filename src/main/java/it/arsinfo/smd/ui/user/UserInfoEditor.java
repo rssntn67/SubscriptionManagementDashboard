@@ -20,10 +20,10 @@ import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 
-public class UserInfoEditor extends SmdServiceDaoEditor<UserInfo> {
+public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
 
     /**
      * 

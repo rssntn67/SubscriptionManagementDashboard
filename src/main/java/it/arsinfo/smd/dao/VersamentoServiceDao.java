@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Versamento;
 public class VersamentoServiceDao implements SmdServiceDao<Versamento> {
 
     @Autowired
-    VersamentoDao repository;
+    private VersamentoDao repository;
 
 	@Override
 	public Versamento save(Versamento entity) throws Exception {

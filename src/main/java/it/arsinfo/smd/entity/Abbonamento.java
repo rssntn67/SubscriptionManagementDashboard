@@ -35,7 +35,7 @@ import it.arsinfo.smd.service.Smd;
         })
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, cassa);
-public class Abbonamento implements SmdEntity {
+public class Abbonamento implements SmdEntityItems<EstrattoConto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -355,20 +355,20 @@ public class Abbonamento implements SmdEntity {
 		this.speseEstrattoConto = speseEstrattoConto;
 	}
 
-	public List<EstrattoConto> getEstrattiConto() {
+	public List<EstrattoConto> getItems() {
 		return estrattiConto;
 	}
 
-	public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
+	public void setItems(List<EstrattoConto> estrattiConto) {
 		this.estrattiConto = estrattiConto;
 	}
 	
-	public void addEstrattoConto(EstrattoConto ec) {
-		estrattiConto.add(ec);
+	public boolean addItem(EstrattoConto ec) {
+		return estrattiConto.add(ec);
 	}
     
-	public void deleteEstrattoConto(EstrattoConto ec) {
-		estrattiConto.remove(ec);
+	public boolean removeItem(EstrattoConto ec) {
+		return estrattiConto.remove(ec);
 	}
 
 

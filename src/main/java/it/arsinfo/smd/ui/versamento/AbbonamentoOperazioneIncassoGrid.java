@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.abbonamento;
+package it.arsinfo.smd.ui.versamento;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -12,10 +12,10 @@ import com.vaadin.ui.components.grid.FooterRow;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class OperazioneIncassoGrid extends SmdGrid<OperazioneIncasso> {
+public class AbbonamentoOperazioneIncassoGrid extends SmdGrid<OperazioneIncasso> {
 
     private final FooterRow gridfooter;
-    public OperazioneIncassoGrid(String gridname) {
+    public AbbonamentoOperazioneIncassoGrid(String gridname) {
         super(new Grid<>(OperazioneIncasso.class),gridname);
         setColumns(                  
                 "operatore",

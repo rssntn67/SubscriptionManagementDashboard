@@ -24,9 +24,9 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class AbbonamentoEditor extends SmdServiceDaoEditor<Abbonamento> {
+public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     private boolean noOmaggio;
     private boolean hasResiduo;
@@ -61,10 +61,10 @@ public class AbbonamentoEditor extends SmdServiceDaoEditor<Abbonamento> {
     
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
+    
+    public AbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
-    public AbbonamentoEditor(AbbonamentoServiceDao abbonamentoDao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
-
-        super(abbonamentoDao,new Binder<>(Abbonamento.class));
+        super(dao,new Binder<>(Abbonamento.class));
         
         HorizontalLayout anag = new HorizontalLayout(codeLine);
         anag.addComponentsAndExpand(intestatario);
@@ -172,8 +172,8 @@ public class AbbonamentoEditor extends SmdServiceDaoEditor<Abbonamento> {
         getBinder().forField(cassa).bind("cassa");
         getBinder().forField(ccp).bind("ccp");
         getBinder().forField(cuas).bind("cuas");                
-        getBinder().forField(progressivo).asRequired().bind("progressivo");                
-
+        getBinder().forField(progressivo).asRequired().bind("progressivo");  
+        
     }
 
     @Override

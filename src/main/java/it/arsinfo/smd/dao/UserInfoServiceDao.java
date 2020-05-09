@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.UserInfo;
 public class UserInfoServiceDao implements SmdServiceDao<UserInfo> {
 
     @Autowired
-    UserInfoDao repository;
+    private UserInfoDao repository;
 
 	@Override
 	public UserInfo save(UserInfo entity) throws Exception {

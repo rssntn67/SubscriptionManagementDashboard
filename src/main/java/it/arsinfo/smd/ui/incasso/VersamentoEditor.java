@@ -18,9 +18,9 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
-public class VersamentoEditor extends SmdEditor<Versamento> {
+public class VersamentoEditor extends SmdRepositoryDaoEditor<Versamento> {
 
     private final TextField  importo = new TextField("Importo");
     private final TextField  incassato = new TextField("Incassato");

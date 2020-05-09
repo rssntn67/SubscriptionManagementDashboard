@@ -8,12 +8,12 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.ui.SmdAbstractUI;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_SPESESPEDIZIONE)
 @Title("Spese di Spedizione")
-public class SpesaSpedizioneUI extends SmdAbstractUI<SpesaSpedizione> {
+public class SpesaSpedizioneUI extends SmdEditorUI<SpesaSpedizione> {
 
     /**
      * 

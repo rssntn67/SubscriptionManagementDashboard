@@ -192,7 +192,7 @@ public class SmdServiceImpl implements SmdService {
                    storico.setStatoStorico(StatoStorico.Valido);
                    storicoDao.save(storico);
             });
-            if (abb.getEstrattiConto().size() >= 1) {
+            if (abb.getItems().size() >= 1) {
                 genera(abb);
             }
         });
@@ -248,7 +248,9 @@ public class SmdServiceImpl implements SmdService {
         }
         storico.setStatoStorico(StatoStorico.Sospeso);
         save(storico, note);
-        rimuovi(getByStorico(campagna, storico));
+        EstrattoConto ec = getByStorico(campagna, storico);
+        Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+        rimuovi(abbonamento,ec);
     }
 
   
@@ -284,11 +286,11 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        for (EstrattoConto ec: abbonamento.getEstrattiConto()) {
+        for (EstrattoConto ec: abbonamento.getItems()) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
-        for (EstrattoConto ec: abbonamento.getEstrattiConto()) {
+        for (EstrattoConto ec: abbonamento.getItems()) {
             estrattoContoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {
@@ -348,15 +350,9 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void rimuovi(EstrattoConto estrattoConto) throws Exception {
-        if (estrattoConto == null)
+    public void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception {
+        if (estrattoConto == null || abbonamento == null)
             return;
-        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
-        if (abbonamento == null) return;
-        rimuovi(abbonamento,estrattoConto);
-    }
-    
-    private void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,

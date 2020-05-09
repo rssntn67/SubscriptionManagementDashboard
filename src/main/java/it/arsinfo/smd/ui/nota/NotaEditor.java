@@ -11,9 +11,9 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class NotaEditor extends SmdServiceDaoEditor<Nota> {
+public class NotaEditor extends SmdEntityEditor<Nota> {
 
     private final TextArea description = new TextArea("Descrizione");
     private final ComboBox<Storico> storico = new ComboBox<Storico>("Selezionare lo storico");

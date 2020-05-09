@@ -17,9 +17,9 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class CampagnaEditor extends SmdServiceDaoEditor<Campagna> {
+public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
                                                            EnumSet.allOf(Anno.class));

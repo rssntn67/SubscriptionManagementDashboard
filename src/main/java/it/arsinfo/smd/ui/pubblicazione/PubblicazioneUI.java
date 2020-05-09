@@ -8,12 +8,12 @@ import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.ui.SmdAbstractUI;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_PUBBLICAZIONI)
 @Title("Pubblicazioni ADP")
-public class PubblicazioneUI extends SmdAbstractUI<Pubblicazione> {
+public class PubblicazioneUI extends SmdEditorUI<Pubblicazione> {
 
     /**
      * 

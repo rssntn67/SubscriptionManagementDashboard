@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Incasso;
 public class IncassoServiceDao implements SmdServiceDao<Incasso> {
 
     @Autowired
-    IncassoDao repository;
+    private IncassoDao repository;
 
 	@Override
 	public Incasso save(Incasso entity) throws Exception {

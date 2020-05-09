@@ -10,7 +10,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -19,10 +18,10 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
 public class EstrattoContoEditor
-        extends SmdEditor<EstrattoConto> {
+        extends SmdItemEditor<EstrattoConto> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     
@@ -52,10 +51,9 @@ public class EstrattoContoEditor
             EnumSet.allOf(InvioSpedizione.class));
 
     public EstrattoContoEditor(
-            EstrattoContoDao anagraficaPubblicazioneDao,
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
 
-        super(anagraficaPubblicazioneDao, new Binder<>(EstrattoConto.class) );
+        super(new Binder<>(EstrattoConto.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -84,7 +82,7 @@ public class EstrattoContoEditor
         meseFine.setItemCaptionGenerator(Mese::getNomeBreve);
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
-        setComponents(getActions(), 
+        setComponents(
                       new HorizontalLayout(pubblicazione,destinatario,importo,numero,numeroTotaleRiviste),
                       new HorizontalLayout(invio,invioSpedizione,tipoEstrattoconto),
                       new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine)
@@ -146,21 +144,16 @@ public class EstrattoContoEditor
 
     @Override
     public void focus(boolean persisted, EstrattoConto obj) {
-        pubblicazione.setReadOnly(persisted);
-        destinatario.setReadOnly(persisted);
-        invio.setReadOnly(persisted);
-        invioSpedizione.setReadOnly(persisted);
+        pubblicazione.setReadOnly(persisted || obj.getStorico() != null);
+        destinatario.setReadOnly(persisted|| obj.getStorico() != null);
+        invio.setReadOnly(persisted|| obj.getStorico() != null);
+        invioSpedizione.setReadOnly(persisted|| obj.getStorico() != null);
         numero.setReadOnly(obj.getStorico() != null);
         tipoEstrattoconto.setReadOnly(obj.getStorico() != null);
-        meseInizio.setReadOnly(persisted);
-        meseFine.setReadOnly(persisted);
-        annoInizio.setReadOnly(persisted);
-        annoFine.setReadOnly(persisted);
-        
-        getCancel().setEnabled(obj.getStorico() == null);
-        getDelete().setEnabled(obj.getStorico() == null);
-        getSave().setEnabled(obj.getStorico() == null);
-        
+        meseInizio.setReadOnly(persisted|| obj.getStorico() != null);
+        meseFine.setReadOnly(persisted|| obj.getStorico() != null);
+        annoInizio.setReadOnly(persisted|| obj.getStorico() != null);
+        annoFine.setReadOnly(persisted|| obj.getStorico() != null);        
         numero.focus();
     }
     

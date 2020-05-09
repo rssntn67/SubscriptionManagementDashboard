@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -7,13 +9,15 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
 import it.arsinfo.smd.entity.SmdEntity;
+import it.arsinfo.smd.service.SmdService;
 
-public abstract class SmdServiceDaoEditor<T extends SmdEntity>
+public abstract class SmdRepositoryDaoEditor<T extends SmdEntity>
         extends SmdChangeHandler {
 
-    private final SmdServiceDao<T> repositoryDao;
+    private final JpaRepository<T, Long> repositoryDao;
+    private SmdService smdService;
+
     private T smdObj;
 
     private Button save = new Button("Salva", VaadinIcons.CHECK);
@@ -27,7 +31,7 @@ public abstract class SmdServiceDaoEditor<T extends SmdEntity>
 
     private final Binder<T> binder;
 
-    public SmdServiceDaoEditor(SmdServiceDao<T> repositoryDao, Binder<T> binder) {
+    public SmdRepositoryDaoEditor(JpaRepository<T, Long> repositoryDao, Binder<T> binder) {
 
         this.repositoryDao = repositoryDao;
         this.binder = binder;
@@ -76,7 +80,7 @@ public abstract class SmdServiceDaoEditor<T extends SmdEntity>
         final boolean persisted = c.getId() != null;
         if (persisted) {
             // Find fresh entity for editing
-            smdObj = repositoryDao.findById(c.getId());
+            smdObj = repositoryDao.findById(c.getId()).get();
         } else {
             smdObj = c;
         }
@@ -115,8 +119,16 @@ public abstract class SmdServiceDaoEditor<T extends SmdEntity>
         return smdObj;
     }
 
-    public SmdServiceDao<T> getServiceDao() {
+    public JpaRepository<T, Long> getRepositoryDao() {
         return repositoryDao;
     }
+    
+	public SmdService getSmdService() {
+		return smdService;
+	}
+
+	public void setSmdService(SmdService smdService) {
+		this.smdService = smdService;
+	}
 
 }

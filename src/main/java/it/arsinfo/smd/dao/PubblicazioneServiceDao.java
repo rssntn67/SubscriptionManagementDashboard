@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 public class PubblicazioneServiceDao implements SmdServiceDao<Pubblicazione> {
 
     @Autowired
-    PubblicazioneDao repository;
+    private PubblicazioneDao repository;
 
 	@Override
 	public Pubblicazione save(Pubblicazione entity) throws Exception {

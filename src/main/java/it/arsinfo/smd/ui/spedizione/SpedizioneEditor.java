@@ -25,10 +25,10 @@ import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
 public class SpedizioneEditor
-        extends SmdEditor<Spedizione> {
+        extends SmdRepositoryDaoEditor<Spedizione> {
 
     private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");

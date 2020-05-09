@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Storico;
 public class StoricoServiceDao implements SmdServiceDao<Storico> {
 
     @Autowired
-    StoricoDao repository;
+    private StoricoDao repository;
 
 	@Override
 	public Storico save(Storico entity) throws Exception {

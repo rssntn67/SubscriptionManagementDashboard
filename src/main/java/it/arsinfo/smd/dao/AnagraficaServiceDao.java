@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 public class AnagraficaServiceDao implements SmdServiceDao<Anagrafica> {
 
     @Autowired
-    AnagraficaDao repository;
+    private AnagraficaDao repository;
 
 	@Override
 	public Anagrafica save(Anagrafica entity) throws Exception {

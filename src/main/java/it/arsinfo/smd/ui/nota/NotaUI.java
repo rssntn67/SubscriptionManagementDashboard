@@ -12,12 +12,12 @@ import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.ui.SmdAbstractUI;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_NOTE)
 @Title("Note Storico ADP")
-public class NotaUI extends SmdAbstractUI<Nota> {
+public class NotaUI extends SmdEditorUI<Nota> {
 
     /**
      * 

@@ -12,10 +12,10 @@ import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.ui.vaadin.SmdServiceDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class SpesaSpedizioneEditor
-        extends SmdServiceDaoEditor<SpesaSpedizione> {
+        extends SmdEntityEditor<SpesaSpedizione> {
 
     private final ComboBox<AreaSpedizione> areaSpedizione = new ComboBox<AreaSpedizione>("AreaSpedizione",
                                                                     EnumSet.allOf(AreaSpedizione.class));

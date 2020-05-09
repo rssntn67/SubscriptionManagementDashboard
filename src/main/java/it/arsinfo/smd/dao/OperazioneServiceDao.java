@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Operazione;
 public class OperazioneServiceDao implements SmdServiceDao<Operazione> {
 
     @Autowired
-    OperazioneDao repository;
+    private OperazioneDao repository;
 
 	@Override
 	public Operazione save(Operazione entity) throws Exception {

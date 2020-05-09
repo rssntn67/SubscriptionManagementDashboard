@@ -17,10 +17,10 @@ import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
 
-public class ResetPassEditor extends SmdEditor<UserInfo> {
+public class ResetPassEditor extends SmdRepositoryDaoEditor<UserInfo> {
 
     /**
      * 
