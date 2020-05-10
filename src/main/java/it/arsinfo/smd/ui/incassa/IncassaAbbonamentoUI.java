@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.versamento;
+package it.arsinfo.smd.ui.incassa;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ import it.arsinfo.smd.ui.vaadin.SmdButtonTextField;
 
 @SpringUI(path = SmdUI.URL_INCASSA_ABB)
 @Title("Incassa da Abbonamenti ADP")
-public class VersamentoAbbonamentoUI extends SmdUI {
+public class IncassaAbbonamentoUI extends SmdUI {
 
     /**
      * 
@@ -44,7 +44,7 @@ public class VersamentoAbbonamentoUI extends SmdUI {
 
         SmdButton back = new SmdButton("Indietro",null);
 
-        AbbonamentoOperazioneIncassoGrid versamentoGrid = new AbbonamentoOperazioneIncassoGrid("Operazioni su Versamenti Associate");
+        OperazioneIncassoGrid versamentoGrid = new OperazioneIncassoGrid("Operazioni su Versamenti Associate");
         
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica) {
         	@Override
@@ -55,7 +55,7 @@ public class VersamentoAbbonamentoUI extends SmdUI {
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         SmdButtonTextField incassa = new SmdButtonTextField("Inserisci Importo da Incassare","Incassa", VaadinIcons.CASH);
         
-        VersamentoAbbonamentoEditor editor = new VersamentoAbbonamentoEditor(anagrafica,campagne);
+        IncassaAbbonamentoEditor editor = new IncassaAbbonamentoEditor(anagrafica,campagne);
         editor.getActions().addComponent(back.getButton());
 
         addSmdComponents(back,editor,incassa,versamentoGrid, search, grid);

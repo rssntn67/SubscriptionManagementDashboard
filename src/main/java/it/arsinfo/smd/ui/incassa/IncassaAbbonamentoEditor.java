@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.versamento;
+package it.arsinfo.smd.ui.incassa;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -23,7 +23,7 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
-public class VersamentoAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
+public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
     private boolean noOmaggio;
     private boolean hasResiduo;
@@ -58,7 +58,7 @@ public class VersamentoAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
     
-    public VersamentoAbbonamentoEditor(List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    public IncassaAbbonamentoEditor(List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(new Binder<>(Abbonamento.class));
         
