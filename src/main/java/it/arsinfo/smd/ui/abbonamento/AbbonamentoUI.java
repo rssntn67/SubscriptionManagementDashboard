@@ -33,9 +33,6 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Abbonamento");
-
-        
         List<Anagrafica> anagrafica = dao.getAnagrafica();
         List<Pubblicazione> pubblicazioni = dao.getPubblicazioni();
         List<Campagna> campagne = dao.getCampagne();
@@ -65,7 +62,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         editor.addComponents(abbeditor.getComponents());
         editor.addComponents(itemGrid.getComponents());
 
-        init(request, add, search, editor, grid, "Abbonamento");
+        super.init(request, add, search, editor, grid, "Abbonamento");
         
         addSmdComponents(editor, 
                 add,
