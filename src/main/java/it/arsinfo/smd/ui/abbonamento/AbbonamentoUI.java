@@ -45,13 +45,26 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         
-        AbbonamentoEditor editor = new AbbonamentoEditor(dao,anagrafica,campagne);
+        AbbonamentoEditor abbeditor = new AbbonamentoEditor(dao,anagrafica,campagne);
         EstrattoContoGrid itemGrid = new EstrattoContoGrid("Estratti Conto");
         EstrattoContoAdd itemAdd = new EstrattoContoAdd("Aggiungi EC");
         EstrattoContoEditor itemEditor = new EstrattoContoEditor(pubblicazioni, anagrafica);
 
-        AbbonamentoEstrattoContoEditor abbeditor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemGrid, itemEditor, editor);
+        AbbonamentoEstrattoContoEditor editor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemGrid, itemEditor, abbeditor);
+		abbeditor.addComponents(itemEditor.getComponents());
+		abbeditor.addComponents(abbeditor.getComponents());
+		abbeditor.addComponents(itemGrid.getComponents());
+
         init(request, add, search, abbeditor, grid, "Abbonamento");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);        
+        grid.populate(search.findAll());
+
     }
 
 }

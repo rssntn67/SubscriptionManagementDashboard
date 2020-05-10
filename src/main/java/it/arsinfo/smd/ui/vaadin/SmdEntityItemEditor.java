@@ -2,7 +2,6 @@ package it.arsinfo.smd.ui.vaadin;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.dao.SmdServiceItemDao;
@@ -34,11 +33,6 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 		editor.getActions().addComponents(itemSave.getComponents());
 		editor.getActions().addComponents(itemDel.getComponents());
 		editor.getActions().addComponents(itemAdd.getComponents());
-
-		VerticalLayout layout = new VerticalLayout();
-		layout.addComponents(editor.getComponents());
-		layout.addComponents(itemGrid.getComponents());
-		layout.addComponents(itemEditor.getComponents());
 				
         itemEditor.setVisible(false);
         itemDel.disable();

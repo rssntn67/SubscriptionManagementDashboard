@@ -31,6 +31,16 @@ public class PubblicazioneUI extends SmdEditorUI<Pubblicazione> {
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
                         
         init(request,add, search,editor, grid,"Pubblicazioni");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
 
 }

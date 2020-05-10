@@ -30,6 +30,16 @@ public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaServiceDao);
         super.init(request,add,search,editor,grid, "Anagrafica");        
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
     
 }

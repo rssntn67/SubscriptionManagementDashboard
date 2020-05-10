@@ -32,6 +32,16 @@ public class SpesaSpedizioneUI extends SmdEditorUI<SpesaSpedizione> {
         
         SpesaSpedizioneGrid grid = new SpesaSpedizioneGrid("Spese Spedizione");
         init(request,add, search,editor, grid, "Spese Spedizione");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
 
 }

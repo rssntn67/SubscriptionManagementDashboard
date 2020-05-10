@@ -30,6 +30,16 @@ public class CampagnaUI extends SmdEditorUI<Campagna> {
         CampagnaGrid grid = new CampagnaGrid("Campagne");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao);
         init(request, add, search, editor, grid, "Campagne Abbonamenti");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
 
 }

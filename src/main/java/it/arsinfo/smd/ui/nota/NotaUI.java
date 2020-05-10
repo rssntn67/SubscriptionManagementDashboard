@@ -38,6 +38,16 @@ public class NotaUI extends SmdEditorUI<Nota> {
         NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(notaDao, storici);
         init(request,add, search,editor, grid,"Note");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
 
 }

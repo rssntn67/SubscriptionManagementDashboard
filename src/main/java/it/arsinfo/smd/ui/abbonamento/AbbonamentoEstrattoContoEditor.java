@@ -12,9 +12,6 @@ public class AbbonamentoEstrattoContoEditor extends SmdEntityItemEditor<Estratto
 			EstrattoContoAdd itemAdd, EstrattoContoGrid itemGrid, EstrattoContoEditor itemEditor,
 			AbbonamentoEditor editor) {
 		super(dao,itemAdd, itemGrid, itemEditor, editor);
-		addComponents(itemEditor.getComponents());
-		addComponents(editor.getComponents());
-		addComponents(itemGrid.getComponents());
 	}
 
 }

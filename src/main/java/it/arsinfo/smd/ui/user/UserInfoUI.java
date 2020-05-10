@@ -34,6 +34,16 @@ public class UserInfoUI extends SmdEditorUI<UserInfo> {
         UserInfoEditor editor = new UserInfoEditor(userInfoDao,passwordEncoder);
         
         init(request,add,search, editor, grid, "Amministrazione Utenti");        
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
+
+        editor.setVisible(false);
+        
+        grid.populate(search.findAll());
+
     }
 
 }
