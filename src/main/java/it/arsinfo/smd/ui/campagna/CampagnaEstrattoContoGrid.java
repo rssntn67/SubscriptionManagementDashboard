@@ -9,11 +9,11 @@ import com.vaadin.ui.components.grid.FooterRow;
 import it.arsinfo.smd.dto.AbbonamentoConEC;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class AbbonamentoConECGrid extends SmdGrid<AbbonamentoConEC> {
+public class CampagnaEstrattoContoGrid extends SmdGrid<AbbonamentoConEC> {
 
     private final FooterRow gridfooter;
 
-    public AbbonamentoConECGrid(String gridName) {
+    public CampagnaEstrattoContoGrid(String gridName) {
         super(new Grid<>(AbbonamentoConEC.class),gridName);
         setColumns(
         		"codeLine",
