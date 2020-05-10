@@ -1,5 +1,6 @@
 package it.arsinfo.smd.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -136,11 +137,15 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 
 	@Override
 	public List<EstrattoConto> getItems(Abbonamento t) {
+		if (t.getId() == null) {
+			return new ArrayList<>();
+		}
 		return itemRepository.findByAbbonamento(t);
 	}
 
 	@Override
 	public Abbonamento deleteItem(Abbonamento t, EstrattoConto item) throws Exception{
+		System.err.println("deleteItem: " + item);
 		if (item.getId() == null ) {
             if (!t.removeItem(item)) {
             	throw new UnsupportedOperationException("Non posso rimuovere EC");

@@ -1,5 +1,8 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -26,6 +29,7 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
                                                             back);
 
     private final Binder<T> binder;
+    private static final Logger log = LoggerFactory.getLogger(SmdEntityEditor.class);
 
     public SmdEntityEditor(SmdServiceDao<T> repositoryDao, Binder<T> binder) {
 
@@ -55,6 +59,7 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
         } catch (Exception e) {
             Notification.show(e.getMessage(),
                               Notification.Type.ERROR_MESSAGE);
+            log.error("delete: {}", e.getMessage(),e);
         }
     }
 
@@ -65,6 +70,7 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
         } catch (Exception e) {
             Notification.show(e.getMessage(),
                               Notification.Type.ERROR_MESSAGE);
+            log.error("save: {}", e.getMessage(),e);
         }
     }
 

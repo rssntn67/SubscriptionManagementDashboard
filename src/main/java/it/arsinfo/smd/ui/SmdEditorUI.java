@@ -17,7 +17,8 @@ public abstract class SmdEditorUI<T extends SmdEntity> extends SmdUI {
     
     protected void init(VaadinRequest request,SmdAdd<T> add ,SmdSearch<T> search,SmdEditor<T> editor,SmdGrid<T> grid,String header) {
         super.init(request, header);
-                
+        editor.setVisible(false);
+
         add.setChangeHandler(() -> {
             setHeader(header+":Nuovo");
             hideMenu();
@@ -39,6 +40,7 @@ public abstract class SmdEditorUI<T extends SmdEntity> extends SmdUI {
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
+            grid.setVisible(false);
             editor.edit(grid.getSelected());
         });
 
