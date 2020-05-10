@@ -16,6 +16,8 @@ public class EstrattoContoAdd extends SmdAddItem<EstrattoConto, Abbonamento> {
         EstrattoConto ec = new EstrattoConto();
         ec.setAbbonamento(abbonamento);
         ec.setDestinatario(abbonamento.getIntestatario());
+        ec.setAnnoInizio(abbonamento.getAnno());
+        ec.setAnnoFine(abbonamento.getAnno());
         return ec;
     }
 

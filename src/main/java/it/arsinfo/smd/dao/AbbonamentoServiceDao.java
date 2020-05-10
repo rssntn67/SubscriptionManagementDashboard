@@ -61,10 +61,11 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
         if (entity.getId() == null) {
             entity.setCodeLine(Abbonamento.generaCodeLine(entity.getAnno()));
         }
-    	repository.save(entity);
         if (entity.getId() == null ) {
             smdService.genera(entity);
-        } 
+        } else {
+        	repository.save(entity);
+        }
 		return entity;
 	}
 
@@ -144,8 +145,8 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 	}
 
 	@Override
+	@Transactional
 	public Abbonamento deleteItem(Abbonamento t, EstrattoConto item) throws Exception{
-		System.err.println("deleteItem: " + item);
 		if (item.getId() == null ) {
             if (!t.removeItem(item)) {
             	throw new UnsupportedOperationException("Non posso rimuovere EC");
@@ -158,6 +159,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 	}
 
 	@Override
+	@Transactional
 	public Abbonamento saveItem(Abbonamento t, EstrattoConto item) throws Exception {
         if (item.getDestinatario() == null) {
         	throw new UnsupportedOperationException("Selezionare il Destinatario");
@@ -167,7 +169,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
         }
         if (item.getId() == null && item.getAbbonamento().getId() == null) {
             t.addItem(item);
-            return t;
+            return save(t);
         }
         if (item.getId() == null ) {
             t.getItems().clear();

@@ -50,7 +50,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         
         EstrattoContoAdd itemAdd = new EstrattoContoAdd("Aggiungi EC");
      	SmdButton itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
-	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
     	SmdButton itemSave = new SmdButton("Salva Item", VaadinIcons.CHECK);
 	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
 	    AbbonamentoEditor abbeditor = new AbbonamentoEditor(dao,anagrafica,campagne);
