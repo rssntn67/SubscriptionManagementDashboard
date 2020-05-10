@@ -29,7 +29,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
             EnumSet.allOf(StatoAbbonamento.class));
 
-    private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
+    private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
             EnumSet.allOf(Anno.class));
 
     private final TextField importo = new TextField("Importo");
@@ -165,6 +165,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         residuo.setVisible(noOmaggio);
         
         cassa.setVisible(!persisted || noOmaggio);
+        cassa.setEnabled(!persisted);
                 
         intestatario.focus();
 
