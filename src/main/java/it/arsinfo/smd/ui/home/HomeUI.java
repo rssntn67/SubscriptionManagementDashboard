@@ -43,9 +43,6 @@ public class HomeUI extends SmdUI {
         HorizontalSplitPanel GO = new HorizontalSplitPanel();        
         GO.addComponents(new Label("Gestione ordini :"),new VerticalLayout(getOrdiniLinks()));
         right.addComponents(GO);
-        HorizontalSplitPanel GU = new HorizontalSplitPanel();        
-        GU.addComponents(new Label("Gestione utenti :"),new VerticalLayout(getUserLinks()));
-        right.addComponents(GU);
         
         layout.addComponents(left,
                              right);

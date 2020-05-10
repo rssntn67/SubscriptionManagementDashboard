@@ -178,8 +178,7 @@ public abstract class SmdUI extends UI {
             }
         });
 
-        MenuItem user = menu.addItem("Gestione Utenti", null);
-        user.addItem("Logout: "+ loggedInUser.getUsername(),new MenuBar.Command() {
+        menu.addItem("Logout: "+ loggedInUser.getUsername(),new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
@@ -187,7 +186,7 @@ public abstract class SmdUI extends UI {
             }
         } );
        if (loggedInUser.getRole() == Role.ADMIN ) {
-           user.addItem("Amministrazione Utenti",new MenuBar.Command() {
+           menu.addItem("Amministrazione Utenti",new MenuBar.Command() {
                 private static final long serialVersionUID = 1L;
                 
                 public void menuSelected(MenuItem selectedItem) {
@@ -196,7 +195,7 @@ public abstract class SmdUI extends UI {
             } );
         } 
         if (!(loggedInUser.getRole() == Role.LOCKED)) {
-            user.addItem("Reset Password",new MenuBar.Command() {
+            menu.addItem("Reset Password",new MenuBar.Command() {
                 private static final long serialVersionUID = 1L;
                 
                 public void menuSelected(MenuItem selectedItem) {
@@ -267,20 +266,6 @@ public abstract class SmdUI extends UI {
         links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
         links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
         links.add(new Link("Incassa Abbonamenti", new ExternalResource(URL_INCASSA_ABB)));
-        return links.toArray((new Link[links.size()]));
-    }
-
-    public Link[] getUserLinks() {
-        List<Link> links = new ArrayList<>();
-        UserInfo loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
-        if (loggedInUser.getRole() == Role.ADMIN ) {
-            links.add(new Link("Amministrazione Utenti", new ExternalResource(URL_USER)));
-        } 
-        if (!(loggedInUser.getRole() == Role.LOCKED)) {
-            links.add(new Link("Reset Password", new ExternalResource(URL_RESET)));
-        }
-        links.add(new Link(String.format("Logout: %s",loggedInUser.getUsername()),
-                         new ExternalResource(URL_LOGOUT)));
         return links.toArray((new Link[links.size()]));
     }
 
