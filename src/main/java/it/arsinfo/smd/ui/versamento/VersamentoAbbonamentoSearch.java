@@ -13,7 +13,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
-public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
+public class VersamentoAbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private Anagrafica customer;
     private Campagna campagna;
@@ -22,7 +22,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private ArrayList<Abbonamento> abbonamenti = new ArrayList<>();
     
-    public AbbonamentoSearch(AbbonamentoDao abbonamentoDao, 
+    public VersamentoAbbonamentoSearch(AbbonamentoDao abbonamentoDao, 
             List<Anagrafica> anagrafica, 
             List<Campagna> campagne) {
         super(abbonamentoDao);

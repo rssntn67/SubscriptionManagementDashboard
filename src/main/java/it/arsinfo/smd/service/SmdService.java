@@ -64,8 +64,6 @@ public interface SmdService {
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
     List<OperazioneIncasso> getAssociati(Versamento versamento);
-    List<OperazioneIncasso> getAssociati(Abbonamento abbonamento);
-
     List<Abbonamento> getAssociabili(Versamento versamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);

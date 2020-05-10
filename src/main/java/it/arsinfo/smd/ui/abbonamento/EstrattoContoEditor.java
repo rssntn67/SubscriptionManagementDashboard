@@ -82,10 +82,12 @@ public class EstrattoContoEditor
         meseFine.setItemCaptionGenerator(Mese::getNomeBreve);
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
+        HorizontalLayout lay = new HorizontalLayout(pubblicazione,tipoEstrattoconto,invio,invioSpedizione);
+        lay.addComponentsAndExpand(destinatario);
         setComponents(
-                      new HorizontalLayout(pubblicazione,destinatario,importo,numero,numeroTotaleRiviste),
-                      new HorizontalLayout(invio,invioSpedizione,tipoEstrattoconto),
-                      new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine)
+    					lay,
+                      new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine),
+                      new HorizontalLayout(numero,importo,numeroTotaleRiviste)
                       );
  
         getBinder()
@@ -154,7 +156,9 @@ public class EstrattoContoEditor
         meseFine.setReadOnly(persisted|| obj.getStorico() != null);
         annoInizio.setReadOnly(persisted|| obj.getStorico() != null);
         annoFine.setReadOnly(persisted|| obj.getStorico() != null);        
-        numero.focus();
+        numeroTotaleRiviste.setVisible(persisted);
+        importo.setVisible(persisted);
+        pubblicazione.focus();
     }
     
 }

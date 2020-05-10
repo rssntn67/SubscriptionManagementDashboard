@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -23,10 +22,6 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
     private Button delete = new Button("Rimuovi", VaadinIcons.TRASH);
     private Button cancel = new Button("Annulla Modifiche");
     private Button back = new Button("Indietro");
-    private HorizontalLayout actions = new HorizontalLayout(save, 
-                                                            delete,
-                                                            cancel,
-                                                            back);
 
     private final Binder<T> binder;
     private static final Logger log = LoggerFactory.getLogger(SmdEntityEditor.class);
@@ -44,13 +39,13 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
         cancel.addClickListener(e -> edit(smdObj));
         back.addClickListener(e -> onChange());
 
+        getActions().addComponent(save);
+        getActions().addComponent(delete);
+        getActions().addComponent(cancel);
+        getActions().addComponent(back);
     }
 
     public abstract void focus(boolean persisted, T obj);
-
-    public HorizontalLayout getActions() {
-        return actions;
-    }
 
     public void delete() {
         try {

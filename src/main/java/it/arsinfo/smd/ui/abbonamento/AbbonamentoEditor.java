@@ -22,7 +22,7 @@ import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
-    private boolean noOmaggio;
+    private boolean noV;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
@@ -50,11 +50,11 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
         super(dao,new Binder<>(Abbonamento.class));
         
-        HorizontalLayout anag = new HorizontalLayout(codeLine);
+        HorizontalLayout anag = new HorizontalLayout(campagna,
+                anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(campagna,
-                                                     anno,cassa,statoAbbonamento,statoIncasso);
+        HorizontalLayout status = new HorizontalLayout(cassa,statoAbbonamento,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
@@ -153,18 +153,18 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         statoIncasso.setVisible(persisted);
         statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
-        noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
+        noV =!persisted || Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
 
-        importo.setVisible(noOmaggio);
-        spese.setVisible(noOmaggio);
-        speseEstero.setVisible(noOmaggio);
-        speseEstrattoConto.setVisible(noOmaggio);
-        pregresso.setVisible(noOmaggio);
-        totale.setVisible(noOmaggio);
-        incassato.setVisible(noOmaggio);
-        residuo.setVisible(noOmaggio);
+        importo.setVisible(noV);
+        spese.setVisible(noV);
+        speseEstero.setVisible(noV);
+        speseEstrattoConto.setVisible(noV);
+        pregresso.setVisible(noV);
+        totale.setVisible(noV);
+        incassato.setVisible(noV);
+        residuo.setVisible(noV);
         
-        cassa.setVisible(!persisted || noOmaggio);
+        cassa.setVisible(noV);
         cassa.setEnabled(!persisted);
                 
         intestatario.focus();

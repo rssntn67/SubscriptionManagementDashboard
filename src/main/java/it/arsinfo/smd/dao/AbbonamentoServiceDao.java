@@ -1,5 +1,6 @@
 package it.arsinfo.smd.dao;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,7 @@ import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -22,7 +24,9 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
@@ -42,6 +46,9 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 
     @Autowired
     private CampagnaDao campagnaDao;
+
+    @Autowired
+    private OperazioneIncassoDao operazioneIncassoDao;
 
 	@Autowired
 	private SmdService smdService;
@@ -181,6 +188,26 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
         return findById(t.getId());
 	}
 
+	public void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception { 
+    	if (incassato == null) {
+    		throw new UnsupportedOperationException("Devi inserire l'importo da incassare");
+    	}
+    	if (entity.getDataContabile() == null) {
+    		new UnsupportedOperationException("Devi inserire la data contabile");
+    	}
+    	if (entity.getDataPagamento() == null) {
+    		new UnsupportedOperationException("Devi inserire la data pagamento");
+    	}
+    	if (entity.getProgressivo() == null) {
+    		new UnsupportedOperationException("Aggiungere Riferimento nel Campo Progressivo");
+    	}
+        smdService.incassa(entity, new BigDecimal(incassato),user);
+	}
+	
+	public List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento) {
+    	return operazioneIncassoDao.findByAbbonamento(abbonamento);
+	}
+	
 	public List<EstrattoConto> findByTipoEstrattoConto(TipoEstrattoConto tec) {
 		return itemRepository.findByTipoEstrattoConto(tec);
 	}

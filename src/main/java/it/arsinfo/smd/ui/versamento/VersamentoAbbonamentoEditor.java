@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.versamento;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -22,11 +20,10 @@ import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
+import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
-public class VersamentoAbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
+public class VersamentoAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
     private boolean noOmaggio;
     private boolean hasResiduo;
@@ -56,50 +53,57 @@ public class VersamentoAbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
             EnumSet.allOf(Cuas.class));
     private final TextField progressivo = new TextField("Progressivo");
 
-    List<EstrattoConto> estrattiConto = new ArrayList<>();
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
     
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
     
-    public VersamentoAbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    public VersamentoAbbonamentoEditor(List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
-        super(dao,new Binder<>(Abbonamento.class));
+        super(new Binder<>(Abbonamento.class));
         
-        HorizontalLayout anag = new HorizontalLayout(codeLine);
+        HorizontalLayout anag = new HorizontalLayout(campagna,anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(campagna,
-                                                     anno,statoAbbonamento,statoIncasso);
+        HorizontalLayout status = new HorizontalLayout(statoAbbonamento,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
 
-        HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas,progressivo);
+        HorizontalLayout incss = new HorizontalLayout(dataContabile,dataPagamento,cassa,ccp,cuas);
         HorizontalLayout detai = new HorizontalLayout();
         detai.addComponentsAndExpand(progressivo);
-        setComponents(getActions(),anag, status,imp,res,incss,detai);
+        setComponents(anag, status,imp,res,incss,detai);
+
 
         intestatario.setItems(anagrafica);
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
         intestatario.setEmptySelectionAllowed(false);
 
-        codeLine.setReadOnly(true);
 
         campagna.setItems(campagne);
         campagna.setItemCaptionGenerator(Campagna::getCaption);
-        campagna.setReadOnly(true);
-
+ 
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
+        
+        campagna.setReadOnly(true);
+        anno.setReadOnly(true);
+        codeLine.setReadOnly(true);
+        intestatario.setReadOnly(true);
 
+        statoAbbonamento.setReadOnly(true);
+        statoIncasso.setReadOnly(true);
         
         importo.setReadOnly(true);
-        totale.setReadOnly(true);
-        
+        speseEstero.setReadOnly(true);
+        spese.setReadOnly(true);
+        pregresso.setReadOnly(true);
+        speseEstrattoConto.setReadOnly(true);
+
+        totale.setReadOnly(true);        
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
-        speseEstrattoConto.setReadOnly(true);
 
         cassa.setEmptySelectionAllowed(false);
         ccp.setEmptySelectionAllowed(false);
@@ -178,16 +182,9 @@ public class VersamentoAbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
-
-        getDelete().setEnabled(abbonamento.getCampagna() == null && abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
         
         codeLine.setVisible(persisted);
-        intestatario.setReadOnly(persisted);
-        
         campagna.setVisible(persisted);
-        anno.setReadOnly(persisted);
-        statoIncasso.setVisible(persisted);
-        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
         noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
         hasResiduo = abbonamento.getResiduo().signum() > 0; 
@@ -208,45 +205,10 @@ public class VersamentoAbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         cuas.setVisible(noOmaggio && hasResiduo);
         progressivo.setVisible(noOmaggio && hasResiduo);
                 
-        intestatario.focus();
+        progressivo.focus();
 
     }
-
-    public void addEstrattoConto(EstrattoConto estrattoConto) {
-        if (estrattiConto.contains(estrattoConto)) {
-            estrattiConto.remove(estrattoConto);
-        }
-        estrattiConto.add(estrattoConto);
-    }
-    
-    public boolean remove(EstrattoConto estrattoconto) {
-        if (estrattoconto.getId() != null) {
-            return removeEstrattoContoById(estrattoconto.getId());
-        }
-        return estrattiConto.remove(estrattoconto);
-    }
-    
-    private boolean removeEstrattoContoById(Long id) {
-        List<EstrattoConto> ecs = new ArrayList<>();
-        boolean match = false;
-        for (EstrattoConto ec : estrattiConto) {
-            if (ec.getId() != null && ec.getId().longValue() == id.longValue()) {
-                match=true;
-                continue;
-            }
-            ecs.add(ec);
-        }
         
-        return match;
-    }
-    public List<EstrattoConto> getEstrattiConto() {
-        return estrattiConto;
-    }
-
-    public void setEstrattiConto(List<EstrattoConto> estrattiConto) {
-        this.estrattiConto = estrattiConto;
-    }
-    
     public boolean incassare() {
         return noOmaggio && hasResiduo;
     }

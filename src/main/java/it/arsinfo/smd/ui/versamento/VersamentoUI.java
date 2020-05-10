@@ -50,8 +50,8 @@ public class VersamentoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
         
-        AbbonamentoSearch abbSearch = 
-        new AbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
+        VersamentoAbbonamentoSearch abbSearch = 
+        new VersamentoAbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         

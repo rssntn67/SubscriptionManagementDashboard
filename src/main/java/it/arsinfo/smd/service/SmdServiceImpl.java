@@ -561,11 +561,6 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<OperazioneIncasso> getAssociati(Abbonamento abbonamento) {
-    	return operazioneIncassoDao.findByAbbonamento(abbonamento);
-   }
-
-    @Override
     public List<OperazioneIncasso> getAssociati(Versamento versamento) {
     	return operazioneIncassoDao.findByVersamento(versamento);
     }
