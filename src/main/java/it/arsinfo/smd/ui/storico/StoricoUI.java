@@ -26,6 +26,7 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.SmdService;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.nota.NotaGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
@@ -33,7 +34,7 @@ import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 @SpringUI(path = SmdUI.URL_STORICO)
 @Title("Storico Anagrafica Pubblicazioni ADP")
 @Push
-public class StoricoUI extends SmdUI {
+public class StoricoUI extends SmdEditorUI<Storico> {
 
     /**
      * 
@@ -63,46 +64,30 @@ public class StoricoUI extends SmdUI {
         super.init(request, "Storico");
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        
+        SmdButtonComboBox<Campagna> update = 
+                new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll().stream().filter(c -> c.getStatoCampagna() != StatoCampagna.Chiusa).collect(Collectors.toList()),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
+            update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+            update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
+            update.getComboBox().setEmptySelectionAllowed(false);
+
         StoricoAdd add = new StoricoAdd("Aggiungi Storico");
         StoricoSearch search = new StoricoSearch(dao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
         
         StoricoEditor editor = 
                 new StoricoEditor(
-                                  dao.getRepository(), 
+                                  dao, 
                                   pubblicazioni, 
-                                  anagrafica) {
-            @Override
-            public void save() {
-                if (!isStoricoValid(this)) {
-                    return;
-                }
-                try {
-                    smdService.save(get(), getNote(this));
-                    onChange();
-                } catch (Exception e) {
-                    Notification.show("Non è possibile salvare questo record: ",
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            }
-            
-            @Override
-            public void delete() {
-                smdService.delete(get());
-                onChange();
-            }
-        };
+                                  anagrafica);
         
+        editor.getActions().addComponents(update.getComponents());
         NotaGrid notaGrid = new NotaGrid("Note");
         notaGrid.getGrid().setColumns("operatore","data","description");
         notaGrid.getGrid().setHeight("200px");
 
-        SmdButtonComboBox<Campagna> update = 
-            new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll().stream().filter(c -> c.getStatoCampagna() != StatoCampagna.Chiusa).collect(Collectors.toList()),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
-        update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-        update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
-        update.getComboBox().setEmptySelectionAllowed(false);
-        addSmdComponents(add,update,editor,notaGrid,search, grid);
+        editor.addComponents(notaGrid.getComponents());
+        addSmdComponents(add,editor,search, grid);
         editor.setVisible(false);
         notaGrid.setVisible(false);
         update.setVisible(false);
@@ -168,22 +153,6 @@ public class StoricoUI extends SmdUI {
 
         grid.populate(search.find());
 
-    }
-
-    private boolean isStoricoValid(StoricoEditor editor) {
-        if (editor.getIntestatario().isEmpty()) {
-            Notification.show("Intestatario deve essere valorizzato", Type.WARNING_MESSAGE);
-            return false;                    
-        }
-        if (editor.getDestinatario().isEmpty()) {
-            Notification.show("Destinatario deve essere valorizzato", Type.WARNING_MESSAGE);
-            return false;                    
-        }
-        if (editor.getPubblicazione().isEmpty()) {
-            Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
-            return false;
-        }        
-        return true;
     }
     
     private  Nota[] getNote(StoricoEditor editor) {

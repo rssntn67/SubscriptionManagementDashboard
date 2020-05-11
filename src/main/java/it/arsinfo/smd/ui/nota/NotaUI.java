@@ -34,6 +34,7 @@ public class NotaUI extends SmdEditorUI<Nota> {
         NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(dao, storici);
         init(request,add, search,editor, grid,"Note");
+        add.setUser(getLoggedInUser());
         
         addSmdComponents(editor, 
                 add,

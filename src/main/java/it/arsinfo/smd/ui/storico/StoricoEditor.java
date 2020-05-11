@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -18,10 +18,10 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class StoricoEditor
-        extends SmdRepositoryDaoEditor<Storico> {
+        extends SmdEntityEditor<Storico> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
@@ -41,11 +41,11 @@ public class StoricoEditor
     private final TextField nota = new TextField("Aggiungi Nota");
 
     public StoricoEditor(
-            StoricoDao storicoDao,
+            StoricoServiceDao dao,
             List<Pubblicazione> pubblicazioni, 
             List<Anagrafica> anagrafiche) {
 
-        super(storicoDao, new Binder<>(Storico.class) );
+        super(dao, new Binder<>(Storico.class) );
         
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");

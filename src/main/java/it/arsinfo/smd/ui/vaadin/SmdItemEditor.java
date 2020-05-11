@@ -27,9 +27,6 @@ public abstract class SmdItemEditor<T extends SmdEntity>
         }
         final boolean persisted = c.getId() != null;
         smdObj = c;
-        // Bind customer properties to similarly named fields
-        // Could also use annotation or "manual binding" or programmatically
-        // moving values from fields to entities before saving
         binder.setBean(smdObj);
 
         focus(persisted, smdObj);

@@ -34,7 +34,7 @@ public class NotaEditor extends SmdEntityEditor<Nota> {
         storico.setItems(storici);
         storico.setItemCaptionGenerator(Storico::getCaption);
         storico.setEmptySelectionAllowed(false);
-
+        
         user.setReadOnly(true);
 
         getBinder().forField(storico).asRequired().withValidator(an -> an != null,
@@ -51,10 +51,11 @@ public class NotaEditor extends SmdEntityEditor<Nota> {
     @Override
     public void focus(boolean persisted, Nota obj) {
         getSave().setEnabled(!persisted);
-        getCancel().setEnabled(false);
+        getCancel().setEnabled(!persisted);
+        getDelete().setEnabled(false);
         storico.setReadOnly(persisted);
         description.setReadOnly(persisted);
-        storico.focus();
+        description.focus();
 
     }
 
