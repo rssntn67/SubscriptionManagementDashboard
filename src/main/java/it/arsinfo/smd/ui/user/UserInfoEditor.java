@@ -16,14 +16,14 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.UserInfoDao;
+import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 
-public class UserInfoEditor extends SmdEditor<UserInfo> {
+public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
 
     /**
      * 
@@ -34,7 +34,7 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
     private final PasswordField confirm = new PasswordField("confirm");
 
     private boolean persisted;
-    public UserInfoEditor(UserInfoDao repo, PasswordEncoder passwordEncoder) {
+    public UserInfoEditor(UserInfoServiceDao repo, PasswordEncoder passwordEncoder) {
         super(repo, new Binder<>(UserInfo.class));
         setComponents(getActions(),
                       new HorizontalLayout(username,role),
@@ -65,7 +65,7 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
         }
         
         if (!persisted &&
-            ((UserInfoDao)getRepositoryDao()).findByUsername(username.getValue()) != null) {
+            ((UserInfoServiceDao)getServiceDao()).getRepository().findByUsername(username.getValue()) != null) {
             Notification.show("Utente non salvato",
                               "username esiste",
                               Notification.Type.HUMANIZED_MESSAGE);
@@ -109,6 +109,7 @@ public class UserInfoEditor extends SmdEditor<UserInfo> {
         this.persisted = persisted;
         confirm.clear();
         username.setReadOnly(persisted);
+        role.setReadOnly(persisted && obj.getUsername().equals("admin"));
         password.setRequiredIndicatorVisible(!persisted);
     }
     

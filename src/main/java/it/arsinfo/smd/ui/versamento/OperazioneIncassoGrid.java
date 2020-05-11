@@ -1,6 +1,6 @@
 package it.arsinfo.smd.ui.versamento;
 
-public class OperazioneIncassoGrid extends it.arsinfo.smd.ui.abbonamento.OperazioneIncassoGrid {
+public class OperazioneIncassoGrid extends it.arsinfo.smd.ui.incassa.OperazioneIncassoGrid {
 
     public OperazioneIncassoGrid(String gridName) {
         super(gridName);
@@ -8,13 +8,13 @@ public class OperazioneIncassoGrid extends it.arsinfo.smd.ui.abbonamento.Operazi
                 "operatore",
                 "statoOperazioneIncasso",
                 "importo",
-                "abbonamento.intestatario.captionBrief",
+                "abbonamento.intestatario.caption",
                 "abbonamento.codeLine",
                 "abbonamento.totale",
                 "abbonamento.incassato",
                 "abbonamento.residuo",
                 "abbonamento.anno");
-        setColumnCaption("intestatario.captionBrief", "Intestatario");
+        setColumnCaption("intestatario.caption", "Intestatario");
         setColumnCaption("abbonamento.totale", "importo abb.");
         setColumnCaption("abbonamento.incassato", "incassato abb.");
         setColumnCaption("abbonamento.residuo", "residuo abb.");

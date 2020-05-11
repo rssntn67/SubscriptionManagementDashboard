@@ -34,15 +34,6 @@ public class HomeUI extends SmdUI {
         HorizontalSplitPanel GA = new HorizontalSplitPanel();        
         GA.addComponents(new Label("Gestione Anagrafiche:"),new VerticalLayout(getAnagraficaLink()));
         right.addComponents(GA);
-        HorizontalSplitPanel GP = new HorizontalSplitPanel();        
-        GP.addComponents(new Label("Gestione Pubblicazioni:"),new VerticalLayout(getPubblicazioneLink()));
-        right.addComponents(GP);
-        HorizontalSplitPanel GS = new HorizontalSplitPanel();        
-        GS.addComponents(new Label("Gestione Spese:"),new VerticalLayout(getSpeseSpedizioneLink()));
-        right.addComponents(GS);
-        HorizontalSplitPanel GC = new HorizontalSplitPanel();        
-        GC.addComponents(new Label("Gestione Campagne:"),new VerticalLayout(getCampagnaLinks()));
-        right.addComponents(GC);
         HorizontalSplitPanel GB = new HorizontalSplitPanel();        
         GB.addComponents(new Label("Gestione Abbonamenti:"),new VerticalLayout(getAbbonamentoLinks()));
         right.addComponents(GB);
@@ -52,9 +43,6 @@ public class HomeUI extends SmdUI {
         HorizontalSplitPanel GO = new HorizontalSplitPanel();        
         GO.addComponents(new Label("Gestione ordini :"),new VerticalLayout(getOrdiniLinks()));
         right.addComponents(GO);
-        HorizontalSplitPanel GU = new HorizontalSplitPanel();        
-        GU.addComponents(new Label("Gestione utenti :"),new VerticalLayout(getUserLinks()));
-        right.addComponents(GU);
         
         layout.addComponents(left,
                              right);

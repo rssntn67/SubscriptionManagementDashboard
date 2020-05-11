@@ -1,7 +1,9 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.Entity;
@@ -33,7 +35,7 @@ import it.arsinfo.smd.service.Smd;
         })
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, cassa);
-public class Abbonamento implements SmdEntity {
+public class Abbonamento implements SmdEntityItems<EstrattoConto> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -75,6 +77,8 @@ public class Abbonamento implements SmdEntity {
     @Transient
     private String progressivo;
 
+    @Transient
+    private List<EstrattoConto> estrattiConto = new ArrayList<EstrattoConto>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -350,6 +354,22 @@ public class Abbonamento implements SmdEntity {
 	public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
 		this.speseEstrattoConto = speseEstrattoConto;
 	}
+
+	public List<EstrattoConto> getItems() {
+		return estrattiConto;
+	}
+
+	public void setItems(List<EstrattoConto> estrattiConto) {
+		this.estrattiConto = estrattiConto;
+	}
+	
+	public boolean addItem(EstrattoConto ec) {
+		return estrattiConto.add(ec);
+	}
     
+	public boolean removeItem(EstrattoConto ec) {
+		return estrattiConto.remove(ec);
+	}
+
 
 }

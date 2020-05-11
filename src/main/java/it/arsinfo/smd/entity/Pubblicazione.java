@@ -204,7 +204,7 @@ public class Pubblicazione implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("Pubblicazione:Edit:'%s'", nome);
+        return String.format("'%s'", nome);
     }
 
     public Anno getAnno() {
@@ -385,18 +385,8 @@ public class Pubblicazione implements SmdEntity {
             return false;
         Pubblicazione other = (Pubblicazione) obj;
         if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id)) {
-            return false;
-        } else {
-            return true;
+            return other.nome.equals(nome);
         }
-        if (nome == null) {
-            if (other.nome != null)
-                return false;
-        } else if (!nome.equals(other.nome))
-            return false;
-        return true;
+        return (other.id == id);
     }
 }

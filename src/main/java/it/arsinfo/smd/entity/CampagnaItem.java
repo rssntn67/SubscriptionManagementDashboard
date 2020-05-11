@@ -47,8 +47,13 @@ public class CampagnaItem
 
         @Override
         public String toString() {
-            return String.format("CampagnaItem[id=%d, Campagna=%d Pubblicazione=%d]", 
-                                 id, campagna.getId(), pubblicazione.getId());
+            return String.format("CampagnaItem[id=%d, %s %s]", 
+                                 id, campagna, pubblicazione);
         }
+
+		@Override
+		public String getHeader() {
+			return "Elemento Campagna";
+		}
 
 }

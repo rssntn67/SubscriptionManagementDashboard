@@ -100,4 +100,10 @@ public class OperazioneSospendi implements SmdEntity {
 		return data;
 	}
 
+	@Override
+	public String getHeader() {
+		return pubblicazione.getNome() + " " + anno
+				+ " " + meseSpedizione + " " + operatore + " " + data;
+	}
+
 }

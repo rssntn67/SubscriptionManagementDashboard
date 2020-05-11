@@ -1,8 +1,13 @@
 package it.arsinfo.smd.entity;
 
+import javax.persistence.Transient;
+
 public interface SmdEntity {
     
-    Long getId();
+	Long getId();
+    
+    @Transient
+    String getHeader();
 
     static String decodeForGrid(boolean status) {
         if (status) {
@@ -11,4 +16,7 @@ public interface SmdEntity {
         return "no";
     }
 
+    static String getHeaderBase(SmdEntity entity) {
+    	return entity.getClass().getName()+":"+"Edit";
+    }
 }

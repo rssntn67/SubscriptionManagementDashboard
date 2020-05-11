@@ -102,4 +102,9 @@ public class UserInfo implements SmdEntity {
 	public String toString() {
 		return "UserInfo [id=" + id + ", username=" + username + ", role=" + role + "]";
 	}
+
+	@Override
+	public String getHeader() {
+		return username + ":" + role;
+	}
 }

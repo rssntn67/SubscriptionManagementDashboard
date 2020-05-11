@@ -58,6 +58,9 @@ public class Versamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Sostitutivo sostitutivo;
 
+    @ManyToOne(optional=true,fetch=FetchType.LAZY)
+    private Anagrafica committente;
+
     public Versamento() {
         super();
     }
@@ -174,6 +177,13 @@ public class Versamento implements SmdEntity {
         return importo.subtract(incassato);
     }
 
+    @Transient
+    public String getAssociatoCommittente() {
+    	if (committente != null) {
+    		return "si";
+    	}
+    	return "no";
+    }
     public void setIncassato(BigDecimal incassato) {
         this.incassato = incassato;
     }
@@ -185,4 +195,20 @@ public class Versamento implements SmdEntity {
     public void setDataPagamento(Date dataPagamento) {
         this.dataPagamento = Smd.getStandardDate(dataPagamento);
     }
+
+
+	public Anagrafica getCommittente() {
+		return committente;
+	}
+
+
+	public void setCommittente(Anagrafica committente) {
+		this.committente = committente;
+	}
+
+
+	@Override
+	public String getHeader() {
+		return "Versamento";
+	}
 }

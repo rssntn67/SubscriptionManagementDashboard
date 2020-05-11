@@ -1,5 +1,8 @@
 package it.arsinfo.smd.ui.vaadin;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import com.vaadin.ui.Component;
 
 public abstract class SmdChangeHandler {
@@ -37,6 +40,13 @@ public abstract class SmdChangeHandler {
         return components;
     }
 
+    public void addComponents(Component ... components) {
+    	if (this.components == null)
+    		this.components = components;
+    	else
+    		this.components=Stream.concat(Arrays.stream(this.components), Arrays.stream(components)).toArray(Component[]::new);	
+    }
+    
     public void setComponents(Component ... components) {
         this.components = components;
     }

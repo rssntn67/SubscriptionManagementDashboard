@@ -9,16 +9,16 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.OperazioneDao;
+import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.ui.vaadin.SmdEditor;
+import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
 public class OperazioneEditor
-        extends SmdEditor<Operazione> {
+        extends SmdRepositoryDaoEditor<Operazione> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
     private final ComboBox<Anno> annoPubblicazione = new ComboBox<Anno>("Anno Pubbl.",

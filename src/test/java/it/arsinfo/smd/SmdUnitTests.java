@@ -49,7 +49,6 @@ import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.helper.SmdImportAdp;
 import it.arsinfo.smd.service.Smd;
 
 @RunWith(SpringRunner.class)
@@ -956,12 +955,29 @@ public class SmdUnitTests {
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));
-        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici, pubblicazioni);
+        CampagnaItem ciestratti = new CampagnaItem();
+        ciestratti.setCampagna(campagna);
+        ciestratti.setPubblicazione(estratti);
+        campagna.addCampagnaItem(ciestratti);
+        CampagnaItem ciblocchetti = new CampagnaItem();
+        ciblocchetti.setCampagna(campagna);
+        ciblocchetti.setPubblicazione(blocchetti);
+        campagna.addCampagnaItem(ciblocchetti);
+        CampagnaItem cilodare = new CampagnaItem();
+        cilodare.setCampagna(campagna);
+        cilodare.setPubblicazione(lodare);
+        campagna.addCampagnaItem(cilodare);
+        CampagnaItem cimessaggio = new CampagnaItem();
+        cimessaggio.setCampagna(campagna);
+        cimessaggio.setPubblicazione(messaggio);
+        campagna.addCampagnaItem(cimessaggio);
+        
+        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici);
+        assertEquals(1, abbonamenti.size());
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());
         }
-        assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
@@ -1155,12 +1171,7 @@ public class SmdUnitTests {
         assertEquals(Paese.IT, paese);
         
     }
-    
-    @Test 
-    public void testGeneraCodeLineBase() {
-        SmdImportAdp.getAnagraficaByAncodcon(Anagrafica.generaCodeLineBase());
-    }
-    
+        
     @Test
     public void testIncassaEsatto() throws Exception {
     	Abbonamento abbonamento = new Abbonamento();

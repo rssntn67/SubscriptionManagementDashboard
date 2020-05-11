@@ -7,7 +7,7 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.CampagnaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;

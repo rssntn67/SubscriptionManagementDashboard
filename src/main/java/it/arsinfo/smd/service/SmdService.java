@@ -38,17 +38,17 @@ public interface SmdService {
     void save(Storico storico, Nota... note);
 
     List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);
-    void invia(Campagna campagna) throws Exception;
-    void estratto(Campagna campagna) throws Exception;
-    void chiudi(Campagna campagna) throws Exception;
 
-    void genera(Campagna campagna, List<Pubblicazione> attivi) throws Exception;
-    void genera(Abbonamento abbonamento, EstrattoConto... estrattiConto) throws Exception;
+    void genera(Campagna campagna) throws Exception;
+    void genera(Abbonamento abbonamento) throws Exception;
     
-    void delete(Campagna campagna) throws Exception;
-    void delete(Abbonamento abbonamento) throws Exception;
+    void cancella(Abbonamento abbonamento) throws Exception;
+    void sospendiSpedizioni(Abbonamento abbonamento) throws Exception;
+    void riattivaSpedizioni(Abbonamento abbonamento) throws Exception;
+    void sospendiStorico(Abbonamento abbonamento) throws Exception;
+    void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
-    void rimuovi(EstrattoConto estrattoConto) throws Exception;
+    void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void rimuovi(Campagna campagna,Storico storico,Nota...note) throws Exception;
     
@@ -64,24 +64,23 @@ public interface SmdService {
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
 
     List<OperazioneIncasso> getAssociati(Versamento versamento);
-    List<OperazioneIncasso> getAssociati(Abbonamento abbonamento);
-
     List<Abbonamento> getAssociabili(Versamento versamento);
 
     List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
     List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
-    List<Spedizione> findSpedizioneAll();    
+    List<Spedizione> findSpedizioneAll();
     
     void save(Incasso incasso) throws Exception;
     void save(Versamento versamento) throws Exception;
     void delete(Versamento versamento) throws Exception;
     
-    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;
-    void dissocia(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
-    
+    void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
     void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
-      
+    void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
+    
+    void associaCommittente(Anagrafica committente, Versamento versamento);
+    void rimuoviCommittente(Versamento versamento);
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
 

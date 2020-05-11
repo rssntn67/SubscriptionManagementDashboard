@@ -33,22 +33,22 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.CampagnaDao;
-import it.arsinfo.smd.dao.CampagnaItemDao;
-import it.arsinfo.smd.dao.EstrattoContoDao;
-import it.arsinfo.smd.dao.IncassoDao;
-import it.arsinfo.smd.dao.NotaDao;
-import it.arsinfo.smd.dao.OperazioneDao;
-import it.arsinfo.smd.dao.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
-import it.arsinfo.smd.dao.SpedizioneDao;
-import it.arsinfo.smd.dao.SpedizioneItemDao;
-import it.arsinfo.smd.dao.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.StoricoDao;
-import it.arsinfo.smd.dao.UserInfoDao;
-import it.arsinfo.smd.dao.VersamentoDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.CampagnaItemDao;
+import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.repository.OperazioneDao;
+import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.SpedizioneDao;
+import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
+import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
+import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.repository.UserInfoDao;
+import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
@@ -459,11 +459,28 @@ public class SmdApplicationTests {
         assertEquals(4, pubblicazioneDao.findByTipo(TipoPubblicazione.MENSILE).size());
         assertEquals(1, pubblicazioneDao.findByTipo(TipoPubblicazione.SEMESTRALE).size());
         assertEquals(1, pubblicazioneDao.findByTipo(TipoPubblicazione.ANNUALE).size());
+        assertEquals(0, pubblicazioneDao.findByTipo(TipoPubblicazione.UNICO).size());
+
+        assertEquals(2, pubblicazioneDao.findByTipoNot(TipoPubblicazione.MENSILE).size());
+        assertEquals(5, pubblicazioneDao.findByTipoNot(TipoPubblicazione.SEMESTRALE).size());
+        assertEquals(5, pubblicazioneDao.findByTipoNot(TipoPubblicazione.ANNUALE).size());
+        assertEquals(6, pubblicazioneDao.findByTipoNot(TipoPubblicazione.UNICO).size());
+
+        assertEquals(4, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.MENSILE,true).size());
+        assertEquals(1, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.SEMESTRALE,true).size());
+        assertEquals(1, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.ANNUALE,true).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.UNICO,true).size());
         
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.MENSILE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.SEMESTRALE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.ANNUALE,false).size());
+        assertEquals(0, pubblicazioneDao.findByTipoAndActive(TipoPubblicazione.UNICO,false).size());
+
         pubblicazioneDao.delete(p1);
         assertEquals(5, pubblicazioneDao.findAll().size());
-        pubblicazioneDao.delete(p);
+        pubblicazioneDao.delete(p);        
         assertEquals(4, pubblicazioneDao.findAll().size());
+        assertEquals(4, pubblicazioneDao.findByTipoNotAndActive(TipoPubblicazione.UNICO,true).size());
     }
 
     @Test 
@@ -1038,7 +1055,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSede);
-        smdService.genera(abb, ec1);
+        abb.addItem(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.AdpSede, InvioSpedizione.AdpSede);
     }
 
@@ -1061,14 +1079,15 @@ public class SmdApplicationTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
-        ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);        
-        smdService.genera(abb, ec1);
+        ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
+        abb.addItem(ec1);
+        smdService.genera(abb);
         EstrattoConto estrattoConto = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoEstrattoConto.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         
         estrattoConto.setNumero(4);
         smdService.aggiorna(estrattoConto);
         estrattoConto = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoEstrattoConto.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        smdService.rimuovi(estrattoConto);
+        smdService.rimuovi(abb,estrattoConto);
         assertEquals(0, estrattoContoDao.count());
         assertEquals(0, abbonamentoDao.count());
         assertEquals(0, spedizioneDao.count());
@@ -1094,7 +1113,8 @@ public class SmdApplicationTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
-        smdService.genera(abb, ec1);        
+        abb.addItem(ec1);
+        smdService.genera(abb);        
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.Spedizioniere);
     }
 
@@ -1118,7 +1138,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSede);
-        smdService.genera(abb, ec1);
+        abb.addItem(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.Ordinario,InvioSpedizione.AdpSede, InvioSpedizione.AdpSede);
                 
     }
@@ -1144,7 +1165,8 @@ public class SmdApplicationTests {
         ec1.setNumero(5);
         ec1.setInvioSpedizione(InvioSpedizione.AdpSedeNoSpese);
         ec1.setTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp);
-        smdService.genera(abb, ec1);
+        abb.addItem(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.OmaggioDirettoreAdp,InvioSpedizione.AdpSedeNoSpese, InvioSpedizione.AdpSedeNoSpese);
      }
 
@@ -1168,7 +1190,8 @@ public class SmdApplicationTests {
         ec1.setDestinatario(tizio);
         ec1.setNumero(5);
         ec1.setTipoEstrattoConto(TipoEstrattoConto.OmaggioDirettoreAdp);
-        smdService.genera(abb, ec1);
+        abb.addItem(ec1);
+        smdService.genera(abb);
         checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5, TipoEstrattoConto.OmaggioDirettoreAdp,InvioSpedizione.Spedizioniere, InvioSpedizione.Spedizioniere);
     }
 
@@ -1192,6 +1215,7 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
+        abb.addItem(ec1);
         EstrattoConto ec2 = new EstrattoConto();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
@@ -1200,7 +1224,8 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);        
         ec2.setDestinatario(tizio);
-        smdService.genera(abb, ec1,ec2);
+        abb.addItem(ec2);
+        smdService.genera(abb);
         assertEquals(2, estrattoContoDao.findAll().size());
         assertEquals(6, spedizioneDao.findAll().size());
         assertEquals(12, spedizioneItemDao.findAll().size());
@@ -1633,6 +1658,61 @@ public class SmdApplicationTests {
                 
     }
     
+    @Test 
+    public void testVersamentoCommittente() {
+        log.info("----------------->testVersamentoCommittente<----------------");
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        
+        Anagrafica ar = SmdHelper.getAR();
+        anagraficaDao.save(ar);
+        assertEquals(1, anagraficaDao.findAll().size());
+
+        Incasso incasso = SmdHelper.getIncassoTelematici();
+        incassoDao.save(incasso);
+        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+        
+        Versamento versamento = versamentoDao.findAll().iterator().next();
+        assertNotNull(versamento);
+        assertNull(versamento.getCommittente());
+        Anagrafica committente = anagraficaDao.findAll().iterator().next();
+        assertNotNull(committente);
+        
+        versamento.setCommittente(committente);
+        versamentoDao.save(versamento);
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+        
+        Versamento persisted1 = versamentoDao.findAll().iterator().next();
+        assertEquals(versamento.getId(), persisted1.getId());
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertNotNull(persisted1);
+        assertNotNull(persisted1.getCommittente());
+        
+        log.info("committente: {}", persisted1.getCommittente().getId());
+
+        persisted1.setCommittente(null);
+        versamentoDao.save(persisted1);
+
+        Versamento persisted2 = versamentoDao.findAll().iterator().next();
+        assertEquals(versamento.getId(), persisted2.getId());
+        assertEquals(1, anagraficaDao.findAll().size());
+        assertNotNull(persisted2);
+        assertNull(persisted2.getCommittente());
+
+        incassoDao.delete(incasso);
+        anagraficaDao.delete(committente);
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+                
+    }
+
+    
     @Test
     public void testIncassa() {
         log.info("----------------->testIncassa<----------------");
@@ -1746,8 +1826,8 @@ public class SmdApplicationTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoProssimo());
         ec1.setDestinatario(davidePalma);
-
-        smdService.genera(abb1, ec1);
+        abb1.addItem(ec1);
+        smdService.genera(abb1);
 
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, estrattoContoDao.findAll().size());
@@ -1769,8 +1849,8 @@ public class SmdApplicationTests {
         ec2.setMeseFine(Mese.DICEMBRE);
         ec2.setAnnoFine(Anno.getAnnoProssimo());
         ec2.setDestinatario(antonioRusso);
-
-        smdService.genera(abb2, ec2);
+        abb2.addItem(ec2);
+        smdService.genera(abb2);
 
         assertEquals(2, abbonamentoDao.findAll().size());
         assertEquals(2, estrattoContoDao.findAll().size());

@@ -17,5 +17,14 @@ public class SmdButton extends SmdChangeHandler {
     public Button getButton() {
         return button;
     }
+    
+    public void enable() {
+    	button.setEnabled(true);
+    }
+    
+    public void disable() {
+    	button.setEnabled(false);
+    }
+    
 
 }

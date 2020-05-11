@@ -334,7 +334,7 @@ public class Anagrafica implements SmdEntity {
 
     @Transient
     public String getHeader() {
-    	return generaHeader(this);
+    	return generaIntestazione(this);
     }
 
     public Provincia getProvincia() {
@@ -421,10 +421,6 @@ public class Anagrafica implements SmdEntity {
         		a.getCitta(),
         		a.getCap(),
         		a.getCodeLineBase());
-    }
-
-    public static String generaHeader(Anagrafica a) {
-        return String.format("Anagrafica:Edit:%s", generaIntestazione(a));
     }
 
     public String getIndirizzoSecondaRiga() {

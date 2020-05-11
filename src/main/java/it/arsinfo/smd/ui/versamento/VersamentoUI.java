@@ -3,19 +3,24 @@ package it.arsinfo.smd.ui.versamento;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.CampagnaDao;
-import it.arsinfo.smd.dao.VersamentoDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
+import it.arsinfo.smd.ui.vaadin.SmdButton;
+import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 
 @SpringUI(path = SmdUI.URL_VERSAMENTI)
 @Title("Versamenti")
@@ -45,15 +50,32 @@ public class VersamentoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
         
-        AbbonamentoSearch abbSearch = 
-        new AbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
+        VersamentoAbbonamentoSearch abbSearch = 
+        new VersamentoAbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
         VersamentoSearch search = new VersamentoSearch(versamentoDao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
-        addSmdComponents(search,grid,abbonamentiAssociatiGrid,abbSearch,abbonamentiAssociabiliGrid);
+        SmdButtonComboBox<Anagrafica> associacommittente = 
+        		new SmdButtonComboBox<>("Selezionare Committente", 
+        				anagraficaDao.findAll(), 
+        				"Associa Committente", VaadinIcons.ABACUS);
+        associacommittente.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+        associacommittente.getButton().setWidth("300px");
+        associacommittente.getComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
+        associacommittente.getComboBox().setEmptySelectionAllowed(false);
+        associacommittente.getComboBox().setWidth("1000px");;
+        associacommittente.setVisible(false);
+        
+        SmdButton dissociacommittente = 
+        		new SmdButton("Dissocia Committente", VaadinIcons.BACKWARDS);
+        dissociacommittente.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+        dissociacommittente.getButton().setWidth("300px");
+        dissociacommittente.setVisible(false);
+
+        addSmdComponents(search,grid,associacommittente,dissociacommittente,abbonamentiAssociatiGrid,abbSearch,abbonamentiAssociabiliGrid);
         
         abbSearch.setVisible(false);
         abbonamentiAssociatiGrid.setVisible(false);
@@ -71,10 +93,18 @@ public class VersamentoUI extends SmdUI {
                 abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
+                associacommittente.getComboBox().setValue(null);
+                if (grid.getSelected().getCommittente() != null) {
+                	associacommittente.getComboBox().setValue(anagraficaDao.findById(grid.getSelected().getCommittente().getId()).get());
+                	dissociacommittente.setVisible(true);
+                }
+                associacommittente.setVisible(true);
             } else {
                 abbSearch.setVisible(false);
                 abbonamentiAssociatiGrid.setVisible(false);
                 abbonamentiAssociabiliGrid.setVisible(false);
+                associacommittente.setVisible(false);
+                dissociacommittente.setVisible(false);
             }
         });
         
@@ -88,7 +118,7 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Storna");
             button.addClickListener(click -> {
                 try {
-                    smdService.dissocia(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
+                    smdService.storna(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
@@ -136,6 +166,23 @@ public class VersamentoUI extends SmdUI {
             abbonamentiAssociabiliGrid.populate(abbSearch.find());
         });
 
+        dissociacommittente.setChangeHandler(() -> {
+			smdService.rimuoviCommittente(grid.getSelected());
+			Notification.show("Committente rimosso da Versamento",
+                 Notification.Type.HUMANIZED_MESSAGE);
+			grid.populate(search.find());
+        });
+
+        associacommittente.setChangeHandler(() -> {
+        	if (associacommittente.getValue() == null ) {
+        		return;
+        	}
+        	smdService.associaCommittente(associacommittente.getValue(),grid.getSelected());				
+        	Notification.show("Committente associato a Versamento",
+                         Notification.Type.HUMANIZED_MESSAGE);
+			grid.populate(search.find());
+			
+        });
         grid.populate(search.findAll());
     }
 }

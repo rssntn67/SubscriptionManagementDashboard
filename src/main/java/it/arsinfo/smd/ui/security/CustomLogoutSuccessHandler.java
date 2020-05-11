@@ -26,9 +26,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
     	smdService.logout(authentication.getName());
-    	String URL = request.getContextPath() + SmdUI.URL_REDIRECT_LOGOUT;
         response.setStatus(HttpStatus.OK.value());
-        response.sendRedirect(URL);
+        response.sendRedirect(request.getContextPath() + SmdUI.URL_LOGIN);
     }
 
 }

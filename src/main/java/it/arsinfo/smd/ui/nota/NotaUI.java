@@ -8,15 +8,16 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.NotaDao;
-import it.arsinfo.smd.dao.StoricoDao;
+import it.arsinfo.smd.dao.NotaServiceDao;
+import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_NOTE)
 @Title("Note Storico ADP")
-public class NotaUI extends SmdUI {
+public class NotaUI extends SmdEditorUI<Nota> {
 
     /**
      * 
@@ -24,53 +25,27 @@ public class NotaUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    NotaDao notaDao;
+    NotaServiceDao notaDao;
 
     @Autowired
     StoricoDao storicoDao;
 
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Note");
         List<Storico> storici = storicoDao.findAll();
-        NotaSearch search = new NotaSearch(notaDao, storici);
+        NotaSearch search = new NotaSearch(notaDao.getRepository(), storici);
         NotaAdd add = new NotaAdd("Aggiungi Nota");
         NotaGrid grid = new NotaGrid("Note");
         NotaEditor editor = new NotaEditor(notaDao, storici);
-        addSmdComponents(add, search,editor, grid);
+        init(request,add, search,editor, grid,"Note");
+        
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
 
         editor.setVisible(false);
-
-        search.setChangeHandler(() -> grid.populate(search.find()));
-
-        add.setChangeHandler(() -> {
-            Nota nota = add.generate();
-            nota.setOperatore(getLoggedInUser().getUsername());
-            editor.edit(nota);
-            search.setVisible(false);
-            grid.setVisible(false);
-        });
-
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
-            editor.edit(grid.getSelected());
-            search.setVisible(false);
-            add.setVisible(false);
-            setHeader("Nota:Edit");
-            hideMenu();
-        });
-
-        editor.setChangeHandler(() -> {
-            editor.setVisible(false);
-            grid.populate(search.find());
-            add.setVisible(true);
-            search.setVisible(true);
-            setHeader("Note");
-            showMenu();
-        });
-
+        
         grid.populate(search.findAll());
 
     }

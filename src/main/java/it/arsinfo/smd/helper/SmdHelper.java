@@ -729,7 +729,7 @@ public class SmdHelper {
         abb.setAnno(anno);
         abb.setCassa(cassa);
         abb.setIntestatario(intestatario);
-        abb.setCodeLine(Abbonamento.generaCodeLine(anno,intestatario));
+        abb.setCodeLine(Abbonamento.generaCodeLine(anno));
         return abb;   
     }
 

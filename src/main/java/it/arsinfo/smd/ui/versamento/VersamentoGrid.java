@@ -18,6 +18,7 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
         setColumns(                  
+                "associatoCommittente",
                 "codeLine",
                    "importo",
                    "incassato",

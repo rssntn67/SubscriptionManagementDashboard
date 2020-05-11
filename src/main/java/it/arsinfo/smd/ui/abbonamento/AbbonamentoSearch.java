@@ -13,8 +13,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.EstrattoContoDao;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -39,16 +38,13 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
     
-    private final EstrattoContoDao estrattoContoDao;
+    private final AbbonamentoServiceDao dao;
 
-    public AbbonamentoSearch(AbbonamentoDao abbonamentoDao, 
-            EstrattoContoDao estrattoContoDao,
-            List<Pubblicazione> pubblicazioni,
-            List<Anagrafica> anagrafica, 
-            List<Campagna> campagne) {
-        super(abbonamentoDao);
+    public AbbonamentoSearch(AbbonamentoServiceDao dao, List<Campagna> campagne, List<Pubblicazione> pubblicazioni,
+    		List<Anagrafica> anagrafica) {
+        super(dao.getRepository());
 
-        this.estrattoContoDao=estrattoContoDao;
+        this.dao=dao;
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
         ComboBox<Anno> filterAnno = new ComboBox<Anno>();
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
@@ -142,7 +138,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     }
 
     private List<Abbonamento> findByTipoEstrattoConto(List<Abbonamento> abbonamenti, TipoEstrattoConto tec) {
-        List<Long> approved = estrattoContoDao
+        List<Long> approved = dao
                 .findByTipoEstrattoConto(tec)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
             return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
@@ -151,15 +147,15 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     
     private List<Abbonamento> findByCustomer() {
        final Map<Long,Abbonamento> abbMap = 
-                ((AbbonamentoDao) getRepo()).findByIntestatario(customer)
+                dao.findByIntestatario(customer)
                 .stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         
-        estrattoContoDao
+        dao
             .findByDestinatario(customer)
             .stream()
             .filter(ec -> !abbMap.containsKey(ec.getAbbonamento().getId()))
             .forEach( ec -> {
-                Abbonamento  abb = ((AbbonamentoDao) getRepo()).findById(ec.getAbbonamento().getId()).get();
+                Abbonamento  abb = dao.getRepository().findById(ec.getAbbonamento().getId()).get();
                 abbMap.put(abb.getId(), abb);
             });        
         return abbMap.values().stream().collect(Collectors.toList());
@@ -167,7 +163,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     
 
     private List<Abbonamento> findByPubblicazione(List<Abbonamento> abbonamenti) {         
-         List<Long> approved = estrattoContoDao
+         List<Long> approved = dao
              .findByPubblicazione(pubblicazione)
              .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
          return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
@@ -182,10 +178,10 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             return filterAll(findByCustomer());
         }
         if (customer == null && anno == null) {
-            return filterAll(((AbbonamentoDao) getRepo()).findByCampagna(campagna));
+            return filterAll(dao.getRepository().findByCampagna(campagna));
         }
         if (customer == null && campagna == null) {
-            return filterAll(((AbbonamentoDao) getRepo()).findByAnno(anno));
+            return filterAll(dao.getRepository().findByAnno(anno));
         }
         
         if (anno == null) {
@@ -206,14 +202,14 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             .collect(Collectors.toList()));
         }
         if (customer == null) {
-            return filterAll(((AbbonamentoDao) getRepo()).findByCampagna(campagna)
+            return filterAll(dao.getRepository().findByCampagna(campagna)
                 .stream()
                     .filter(a -> 
                         a.getAnno() == anno
                         )
                     .collect(Collectors.toList()));
         }
-        return filterAll(((AbbonamentoDao) getRepo()).findByIntestatario(customer)
+        return filterAll(dao.getRepository().findByIntestatario(customer)
                 .stream()
                 .filter(a -> 
                     a.getCampagna() != null
@@ -247,9 +243,9 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     
     public List<EstrattoConto> findEC() {
         if (pubblicazione != null) {
-            return filterAllEC(estrattoContoDao.findByPubblicazione(pubblicazione));
+            return filterAllEC(dao.findByPubblicazione(pubblicazione));
         }
-        return filterAllEC(estrattoContoDao.findAll());
+        return filterAllEC(dao.findAllItems());
     }
 
     private List<EstrattoConto> filterAllEC(List<EstrattoConto> estrattiConto) {
