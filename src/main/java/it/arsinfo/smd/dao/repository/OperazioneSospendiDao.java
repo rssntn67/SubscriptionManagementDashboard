@@ -1,4 +1,4 @@
-package it.arsinfo.smd.repository;
+package it.arsinfo.smd.dao.repository;
 
 import java.util.List;
 
