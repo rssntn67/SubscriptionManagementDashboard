@@ -14,11 +14,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -50,7 +50,7 @@ public class StoricoUI extends SmdUI {
     private AnagraficaDao anagraficaDao;
 
     @Autowired
-    private StoricoDao storicoDao;
+    private StoricoServiceDao dao;
 
     @Autowired
     private NotaDao notaDao;
@@ -64,12 +64,12 @@ public class StoricoUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
         StoricoAdd add = new StoricoAdd("Aggiungi Storico");
-        StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
+        StoricoSearch search = new StoricoSearch(dao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
         
         StoricoEditor editor = 
                 new StoricoEditor(
-                                  storicoDao, 
+                                  dao.getRepository(), 
                                   pubblicazioni, 
                                   anagrafica) {
             @Override

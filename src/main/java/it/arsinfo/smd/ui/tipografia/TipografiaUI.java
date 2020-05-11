@@ -11,7 +11,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
-import it.arsinfo.smd.dao.repository.OperazioneDao;
+import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
@@ -32,7 +32,7 @@ public class TipografiaUI extends SmdUI {
     private static final long serialVersionUID = -4970387092690412856L;
 
     @Autowired
-    private OperazioneDao operazioneDao;
+    private OperazioneServiceDao dao;
 
     @Autowired
     private PubblicazioneDao pubblicazioneDao;
@@ -47,9 +47,9 @@ public class TipografiaUI extends SmdUI {
         
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
         OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES);
-        OperazioneSearch search = new OperazioneSearch(operazioneDao, pubblicazioni);
+        OperazioneSearch search = new OperazioneSearch(dao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
-        OperazioneEditor editor = new OperazioneEditor(operazioneDao, pubblicazioni);
+        OperazioneEditor editor = new OperazioneEditor(dao.getRepository(), pubblicazioni);
         addSmdComponents(generaShow,genera,editor,search,grid);
         
         
@@ -100,13 +100,13 @@ public class TipografiaUI extends SmdUI {
               );
             button.addClickListener(click -> {
                 op.setStatoOperazione(StatoOperazione.Inviata);
-                operazioneDao.save(op);
+                dao.getRepository().save(op);
                 grid.populate(search.find());
             });
             return button;
         });
 
-        grid.populate(operazioneDao.findAll());
+        grid.populate(search.find());
 
      }
 

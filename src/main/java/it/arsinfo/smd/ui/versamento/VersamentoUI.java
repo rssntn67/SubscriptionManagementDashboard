@@ -10,10 +10,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.service.SmdService;
@@ -32,10 +32,10 @@ public class VersamentoUI extends SmdUI {
     private static final long serialVersionUID = 6407425404499250763L;
 
     @Autowired
-    private VersamentoDao versamentoDao;
+    private VersamentoServiceDao dao;
 
     @Autowired
-    private AbbonamentoDao abbonamentoDao;
+    private AbbonamentoServiceDao abbonamentoDao;
 
     @Autowired
     private AnagraficaDao anagraficaDao;
@@ -52,7 +52,7 @@ public class VersamentoUI extends SmdUI {
         
         VersamentoAbbonamentoSearch abbSearch = 
         new VersamentoAbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
-        VersamentoSearch search = new VersamentoSearch(versamentoDao);
+        VersamentoSearch search = new VersamentoSearch(dao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");

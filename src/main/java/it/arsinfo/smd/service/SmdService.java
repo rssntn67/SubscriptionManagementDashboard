@@ -65,10 +65,6 @@ public interface SmdService {
 
     List<OperazioneIncasso> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
-
-    List<Spedizione> findSpedizioneByDestinatario(Anagrafica a);
-    List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p);
-    List<Spedizione> findSpedizioneAll();
     
     void save(Incasso incasso) throws Exception;
     void save(Versamento versamento) throws Exception;

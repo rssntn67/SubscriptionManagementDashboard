@@ -25,7 +25,7 @@ public class SpesaSpedizioneUI extends SmdEditorUI<SpesaSpedizione> {
 
     @Override
     protected void init(VaadinRequest request) {
-        SpesaSpedizioneSearch search = new SpesaSpedizioneSearch(spesaSpedizioneDao.getRepository());
+        SpesaSpedizioneSearch search = new SpesaSpedizioneSearch(spesaSpedizioneDao);
         SpesaSpedizioneAdd add = new SpesaSpedizioneAdd("Aggiungi Spese Spedizione");
         SpesaSpedizioneEditor editor = 
                 new SpesaSpedizioneEditor(spesaSpedizioneDao);

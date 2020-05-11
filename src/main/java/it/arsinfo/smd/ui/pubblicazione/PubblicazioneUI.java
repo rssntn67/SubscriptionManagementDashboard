@@ -26,7 +26,7 @@ public class PubblicazioneUI extends SmdEditorUI<Pubblicazione> {
     @Override
     protected void init(VaadinRequest request) {
         PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
-        PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao.getRepository());
+        PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
         PubblicazioneGrid grid = new PubblicazioneGrid("Pubblicazioni");
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);
                         

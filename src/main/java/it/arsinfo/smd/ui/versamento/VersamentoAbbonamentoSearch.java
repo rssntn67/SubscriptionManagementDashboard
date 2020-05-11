@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -22,11 +22,10 @@ public class VersamentoAbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private ArrayList<Abbonamento> abbonamenti = new ArrayList<>();
     
-    public VersamentoAbbonamentoSearch(AbbonamentoDao abbonamentoDao, 
+    public VersamentoAbbonamentoSearch(AbbonamentoServiceDao dao, 
             List<Anagrafica> anagrafica, 
             List<Campagna> campagne) {
-        super(abbonamentoDao);
-        
+        super(dao);
         HorizontalLayout anag = new HorizontalLayout(filterCampagna);
         anag.addComponentsAndExpand(filterAnagrafica);
         

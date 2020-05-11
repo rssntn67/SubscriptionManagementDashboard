@@ -28,7 +28,7 @@ public class UserInfoUI extends SmdEditorUI<UserInfo> {
 
     @Override
     protected void init(VaadinRequest request) {
-        UserInfoSearch search = new UserInfoSearch(userInfoDao.getRepository());
+        UserInfoSearch search = new UserInfoSearch(userInfoDao);
         UserInfoAdd add = new UserInfoAdd("Aggiungi Utente");
         UserInfoGrid grid = new UserInfoGrid("Users");
         UserInfoEditor editor = new UserInfoEditor(userInfoDao,passwordEncoder);

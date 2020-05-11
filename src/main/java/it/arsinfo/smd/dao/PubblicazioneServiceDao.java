@@ -1,11 +1,14 @@
 package it.arsinfo.smd.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
@@ -38,4 +41,18 @@ public class PubblicazioneServiceDao implements SmdServiceDao<Pubblicazione> {
 		return repository;
 	}
 	
+	public List<Pubblicazione> searchBy(String nome, TipoPubblicazione tipo) {
+        if (StringUtils.isEmpty(nome) && tipo == null) {
+            return findAll();
+        }
+
+        if (tipo == null) {
+            return repository.findByNomeStartsWithIgnoreCase(nome);
+        }
+        if (StringUtils.isEmpty(nome)) {
+            return repository.findByTipo(tipo);
+        }
+        return repository.findByNomeStartsWithIgnoreCase(nome).stream().filter(p -> p.getTipo().equals(tipo)).collect(Collectors.toList());
+
+	}
 }

@@ -12,7 +12,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.AnagraficaServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -61,9 +61,12 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
+    
+    private final AnagraficaServiceDao dao;
 
-    public AnagraficaSearch(AnagraficaDao anagraficaDao) {
-        super(anagraficaDao);
+    public AnagraficaSearch(AnagraficaServiceDao dao) {
+        super(dao);
+        this.dao=dao;
         TextField filterDenominazione = new TextField("Cerca per Denominazione");
         TextField filterNome = new TextField("Cerca per Nome");
         TextField filterCap = new TextField("Cerca per CAP");
@@ -186,19 +189,19 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     public List<Anagrafica> find() {
         
         if (searchDiocesi != null) {
-            return filterAll(((AnagraficaDao) getRepo()).findByDiocesi(searchDiocesi),true,false,false,false,false);
+            return filterAll(dao.getRepository().findByDiocesi(searchDiocesi),true,false,false,false,false);
         }
         if (!StringUtils.isEmpty(searchNome)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByNomeContainingIgnoreCase(searchNome),false,false,true,false,false);
+            return filterAll(dao.getRepository().findByNomeContainingIgnoreCase(searchNome),false,false,true,false,false);
         }
         if (!StringUtils.isEmpty(searchDenominazione)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByDenominazioneContainingIgnoreCase(searchDenominazione),false,false,true,false,false);
+            return filterAll(dao.getRepository().findByDenominazioneContainingIgnoreCase(searchDenominazione),false,false,true,false,false);
         }
         if (!StringUtils.isEmpty(searchCitta)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCittaContainingIgnoreCase(searchCitta),false,false,false,false,true);
+            return filterAll(dao.getRepository().findByCittaContainingIgnoreCase(searchCitta),false,false,false,false,true);
         }
         if (!StringUtils.isEmpty(searchCap)) {
-            return filterAll(((AnagraficaDao) getRepo()).findByCapContainingIgnoreCase(searchCap),false,false,false,true,false);
+            return filterAll(dao.getRepository().findByCapContainingIgnoreCase(searchCap),false,false,false,true,false);
         }
         return filterAll(findAll(),false,false,false,false,false);
 

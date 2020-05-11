@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.UserInfo.Role;
 
 @Service
 public class UserInfoServiceDao implements SmdServiceDao<UserInfo> {
@@ -36,6 +38,19 @@ public class UserInfoServiceDao implements SmdServiceDao<UserInfo> {
 
 	public UserInfoDao getRepository() {
 		return repository;
+	}
+
+	public List<UserInfo> searchBy(String searchText, Role role) {
+        if (StringUtils.isEmpty(searchText) && role == null) {
+            return findAll();
+        }
+        if (StringUtils.isEmpty(searchText)) {
+            return repository.findByRole(role);
+        }
+        if (role == null ) {
+            return repository.findByUsernameContainingIgnoreCase(searchText);
+        }
+        return repository.findByUsernameContainingIgnoreCaseAndRole(searchText, role);
 	}
 	
 }

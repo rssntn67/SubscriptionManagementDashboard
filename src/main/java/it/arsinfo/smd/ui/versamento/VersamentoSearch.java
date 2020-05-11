@@ -1,13 +1,9 @@
 package it.arsinfo.smd.ui.versamento;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.util.StringUtils;
 
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
@@ -15,12 +11,11 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.VersamentoDao;
+import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class VersamentoSearch extends SmdSearch<Versamento> {
@@ -34,8 +29,10 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
   
-    public VersamentoSearch(VersamentoDao versamentoDao) {
-        super(versamentoDao);
+    private final VersamentoServiceDao dao;
+    public VersamentoSearch(VersamentoServiceDao dao) {
+        super(dao);
+        this.dao=dao;
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
         filterDataContabile.setDateFormat("yyyy-MM-dd");
 
@@ -93,141 +90,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
 
     @Override
     public List<Versamento> find() {
-        if (StringUtils.isEmpty(importo) && dataContabile == null
-                && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return filterAll(findAll());
-        }
-        if (!StringUtils.isEmpty(importo)) {
-            try {
-                new BigDecimal(importo);
-            } catch (NumberFormatException e) {
-                return new ArrayList<>();
-            }
-        }
-         
-        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-                return filterAll(((VersamentoDao) getRepo())
-                    .findByImporto(new BigDecimal(importo)));
-        }
-
-        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(importo)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine));
-        }
-
-        if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByDataContabile(Smd.getStandardDate(dataContabile)));
-        }
-
-        if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(codeLine)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByDataPagamento(Smd.getStandardDate(dataPagamento)));
-        }
-
-        if (dataContabile == null && dataPagamento == null) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v-> v.getImporto().compareTo(new BigDecimal(importo)) == 0)
-                    .collect(Collectors.toList()));
-        }
-
-
-        if (dataContabile == null && StringUtils.isEmpty(codeLine)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByImporto(new BigDecimal(importo))
-                    .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
-                    .collect(Collectors.toList()));
-        }
-
-        if (dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByImporto(new BigDecimal(importo))
-                    .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
-                    .collect(Collectors.toList()));
-        }
-
-        if (dataContabile == null && StringUtils.isEmpty(importo)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
-                    .collect(Collectors.toList()));
-        }
-
-        if (dataPagamento == null && StringUtils.isEmpty(importo)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
-                    .collect(Collectors.toList()));
-        }
-
-        if (StringUtils.isEmpty(codeLine) && StringUtils.isEmpty(importo)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByDataPagamento(Smd.getStandardDate(dataPagamento))
-                    .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
-                    .collect(Collectors.toList()));
-        }
-
-        if (StringUtils.isEmpty(codeLine)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByImporto(new BigDecimal(importo))
-                    .stream()
-                    .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
-                    )
-                    .collect(Collectors.toList()));
-        }
-
-        if (StringUtils.isEmpty(importo)) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
-                    )
-                    .collect(Collectors.toList()));
-        }
-
-        if (dataPagamento == null) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                    && v.getImporto().compareTo(new BigDecimal(importo)) == 0
-                    )
-                    .collect(Collectors.toList()));
-            
-        }
-        if (dataContabile == null) {
-            return filterAll(((VersamentoDao) getRepo())
-                    .findByCodeLineContainingIgnoreCase(codeLine)
-                    .stream()
-                    .filter(v -> 
-                       v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
-                    && v.getImporto().compareTo(new BigDecimal(importo)) == 0
-                    )
-                    .collect(Collectors.toList()));
-            
-        }
-        return filterAll(((VersamentoDao) getRepo())
-                .findByCodeLineContainingIgnoreCase(codeLine)
-                .stream()
-                .filter(v -> 
-                   v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
-                && v.getImporto().compareTo(new BigDecimal(importo)) == 0
-                )
-                .collect(Collectors.toList()));
-
+    	return filterAll(dao.searchBy(importo,dataContabile,dataPagamento,codeLine));
     }
      
     private List<Versamento> filterAll(List<Versamento> versamenti) {

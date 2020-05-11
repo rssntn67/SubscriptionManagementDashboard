@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.entity.Operazione;
+import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
 public class OperazioneServiceDao implements SmdServiceDao<Operazione> {
@@ -36,6 +37,13 @@ public class OperazioneServiceDao implements SmdServiceDao<Operazione> {
 
 	public OperazioneDao getRepository() {
 		return repository;
+	}
+
+	public List<Operazione> searchBy(Pubblicazione p) {
+       if (p == null) {
+            return findAll();
+        }
+        return repository.findByPubblicazione(p);	 
 	}
 	
 }

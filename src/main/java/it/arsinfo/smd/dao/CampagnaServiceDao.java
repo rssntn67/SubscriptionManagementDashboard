@@ -1,6 +1,7 @@
 package it.arsinfo.smd.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -230,4 +231,16 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
         log.info("chiudi Campagna end {}", campagna);
 	}
 
+	public List<Campagna> searchBy(Anno anno) {
+        if (anno != null) {
+            Campagna campagna = repository.findByAnno(anno);
+            List<Campagna> campagne = new ArrayList<>();
+            if (campagna != null) {
+                campagne.add(campagna);
+            }
+            return campagne;
+        }
+        return findAll();
+
+	}
 }

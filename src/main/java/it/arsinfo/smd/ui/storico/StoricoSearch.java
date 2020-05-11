@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -29,9 +29,11 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
 
-    public StoricoSearch(StoricoDao storicoDao,
+    private final StoricoServiceDao dao;
+    public StoricoSearch(StoricoServiceDao dao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
-        super(storicoDao);
+        super(dao);
+        this.dao =dao;
 
         ComboBox<Anagrafica> filterIntestatario = new ComboBox<Anagrafica>();
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
@@ -108,28 +110,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
 
     @Override
     public List<Storico> find() {
-        if (destinatario == null && intestatario == null && pubblicazione == null) {
-            return filterAll(findAll());            
-        }
-        if (destinatario == null && intestatario == null) {
-            return filterAll(((StoricoDao) getRepo()).findByPubblicazione(pubblicazione));
-        }
-        if (destinatario == null && pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatario(intestatario));
-        }
-        if (intestatario == null && pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByDestinatario(destinatario));
-        }
-        if (pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndDestinatario(intestatario,destinatario));
-        }
-        if (intestatario == null) {
-            return filterAll(((StoricoDao) getRepo()).findByDestinatarioAndPubblicazione(destinatario,pubblicazione));
-        }
-        if (destinatario == null ) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndPubblicazione(intestatario, pubblicazione));
-        }
-        return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndDestinatarioAndPubblicazione(intestatario, destinatario, pubblicazione));
+    	return filterAll(dao.searchBy(intestatario, destinatario, pubblicazione));
     }
 
     private List<Storico> filterAll(List<Storico> storici) {

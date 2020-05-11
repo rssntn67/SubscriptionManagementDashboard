@@ -12,7 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.IncassoServiceDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
@@ -28,7 +28,7 @@ public class IncassoUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private IncassoDao incassoDao;
+    private IncassoServiceDao dao;
     @Autowired    
     private VersamentoDao versamentoDao;
 
@@ -40,11 +40,11 @@ public class IncassoUI extends SmdUI {
         super.init(request,"Incassi");
         IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
         IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
-        IncassoSearch search = new IncassoSearch(incassoDao);
+        IncassoSearch search = new IncassoSearch(dao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         IncassoGrid grid = new IncassoGrid("Incassi");
 
-        IncassoEditor editor = new IncassoEditor(incassoDao) {
+        IncassoEditor editor = new IncassoEditor(dao.getRepository()) {
             @Override
             public void save() {
                 if (get().getId() == null && get().getVersamenti().isEmpty()) {
