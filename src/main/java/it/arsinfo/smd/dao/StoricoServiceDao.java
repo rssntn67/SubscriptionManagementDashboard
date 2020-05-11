@@ -5,9 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -24,6 +29,15 @@ public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
     
     @Autowired
     private SmdService smdService;
+    
+    @Autowired
+    private PubblicazioneDao pubblicazioneDao;
+
+    @Autowired
+    private CampagnaDao campagnaDao;
+    
+    @Autowired
+    private AnagraficaDao anagraficaDao;
 
 	@Override
 	public Storico save(Storico entity) throws Exception {
@@ -42,8 +56,7 @@ public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
 
 	@Override
 	public void delete(Storico entity) throws Exception {
-		smdService.delete(entity);
-		//repository.delete(entity);
+		throw new UnsupportedOperationException("Delete Storico non supportato");
 	}
 
 	@Override
@@ -93,12 +106,46 @@ public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
 
 	@Override
 	public Storico deleteItem(Storico t, Nota item) throws Exception {
-		throw new UnsupportedOperationException("Delete Nota da Storico non supportato");
+		t.removeItem(item);
+		return t;
 	}
 
 	@Override
 	public Storico saveItem(Storico t, Nota item) throws Exception {
-		throw new UnsupportedOperationException("Salva Nota da Storico non supportato");
+		t.addItem(item);
+		return t;
 	}
 	
+	public List<Pubblicazione> findPubblicazioni() {
+		return pubblicazioneDao.findAll();
+	}
+
+	public List<Anagrafica> findAnagrafica() {
+		return anagraficaDao.findAll();
+	}
+	
+	public List<Campagna> findCampagne() {
+		return campagnaDao.findByStatoCampagnaNot(StatoCampagna.Chiusa);
+	}
+
+	public void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception {
+        if (campagna == null) {
+            throw new UnsupportedOperationException("La Campagna da aggiornare deve essere valorizzato");                 
+        }
+        if (storico.getNumero() <= 0) {
+            Nota nota = getNotaOnUpdate(storico, campagna, "rimuovi",username);
+    		smdService.rimuovi(campagna, storico, nota);
+        } else {
+            Nota nota = getNotaOnUpdate(storico, campagna, "aggiorna",username);
+    		smdService.aggiorna(campagna, storico, nota);		
+        }
+	}
+	
+    private  Nota getNotaOnUpdate(Storico storico,Campagna campagna, String action, String username) {
+        Nota unota = new Nota(storico);
+        unota.setOperatore(username);
+        unota.setDescription(action+": " + campagna.getCaption());
+        return unota;
+    }
+
 }

@@ -46,20 +46,20 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         
         EstrattoContoAdd itemAdd = new EstrattoContoAdd("Aggiungi EC");
-     	SmdButton itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
+     	SmdButton itemDel = new SmdButton("Rimuovi EC", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
-    	SmdButton itemSave = new SmdButton("Salva Item", VaadinIcons.CHECK);
+    	SmdButton itemSave = new SmdButton("Salva EC", VaadinIcons.CHECK);
 	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-	    AbbonamentoEditor abbeditor = new AbbonamentoEditor(dao,anagrafica,campagne);
-	    abbeditor.getActions().addComponents(itemDel.getComponents());
-		abbeditor.getActions().addComponents(itemSave.getComponents());
-		abbeditor.getActions().addComponents(itemAdd.getComponents());
+	    AbbonamentoEditor maineditor = new AbbonamentoEditor(dao,anagrafica,campagne);
+	    maineditor.getActions().addComponents(itemDel.getComponents());
+		maineditor.getActions().addComponents(itemSave.getComponents());
+		maineditor.getActions().addComponents(itemAdd.getComponents());
         EstrattoContoGrid itemGrid = new EstrattoContoGrid("Estratti Conto");
         EstrattoContoEditor itemEditor = new EstrattoContoEditor(pubblicazioni, anagrafica);
    	    
-        AbbonamentoEstrattoContoEditor editor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, abbeditor);
+        AbbonamentoEstrattoContoEditor editor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
-        editor.addComponents(abbeditor.getComponents());
+        editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());
 
         super.init(request, add, search, editor, grid, "Abbonamento");

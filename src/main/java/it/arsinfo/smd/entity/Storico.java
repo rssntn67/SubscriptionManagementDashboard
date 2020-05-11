@@ -126,10 +126,10 @@ public class Storico implements SmdEntityItems<Nota> {
     }
     @Transient
     public String getHeader() {
-        return String.format("'%d %s' %d]",
+        return String.format("'%s' %d %s]",
+                intestatario.getHeader(),
                 numero, 
-                pubblicazione.getNome(), 
-                intestatario.getHeader());
+                pubblicazione.getNome());
     }
     
     @Override

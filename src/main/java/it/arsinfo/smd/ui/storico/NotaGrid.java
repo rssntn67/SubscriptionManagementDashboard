@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.nota;
+package it.arsinfo.smd.ui.storico;
 
 import com.vaadin.ui.Grid;
 
@@ -9,10 +9,9 @@ public class NotaGrid extends SmdGrid<Nota> {
 
     public NotaGrid(String gridname) {
         super(new Grid<>(Nota.class),gridname);
-        setColumns("storico.caption","data", "operatore",
-                "description");
-        setColumnCaption("storico.caption", "Storico");
-
+        setColumns("data", "operatore",
+                   "description"
+                    );
     }
 
 }

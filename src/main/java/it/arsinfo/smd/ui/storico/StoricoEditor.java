@@ -38,8 +38,6 @@ public class StoricoEditor
 
     private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
-    private final TextField nota = new TextField("Aggiungi Nota");
-
     public StoricoEditor(
             StoricoServiceDao dao,
             List<Pubblicazione> pubblicazioni, 
@@ -87,10 +85,7 @@ public class StoricoEditor
         HorizontalLayout dati2HL = new HorizontalLayout();
         dati2HL.addComponents(cassa,invio,invioSpedizione);
 
-        HorizontalLayout noteHL = new HorizontalLayout();
-        noteHL.addComponentsAndExpand(nota);
-
-        setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL,noteHL);
+        setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL);
          
         getBinder()
             .forField(numero)
@@ -119,19 +114,5 @@ public class StoricoEditor
         
         numero.focus();
     }
-    public TextField getNota() {
-        return nota;
-    }
     
-    public ComboBox<Pubblicazione> getPubblicazione() {
-        return pubblicazione;
-    }
-
-    public ComboBox<Anagrafica> getDestinatario() {
-        return destinatario;
-    }
-
-    public ComboBox<Anagrafica> getIntestatario() {
-        return intestatario;
-    }
 }
