@@ -42,7 +42,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     public AbbonamentoSearch(AbbonamentoServiceDao dao, List<Campagna> campagne, List<Pubblicazione> pubblicazioni,
     		List<Anagrafica> anagrafica) {
-        super(dao.getRepository());
+        super(dao);
 
         this.dao=dao;
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();

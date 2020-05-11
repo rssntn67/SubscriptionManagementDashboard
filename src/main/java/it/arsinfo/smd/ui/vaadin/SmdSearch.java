@@ -3,38 +3,23 @@ package it.arsinfo.smd.ui.vaadin;
 
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import it.arsinfo.smd.dao.SmdServiceDao;
 import it.arsinfo.smd.entity.SmdEntity;
-import it.arsinfo.smd.service.SmdService;
 
 public abstract class SmdSearch<T extends SmdEntity>
         extends SmdChangeHandler {
 
-    private final JpaRepository<T, Long> repo;
-
-    private SmdService smdService;
+    private final SmdServiceDao<T> dao;
         
-    public SmdSearch(JpaRepository<T, Long> repo) {
-        this.repo=repo;
+    public SmdSearch(SmdServiceDao<T> dao) {
+        this.dao=dao;
 
     }
 
     public abstract List<T> find();
-    
+        
     public List<T> findAll() {
-        return repo.findAll();
+        return dao.findAll();
     }
 
-    public JpaRepository<T, Long> getRepo() {
-        return repo;
-    }
-
-    public SmdService getSmdService() {
-        return smdService;
-    }
-
-    public void setSmdService(SmdService smdService) {
-        this.smdService = smdService;
-    }
 }
