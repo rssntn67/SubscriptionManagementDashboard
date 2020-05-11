@@ -97,7 +97,22 @@ public abstract class SmdUI extends UI {
         });
 
         MenuItem abbonamenti = menu.addItem("Gestione Abbonamento",null);
-        
+        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ABBONAMENTI);
+            }
+        } );
+
+        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_SPEDIZIONI);
+            }
+        } );
+
         abbonamenti.addItem("Campagna",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -120,22 +135,6 @@ public abstract class SmdUI extends UI {
             }
         } );
         
-        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_ABBONAMENTI);
-            }
-        } );
-
-        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_SPEDIZIONI);
-            }
-        } );
-
         MenuItem incassi = menu.addItem("Gestione Incassi",null);
         incassi.addItem("Incassi",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
@@ -253,11 +252,11 @@ public abstract class SmdUI extends UI {
 
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
+        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         links.add(new Link("Campagna",   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));
-        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         return links.toArray((new Link[links.size()]));
     }
 
