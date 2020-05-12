@@ -4,14 +4,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.util.StringUtils;
-
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.dao.AnagraficaServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -20,7 +19,6 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.service.dao.AnagraficaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
@@ -62,9 +60,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
     
-    private final AnagraficaServiceDaoImpl dao;
+    private final AnagraficaServiceDao dao;
 
-    public AnagraficaSearch(AnagraficaServiceDaoImpl dao) {
+    public AnagraficaSearch(AnagraficaServiceDao dao) {
         super(dao);
         this.dao=dao;
         TextField filterDenominazione = new TextField("Cerca per Denominazione");
@@ -187,66 +185,10 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     @Override
     public List<Anagrafica> find() {
-        
-        if (searchDiocesi != null) {
-            return filterAll(dao.getRepository().findByDiocesi(searchDiocesi),true,false,false,false,false);
-        }
-        if (!StringUtils.isEmpty(searchNome)) {
-            return filterAll(dao.getRepository().findByNomeContainingIgnoreCase(searchNome),false,false,true,false,false);
-        }
-        if (!StringUtils.isEmpty(searchDenominazione)) {
-            return filterAll(dao.getRepository().findByDenominazioneContainingIgnoreCase(searchDenominazione),false,false,true,false,false);
-        }
-        if (!StringUtils.isEmpty(searchCitta)) {
-            return filterAll(dao.getRepository().findByCittaContainingIgnoreCase(searchCitta),false,false,false,false,true);
-        }
-        if (!StringUtils.isEmpty(searchCap)) {
-            return filterAll(dao.getRepository().findByCapContainingIgnoreCase(searchCap),false,false,false,true,false);
-        }
-        return filterAll(findAll(),false,false,false,false,false);
-
+        return filterAll(dao.searchBy(searchDiocesi,searchNome,searchDenominazione,searchCitta,searchCap));
     }
 
-    private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche, 
-            boolean bdio, 
-            boolean bden,
-            boolean bnom,
-            boolean bcap,
-            boolean bcit) {
-
-        if (searchDiocesi != null && !bdio) {
-            anagrafiche = anagrafiche.stream().filter(a -> searchDiocesi == a.getDiocesi()).collect(Collectors.toList()); 
-        }
-        if (!StringUtils.isEmpty(searchDenominazione) && !bden) {
-            anagrafiche = anagrafiche.stream().filter( 
-                  a -> !StringUtils.isEmpty(a.getDenominazione())
-                      && a.getDenominazione().toLowerCase().contains(searchDenominazione.toLowerCase())
-             )
-            .collect(Collectors.toList()); 
-        }
-        if (!StringUtils.isEmpty(searchNome) && !bnom) {
-            anagrafiche = anagrafiche.stream().filter( 
-                  a -> !StringUtils.isEmpty(a.getNome())
-                      && a.getNome().toLowerCase().contains(searchNome.toLowerCase())
-             )
-            .collect(Collectors.toList()); 
-        }
-        if (!StringUtils.isEmpty(searchCap) && !bcap) {
-            anagrafiche = anagrafiche.stream().filter( 
-                  a -> !StringUtils.isEmpty(a.getCap())
-                      && a.getCap().toLowerCase().contains(searchCap.toLowerCase())
-             )
-            .collect(Collectors.toList()); 
-        }
-        if (!StringUtils.isEmpty(searchCitta) && !bcit) {
-            anagrafiche = anagrafiche.stream().filter( 
-                  a -> !StringUtils.isEmpty(a.getCitta())
-                      && a.getCitta().toLowerCase().contains(searchCitta.toLowerCase())
-             )
-            .collect(Collectors.toList()); 
-        }
-
-        
+    private List<Anagrafica> filterAll(List<Anagrafica> anagrafiche) {
         if (filterPaese.getValue() != null) {
             anagrafiche = anagrafiche.stream().filter(a -> filterPaese.getValue() == a.getPaese()).collect(Collectors.toList());
         }
