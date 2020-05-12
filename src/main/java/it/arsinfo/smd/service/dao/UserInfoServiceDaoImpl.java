@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 
 @Service
-public class UserInfoServiceDaoImpl implements SmdServiceDao<UserInfo> {
+public class UserInfoServiceDaoImpl implements UserInfoServiceDao {
 
     @Autowired
     private UserInfoDao repository;
@@ -52,6 +52,11 @@ public class UserInfoServiceDaoImpl implements SmdServiceDao<UserInfo> {
             return repository.findByUsernameContainingIgnoreCase(searchText);
         }
         return repository.findByUsernameContainingIgnoreCaseAndRole(searchText, role);
+	}
+
+	@Override
+	public UserInfo findByUsername(String name) {
+		return repository.findByUsername(name);
 	}
 	
 }
