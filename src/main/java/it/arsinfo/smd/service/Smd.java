@@ -277,8 +277,8 @@ public class Smd {
         .forEach(sped -> {
             sped.getSpedizioneItems()
             .stream()
-            .filter(item -> item.getEstrattoConto() == ec || 
-               (item.getEstrattoConto().getId() != null && ec.getId() != null && item.getEstrattoConto().getId().longValue() == ec.getId().longValue()))
+            .filter(item -> item.getRivistaAbbonamento() == ec || 
+               (item.getRivistaAbbonamento().getId() != null && ec.getId() != null && item.getRivistaAbbonamento().getId().longValue() == ec.getId().longValue()))
             .forEach(item -> {
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
@@ -423,10 +423,10 @@ public class Smd {
             sped.getSpedizioneItems()
             .stream()
             .filter(item -> 
-                item.getEstrattoConto() == ec 
+                item.getRivistaAbbonamento() == ec 
                 || 
-                (ec.getId() != null && item.getEstrattoConto().getId() != null &&
-                    item.getEstrattoConto().getId().longValue() == ec.getId().longValue()
+                (ec.getId() != null && item.getRivistaAbbonamento().getId() != null &&
+                    item.getRivistaAbbonamento().getId().longValue() == ec.getId().longValue()
                     )
                 )
             .forEach(item -> {
@@ -493,7 +493,7 @@ public class Smd {
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).stream().forEach(mese -> {
                 SpedizioneItem item = new SpedizioneItem();
-                item.setEstrattoConto(ec);
+                item.setRivistaAbbonamento(ec);
                 item.setAnnoPubblicazione(anno);
                 item.setMesePubblicazione(mese);
                 item.setNumero(ec.getNumero());

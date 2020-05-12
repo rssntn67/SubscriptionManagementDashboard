@@ -123,12 +123,12 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("EstrattoConto:Edit");
+        return String.format("id=%d",id);
     }
 
     @Override
     public String toString() {
-        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s]", 
                              id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
     }
         

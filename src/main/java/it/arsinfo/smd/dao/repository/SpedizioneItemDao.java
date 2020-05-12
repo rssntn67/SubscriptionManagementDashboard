@@ -18,6 +18,6 @@ public interface SpedizioneItemDao extends JpaRepository<SpedizioneItem, Long> {
     List<SpedizioneItem> findByPubblicazione(Pubblicazione p);
     List<SpedizioneItem> findByMesePubblicazione(Mese mese);
     List<SpedizioneItem> findByNumero(Integer numero);
-    List<SpedizioneItem> findByEstrattoConto(RivistaAbbonamento ec);
+    List<SpedizioneItem> findByRivistaAbbonamento(RivistaAbbonamento ec);
 
 }

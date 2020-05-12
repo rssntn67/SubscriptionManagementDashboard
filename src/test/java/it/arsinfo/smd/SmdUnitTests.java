@@ -239,7 +239,7 @@ public class SmdUnitTests {
         assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
         for (SpedizioneItem item: items) {
             assertEquals(anno, item.getAnnoPubblicazione());
-            assertEquals(ec, item.getEstrattoConto());
+            assertEquals(ec, item.getRivistaAbbonamento());
             assertEquals(10, item.getNumero().intValue());
            
             log.info(item.toString());
@@ -289,7 +289,7 @@ public class SmdUnitTests {
         assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
         for (SpedizioneItem item: items) {
             assertEquals(anno, item.getAnnoPubblicazione());
-            assertEquals(ec, item.getEstrattoConto());
+            assertEquals(ec, item.getRivistaAbbonamento());
             assertEquals(10, item.getNumero().intValue());           
             log.info(item.toString());
         }
@@ -643,13 +643,13 @@ public class SmdUnitTests {
         });
 
         final List<SpedizioneItem> ec1items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec1).forEach(item -> ec1items.add(item)));
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec1).forEach(item -> ec1items.add(item)));
 
         final List<SpedizioneItem> ec2items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec2).forEach(item -> ec2items.add(item)));
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec2).forEach(item -> ec2items.add(item)));
         
         final List<SpedizioneItem> ec3items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getEstrattoConto() == ec3).forEach(item -> ec3items.add(item)));
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec3).forEach(item -> ec3items.add(item)));
 
         log.info(abb.toString());
         assertEquals(BigDecimal.ZERO, abb.getSpese());
@@ -667,7 +667,7 @@ public class SmdUnitTests {
         
         for (SpedizioneItem item: deleted){
             log.info("delete: " + item.toString());
-            assertEquals(ec2, item.getEstrattoConto());
+            assertEquals(ec2, item.getRivistaAbbonamento());
         }
         spedizioni.stream().forEach(spwi -> {
             Spedizione sped = spwi.getSpedizione();
@@ -716,7 +716,7 @@ public class SmdUnitTests {
 
         for (SpedizioneItem item: deleted){
             log.info("delete: " + item.toString());
-            assertEquals(ec1, item.getEstrattoConto());
+            assertEquals(ec1, item.getRivistaAbbonamento());
         }
         spedizioni.stream().forEach(spwi -> {
             Spedizione sped = spwi.getSpedizione();
@@ -766,7 +766,7 @@ public class SmdUnitTests {
         deleted = Smd.rimuoviEC(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
         for (SpedizioneItem item: deleted){
             log.info("delete: " + item.toString());
-            assertEquals(ec3, item.getEstrattoConto());
+            assertEquals(ec3, item.getRivistaAbbonamento());
         }
         assertEquals(2, deleted.size());
 
@@ -829,7 +829,7 @@ public class SmdUnitTests {
         .stream()
         .forEach(sped -> sped.getSpedizioneItems()
         		.stream()
-        		.filter(item -> item.getEstrattoConto() == ec)
+        		.filter(item -> item.getRivistaAbbonamento() == ec)
         		.forEach(item -> items.add(item))
         		);
 
