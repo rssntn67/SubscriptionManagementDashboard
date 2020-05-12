@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.dao.SmdServiceItemDao;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
@@ -20,7 +20,7 @@ import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class StoricoServiceDaoImpl implements SmdServiceItemDao<Storico, Nota> {
+public class StoricoServiceDaoImpl implements StoricoServiceDao {
 
     @Autowired
     private StoricoDao repository;
