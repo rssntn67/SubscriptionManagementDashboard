@@ -12,10 +12,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.dao.IncassoServiceDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
-import it.arsinfo.smd.service.dao.IncassoServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
@@ -28,7 +28,7 @@ public class IncassoUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private IncassoServiceDaoImpl dao;
+    private IncassoServiceDao dao;
     @Autowired    
     private VersamentoDao versamentoDao;
 
