@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -17,7 +17,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 
 @Service
-public class SpedizioneServiceDaoImpl implements SmdServiceDao<Spedizione> {
+public class SpedizioneServiceDaoImpl implements SpedizioneServiceDao {
 
     @Autowired
     private SpedizioneDao repository;
