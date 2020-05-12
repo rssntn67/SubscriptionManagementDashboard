@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 
 @Service
-public class NotaServiceDaoImpl implements SmdServiceDao<Nota> {
+public class NotaServiceDaoImpl implements NotaServiceDao {
 
 	@Autowired
 	private NotaDao repository;
