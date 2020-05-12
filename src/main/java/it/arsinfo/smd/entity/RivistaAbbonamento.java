@@ -12,18 +12,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.service.Smd;
 
 @Entity
-@Table(name = "estratto_conto")
 public class RivistaAbbonamento implements SmdEntity {
 
     @Id
@@ -40,7 +38,7 @@ public class RivistaAbbonamento implements SmdEntity {
     private Storico storico;
 
     @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     private Mese meseInizio=Mese.GENNAIO;
     private Anno annoInizio=Anno.getAnnoCorrente();
@@ -115,12 +113,12 @@ public class RivistaAbbonamento implements SmdEntity {
         this.numero = numero;
     }
 
-    public TipoEstrattoConto getTipoEstrattoConto() {
-        return tipoEstrattoConto;
+    public TipoAbbonamentoRivista getTipoAbbonamentoRivista() {
+        return tipoAbbonamentoRivista;
     }
 
-    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
-        this.tipoEstrattoConto = omaggio;
+    public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
+        this.tipoAbbonamentoRivista = omaggio;
     }
 
     @Transient
@@ -131,7 +129,7 @@ public class RivistaAbbonamento implements SmdEntity {
     @Override
     public String toString() {
         return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoEstrattoConto);
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
     }
         
     public BigDecimal getImporto() {

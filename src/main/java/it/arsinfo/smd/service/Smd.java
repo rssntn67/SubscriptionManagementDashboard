@@ -48,7 +48,7 @@ import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -235,7 +235,7 @@ public class Smd {
         ec.setAbbonamento(abb);
         ec.setPubblicazione(storico.getPubblicazione());
         ec.setNumero(storico.getNumero());
-        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
         ec.setMeseInizio(Mese.GENNAIO);
         ec.setAnnoInizio(abb.getAnno());
         ec.setMeseFine(Mese.DICEMBRE);
@@ -481,7 +481,7 @@ public class Smd {
     }
 
     public static List<SpedizioneItem> generaECItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
-        log.debug("generaECItems: tipo: "+ ec.getTipoEstrattoConto());
+        log.debug("generaECItems: tipo: "+ ec.getTipoAbbonamentoRivista());
         log.debug("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
         log.debug("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
         log.debug("generaECItems: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
@@ -731,7 +731,7 @@ public class Smd {
 
     public static void calcoloImportoEC(RivistaAbbonamento ec) throws UnsupportedOperationException {
         BigDecimal costo=BigDecimal.ZERO;
-        switch (ec.getTipoEstrattoConto()) {
+        switch (ec.getTipoAbbonamentoRivista()) {
         case Ordinario:
             costo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
             if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
@@ -741,21 +741,21 @@ public class Smd {
 
         case Web:
             if (!ec.isAbbonamentoAnnuale()) {
-                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Scontato:
             if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Sostenitore:
             if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
             break;

@@ -278,7 +278,7 @@ public class SmdServiceImpl implements SmdService {
         }
         //Only updates are Numero and EstrattoConto other changes
         ec.setNumero(storico.getNumero());
-        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
         save(storico, note);
         aggiorna(ec);
     }

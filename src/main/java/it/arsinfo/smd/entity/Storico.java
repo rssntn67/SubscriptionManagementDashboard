@@ -17,7 +17,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 
 @Entity
 public class Storico implements SmdEntityItems<Nota> {
@@ -38,7 +38,7 @@ public class Storico implements SmdEntityItems<Nota> {
     private Integer numero = 1;
 
     @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
@@ -140,18 +140,18 @@ public class Storico implements SmdEntityItems<Nota> {
                              pubblicazione.getNome(), 
                              intestatario.getId(), 
                              destinatario.getId(), 
-                             tipoEstrattoConto,
+                             tipoAbbonamentoRivista,
                              invio,
                              statoStorico,
                              cassa);
     }
 
-    public TipoEstrattoConto getTipoEstrattoConto() {
-        return tipoEstrattoConto;
+    public TipoAbbonamentoRivista getTipoAbbonamentoRivista() {
+        return tipoAbbonamentoRivista;
     }
 
-    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
-        this.tipoEstrattoConto = omaggio;
+    public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
+        this.tipoAbbonamentoRivista = omaggio;
     }
 
     public Invio getInvio() {

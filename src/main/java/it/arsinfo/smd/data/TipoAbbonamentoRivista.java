@@ -1,6 +1,6 @@
 package it.arsinfo.smd.data;
 
-public enum TipoEstrattoConto {
+public enum TipoAbbonamentoRivista {
     Ordinario, 
     Web, 
     Scontato,

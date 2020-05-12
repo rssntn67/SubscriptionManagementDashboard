@@ -34,7 +34,7 @@ import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -56,7 +56,7 @@ public class SmdUnitTests {
     
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    private static RivistaAbbonamento crea(Abbonamento abb,Pubblicazione p, TipoEstrattoConto tipo, int numero) {
+    private static RivistaAbbonamento crea(Abbonamento abb,Pubblicazione p, TipoAbbonamentoRivista tipo, int numero) {
         Anno anno = Anno.getAnnoProssimo();
         Mese mese = Mese.getMeseCorrente();
         if (mese.getPosizione()+p.getAnticipoSpedizione() > 12) {
@@ -66,7 +66,7 @@ public class SmdUnitTests {
         ec.setAbbonamento(abb);
         ec.setNumero(numero);
         ec.setPubblicazione(p);
-        ec.setTipoEstrattoConto(tipo);
+        ec.setTipoAbbonamentoRivista(tipo);
         ec.setMeseInizio(Mese.GENNAIO);
         ec.setAnnoInizio(anno);
         ec.setMeseFine(Mese.DICEMBRE);
@@ -162,7 +162,7 @@ public class SmdUnitTests {
         assertEquals(0.0,abb.getSpese().doubleValue(),0);
         assertEquals(true, ec.isAbbonamentoAnnuale());
         assertEquals(abb, ec.getAbbonamento());
-        switch (ec.getTipoEstrattoConto()) {
+        switch (ec.getTipoAbbonamentoRivista()) {
         case OmaggioCuriaDiocesiana:
             assertEquals(0.0,abb.getImporto().doubleValue(),0);
            break;
@@ -217,7 +217,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.MARZO);
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
-        assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
+        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         ec.setDestinatario(SmdHelper.getAnagraficaBy("AAAA", "BBBBB"));
         ec.setInvio(Invio.Destinatario);
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
@@ -231,7 +231,7 @@ public class SmdUnitTests {
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
         assertEquals(3, items.size());
-        assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
+        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
         assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
         assertEquals(BigDecimal.ZERO, abb.getSpese());
@@ -271,7 +271,7 @@ public class SmdUnitTests {
         ec.setDestinatario(SmdHelper.getAnagraficaBy("k", "h"));
         ec.setInvio(Invio.Destinatario);
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
-        assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
+        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         List<SpedizioneWithItems> spedizioni = 
                 Smd.genera(abb, 
                                      ec,
@@ -282,7 +282,7 @@ public class SmdUnitTests {
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
 
         assertEquals(3, items.size());
-        assertEquals(TipoEstrattoConto.Ordinario, ec.getTipoEstrattoConto());
+        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
         assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
         assertEquals(abb, ec.getAbbonamento());
@@ -787,7 +787,7 @@ public class SmdUnitTests {
     public void testImportoAbbonamentoStd() {
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Anagrafica ar = SmdHelper.getAR();
-        EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
+        EnumSet.allOf(TipoAbbonamentoRivista.class).stream().forEach(tpec -> {
             Abbonamento abb = new Abbonamento();
             abb.setIntestatario(ar);
             RivistaAbbonamento ec = crea(abb,messaggio, tpec, 10); 
@@ -949,9 +949,9 @@ public class SmdUnitTests {
         pubblicazioni.add(estratti);
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoEstrattoConto.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));
@@ -1080,10 +1080,10 @@ public class SmdUnitTests {
         pubblicazioni.add(estratti);
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));

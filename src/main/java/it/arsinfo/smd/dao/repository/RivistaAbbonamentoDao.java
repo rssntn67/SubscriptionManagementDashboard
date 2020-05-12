@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -19,6 +19,6 @@ public interface RivistaAbbonamentoDao extends JpaRepository<RivistaAbbonamento,
         List<RivistaAbbonamento> findByStorico(Storico storico);
         List<RivistaAbbonamento> findByStoricoAndAnnoInizioAndAnnoFine(Storico storico, Anno inizio, Anno fine);
         List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione);
-        List<RivistaAbbonamento> findByTipoEstrattoConto(TipoEstrattoConto tipo);
+        List<RivistaAbbonamento> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
         void deleteByAbbonamento(Abbonamento abbonamento);
 }

@@ -18,7 +18,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -36,7 +36,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
     private Pubblicazione pubblicazione;
-    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
+    private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
     
     private final AbbonamentoServiceDao dao;
 
@@ -55,7 +55,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterCassa);
         anag.addComponentsAndExpand(filterAnagrafica);
         HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCodeLine,filterCampagna,filterCcp);
-        tipo.addComponentsAndExpand(filterTipoEstrattoConto);
+        tipo.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         
         setComponents(anag,tipo);
         filterCodeLine.setPlaceholder("Inserisci Code Line");
@@ -130,14 +130,14 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         filterCcp.setItemCaptionGenerator(Ccp::getCcp);
         filterCcp.addSelectionListener(e ->onChange());
         
-        filterTipoEstrattoConto.setPlaceholder("Cerca per Tipo Estratto Conto");
-        filterTipoEstrattoConto.setItems(EnumSet.allOf(TipoEstrattoConto.class));
-        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
+        filterTipoAbbonamentoRivista.setPlaceholder("Cerca per Tipo");
+        filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
+        filterTipoAbbonamentoRivista.addSelectionListener(e ->onChange());
 
 
     }
 
-    private List<Abbonamento> findByTipoEstrattoConto(List<Abbonamento> abbonamenti, TipoEstrattoConto tec) {
+    private List<Abbonamento> findByTipoEstrattoConto(List<Abbonamento> abbonamenti, TipoAbbonamentoRivista tec) {
         List<Long> approved = dao
                 .findByTipoEstrattoConto(tec)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
@@ -220,8 +220,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     }
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
-        if (filterTipoEstrattoConto.getValue() != null) {
-            abbonamenti = findByTipoEstrattoConto(abbonamenti, filterTipoEstrattoConto.getValue());
+        if (filterTipoAbbonamentoRivista.getValue() != null) {
+            abbonamenti = findByTipoEstrattoConto(abbonamenti, filterTipoAbbonamentoRivista.getValue());
         }
         if (pubblicazione != null) {
             abbonamenti = findByPubblicazione(abbonamenti);
@@ -252,8 +252,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         if (customer != null) {
             estrattiConto = estrattiConto.stream().filter( s -> s.getDestinatario().getId() == customer.getId()).collect(Collectors.toList());
         }
-        if (filterTipoEstrattoConto.getValue() != null) {
-            estrattiConto=estrattiConto.stream().filter(s -> s.getTipoEstrattoConto() == filterTipoEstrattoConto.getValue()).collect(Collectors.toList());      
+        if (filterTipoAbbonamentoRivista.getValue() != null) {
+            estrattiConto=estrattiConto.stream().filter(s -> s.getTipoAbbonamentoRivista() == filterTipoAbbonamentoRivista.getValue()).collect(Collectors.toList());      
         }
         
         return estrattiConto;

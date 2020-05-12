@@ -19,7 +19,7 @@ import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -208,8 +208,8 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Rivi
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
 	
-	public List<RivistaAbbonamento> findByTipoEstrattoConto(TipoEstrattoConto tec) {
-		return itemRepository.findByTipoEstrattoConto(tec);
+	public List<RivistaAbbonamento> findByTipoEstrattoConto(TipoAbbonamentoRivista tec) {
+		return itemRepository.findByTipoAbbonamentoRivista(tec);
 	}
 
 	public List<RivistaAbbonamento> findByDestinatario(Anagrafica customer) {

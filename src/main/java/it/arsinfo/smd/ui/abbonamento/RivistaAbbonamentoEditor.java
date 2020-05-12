@@ -14,7 +14,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -26,8 +26,8 @@ public class RivistaAbbonamentoEditor
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
-    private final ComboBox<TipoEstrattoConto> tipoEstrattoconto = new ComboBox<TipoEstrattoConto>("Tipo",
-                                                                    EnumSet.allOf(TipoEstrattoConto.class));
+    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>("Tipo",
+                                                                    EnumSet.allOf(TipoAbbonamentoRivista.class));
     
     private final ComboBox<Anno> annoInizio = new ComboBox<Anno>("Anno Inizio",
             EnumSet.allOf(Anno.class));
@@ -67,7 +67,7 @@ public class RivistaAbbonamentoEditor
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
-        tipoEstrattoconto.setEmptySelectionAllowed(false);
+        tipoAbbonamentoRivista.setEmptySelectionAllowed(false);
 
         annoInizio.setEmptySelectionAllowed(false);
         annoInizio.setItemCaptionGenerator(Anno::getAnnoAsString);
@@ -82,7 +82,7 @@ public class RivistaAbbonamentoEditor
         meseFine.setItemCaptionGenerator(Mese::getNomeBreve);
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
-        HorizontalLayout lay = new HorizontalLayout(pubblicazione,tipoEstrattoconto,invio,invioSpedizione);
+        HorizontalLayout lay = new HorizontalLayout(pubblicazione,tipoAbbonamentoRivista,invio,invioSpedizione);
         lay.addComponentsAndExpand(destinatario);
         setComponents(
     					lay,
@@ -119,8 +119,8 @@ public class RivistaAbbonamentoEditor
         .withValidator(p -> p != null, "Destinatario deve essere selezionato")
         .bind(RivistaAbbonamento::getDestinatario,RivistaAbbonamento::setDestinatario);
 
-        getBinder().forField(tipoEstrattoconto)
-        .asRequired().bind(RivistaAbbonamento::getTipoEstrattoConto,RivistaAbbonamento::setTipoEstrattoConto);
+        getBinder().forField(tipoAbbonamentoRivista)
+        .asRequired().bind(RivistaAbbonamento::getTipoAbbonamentoRivista,RivistaAbbonamento::setTipoAbbonamentoRivista);
 
         getBinder().forField(invio)
         .asRequired().bind(RivistaAbbonamento::getInvio,RivistaAbbonamento::setInvio);
@@ -151,7 +151,7 @@ public class RivistaAbbonamentoEditor
         invio.setReadOnly(persisted|| obj.getStorico() != null);
         invioSpedizione.setReadOnly(persisted|| obj.getStorico() != null);
         numero.setReadOnly(obj.getStorico() != null);
-        tipoEstrattoconto.setReadOnly(obj.getStorico() != null);
+        tipoAbbonamentoRivista.setReadOnly(obj.getStorico() != null);
         meseInizio.setReadOnly(persisted|| obj.getStorico() != null);
         meseFine.setReadOnly(persisted|| obj.getStorico() != null);
         annoInizio.setReadOnly(persisted|| obj.getStorico() != null);
