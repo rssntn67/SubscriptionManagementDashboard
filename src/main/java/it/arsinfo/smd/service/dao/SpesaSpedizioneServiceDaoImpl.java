@@ -13,7 +13,7 @@ import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 
 @Service
-public class SpesaSpedizioneServiceDao implements SmdServiceDao<SpesaSpedizione> {
+public class SpesaSpedizioneServiceDaoImpl implements SmdServiceDao<SpesaSpedizione> {
 
     @Autowired
     private SpesaSpedizioneDao repository;

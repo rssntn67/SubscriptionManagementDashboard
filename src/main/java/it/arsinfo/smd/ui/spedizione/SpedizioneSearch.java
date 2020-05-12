@@ -18,7 +18,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.service.dao.SpedizioneServiceDao;
+import it.arsinfo.smd.service.dao.SpedizioneServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
@@ -34,8 +34,8 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
             
     private final Map<Long,Abbonamento> abbMap;
     
-    private final SpedizioneServiceDao dao;
-    public SpedizioneSearch(SpedizioneServiceDao dao,
+    private final SpedizioneServiceDaoImpl dao;
+    public SpedizioneSearch(SpedizioneServiceDaoImpl dao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {

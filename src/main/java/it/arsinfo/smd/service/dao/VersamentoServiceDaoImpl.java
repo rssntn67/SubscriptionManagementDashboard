@@ -16,7 +16,7 @@ import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
 
 @Service
-public class VersamentoServiceDao implements SmdServiceDao<Versamento> {
+public class VersamentoServiceDaoImpl implements SmdServiceDao<Versamento> {
 
     @Autowired
     private VersamentoDao repository;

@@ -14,7 +14,7 @@ import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 
 @Service
-public class NotaServiceDao implements SmdServiceDao<Nota> {
+public class NotaServiceDaoImpl implements SmdServiceDao<Nota> {
 
 	@Autowired
 	private NotaDao repository;

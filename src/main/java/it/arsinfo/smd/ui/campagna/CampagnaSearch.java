@@ -8,16 +8,16 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.service.dao.CampagnaServiceDao;
+import it.arsinfo.smd.service.dao.CampagnaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class CampagnaSearch extends SmdSearch<Campagna> {
 
     private Anno anno;
     
-    private final CampagnaServiceDao dao;
+    private final CampagnaServiceDaoImpl dao;
 
-    public CampagnaSearch(CampagnaServiceDao dao) {
+    public CampagnaSearch(CampagnaServiceDaoImpl dao) {
         super(dao);
         this.dao=dao;
         ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno",

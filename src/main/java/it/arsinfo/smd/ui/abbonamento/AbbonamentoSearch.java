@@ -2,8 +2,6 @@ package it.arsinfo.smd.ui.abbonamento;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.util.StringUtils;
@@ -13,6 +11,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
@@ -21,8 +20,6 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.service.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
@@ -137,95 +134,12 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     }
 
-    private List<Abbonamento> findByTipo(List<Abbonamento> abbonamenti, TipoAbbonamentoRivista tec) {
-        List<Long> approved = dao
-                .findByTipo(tec)
-                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-            return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
-
-    }
-    
-    private List<Abbonamento> findByCustomer() {
-       final Map<Long,Abbonamento> abbMap = 
-                dao.findByIntestatario(customer)
-                .stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
-        
-        dao
-            .findByDestinatario(customer)
-            .stream()
-            .filter(ec -> !abbMap.containsKey(ec.getAbbonamento().getId()))
-            .forEach( ec -> {
-                Abbonamento  abb = dao.getRepository().findById(ec.getAbbonamento().getId()).get();
-                abbMap.put(abb.getId(), abb);
-            });        
-        return abbMap.values().stream().collect(Collectors.toList());
-    }
-    
-
-    private List<Abbonamento> findByPubblicazione(List<Abbonamento> abbonamenti) {         
-         List<Long> approved = dao
-             .findByPubblicazione(pubblicazione)
-             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-         return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
-     }
-
     @Override
     public List<Abbonamento> find() {
-        if (campagna == null && customer == null && anno == null) {
-            return filterAll(findAll());            
-        }
-        if (campagna == null && anno == null) {
-            return filterAll(findByCustomer());
-        }
-        if (customer == null && anno == null) {
-            return filterAll(dao.getRepository().findByCampagna(campagna));
-        }
-        if (customer == null && campagna == null) {
-            return filterAll(dao.getRepository().findByAnno(anno));
-        }
-        
-        if (anno == null) {
-           return filterAll(findByCustomer()
-            .stream()
-            .filter(a -> 
-                a.getCampagna() != null
-                && a.getCampagna().getId() == campagna.getId()
-            )
-            .collect(Collectors.toList()));
-        }
-        if (campagna == null) {
-           return filterAll(findByCustomer()
-            .stream()
-            .filter(a -> 
-                a.getAnno() == anno
-                )
-            .collect(Collectors.toList()));
-        }
-        if (customer == null) {
-            return filterAll(dao.getRepository().findByCampagna(campagna)
-                .stream()
-                    .filter(a -> 
-                        a.getAnno() == anno
-                        )
-                    .collect(Collectors.toList()));
-        }
-        return filterAll(dao.getRepository().findByIntestatario(customer)
-                .stream()
-                .filter(a -> 
-                    a.getCampagna() != null
-                    && a.getCampagna().getId() == campagna.getId()
-                    && a.getAnno() == anno
-                    )
-                .collect(Collectors.toList()));
+    	return filterAll(dao.searchBy(campagna,customer,anno,pubblicazione,filterTipoAbbonamentoRivista.getValue()));
     }
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
-        if (filterTipoAbbonamentoRivista.getValue() != null) {
-            abbonamenti = findByTipo(abbonamenti, filterTipoAbbonamentoRivista.getValue());
-        }
-        if (pubblicazione != null) {
-            abbonamenti = findByPubblicazione(abbonamenti);
-        }
         if (filterCcp.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCcp() == filterCcp.getValue()).collect(Collectors.toList());      
         }
@@ -240,24 +154,4 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         }
         return abbonamenti;
     }
-    
-    public List<RivistaAbbonamento> findEC() {
-        if (pubblicazione != null) {
-            return filterAllEC(dao.findByPubblicazione(pubblicazione));
-        }
-        return filterAllEC(dao.findAllItems());
-    }
-
-    private List<RivistaAbbonamento> filterAllEC(List<RivistaAbbonamento> estrattiConto) {
-        if (customer != null) {
-            estrattiConto = estrattiConto.stream().filter( s -> s.getDestinatario().getId() == customer.getId()).collect(Collectors.toList());
-        }
-        if (filterTipoAbbonamentoRivista.getValue() != null) {
-            estrattiConto=estrattiConto.stream().filter(s -> s.getTipoAbbonamentoRivista() == filterTipoAbbonamentoRivista.getValue()).collect(Collectors.toList());      
-        }
-        
-        return estrattiConto;
-    }
-
-
 }

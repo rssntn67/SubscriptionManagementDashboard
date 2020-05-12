@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 
 @Service
-public class UserInfoServiceDao implements SmdServiceDao<UserInfo> {
+public class UserInfoServiceDaoImpl implements SmdServiceDao<UserInfo> {
 
     @Autowired
     private UserInfoDao repository;

@@ -20,13 +20,13 @@ import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
+public class StoricoServiceDaoImpl implements SmdServiceItemDao<Storico, Nota> {
 
     @Autowired
     private StoricoDao repository;
     
     @Autowired
-    private NotaDao repositoryItemDao;
+    private NotaDao itemRepository;
     
     @Autowired
     private SmdService smdService;
@@ -102,7 +102,7 @@ public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
 
 	@Override
 	public List<Nota> getItems(Storico t) {
-		return repositoryItemDao.findByStorico(t);
+		return itemRepository.findByStorico(t);
 	}
 
 	@Override
@@ -148,5 +148,10 @@ public class StoricoServiceDao implements SmdServiceItemDao<Storico, Nota> {
         unota.setDescription(action+": " + campagna.getCaption());
         return unota;
     }
+
+	@Override
+	public List<Nota> findAllItems() {
+		return itemRepository.findAll();
+	}
 
 }

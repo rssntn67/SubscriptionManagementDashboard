@@ -9,16 +9,16 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.dao.NotaServiceDao;
+import it.arsinfo.smd.service.dao.NotaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class NotaSearch extends SmdSearch<Nota> {
 
     private String searchText;
     private Storico storico;
-    private NotaServiceDao dao;
+    private NotaServiceDaoImpl dao;
 
-    public NotaSearch(NotaServiceDao dao, List<Storico> storici) {
+    public NotaSearch(NotaServiceDaoImpl dao, List<Storico> storici) {
         super(dao);
         this.dao=dao;
         TextField filter = new TextField();

@@ -10,13 +10,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.service.SmdService;
-import it.arsinfo.smd.service.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.service.dao.VersamentoServiceDao;
+import it.arsinfo.smd.service.dao.VersamentoServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
@@ -32,7 +32,7 @@ public class VersamentoUI extends SmdUI {
     private static final long serialVersionUID = 6407425404499250763L;
 
     @Autowired
-    private VersamentoServiceDao dao;
+    private VersamentoServiceDaoImpl dao;
 
     @Autowired
     private AbbonamentoServiceDao abbonamentoDao;

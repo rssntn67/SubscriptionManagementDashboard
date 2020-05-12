@@ -17,7 +17,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 
 @Service
-public class SpedizioneServiceDao implements SmdServiceDao<Spedizione> {
+public class SpedizioneServiceDaoImpl implements SmdServiceDao<Spedizione> {
 
     @Autowired
     private SpedizioneDao repository;
@@ -26,7 +26,7 @@ public class SpedizioneServiceDao implements SmdServiceDao<Spedizione> {
     @Autowired
     private SpedizioneItemDao itemRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(SpedizioneServiceDao.class);
+    private static final Logger log = LoggerFactory.getLogger(SpedizioneServiceDaoImpl.class);
 
 	@Override
 	public Spedizione save(Spedizione entity) throws Exception {

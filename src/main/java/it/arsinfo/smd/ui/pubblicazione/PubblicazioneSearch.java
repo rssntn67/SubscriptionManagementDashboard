@@ -10,7 +10,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.service.dao.PubblicazioneServiceDao;
+import it.arsinfo.smd.service.dao.PubblicazioneServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
@@ -18,9 +18,9 @@ public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
     private String searchNome;
     private TipoPubblicazione tipoPubblicazione;
     
-    private final PubblicazioneServiceDao dao;
+    private final PubblicazioneServiceDaoImpl dao;
 
-    public PubblicazioneSearch(PubblicazioneServiceDao dao) {
+    public PubblicazioneSearch(PubblicazioneServiceDaoImpl dao) {
         super(dao);
         this.dao=dao;
         TextField filterNome = new TextField();

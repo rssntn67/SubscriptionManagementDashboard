@@ -14,7 +14,7 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.dao.IncassoServiceDao;
+import it.arsinfo.smd.service.dao.IncassoServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class IncassoSearch extends SmdSearch<Incasso> {
@@ -24,9 +24,9 @@ public class IncassoSearch extends SmdSearch<Incasso> {
     private Cuas cuas;
     private LocalDate dataContabile;
     
-    private final IncassoServiceDao dao;
+    private final IncassoServiceDaoImpl dao;
 
-    public IncassoSearch(IncassoServiceDao dao) {
+    public IncassoSearch(IncassoServiceDaoImpl dao) {
         super(dao);
         this.dao = dao;
 

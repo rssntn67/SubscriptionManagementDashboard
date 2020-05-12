@@ -15,7 +15,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.dao.VersamentoServiceDao;
+import it.arsinfo.smd.service.dao.VersamentoServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class VersamentoSearch extends SmdSearch<Versamento> {
@@ -29,8 +29,8 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
   
-    private final VersamentoServiceDao dao;
-    public VersamentoSearch(VersamentoServiceDao dao) {
+    private final VersamentoServiceDaoImpl dao;
+    public VersamentoSearch(VersamentoServiceDaoImpl dao) {
         super(dao);
         this.dao=dao;
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");

@@ -18,7 +18,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.service.dao.UserInfoServiceDao;
+import it.arsinfo.smd.service.dao.UserInfoServiceDaoImpl;
 import it.arsinfo.smd.ui.security.SecurityUtils;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
@@ -34,7 +34,7 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
     private final PasswordField confirm = new PasswordField("confirm");
 
     private boolean persisted;
-    public UserInfoEditor(UserInfoServiceDao repo, PasswordEncoder passwordEncoder) {
+    public UserInfoEditor(UserInfoServiceDaoImpl repo, PasswordEncoder passwordEncoder) {
         super(repo, new Binder<>(UserInfo.class));
         setComponents(getActions(),
                       new HorizontalLayout(username,role),
@@ -65,7 +65,7 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         }
         
         if (!persisted &&
-            ((UserInfoServiceDao)getServiceDao()).getRepository().findByUsername(username.getValue()) != null) {
+            ((UserInfoServiceDaoImpl)getServiceDao()).getRepository().findByUsername(username.getValue()) != null) {
             Notification.show("Utente non salvato",
                               "username esiste",
                               Notification.Type.HUMANIZED_MESSAGE);

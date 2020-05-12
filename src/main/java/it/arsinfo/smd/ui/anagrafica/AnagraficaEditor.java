@@ -17,7 +17,7 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.service.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.service.dao.AnagraficaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
@@ -66,7 +66,7 @@ public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
     private final CheckBox elencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox promotoreRegionale = new CheckBox("Prom. Reg.");
 
-    public AnagraficaEditor(AnagraficaServiceDao anagraficaDao) {
+    public AnagraficaEditor(AnagraficaServiceDaoImpl anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
         HorizontalLayout intestazioni = new HorizontalLayout(diocesi, titolo,nome);

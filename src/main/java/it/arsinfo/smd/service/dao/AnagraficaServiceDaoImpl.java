@@ -10,7 +10,7 @@ import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.entity.Anagrafica;
 
 @Service
-public class AnagraficaServiceDao implements SmdServiceDao<Anagrafica> {
+public class AnagraficaServiceDaoImpl implements SmdServiceDao<Anagrafica> {
 
     @Autowired
     private AnagraficaDao repository;

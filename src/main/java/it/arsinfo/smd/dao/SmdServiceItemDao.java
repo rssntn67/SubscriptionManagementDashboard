@@ -10,4 +10,5 @@ public interface SmdServiceItemDao<T extends SmdEntityItems<I>,I extends SmdEnti
 	List<I>	getItems(T t);
 	T deleteItem(T t,I item) throws Exception;
 	T saveItem(T t,I item) throws Exception;
+	List<I> findAllItems();
 }

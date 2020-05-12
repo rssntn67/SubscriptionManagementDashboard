@@ -15,7 +15,7 @@ import com.vaadin.ui.Notification;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
-import it.arsinfo.smd.service.dao.IncassoServiceDao;
+import it.arsinfo.smd.service.dao.IncassoServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
@@ -28,7 +28,7 @@ public class IncassoUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private IncassoServiceDao dao;
+    private IncassoServiceDaoImpl dao;
     @Autowired    
     private VersamentoDao versamentoDao;
 

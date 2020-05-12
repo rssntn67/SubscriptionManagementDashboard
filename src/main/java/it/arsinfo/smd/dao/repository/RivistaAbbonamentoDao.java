@@ -20,5 +20,6 @@ public interface RivistaAbbonamentoDao extends JpaRepository<RivistaAbbonamento,
         List<RivistaAbbonamento> findByStoricoAndAnnoInizioAndAnnoFine(Storico storico, Anno inizio, Anno fine);
         List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione);
         List<RivistaAbbonamento> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
+        List<RivistaAbbonamento> findByPubblicazioneAndTipoAbbonamentoRivista(Pubblicazione pubblicazione, TipoAbbonamentoRivista t);
         void deleteByAbbonamento(Abbonamento abbonamento);
 }

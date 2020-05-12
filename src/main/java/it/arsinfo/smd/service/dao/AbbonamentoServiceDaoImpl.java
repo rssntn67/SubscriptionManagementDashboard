@@ -3,12 +3,15 @@ package it.arsinfo.smd.service.dao;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.arsinfo.smd.dao.SmdServiceItemDao;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
@@ -28,7 +31,7 @@ import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,RivistaAbbonamento> {
+public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
     @Autowired
     private AbbonamentoDao repository;
@@ -185,20 +188,71 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Rivi
 		return itemRepository.findByTipoAbbonamentoRivista(tec);
 	}
 
-	public List<RivistaAbbonamento> findByDestinatario(Anagrafica customer) {
-		return itemRepository.findByDestinatario(customer);
-	}
-
-	public List<Abbonamento> findByIntestatario(Anagrafica customer) {
-		return repository.findByIntestatario(customer);
-	}
-
 	public List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione) {
 		return itemRepository.findByPubblicazione(pubblicazione);
 	}
 
 	public List<RivistaAbbonamento> findAllItems() {
 		return itemRepository.findAll();
+	}
+
+    private List<Abbonamento> addByDestinatario(Anagrafica destinatario, List<Abbonamento> found) {
+        final Map<Long,Abbonamento> abbMap = 
+        		found.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
+         
+         itemRepository.findByDestinatario(destinatario)
+             .stream()
+             .filter(ec -> !abbMap.containsKey(ec.getAbbonamento().getId()))
+             .forEach( ec -> {
+                 Abbonamento  abb = findById(ec.getAbbonamento().getId());
+                 abbMap.put(abb.getId(), abb);
+             });        
+         return abbMap.values().stream().collect(Collectors.toList());
+     }
+
+    private List<Abbonamento> filterBy(TipoAbbonamentoRivista tipo, Pubblicazione p,List<Abbonamento> abbonamenti) {
+    	if (abbonamenti.size() == 0)
+    		return abbonamenti;
+    	if (tipo == null && p == null)
+    		return abbonamenti;
+    	List<Long> approved;
+    	if (tipo == null)
+            approved = itemRepository
+            .findByPubblicazione(p)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (p == null)
+    		approved = itemRepository
+            .findByTipoAbbonamentoRivista(tipo)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else 
+    		approved = itemRepository
+                .findByPubblicazioneAndTipoAbbonamentoRivista(p, tipo)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+        return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
+    }
+
+	@Override
+	public List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t) {
+		List<Abbonamento> abbonamenti;
+        if (campagna == null && customer == null && anno == null) {
+            abbonamenti = findAll();            
+        } else if (campagna == null && anno == null) {
+        	abbonamenti = addByDestinatario(customer, repository.findByIntestatario(customer));
+        } else if (customer == null && anno == null) {
+        	abbonamenti = repository.findByCampagna(campagna);
+        } else if (customer == null && campagna == null) {
+        	abbonamenti = repository.findByAnno(anno);
+        } else if (anno == null) {
+        	abbonamenti = addByDestinatario(customer,repository.findByIntestatarioAndCampagna(customer, campagna));
+        } else  if (campagna == null) {
+           abbonamenti = addByDestinatario(customer,repository.findByIntestatarioAndAnno(customer, anno));
+        } else if (customer == null) {
+        	abbonamenti = repository.findByCampagnaAndAnno(campagna,anno);
+        } else {
+        	abbonamenti =  addByDestinatario(customer,repository.findByIntestatarioAndCampagnaAndAnno(customer, campagna, anno));
+        }
+        
+        return filterBy(t, p, abbonamenti);
 	}
 
 }

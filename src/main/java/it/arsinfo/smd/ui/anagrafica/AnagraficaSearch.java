@@ -20,7 +20,7 @@ import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.service.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.service.dao.AnagraficaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class AnagraficaSearch extends SmdSearch<Anagrafica> {
@@ -62,9 +62,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
     
-    private final AnagraficaServiceDao dao;
+    private final AnagraficaServiceDaoImpl dao;
 
-    public AnagraficaSearch(AnagraficaServiceDao dao) {
+    public AnagraficaSearch(AnagraficaServiceDaoImpl dao) {
         super(dao);
         this.dao=dao;
         TextField filterDenominazione = new TextField("Cerca per Denominazione");

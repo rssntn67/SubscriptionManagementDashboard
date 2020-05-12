@@ -11,7 +11,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.service.dao.OperazioneServiceDao;
+import it.arsinfo.smd.service.dao.OperazioneServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class OperazioneSearch extends SmdSearch<Operazione> {
@@ -20,8 +20,8 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
     ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     ComboBox<Mese> filterMese = new ComboBox<Mese>();
 
-    private final OperazioneServiceDao dao;
-    public OperazioneSearch(OperazioneServiceDao dao, List<Pubblicazione> pubblicazioni) {
+    private final OperazioneServiceDaoImpl dao;
+    public OperazioneSearch(OperazioneServiceDaoImpl dao, List<Pubblicazione> pubblicazioni) {
         super(dao);
         this.dao = dao;
         ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>();

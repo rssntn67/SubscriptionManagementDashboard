@@ -11,7 +11,7 @@ import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
-public class OperazioneServiceDao implements SmdServiceDao<Operazione> {
+public class OperazioneServiceDaoImpl implements SmdServiceDao<Operazione> {
 
     @Autowired
     private OperazioneDao repository;

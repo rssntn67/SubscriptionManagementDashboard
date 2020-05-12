@@ -17,7 +17,7 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.dao.StoricoServiceDao;
+import it.arsinfo.smd.service.dao.StoricoServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class StoricoEditor
@@ -39,7 +39,7 @@ public class StoricoEditor
     private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
     public StoricoEditor(
-            StoricoServiceDao dao,
+            StoricoServiceDaoImpl dao,
             List<Pubblicazione> pubblicazioni, 
             List<Anagrafica> anagrafiche) {
 

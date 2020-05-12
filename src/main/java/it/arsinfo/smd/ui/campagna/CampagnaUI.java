@@ -7,7 +7,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.service.dao.CampagnaServiceDao;
+import it.arsinfo.smd.service.dao.CampagnaServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
@@ -21,7 +21,7 @@ public class CampagnaUI extends SmdEditorUI<Campagna> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private CampagnaServiceDao campagnaDao;
+    private CampagnaServiceDaoImpl campagnaDao;
 
     @Override
     protected void init(VaadinRequest request) {

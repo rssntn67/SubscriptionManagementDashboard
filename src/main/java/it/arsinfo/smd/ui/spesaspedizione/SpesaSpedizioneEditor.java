@@ -11,7 +11,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.service.dao.SpesaSpedizioneServiceDao;
+import it.arsinfo.smd.service.dao.SpesaSpedizioneServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class SpesaSpedizioneEditor
@@ -29,7 +29,7 @@ public class SpesaSpedizioneEditor
     private final TextField cor3gg = new TextField("Spese Spedizione Corriere 3gg");
 
     public SpesaSpedizioneEditor(
-            SpesaSpedizioneServiceDao spesaSpedizioneDao) {
+            SpesaSpedizioneServiceDaoImpl spesaSpedizioneDao) {
 
         super(spesaSpedizioneDao, new Binder<>(SpesaSpedizione.class) );
 

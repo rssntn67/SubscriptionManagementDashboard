@@ -32,7 +32,7 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
+public class CampagnaServiceDaoImpl implements SmdServiceDao<Campagna> {
 
 	@Autowired
 	private CampagnaDao repository;
@@ -49,7 +49,7 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 	@Autowired
 	private SmdService smdService;
 
-	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDao.class);
+	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
 
 	@Override
 	@Transactional

@@ -13,7 +13,7 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
-public class PubblicazioneServiceDao implements SmdServiceDao<Pubblicazione> {
+public class PubblicazioneServiceDaoImpl implements SmdServiceDao<Pubblicazione> {
 
     @Autowired
     private PubblicazioneDao repository;

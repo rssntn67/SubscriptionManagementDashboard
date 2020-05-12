@@ -10,7 +10,7 @@ import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.entity.Incasso;
 
 @Service
-public class IncassoServiceDao implements SmdServiceDao<Incasso> {
+public class IncassoServiceDaoImpl implements SmdServiceDao<Incasso> {
 
     @Autowired
     private IncassoDao repository;

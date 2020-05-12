@@ -17,7 +17,7 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
-import it.arsinfo.smd.service.dao.OperazioneServiceDao;
+import it.arsinfo.smd.service.dao.OperazioneServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
@@ -32,7 +32,7 @@ public class TipografiaUI extends SmdUI {
     private static final long serialVersionUID = -4970387092690412856L;
 
     @Autowired
-    private OperazioneServiceDao dao;
+    private OperazioneServiceDaoImpl dao;
 
     @Autowired
     private PubblicazioneDao pubblicazioneDao;

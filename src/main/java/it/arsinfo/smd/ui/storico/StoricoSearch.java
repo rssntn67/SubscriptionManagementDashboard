@@ -15,7 +15,7 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.dao.StoricoServiceDao;
+import it.arsinfo.smd.service.dao.StoricoServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class StoricoSearch extends SmdSearch<Storico> {
@@ -29,8 +29,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
 
-    private final StoricoServiceDao dao;
-    public StoricoSearch(StoricoServiceDao dao,
+    private final StoricoServiceDaoImpl dao;
+    public StoricoSearch(StoricoServiceDaoImpl dao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
         super(dao);
         this.dao =dao;
