@@ -6,14 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 
 @Service
-public class SpesaSpedizioneServiceDaoImpl implements SmdServiceDao<SpesaSpedizione> {
+public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneServiceDao {
 
     @Autowired
     private SpesaSpedizioneDao repository;
