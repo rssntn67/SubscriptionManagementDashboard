@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
 
 @Service
-public class VersamentoServiceDaoImpl implements SmdServiceDao<Versamento> {
+public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
     @Autowired
     private VersamentoDao repository;
