@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
@@ -32,7 +32,7 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class CampagnaServiceDaoImpl implements SmdServiceDao<Campagna> {
+public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Autowired
 	private CampagnaDao repository;

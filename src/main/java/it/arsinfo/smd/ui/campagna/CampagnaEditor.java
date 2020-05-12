@@ -12,11 +12,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
+import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.service.dao.CampagnaServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class CampagnaEditor extends SmdEntityEditor<Campagna> {
@@ -42,7 +42,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Button buttonWChiudi = new Button("Chiudi",VaadinIcons.ENVELOPES);
 
 
-    public CampagnaEditor(CampagnaServiceDaoImpl repo) {
+    public CampagnaEditor(CampagnaServiceDao repo) {
 
         super(repo, new Binder<>(Campagna.class));
         items = new CampagnaItemsEditor(repo.findPubblicazioni());
