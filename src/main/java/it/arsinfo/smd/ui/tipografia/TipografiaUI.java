@@ -11,13 +11,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
-import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
+import it.arsinfo.smd.service.dao.OperazioneServiceDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 

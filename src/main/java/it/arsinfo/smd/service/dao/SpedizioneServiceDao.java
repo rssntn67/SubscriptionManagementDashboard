@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.service.dao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.arsinfo.smd.dao.SmdServiceDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.entity.Anagrafica;

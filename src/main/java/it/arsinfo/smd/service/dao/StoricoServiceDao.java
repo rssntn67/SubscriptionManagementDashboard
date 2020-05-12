@@ -1,10 +1,11 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.service.dao;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.arsinfo.smd.dao.SmdServiceItemDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.NotaDao;

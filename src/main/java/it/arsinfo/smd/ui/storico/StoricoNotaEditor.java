@@ -1,7 +1,7 @@
 package it.arsinfo.smd.ui.storico;
 
-import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.service.dao.StoricoServiceDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.vaadin.SmdEntityItemEditor;

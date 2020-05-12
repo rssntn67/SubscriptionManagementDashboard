@@ -8,9 +8,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.service.dao.NotaServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class NotaEditor extends SmdEntityEditor<Nota> {

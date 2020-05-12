@@ -11,11 +11,11 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.service.dao.VersamentoServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class VersamentoSearch extends SmdSearch<Versamento> {

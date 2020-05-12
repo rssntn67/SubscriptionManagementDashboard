@@ -7,8 +7,8 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.service.dao.UserInfoServiceDao;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 

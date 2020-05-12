@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.service.dao;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import it.arsinfo.smd.dao.SmdServiceDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;

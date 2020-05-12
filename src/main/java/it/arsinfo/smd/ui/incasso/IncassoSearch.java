@@ -9,12 +9,12 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.IncassoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.dao.IncassoServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class IncassoSearch extends SmdSearch<Incasso> {

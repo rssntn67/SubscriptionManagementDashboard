@@ -12,11 +12,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
-import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
+import it.arsinfo.smd.service.dao.CampagnaServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class CampagnaEditor extends SmdEntityEditor<Campagna> {

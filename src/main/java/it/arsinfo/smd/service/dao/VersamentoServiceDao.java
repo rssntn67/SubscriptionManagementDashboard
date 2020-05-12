@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dao;
+package it.arsinfo.smd.service.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import it.arsinfo.smd.dao.SmdServiceDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;

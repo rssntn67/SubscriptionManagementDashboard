@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -16,6 +15,7 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.service.dao.StoricoServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class StoricoSearch extends SmdSearch<Storico> {

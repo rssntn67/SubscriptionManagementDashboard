@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -19,6 +18,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.service.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {

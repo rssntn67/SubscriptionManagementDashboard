@@ -6,9 +6,9 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.service.dao.CampagnaServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class CampagnaSearch extends SmdSearch<Campagna> {

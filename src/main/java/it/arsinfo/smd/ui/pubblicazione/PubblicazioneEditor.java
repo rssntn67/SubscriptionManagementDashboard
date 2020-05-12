@@ -10,11 +10,11 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.service.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class PubblicazioneEditor extends SmdEntityEditor<Pubblicazione> {

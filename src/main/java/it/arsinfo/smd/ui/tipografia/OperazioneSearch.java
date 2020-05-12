@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.service.dao.OperazioneServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class OperazioneSearch extends SmdSearch<Operazione> {

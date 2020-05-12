@@ -6,10 +6,10 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
+import it.arsinfo.smd.service.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class SpesaSpedizioneSearch extends SmdSearch<SpesaSpedizione> {

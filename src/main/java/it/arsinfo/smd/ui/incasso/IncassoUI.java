@@ -12,10 +12,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.IncassoServiceDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
+import it.arsinfo.smd.service.dao.IncassoServiceDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
