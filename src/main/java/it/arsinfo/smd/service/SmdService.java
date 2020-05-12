@@ -10,7 +10,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.dto.AbbonamentoConEC;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -37,7 +37,7 @@ public interface SmdService {
 	void delete(Storico storico);
     void save(Storico storico, Nota... note);
 
-    List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti);
+    List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
 
     void genera(Campagna campagna) throws Exception;
     void genera(Abbonamento abbonamento) throws Exception;
@@ -48,11 +48,11 @@ public interface SmdService {
     void sospendiStorico(Abbonamento abbonamento) throws Exception;
     void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
-    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento estrattoConto) throws Exception;
+    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void rimuovi(Campagna campagna,Storico storico,Nota...note) throws Exception;
     
-    void aggiorna(RivistaAbbonamento estrattoConto) throws Exception;    
+    void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception;    
     void aggiorna(Campagna campagna,Storico storico, Nota...note) throws Exception;
     
     void generaStatisticheTipografia(Anno anno, Mese mese); 

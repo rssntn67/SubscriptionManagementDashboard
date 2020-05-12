@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 
-public class AbbonamentoConEC extends Indirizzo {
+public class AbbonamentoConRiviste extends Indirizzo {
 
 	public static String numeroPlaceHolder="-";
     private final Abbonamento abbonamento;
@@ -27,7 +27,7 @@ public class AbbonamentoConEC extends Indirizzo {
     private BigDecimal importoLodare=BigDecimal.ZERO;
     private BigDecimal importoManifesti=BigDecimal.ZERO;
 
-    public AbbonamentoConEC(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
+    public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
     	super(intestatario,co);
     	fmt_IT.setMaximumFractionDigits(2);    	
     	fmt_IT.setMinimumFractionDigits(2);    	

@@ -29,7 +29,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     
     private final CampagnaItemsEditor items;
     
-    private final CampagnaEstrattoContoGrid grid = new CampagnaEstrattoContoGrid("Abbonamenti");
+    private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     
     private final Button buttonVGenerati = new Button("Abbonamenti Generati",VaadinIcons.ENVELOPES);
     private final Button buttonVInviati = new Button("Abbonamenti Inviati",VaadinIcons.ENVELOPES);

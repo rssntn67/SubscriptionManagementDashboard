@@ -924,38 +924,38 @@ public class SmdApplicationTests {
         assertEquals(2, spedizioneItemDao.findAll().size());
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(codeline);
         log.info(abbonamento.toString());
-        RivistaAbbonamento estrattoConto = rivistaAbbonamentoDao.findAll().iterator().next();
-        log.info(estrattoConto.toString());
+        RivistaAbbonamento rivista = rivistaAbbonamentoDao.findAll().iterator().next();
+        log.info(rivista.toString());
        assertEquals(0, abbonamento.getPregresso().doubleValue(),0);
 
         switch (tipoEC) {
         	case OmaggioDirettoreAdp:
  		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
-		       assertEquals(0, estrattoConto.getImporto().doubleValue(),0);
+		       assertEquals(0, rivista.getImporto().doubleValue(),0);
 		       break;
         	case OmaggioCuriaDiocesiana:
   		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, estrattoConto.getImporto().doubleValue(),0);
+ 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
  		       break;
         	case OmaggioCuriaGeneralizia:
   		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, estrattoConto.getImporto().doubleValue(),0);
+ 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
   		       break;
            	case OmaggioGesuiti:
   		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, estrattoConto.getImporto().doubleValue(),0);
+ 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
    		       break;
            	default:
 		       assertEquals(numero*blocchetti.getAbbonamento().doubleValue(), abbonamento.getImporto().doubleValue(),0);
-		       assertEquals(numero*blocchetti.getAbbonamento().doubleValue(), estrattoConto.getImporto().doubleValue(),0);
+		       assertEquals(numero*blocchetti.getAbbonamento().doubleValue(), rivista.getImporto().doubleValue(),0);
 			break;
 		}
         assertEquals(0, abbonamento.getPregresso().doubleValue(),0);
-        assertEquals(invioSpedizioneEc, estrattoConto.getInvioSpedizione());	
-        assertEquals(blocchetti.getId(), estrattoConto.getPubblicazione().getId());
-        assertEquals(tizio.getId(), estrattoConto.getDestinatario().getId());
-        assertEquals(numero, estrattoConto.getNumero().intValue());
-        assertEquals(numero*blocchetti.getMesiPubblicazione().size(), estrattoConto.getNumeroTotaleRiviste().intValue());
+        assertEquals(invioSpedizioneEc, rivista.getInvioSpedizione());	
+        assertEquals(blocchetti.getId(), rivista.getPubblicazione().getId());
+        assertEquals(tizio.getId(), rivista.getDestinatario().getId());
+        assertEquals(numero, rivista.getNumero().intValue());
+        assertEquals(numero*blocchetti.getMesiPubblicazione().size(), rivista.getNumeroTotaleRiviste().intValue());
         
         for (Spedizione sped : spedizioneDao.findAll()) {
         	log.info(sped.toString());
@@ -993,10 +993,10 @@ public class SmdApplicationTests {
         	log.info(item.toString());
         	assertEquals(blocchetti.getId(), item.getPubblicazione().getId());
         	assertEquals(numero, item.getNumero().intValue());
-        	assertEquals(estrattoConto.getId(), item.getRivistaAbbonamento().getId());        	
+        	assertEquals(rivista.getId(), item.getRivistaAbbonamento().getId());        	
         }
         
-        return estrattoConto;
+        return rivista;
     	
     }
 
@@ -1048,12 +1048,12 @@ public class SmdApplicationTests {
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         abb.addItem(ec1);
         smdService.genera(abb);
-        RivistaAbbonamento estrattoConto = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
+        RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         
-        estrattoConto.setNumero(4);
-        smdService.aggiorna(estrattoConto);
-        estrattoConto = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        smdService.rimuovi(abb,estrattoConto);
+        rivista.setNumero(4);
+        smdService.aggiorna(rivista);
+        rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
+        smdService.rimuovi(abb,rivista);
         assertEquals(0, rivistaAbbonamentoDao.count());
         assertEquals(0, abbonamentoDao.count());
         assertEquals(0, spedizioneDao.count());

@@ -84,8 +84,8 @@ public class SpedizioneItem implements SmdEntity {
     }
 
 
-    public void setRivistaAbbonamento(RivistaAbbonamento estrattoConto) {
-        this.rivistaAbbonamento = estrattoConto;
+    public void setRivistaAbbonamento(RivistaAbbonamento rivistaAbbonamento) {
+        this.rivistaAbbonamento = rivistaAbbonamento;
     }
         
     @Override

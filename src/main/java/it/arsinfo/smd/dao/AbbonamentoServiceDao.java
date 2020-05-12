@@ -2,10 +2,7 @@ package it.arsinfo.smd.dao;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,18 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.service.SmdService;
 
@@ -63,7 +60,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Rivi
         	throw new UnsupportedOperationException("Anno deve essere anno corrente o successivi");
         }
         if (entity.getId() == null && entity.getItems().size() == 0) {
-        	throw new UnsupportedOperationException("Aggiungere Estratto Conto Prima di Salvare");
+        	throw new UnsupportedOperationException("Aggiungere Rivista Prima di Salvare");
         }
         if (entity.getId() == null) {
             entity.setCodeLine(Abbonamento.generaCodeLine(entity.getAnno()));
@@ -105,32 +102,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Rivi
 	public AbbonamentoDao getRepository() {
 		return repository;
 	}
-
-	public List<Abbonamento> findByCampagna(Campagna entity) {
-		return repository.findByCampagna(entity);
-	}
 	
-	public List<Abbonamento> findInviatiByCampagna(Campagna entity) {
-		return repository.findByCampagna(entity).stream().filter(a -> a.getTotale().signum() > 0)
-				.collect(Collectors.toList());
-	}
-	
-	public List<Abbonamento> findEstrattoContoByCampagna(Campagna entity) {
-		return Stream
-		.of(repository.findByCampagnaAndStatoAbbonamento(entity, StatoAbbonamento.ValidoInviatoEC),
-				repository.findByCampagnaAndStatoAbbonamento(entity,
-						StatoAbbonamento.SospesoInviatoEC))
-		.flatMap(Collection::stream).collect(Collectors.toList());
-	}
-	
-	public List<Abbonamento> findAnnullatiByCampagna(Campagna entity) {
-		return 
-                repository.findByCampagna(entity)
-                .stream()
-                .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
-                .collect(Collectors.toList());
-	}
-
 	public List<Anagrafica> getAnagrafica() {
 		return anagraficaDao.findAll();
 	}

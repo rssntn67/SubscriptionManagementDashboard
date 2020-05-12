@@ -40,7 +40,7 @@ import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.dto.AbbonamentoConEC;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -78,7 +78,7 @@ public class SmdServiceImpl implements SmdService {
     AbbonamentoDao abbonamentoDao;
     
     @Autowired
-    RivistaAbbonamentoDao estrattoContoDao;
+    RivistaAbbonamentoDao rivistaAbbonamentoDao;
     
     @Autowired
     SpedizioneDao spedizioneDao;
@@ -162,12 +162,12 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {
-    	List<AbbonamentoConEC> list = new ArrayList<>();
+    public List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti) {
+    	List<AbbonamentoConRiviste> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
     		list.add(new 
-				AbbonamentoConEC(abbonamento, 
-						estrattoContoDao.findByAbbonamento(abbonamento),
+				AbbonamentoConRiviste(abbonamento, 
+						rivistaAbbonamentoDao.findByAbbonamento(abbonamento),
     					abbonamento.getIntestatario(),abbonamento.getIntestatario().getCo()));
     	}
     	return list;
@@ -216,12 +216,12 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getId());
             }
         );
-        estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> estrattoContoDao.deleteById(ec.getId()));
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
     }
 
     private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
         List<RivistaAbbonamento> ecs = 
-                estrattoContoDao
+                rivistaAbbonamentoDao
                 .findByStorico(storico)
                 .stream()
                 .filter(ec -> {
@@ -231,7 +231,7 @@ public class SmdServiceImpl implements SmdService {
                 .collect(Collectors.toList());
 
         if (ecs.size() > 1 ) {
-            throw new Exception("Un solo Estratto Conto per storico ogni anno");
+            throw new Exception("Un solo Rivista Abbonamento per storico ogni anno");
         }        
         if (ecs.size()  == 0) {
         	return null;
@@ -276,7 +276,6 @@ public class SmdServiceImpl implements SmdService {
             genera(abbonamento);
             return;
         }
-        //Only updates are Numero and EstrattoConto other changes
         ec.setNumero(storico.getNumero());
         ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
         save(storico, note);
@@ -291,7 +290,7 @@ public class SmdServiceImpl implements SmdService {
         }
         abbonamentoDao.save(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
-            estrattoContoDao.save(ec);
+            rivistaAbbonamentoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
@@ -300,14 +299,14 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(RivistaAbbonamento estrattoConto) throws Exception {
+    public void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception {
         // quantita -> spedizioneItem Importo Abbonamento
         // Tipo -> ordinario -> Importo Abbonamento
-        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
+        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         List<SpedizioneItem> deleted = Smd.aggiornaEC(abbonamento,
-                                                     estrattoConto, 
+                                                     rivistaAbbonamento, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
@@ -323,7 +322,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        estrattoContoDao.save(estrattoConto);
+        rivistaAbbonamentoDao.save(rivistaAbbonamento);
         
         abbonamentoDao
         .findByIntestatarioAndAnnoAndCassa(
@@ -344,19 +343,19 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void rimuovi(Abbonamento abbonamento) throws Exception {
         if (abbonamento == null) return;
-        for (RivistaAbbonamento ec: estrattoContoDao.findByAbbonamento(abbonamento)) {
+        for (RivistaAbbonamento ec: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
             rimuovi(abbonamento,ec);
         }
     }
 
     @Override
-    public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento estrattoConto) throws Exception {
-        if (estrattoConto == null || abbonamento == null)
+    public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception {
+        if (rivistaAbbonamento == null || abbonamento == null)
             return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
-                                                     estrattoConto, 
+                                                     rivistaAbbonamento, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
@@ -376,12 +375,12 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        if (estrattoConto.getNumeroTotaleRiviste() == 0 && estrattoConto.getStorico() == null) { 
-            estrattoContoDao.deleteById(estrattoConto.getId());
+        if (rivistaAbbonamento.getNumeroTotaleRiviste() == 0 && rivistaAbbonamento.getStorico() == null) { 
+            rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId());
         } else {
-            estrattoContoDao.save(estrattoConto);
+            rivistaAbbonamentoDao.save(rivistaAbbonamento);
         }
-        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && estrattoContoDao.findByAbbonamento(abbonamento).isEmpty()) {
+        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && rivistaAbbonamentoDao.findByAbbonamento(abbonamento).isEmpty()) {
         	abbonamentoDao.delete(abbonamento);
         } else {
         	abbonamentoDao.save(abbonamento);
@@ -599,7 +598,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void sospendiStorico(Abbonamento abbonamento) throws Exception {
-        estrattoContoDao.findByAbbonamento(abbonamento)
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(ec -> ec.getStorico() != null)
         .forEach(ec -> {
@@ -611,7 +610,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void riattivaStorico(Abbonamento abbonamento) throws Exception {
-        estrattoContoDao.findByAbbonamento(abbonamento)
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(ec -> ec.getStorico() != null)
         .forEach(ec -> {

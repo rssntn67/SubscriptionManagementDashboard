@@ -502,7 +502,7 @@ public class Smd {
             });
         }
       if (items.isEmpty()) {
-          throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
+          throw new UnsupportedOperationException("Nessuna spedizione per rivista in Abbonamento");
       }
       return items; 
     }
@@ -654,7 +654,7 @@ public class Smd {
     }
     
     public static List<RivistaAbbonamento> 
-        generaEstrattoContoAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
+        generaRivisteAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
         throws UnsupportedOperationException {
         if (abbonamento.getCampagna() != campagna) {
             throw new UnsupportedOperationException("Campagna ed abbonamento non matchano");

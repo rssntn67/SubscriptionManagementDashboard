@@ -52,7 +52,7 @@ public class SmdLoadSampleData implements Runnable {
     protected final PubblicazioneDao pubblicazioneDao;
     private final SpesaSpedizioneDao spesaSpedizioneDao;
     protected final AbbonamentoDao abbonamentoDao;
-    private final RivistaAbbonamentoDao estrattoContoDao;
+    private final RivistaAbbonamentoDao rivistaAbbonamentoDao;
     private final SpedizioneDao spedizioneDao;
     private final SpedizioneItemDao spedizioneItemDao;
     protected final StoricoDao storicoDao;
@@ -99,7 +99,7 @@ public class SmdLoadSampleData implements Runnable {
             PubblicazioneDao pubblicazioneDao, 
             SpesaSpedizioneDao spesaSpedizioneDao, 
             AbbonamentoDao abbonamentoDao,
-            RivistaAbbonamentoDao estrattoContoDao,
+            RivistaAbbonamentoDao rivistaAbbonamentoDao,
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 
@@ -114,7 +114,7 @@ public class SmdLoadSampleData implements Runnable {
         this.pubblicazioneDao=pubblicazioneDao;
         this.spesaSpedizioneDao=spesaSpedizioneDao;
         this.abbonamentoDao=abbonamentoDao;
-        this.estrattoContoDao=estrattoContoDao;
+        this.rivistaAbbonamentoDao=rivistaAbbonamentoDao;
         this.spedizioneDao=spedizioneDao;
         this.spedizioneItemDao=spedizioneItemDao;
         this.incassoDao=incassoDao;
@@ -187,7 +187,7 @@ public class SmdLoadSampleData implements Runnable {
                        
                   );
             abbonamentoDao.save(abb);
-            estrattoContoDao.save(ec);
+            rivistaAbbonamentoDao.save(ec);
             for (SpedizioneWithItems sped:spedizioni) {
                 spedizioneDao.save(sped.getSpedizione());
                 for (SpedizioneItem item: sped.getSpedizioneItems()) {
@@ -205,7 +205,7 @@ public class SmdLoadSampleData implements Runnable {
         }
         abbonamentoDao.save(abb);
         for (RivistaAbbonamento ec: contos) {
-            estrattoContoDao.save(ec);
+            rivistaAbbonamentoDao.save(ec);
         }
         
     }
