@@ -8,9 +8,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
+import it.arsinfo.smd.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.service.dao.PubblicazioneServiceDaoImpl;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
@@ -18,9 +18,9 @@ public class PubblicazioneSearch extends SmdSearch<Pubblicazione> {
     private String searchNome;
     private TipoPubblicazione tipoPubblicazione;
     
-    private final PubblicazioneServiceDaoImpl dao;
+    private final PubblicazioneServiceDao dao;
 
-    public PubblicazioneSearch(PubblicazioneServiceDaoImpl dao) {
+    public PubblicazioneSearch(PubblicazioneServiceDao dao) {
         super(dao);
         this.dao=dao;
         TextField filterNome = new TextField();

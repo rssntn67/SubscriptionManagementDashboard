@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.PubblicazioneServiceDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
-public class PubblicazioneServiceDaoImpl implements SmdServiceDao<Pubblicazione> {
+public class PubblicazioneServiceDaoImpl implements PubblicazioneServiceDao {
 
     @Autowired
     private PubblicazioneDao repository;
