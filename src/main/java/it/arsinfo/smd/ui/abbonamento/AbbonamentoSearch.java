@@ -22,7 +22,7 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
@@ -241,14 +241,14 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         return abbonamenti;
     }
     
-    public List<EstrattoConto> findEC() {
+    public List<RivistaAbbonamento> findEC() {
         if (pubblicazione != null) {
             return filterAllEC(dao.findByPubblicazione(pubblicazione));
         }
         return filterAllEC(dao.findAllItems());
     }
 
-    private List<EstrattoConto> filterAllEC(List<EstrattoConto> estrattiConto) {
+    private List<RivistaAbbonamento> filterAllEC(List<RivistaAbbonamento> estrattiConto) {
         if (customer != null) {
             estrattiConto = estrattiConto.stream().filter( s -> s.getDestinatario().getId() == customer.getId()).collect(Collectors.toList());
         }

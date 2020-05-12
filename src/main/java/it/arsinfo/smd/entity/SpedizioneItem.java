@@ -27,7 +27,7 @@ public class SpedizioneItem implements SmdEntity {
     private Pubblicazione pubblicazione;
 
     @ManyToOne(optional=false,fetch=FetchType.LAZY)
-    private EstrattoConto estrattoConto;
+    private RivistaAbbonamento estrattoConto;
     
     @Enumerated(EnumType.STRING)
     private Mese mesePubblicazione=Mese.getMeseCorrente();
@@ -79,12 +79,12 @@ public class SpedizioneItem implements SmdEntity {
     }
 
 
-    public EstrattoConto getEstrattoConto() {
+    public RivistaAbbonamento getEstrattoConto() {
         return estrattoConto;
     }
 
 
-    public void setEstrattoConto(EstrattoConto estrattoConto) {
+    public void setEstrattoConto(RivistaAbbonamento estrattoConto) {
         this.estrattoConto = estrattoConto;
     }
         

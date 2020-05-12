@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
@@ -23,20 +23,20 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
-public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,EstrattoConto> {
+public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,RivistaAbbonamento> {
 
     @Autowired
     private AbbonamentoDao repository;
 
     @Autowired
-    private EstrattoContoDao itemRepository;
+    private RivistaAbbonamentoDao itemRepository;
 
     @Autowired
     private PubblicazioneDao pubblicazioneDao;
@@ -144,7 +144,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 	}
 
 	@Override
-	public List<EstrattoConto> getItems(Abbonamento t) {
+	public List<RivistaAbbonamento> getItems(Abbonamento t) {
 		if (t.getId() == null) {
 			return new ArrayList<>();
 		}
@@ -153,7 +153,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 
 	@Override
 	@Transactional
-	public Abbonamento deleteItem(Abbonamento t, EstrattoConto item) throws Exception{
+	public Abbonamento deleteItem(Abbonamento t, RivistaAbbonamento item) throws Exception{
 		if (item.getId() == null ) {
             if (!t.removeItem(item)) {
             	throw new UnsupportedOperationException("Non posso rimuovere EC");
@@ -167,7 +167,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 
 	@Override
 	@Transactional
-	public Abbonamento saveItem(Abbonamento t, EstrattoConto item) throws Exception {
+	public Abbonamento saveItem(Abbonamento t, RivistaAbbonamento item) throws Exception {
         if (item.getDestinatario() == null) {
         	throw new UnsupportedOperationException("Selezionare il Destinatario");
         }
@@ -208,11 +208,11 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
 	
-	public List<EstrattoConto> findByTipoEstrattoConto(TipoEstrattoConto tec) {
+	public List<RivistaAbbonamento> findByTipoEstrattoConto(TipoEstrattoConto tec) {
 		return itemRepository.findByTipoEstrattoConto(tec);
 	}
 
-	public List<EstrattoConto> findByDestinatario(Anagrafica customer) {
+	public List<RivistaAbbonamento> findByDestinatario(Anagrafica customer) {
 		return itemRepository.findByDestinatario(customer);
 	}
 
@@ -220,11 +220,11 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Estr
 		return repository.findByIntestatario(customer);
 	}
 
-	public List<EstrattoConto> findByPubblicazione(Pubblicazione pubblicazione) {
+	public List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione) {
 		return itemRepository.findByPubblicazione(pubblicazione);
 	}
 
-	public List<EstrattoConto> findAllItems() {
+	public List<RivistaAbbonamento> findAllItems() {
 		return itemRepository.findAll();
 	}
 

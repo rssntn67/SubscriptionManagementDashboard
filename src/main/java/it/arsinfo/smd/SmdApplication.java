@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
@@ -52,7 +52,7 @@ public class SmdApplication {
             PubblicazioneDao pubblicazioneDao,
             SpesaSpedizioneDao spesaSpedizioneDao,
             AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao estrattoContoDao,
+            RivistaAbbonamentoDao estrattoContoDao,
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 

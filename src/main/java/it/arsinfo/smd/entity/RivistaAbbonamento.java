@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Anno;
@@ -22,7 +23,8 @@ import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.service.Smd;
 
 @Entity
-public class EstrattoConto implements SmdEntity {
+@Table(name = "estratto_conto")
+public class RivistaAbbonamento implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,7 +60,7 @@ public class EstrattoConto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
-    public EstrattoConto() {
+    public RivistaAbbonamento() {
     }
 
     public boolean isAbbonamentoAnnuale() {
@@ -180,7 +182,7 @@ public class EstrattoConto implements SmdEntity {
         this.numeroTotaleRiviste = numeroTotaleRiviste;
     }
 
-    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(EstrattoConto ec) throws UnsupportedOperationException {
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(RivistaAbbonamento ec) throws UnsupportedOperationException {
         
         if (ec.getPubblicazione() == null) {
             throw new UnsupportedOperationException("pubblicazione null");

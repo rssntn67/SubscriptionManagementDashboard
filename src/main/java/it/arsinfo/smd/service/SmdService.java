@@ -16,7 +16,7 @@ import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.OperazioneIncasso;
@@ -48,11 +48,11 @@ public interface SmdService {
     void sospendiStorico(Abbonamento abbonamento) throws Exception;
     void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
-    void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception;
+    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento estrattoConto) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void rimuovi(Campagna campagna,Storico storico,Nota...note) throws Exception;
     
-    void aggiorna(EstrattoConto estrattoConto) throws Exception;    
+    void aggiorna(RivistaAbbonamento estrattoConto) throws Exception;    
     void aggiorna(Campagna campagna,Storico storico, Nota...note) throws Exception;
     
     void generaStatisticheTipografia(Anno anno, Mese mese); 

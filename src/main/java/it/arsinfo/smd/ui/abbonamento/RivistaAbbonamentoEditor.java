@@ -16,12 +16,12 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
-public class EstrattoContoEditor
-        extends SmdItemEditor<EstrattoConto> {
+public class RivistaAbbonamentoEditor
+        extends SmdItemEditor<RivistaAbbonamento> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     
@@ -50,10 +50,10 @@ public class EstrattoContoEditor
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
 
-    public EstrattoContoEditor(
+    public RivistaAbbonamentoEditor(
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
 
-        super(new Binder<>(EstrattoConto.class) );
+        super(new Binder<>(RivistaAbbonamento.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -93,51 +93,51 @@ public class EstrattoContoEditor
         getBinder()
         .forField(importo).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
-        .bind(EstrattoConto::getImporto,EstrattoConto::setImporto);
+        .bind(RivistaAbbonamento::getImporto,RivistaAbbonamento::setImporto);
   
         getBinder()
             .forField(numero)
             .withConverter(new StringToIntegerConverter("Deve essere un numero"))
             .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
-            .bind(EstrattoConto::getNumero, EstrattoConto::setNumero);
+            .bind(RivistaAbbonamento::getNumero, RivistaAbbonamento::setNumero);
 
         getBinder()
         .forField(numeroTotaleRiviste)
         .withConverter(new StringToIntegerConverter("Deve essere un numero"))
         .withValidator(num -> num != null && num >= 0,"essere maggiore o uguale 0")
-        .bind(EstrattoConto::getNumeroTotaleRiviste, EstrattoConto::setNumeroTotaleRiviste);
+        .bind(RivistaAbbonamento::getNumeroTotaleRiviste, RivistaAbbonamento::setNumeroTotaleRiviste);
 
         getBinder()
             .forField(pubblicazione)
             .asRequired()
             .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
-            .bind(EstrattoConto::getPubblicazione,EstrattoConto::setPubblicazione);
+            .bind(RivistaAbbonamento::getPubblicazione,RivistaAbbonamento::setPubblicazione);
 
         getBinder()
         .forField(destinatario)
         .asRequired()
         .withValidator(p -> p != null, "Destinatario deve essere selezionato")
-        .bind(EstrattoConto::getDestinatario,EstrattoConto::setDestinatario);
+        .bind(RivistaAbbonamento::getDestinatario,RivistaAbbonamento::setDestinatario);
 
         getBinder().forField(tipoEstrattoconto)
-        .asRequired().bind(EstrattoConto::getTipoEstrattoConto,EstrattoConto::setTipoEstrattoConto);
+        .asRequired().bind(RivistaAbbonamento::getTipoEstrattoConto,RivistaAbbonamento::setTipoEstrattoConto);
 
         getBinder().forField(invio)
-        .asRequired().bind(EstrattoConto::getInvio,EstrattoConto::setInvio);
+        .asRequired().bind(RivistaAbbonamento::getInvio,RivistaAbbonamento::setInvio);
 
         getBinder().forField(invioSpedizione)
-        .asRequired().bind(EstrattoConto::getInvioSpedizione,EstrattoConto::setInvioSpedizione);
+        .asRequired().bind(RivistaAbbonamento::getInvioSpedizione,RivistaAbbonamento::setInvioSpedizione);
 
         getBinder().forField(meseInizio)
-        .asRequired().bind(EstrattoConto::getMeseInizio,EstrattoConto::setMeseInizio);
+        .asRequired().bind(RivistaAbbonamento::getMeseInizio,RivistaAbbonamento::setMeseInizio);
         getBinder().forField(meseFine)
-        .asRequired().bind(EstrattoConto::getMeseFine,EstrattoConto::setMeseFine);
+        .asRequired().bind(RivistaAbbonamento::getMeseFine,RivistaAbbonamento::setMeseFine);
         
         getBinder().forField(annoInizio)
-        .asRequired().bind(EstrattoConto::getAnnoInizio,EstrattoConto::setAnnoInizio);
+        .asRequired().bind(RivistaAbbonamento::getAnnoInizio,RivistaAbbonamento::setAnnoInizio);
 
         getBinder().forField(annoFine)
-        .asRequired().bind(EstrattoConto::getAnnoFine,EstrattoConto::setAnnoFine);
+        .asRequired().bind(RivistaAbbonamento::getAnnoFine,RivistaAbbonamento::setAnnoFine);
         
         importo.setReadOnly(true);
         numeroTotaleRiviste.setReadOnly(true);
@@ -145,7 +145,7 @@ public class EstrattoContoEditor
     }
 
     @Override
-    public void focus(boolean persisted, EstrattoConto obj) {
+    public void focus(boolean persisted, RivistaAbbonamento obj) {
         pubblicazione.setReadOnly(persisted || obj.getStorico() != null);
         destinatario.setReadOnly(persisted|| obj.getStorico() != null);
         invio.setReadOnly(persisted|| obj.getStorico() != null);

@@ -40,7 +40,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -56,13 +56,13 @@ public class SmdUnitTests {
     
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    private static EstrattoConto crea(Abbonamento abb,Pubblicazione p, TipoEstrattoConto tipo, int numero) {
+    private static RivistaAbbonamento crea(Abbonamento abb,Pubblicazione p, TipoEstrattoConto tipo, int numero) {
         Anno anno = Anno.getAnnoProssimo();
         Mese mese = Mese.getMeseCorrente();
         if (mese.getPosizione()+p.getAnticipoSpedizione() > 12) {
             anno=Anno.getAnnoSuccessivo(anno);
         }
-        EstrattoConto ec =  new EstrattoConto();
+        RivistaAbbonamento ec =  new RivistaAbbonamento();
         ec.setAbbonamento(abb);
         ec.setNumero(numero);
         ec.setPubblicazione(p);
@@ -158,7 +158,7 @@ public class SmdUnitTests {
         
     }
     
-    private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, EstrattoConto ec) {
+    private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, RivistaAbbonamento ec) {
         assertEquals(0.0,abb.getSpese().doubleValue(),0);
         assertEquals(true, ec.isAbbonamentoAnnuale());
         assertEquals(abb, ec.getAbbonamento());
@@ -208,7 +208,7 @@ public class SmdUnitTests {
         abb.setIntestatario(SmdHelper.getAnagraficaBy("tizio", "caio"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         assertEquals(2, messaggio.getAnticipoSpedizione());
-        EstrattoConto ec = new EstrattoConto();
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setPubblicazione(messaggio);
         ec.setNumero(10);
         Anno anno = Anno.getAnnoProssimo();
@@ -260,7 +260,7 @@ public class SmdUnitTests {
         abb.setIntestatario(SmdHelper.getAnagraficaBy("a", "b"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         assertEquals(2, messaggio.getAnticipoSpedizione());
-        EstrattoConto ec = new EstrattoConto();
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setPubblicazione(messaggio);
         ec.setNumero(10);
         Anno anno = Anno.getAnnoPassato();
@@ -446,7 +446,7 @@ public class SmdUnitTests {
             log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseD.getNomeBreve(),annof.getAnnoAsString());        	
         }
 
-        EstrattoConto ec1 = new EstrattoConto();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(meseA);
         ec1.setAnnoInizio(annoi);
@@ -551,7 +551,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
-        EstrattoConto ec1 = new EstrattoConto();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -559,7 +559,7 @@ public class SmdUnitTests {
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
-        EstrattoConto ec2 = new EstrattoConto();
+        RivistaAbbonamento ec2 = new RivistaAbbonamento();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
         ec2.setMeseInizio(Mese.GENNAIO);
@@ -567,7 +567,7 @@ public class SmdUnitTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
         ec2.setDestinatario(tizio);
-        EstrattoConto ec3 = new EstrattoConto();
+        RivistaAbbonamento ec3 = new RivistaAbbonamento();
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
         ec3.setMeseInizio(Mese.GENNAIO);
@@ -790,7 +790,7 @@ public class SmdUnitTests {
         EnumSet.allOf(TipoEstrattoConto.class).stream().forEach(tpec -> {
             Abbonamento abb = new Abbonamento();
             abb.setIntestatario(ar);
-            EstrattoConto ec = crea(abb,messaggio, tpec, 10); 
+            RivistaAbbonamento ec = crea(abb,messaggio, tpec, 10); 
             verificaImportoAbbonamentoAnnuale(abb,ec);
         });
     }
@@ -808,7 +808,7 @@ public class SmdUnitTests {
         Anagrafica intestatario = SmdHelper.getAnagraficaBy("Tizius", "Sempronius");
         intestatario.setAreaSpedizione(AreaSpedizione.AmericaAfricaAsia);
         abb.setIntestatario(intestatario);
-        EstrattoConto ec = new EstrattoConto();
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setPubblicazione(p);
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
@@ -870,7 +870,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
-        EstrattoConto ec1 = new EstrattoConto();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -981,7 +981,7 @@ public class SmdUnitTests {
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
-            EstrattoConto ec = Smd.genera(abb, storico);
+            RivistaAbbonamento ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
             log.info(ec.toString());
             log.info(abb.toString());
@@ -999,7 +999,7 @@ public class SmdUnitTests {
         Pubblicazione blocchetti = SmdHelper.getBlocchetti();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
-        EstrattoConto ec1 = new EstrattoConto();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1033,7 +1033,7 @@ public class SmdUnitTests {
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
         
-        EstrattoConto ec1 = new EstrattoConto();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1102,7 +1102,7 @@ public class SmdUnitTests {
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
-            EstrattoConto ec = Smd.genera(abb, storico);
+            RivistaAbbonamento ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
             log.info(abb.toString());
             log.info(ec.toString());

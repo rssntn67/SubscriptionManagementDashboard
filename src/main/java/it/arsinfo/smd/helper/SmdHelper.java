@@ -23,7 +23,7 @@ import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -733,9 +733,9 @@ public class SmdHelper {
         return abb;   
     }
 
-    public static EstrattoConto addEC(Abbonamento abb, Pubblicazione pubblicazione,
+    public static RivistaAbbonamento addEC(Abbonamento abb, Pubblicazione pubblicazione,
         Integer numero, BigDecimal importo) {
-        EstrattoConto ec = new EstrattoConto();
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(pubblicazione);
         ec.setDestinatario(abb.getIntestatario());

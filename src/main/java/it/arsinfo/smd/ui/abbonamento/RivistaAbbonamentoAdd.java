@@ -1,19 +1,19 @@
 package it.arsinfo.smd.ui.abbonamento;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.ui.vaadin.SmdAddItem;
 
-public class EstrattoContoAdd extends SmdAddItem<EstrattoConto, Abbonamento> {
+public class RivistaAbbonamentoAdd extends SmdAddItem<RivistaAbbonamento, Abbonamento> {
 
 	private Abbonamento abbonamento;
-    public EstrattoContoAdd(String caption) {
+    public RivistaAbbonamentoAdd(String caption) {
         super(caption);
     }
     
     @Override
-    public EstrattoConto generate() {
-        EstrattoConto ec = new EstrattoConto();
+    public RivistaAbbonamento generate() {
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setAbbonamento(abbonamento);
         ec.setDestinatario(abbonamento.getIntestatario());
         ec.setAnnoInizio(abbonamento.getAnno());

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
@@ -46,7 +46,7 @@ import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
@@ -78,7 +78,7 @@ public class SmdServiceImpl implements SmdService {
     AbbonamentoDao abbonamentoDao;
     
     @Autowired
-    EstrattoContoDao estrattoContoDao;
+    RivistaAbbonamentoDao estrattoContoDao;
     
     @Autowired
     SpedizioneDao spedizioneDao;
@@ -219,8 +219,8 @@ public class SmdServiceImpl implements SmdService {
         estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> estrattoContoDao.deleteById(ec.getId()));
     }
 
-    private EstrattoConto getByStorico(Campagna campagna,Storico storico) throws Exception{
-        List<EstrattoConto> ecs = 
+    private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
+        List<RivistaAbbonamento> ecs = 
                 estrattoContoDao
                 .findByStorico(storico)
                 .stream()
@@ -248,7 +248,7 @@ public class SmdServiceImpl implements SmdService {
         }
         storico.setStatoStorico(StatoStorico.Sospeso);
         save(storico, note);
-        EstrattoConto ec = getByStorico(campagna, storico);
+        RivistaAbbonamento ec = getByStorico(campagna, storico);
         Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
         rimuovi(abbonamento,ec);
     }
@@ -261,7 +261,7 @@ public class SmdServiceImpl implements SmdService {
         	log.warn("aggiorna: Non è possibile aggiornare la campagna {}, {}",campagna,storico);
             throw new UnsupportedOperationException("Non è possibile aggiornare la campagna");
         }
-        EstrattoConto ec = getByStorico(campagna, storico);
+        RivistaAbbonamento ec = getByStorico(campagna, storico);
         
         if (ec == null) {
             storico.setStatoStorico(StatoStorico.Valido);
@@ -286,11 +286,11 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        for (EstrattoConto ec: abbonamento.getItems()) {
+        for (RivistaAbbonamento ec: abbonamento.getItems()) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
-        for (EstrattoConto ec: abbonamento.getItems()) {
+        for (RivistaAbbonamento ec: abbonamento.getItems()) {
             estrattoContoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {
@@ -300,7 +300,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(EstrattoConto estrattoConto) throws Exception {
+    public void aggiorna(RivistaAbbonamento estrattoConto) throws Exception {
         // quantita -> spedizioneItem Importo Abbonamento
         // Tipo -> ordinario -> Importo Abbonamento
         Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
@@ -344,13 +344,13 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void rimuovi(Abbonamento abbonamento) throws Exception {
         if (abbonamento == null) return;
-        for (EstrattoConto ec: estrattoContoDao.findByAbbonamento(abbonamento)) {
+        for (RivistaAbbonamento ec: estrattoContoDao.findByAbbonamento(abbonamento)) {
             rimuovi(abbonamento,ec);
         }
     }
 
     @Override
-    public void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception {
+    public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento estrattoConto) throws Exception {
         if (estrattoConto == null || abbonamento == null)
             return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
