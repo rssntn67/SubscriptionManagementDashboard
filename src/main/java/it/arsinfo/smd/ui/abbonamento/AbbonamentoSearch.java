@@ -137,9 +137,9 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     }
 
-    private List<Abbonamento> findByTipoEstrattoConto(List<Abbonamento> abbonamenti, TipoAbbonamentoRivista tec) {
+    private List<Abbonamento> findByTipo(List<Abbonamento> abbonamenti, TipoAbbonamentoRivista tec) {
         List<Long> approved = dao
-                .findByTipoEstrattoConto(tec)
+                .findByTipo(tec)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
             return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
 
@@ -221,7 +221,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
         if (filterTipoAbbonamentoRivista.getValue() != null) {
-            abbonamenti = findByTipoEstrattoConto(abbonamenti, filterTipoAbbonamentoRivista.getValue());
+            abbonamenti = findByTipo(abbonamenti, filterTipoAbbonamentoRivista.getValue());
         }
         if (pubblicazione != null) {
             abbonamenti = findByPubblicazione(abbonamenti);

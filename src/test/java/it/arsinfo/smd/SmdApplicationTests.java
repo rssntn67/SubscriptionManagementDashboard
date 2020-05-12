@@ -1162,8 +1162,8 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testAbbonamentoAggiungiEstrattoConto() throws Exception {
-        log.info("----------------->testAbbonamentoAggiungiEstrattoConto<----------------");
+    public void testAbbonamentoAggiungiRivistaAbbonamento() throws Exception {
+        log.info("----------------->testAbbonamentoAggiungiRivistaAbbonamento<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1233,8 +1233,8 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoRimuoviEstrattoConto() {
-        log.info("----------------->testAbbonamentoRimuoviEstrattoConto<----------------");
+    public void testAbbonamentoRimuoviRivistaAbbonamento() {
+        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1337,7 +1337,7 @@ public class SmdApplicationTests {
         assertEquals(7, spedizioneDao.findAll().size());
         assertEquals(8, spedizioneItemDao.findAll().size());
         
-        log.info("----------------->testAbbonamentoRimuoviEstrattoConto Rimosso: {}",ec2);
+        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento Rimosso: {}",ec2);
 
         
         spedizioni=smdService.findByAbbonamento(abb);
@@ -1416,8 +1416,8 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testAbbonamentoRimuoviEstrattoContoConSpediti() {
-        log.info("----------------->testAbbonamentoRimuoviEstrattoContoConSpediti<----------------");
+    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() {
+        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamentoConSpediti<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
@@ -1501,8 +1501,8 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoAggiornaEstrattoConto() {
-        log.info("----------------->testAbbonamentoAggiornaEstrattoConto<----------------");
+    public void testAbbonamentoAggiornaRivistaAbbonamento() {
+        log.info("----------------->testAbbonamentoAggiornaRivistaAbbonamento<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         

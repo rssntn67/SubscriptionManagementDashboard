@@ -208,7 +208,7 @@ public class AbbonamentoServiceDao implements SmdServiceItemDao<Abbonamento,Rivi
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
 	
-	public List<RivistaAbbonamento> findByTipoEstrattoConto(TipoAbbonamentoRivista tec) {
+	public List<RivistaAbbonamento> findByTipo(TipoAbbonamentoRivista tec) {
 		return itemRepository.findByTipoAbbonamentoRivista(tec);
 	}
 
