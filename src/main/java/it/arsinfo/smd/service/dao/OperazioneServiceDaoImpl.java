@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 @Service
-public class OperazioneServiceDaoImpl implements SmdServiceDao<Operazione> {
+public class OperazioneServiceDaoImpl implements OperazioneServiceDao {
 
     @Autowired
     private OperazioneDao repository;

@@ -11,13 +11,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
 
+import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.SmdService;
-import it.arsinfo.smd.service.dao.OperazioneServiceDaoImpl;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
@@ -32,7 +32,7 @@ public class TipografiaUI extends SmdUI {
     private static final long serialVersionUID = -4970387092690412856L;
 
     @Autowired
-    private OperazioneServiceDaoImpl dao;
+    private OperazioneServiceDao dao;
 
     @Autowired
     private PubblicazioneDao pubblicazioneDao;
