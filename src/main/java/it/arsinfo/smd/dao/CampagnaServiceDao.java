@@ -119,20 +119,20 @@ public class CampagnaServiceDao implements SmdServiceDao<Campagna> {
 		return pubblicazioneDao.findByTipoNotAndActive(TipoPubblicazione.UNICO, true);
 	}
 
-	public List<AbbonamentoConRiviste> findAbbonamentoConEcGenerati(Campagna entity) {
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteGenerati(Campagna entity) {
 		return smdService.get(abbonamentoDao.findByCampagna(entity));
 	}
 
-	public List<AbbonamentoConRiviste> findAbbonamentoInviati(Campagna entity) {
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteInviati(Campagna entity) {
 		return smdService.get(findInviatiByCampagna(entity));
 	}
 
-	public List<AbbonamentoConRiviste> findAbbonamentoConEcInviati(Campagna entity) {
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity) {
 		return smdService
 				.get(findEstrattoContoByCampagna(entity));
 	}
 
-	public List<AbbonamentoConRiviste> findAbbonamentoAnnullati(Campagna entity) {
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity) {
 		return smdService.get(findAnnullatiByCampagna(entity));
 	}
 	

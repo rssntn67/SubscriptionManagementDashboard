@@ -12,10 +12,10 @@ import com.vaadin.ui.components.grid.FooterRow;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class OperazioneIncassoGrid extends SmdGrid<OperazioneIncasso> {
+public class IncassaAbbonamentoGrid extends SmdGrid<OperazioneIncasso> {
 
     private final FooterRow gridfooter;
-    public OperazioneIncassoGrid(String gridname) {
+    public IncassaAbbonamentoGrid(String gridname) {
         super(new Grid<>(OperazioneIncasso.class),gridname);
         setColumns(                  
                 "operatore",

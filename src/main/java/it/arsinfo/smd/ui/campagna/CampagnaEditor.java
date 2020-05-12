@@ -48,19 +48,19 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         items = new CampagnaItemsEditor(repo.findPubblicazioni());
         
         buttonVGenerati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConEcGenerati(get()));
+            grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
         });
 
         buttonVInviati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoInviati(get()));
+            grid.populate(repo.findAbbonamentoConRivisteInviati(get()));
         });
 
         buttonVEstrattiConto.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConEcInviati(get()));
+            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));
         });
 
         buttonVAnnullati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoAnnullati(get()));
+            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));
         });
 
         buttonWInvio.addClickListener(click -> {
