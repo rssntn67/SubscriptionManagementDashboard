@@ -15,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -42,6 +45,12 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Autowired
 	private AbbonamentoDao abbonamentoDao;
+
+	@Autowired
+	private AnagraficaDao anagraficaDao;
+
+	@Autowired
+	private StoricoDao storicoDao;
 
 	@Autowired
 	private PubblicazioneDao pubblicazioneDao;
@@ -76,7 +85,28 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 			campagnaItemDao.save(item);
 			log.info("save: {}", item);
 		}
-		smdService.genera(entity);
+        log.info("genera Campagna start {}", entity);
+        List<Abbonamento> 
+            abbonamenti = 
+              Smd.genera(entity, 
+                  anagraficaDao.findAll(),
+                  storicoDao.findAll());
+                                                           
+        for (Abbonamento abb:abbonamenti) {
+            storicoDao.findByIntestatarioAndCassa(
+                  abb.getIntestatario(),abb.getCassa())
+                .stream()
+                .filter(s -> s.attivo())
+                .forEach(storico -> {
+                   Smd.genera(abb, storico);
+                   storico.setStatoStorico(StatoStorico.Valido);
+                   storicoDao.save(storico);
+            });
+            if (abb.getItems().size() >= 1) {
+                smdService.genera(abb);
+            }
+        }
+        log.info("genera Campagna end");
 		log.info("save: Campagna end {}", entity);
 		return entity;
 	}
@@ -158,6 +188,10 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 .collect(Collectors.toList());
 	}
 
+    @Override
+    public void genera(Campagna campagna) throws Exception {
+    	save(campagna);
+    }
 	
 	public void invia(Campagna campagna) throws Exception {
         log.info("invia Campagna start {}", campagna);

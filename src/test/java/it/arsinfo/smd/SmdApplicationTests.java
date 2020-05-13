@@ -686,12 +686,14 @@ public class SmdApplicationTests {
         assertEquals(2, notaDao.findAll().size());
         assertEquals(2, storicoDao.findAll().size());
         
-        smdService.delete(storico0);
+        notaDao.findByStorico(storico0).forEach(anota -> notaDao.deleteById(anota.getId()));
+        storicoDao.delete(storico0);
         assertEquals(1, notaDao.findAll().size());
         assertEquals(1, storicoDao.findAll().size());
         
         storico1 = storicoDao.findAll().iterator().next();
-        smdService.delete(storico1);
+        notaDao.findByStorico(storico1).forEach(bnota -> notaDao.deleteById(bnota.getId()));
+        storicoDao.delete(storico1);
         assertEquals(0, notaDao.findAll().size());
         assertEquals(0, storicoDao.findAll().size()); 
     }

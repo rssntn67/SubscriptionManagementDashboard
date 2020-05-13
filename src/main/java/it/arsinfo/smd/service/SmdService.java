@@ -15,15 +15,12 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 
@@ -34,12 +31,8 @@ public interface SmdService {
 	void logout(String user);
 	UserInfo login(String user);
 
-	void delete(Storico storico);
-    void save(Storico storico, Nota... note);
-
     List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
 
-    void genera(Campagna campagna) throws Exception;
     void genera(Abbonamento abbonamento) throws Exception;
     
     void cancella(Abbonamento abbonamento) throws Exception;
@@ -49,11 +42,8 @@ public interface SmdService {
     void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
-    void rimuovi(Abbonamento abbonamento) throws Exception;
-    void rimuovi(Campagna campagna,Storico storico,Nota...note) throws Exception;
-    
+    void rimuovi(Abbonamento abbonamento) throws Exception;    
     void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception;    
-    void aggiorna(Campagna campagna,Storico storico, Nota...note) throws Exception;
     
     void generaStatisticheTipografia(Anno anno, Mese mese); 
     void generaStatisticheTipografia(Anno anno); 

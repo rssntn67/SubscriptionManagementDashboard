@@ -1,22 +1,31 @@
 package it.arsinfo.smd.service.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
+import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdService;
 
 @Service
@@ -36,9 +45,18 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 
     @Autowired
     private CampagnaDao campagnaDao;
+
+    @Autowired
+    private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+
     
     @Autowired
     private AnagraficaDao anagraficaDao;
+
+    private static final Logger log = LoggerFactory.getLogger(StoricoServiceDao.class);
 
 	@Override
 	public Storico save(Storico entity) throws Exception {
@@ -51,7 +69,14 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         if (entity.getPubblicazione() == null) {
         	throw new UnsupportedOperationException("Pubblicazione deve essere valorizzata");
         }        
-        smdService.save(entity, entity.getItems().stream().toArray(Nota[]::new));
+        if (entity.getNumero() <= 0) {
+        	entity.setNumero(0);
+        	entity.setStatoStorico(StatoStorico.Sospeso);
+        }
+        repository.save(entity);
+        for (Nota nota:entity.getItems()) {
+                itemRepository.save(nota);
+        }
 		return entity;
 	}
 
@@ -130,18 +155,87 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 	}
 
 	public void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception {
+        if (storico == null) {
+            throw new UnsupportedOperationException("Lo Storico è nullo, riportare errore all'amministratore");                 
+        }
         if (campagna == null) {
             throw new UnsupportedOperationException("La Campagna da aggiornare deve essere valorizzato");                 
         }
-        if (storico.getNumero() <= 0) {
-            Nota nota = getNotaOnUpdate(storico, campagna, "rimuovi",username);
-    		smdService.rimuovi(campagna, storico, nota);
-        } else {
-            Nota nota = getNotaOnUpdate(storico, campagna, "aggiorna",username);
-    		smdService.aggiorna(campagna, storico, nota);		
+        if (campagna.getStatoCampagna() == StatoCampagna.Chiusa) {
+        	log.warn("aggiornaCampagna: Non è possibile aggiornare la campagna {}, {}",campagna,storico);
+            throw new UnsupportedOperationException(campagna + " - La Campagna è chiusa non può essere cambiata.");                 
         }
+        if (storico.getId() == null && storico.getNumero() <= 0) {
+            storico.addItem(getNotaOnUpdate(storico, campagna, "salva",username));
+    		save(storico);
+        	return;
+        }
+        if (storico.getId() == null ) {
+            storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
+    		save(storico);
+    		genera(campagna, storico);
+        	return;
+        }
+        RivistaAbbonamento ec = getByStorico(campagna, storico);
+        if (storico.getNumero() <= 0 && ec  == null) {
+        	itemRepository.findByStorico(storico).forEach(nota->itemRepository.deleteById(nota.getId()));
+        	repository.delete(storico);
+        	return;
+        }
+        if (storico.getNumero() <= 0) {
+            storico.addItem(getNotaOnUpdate(storico, campagna, "rimuovi",username));
+    		save(storico);
+            Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+            smdService.rimuovi(abbonamento,ec);
+            return;
+        } 
+        if (ec == null) {
+            storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
+    		save(storico);
+    		genera(campagna, storico);
+    		return;
+        	
+        }
+        
+        storico.addItem(getNotaOnUpdate(storico, campagna, "aggiorna",username));
+        save(storico);
+        ec.setNumero(storico.getNumero());
+        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
+        smdService.aggiorna(ec);
+    }
+
+	private void genera(Campagna campagna, Storico storico) throws Exception {
+		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
+		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(a, campagna, storico.getCassa());
+		if (abbonamento == null) {
+			abbonamento = Smd.genera(campagna, a, storico);
+		}
+		abbonamento.addItem(Smd.genera(abbonamento, storico));
+    	smdService.genera(abbonamento);
+
 	}
 	
+    private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
+        List<RivistaAbbonamento> ecs = 
+                rivistaAbbonamentoDao
+                .findByStorico(storico)
+                .stream()
+                .filter(ec -> {
+                    Abbonamento abb = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+                    return abb.getAnno() == campagna.getAnno();
+                })
+                .collect(Collectors.toList());
+
+        if (ecs.size() > 1 ) {
+            throw new Exception("Un solo Rivista Abbonamento per storico ogni anno");
+        }        
+        if (ecs.size()  == 0) {
+        	return null;
+        }        
+        return ecs.iterator().next();
+        
+    }
+
     private  Nota getNotaOnUpdate(Storico storico,Campagna campagna, String action, String username) {
         Nota unota = new Nota(storico);
         unota.setOperatore(username);
