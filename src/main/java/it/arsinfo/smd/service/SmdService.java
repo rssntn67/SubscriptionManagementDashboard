@@ -34,15 +34,13 @@ public interface SmdService {
     List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
 
     void genera(Abbonamento abbonamento) throws Exception;
-    
-    void cancella(Abbonamento abbonamento) throws Exception;
+    void rimuovi(Abbonamento abbonamento) throws Exception;
     void sospendiSpedizioni(Abbonamento abbonamento) throws Exception;
     void riattivaSpedizioni(Abbonamento abbonamento) throws Exception;
     void sospendiStorico(Abbonamento abbonamento) throws Exception;
     void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
-    void rimuovi(Abbonamento abbonamento) throws Exception;    
     void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception;    
     
     void generaStatisticheTipografia(Anno anno, Mese mese); 

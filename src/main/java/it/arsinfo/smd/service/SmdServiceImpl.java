@@ -172,7 +172,7 @@ public class SmdServiceImpl implements SmdService {
 
 
     @Override
-    public void cancella(Abbonamento abbonamento) {
+    public void rimuovi(Abbonamento abbonamento) {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
         	log.warn("Non si può cancellare un abbonamento nello stato Nuovo: {}", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
@@ -188,6 +188,7 @@ public class SmdServiceImpl implements SmdService {
             }
         );
         rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
+        abbonamentoDao.delete(abbonamento);
     }
 
     @Override
@@ -246,14 +247,6 @@ public class SmdServiceImpl implements SmdService {
         	abbonamentoDao.save(abb);
         });
         abbonamentoDao.save(abbonamento);
-    }
-
-    @Override
-    public void rimuovi(Abbonamento abbonamento) throws Exception {
-        if (abbonamento == null) return;
-        for (RivistaAbbonamento ec: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
-            rimuovi(abbonamento,ec);
-        }
     }
 
     @Override

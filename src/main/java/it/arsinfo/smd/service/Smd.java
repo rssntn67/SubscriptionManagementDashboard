@@ -666,7 +666,6 @@ public class Smd {
         storici
         .stream()
         .filter(storico -> 
-            storico.attivo() &&
             storico.getIntestatario().getId().longValue() == abbonamento.getIntestatario().getId().longValue()
             && 
             campagna.hasPubblicazione(storico.getPubblicazione())
@@ -693,8 +692,7 @@ public class Smd {
             .stream()
             .filter(
                     storico -> 
-                        storico.attivo()
-                        && campagna.hasPubblicazione(storico.getPubblicazione()) 
+                    	campagna.hasPubblicazione(storico.getPubblicazione()) 
                         && storico.getIntestatario().equals(a) 
                         && !cassaStorico.contains(storico.getCassa())
                     )

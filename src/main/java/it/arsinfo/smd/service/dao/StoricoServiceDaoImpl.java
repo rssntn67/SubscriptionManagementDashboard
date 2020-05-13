@@ -71,8 +71,8 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         }        
         if (entity.getNumero() <= 0) {
         	entity.setNumero(0);
-        	entity.setStatoStorico(StatoStorico.Sospeso);
         }
+    	log.info("save: {} {}", entity);
         repository.save(entity);
         for (Nota nota:entity.getItems()) {
                 itemRepository.save(nota);
@@ -132,14 +132,14 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 
 	@Override
 	public Storico deleteItem(Storico t, Nota item) throws Exception {
-		t.removeItem(item);
-		return t;
+		throw new UnsupportedOperationException("Delete Nota non supportato");
 	}
 
 	@Override
 	public Storico saveItem(Storico t, Nota item) throws Exception {
 		t.addItem(item);
-		return t;
+		t.addItem(getNotaOnSave(t,item.getOperatore()));
+		return save(t);
 	}
 	
 	public List<Pubblicazione> findPubblicazioni() {
@@ -156,9 +156,11 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 
 	public void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception {
         if (storico == null) {
+        	log.warn("aggiornaCampagna: Lo Storico è nullo");
             throw new UnsupportedOperationException("Lo Storico è nullo, riportare errore all'amministratore");                 
         }
         if (campagna == null) {
+        	log.warn("aggiornaCampagna: Lo Campagna è nulla");
             throw new UnsupportedOperationException("La Campagna da aggiornare deve essere valorizzato");                 
         }
         if (campagna.getStatoCampagna() == StatoCampagna.Chiusa) {
@@ -166,11 +168,13 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
             throw new UnsupportedOperationException(campagna + " - La Campagna è chiusa non può essere cambiata.");                 
         }
         if (storico.getId() == null && storico.getNumero() <= 0) {
+        	log.info("aggiornaCampagna: salva {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "salva",username));
     		save(storico);
         	return;
         }
         if (storico.getId() == null ) {
+        	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
     		save(storico);
     		genera(campagna, storico);
@@ -178,11 +182,11 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         }
         RivistaAbbonamento ec = getByStorico(campagna, storico);
         if (storico.getNumero() <= 0 && ec  == null) {
-        	itemRepository.findByStorico(storico).forEach(nota->itemRepository.deleteById(nota.getId()));
-        	repository.delete(storico);
+        	log.info("aggiornaCampagna: not updating {} {}",storico,campagna);
         	return;
         }
         if (storico.getNumero() <= 0) {
+        	log.info("aggiornaCampagna: rimuovi {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "rimuovi",username));
     		save(storico);
             Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
@@ -190,14 +194,18 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
             return;
         } 
         if (ec == null) {
+        	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
+            storico.setStatoStorico(StatoStorico.Valido);
     		save(storico);
     		genera(campagna, storico);
     		return;
         	
         }
         
+    	log.info("aggiornaCampagna: aggiorna {} {}",storico,campagna);
         storico.addItem(getNotaOnUpdate(storico, campagna, "aggiorna",username));
+        storico.setStatoStorico(StatoStorico.Valido);
         save(storico);
         ec.setNumero(storico.getNumero());
         ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
@@ -234,6 +242,18 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         }        
         return ecs.iterator().next();
         
+    }
+
+    public  Nota getNotaOnSave(Storico storico, String username) {
+    	log.info("getNotaOnSave: {} {}", storico, username);
+        Nota nota = new Nota(storico);
+        nota.setOperatore("admin->"+username);
+        if (storico.getId() == null) {
+            nota.setDescription("Nuovo: " + storico.getHeader());
+        } else {
+            nota.setDescription("Aggiornato: " + storico.getHeader());                    
+        }        
+        return nota;
     }
 
     private  Nota getNotaOnUpdate(Storico storico,Campagna campagna, String action, String username) {

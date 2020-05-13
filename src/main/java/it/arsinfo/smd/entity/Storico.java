@@ -126,20 +126,55 @@ public class Storico implements SmdEntityItems<Nota> {
     }
     @Transient
     public String getHeader() {
-        return String.format("'%s' %d %s]",
+        return String.format("'%s' %d %s %s",
                 intestatario.getHeader(),
                 numero, 
-                pubblicazione.getNome());
+                pubblicazione.getNome(),
+                tipoAbbonamentoRivista);
     }
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, '%d %s' %d -> %d, %s %s, %s, %s]",
+    	if (id == null) {
+            return String.format("Storico[ %d %s '%s' -> '%s', %s %s, %s, %s]",
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getIntestazione(), 
+                    destinatario.getIntestazione(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    		
+    	}
+    	if (id == null && intestatario.getId().longValue() == destinatario.getId().longValue()) {
+            return String.format("Storico[ %d %s '%s', %s %s, %s, %s]",
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getIntestazione(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    	}
+    	if (intestatario.getId().longValue() == destinatario.getId().longValue()) {
+            return String.format("Storico[id=%d, %d %s '%s', %s %s, %s, %s]",
+                    id, 
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getCaption(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    		
+    	}
+        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s, %s, %s]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
-                             intestatario.getId(), 
-                             destinatario.getId(), 
+                             intestatario.getIntestazione(), 
+                             destinatario.getIntestazione(), 
                              tipoAbbonamentoRivista,
                              invio,
                              statoStorico,
@@ -178,25 +213,6 @@ public class Storico implements SmdEntityItems<Nota> {
         this.statoStorico = statoStorico;
     }
     
-    @Transient
-    public boolean attivo() {
-        boolean attivo = false;
-        switch (statoStorico) {
-        case Nuovo:
-            attivo=(numero > 0);
-            break;
-        case Valido:
-            attivo=(numero > 0);
-            break;
-        case Sospeso:
-            break;
-        default:
-            break;
-        }
-        
-        return attivo;
-    }
-
     public InvioSpedizione getInvioSpedizione() {
         return invioSpedizione;
     }

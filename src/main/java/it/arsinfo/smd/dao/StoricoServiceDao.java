@@ -17,4 +17,5 @@ public interface StoricoServiceDao extends SmdServiceItemDao<Storico, Nota> {
 	List<Campagna> findCampagne();
 
 	void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception;
+	Nota getNotaOnSave(Storico storico,String username);
 }

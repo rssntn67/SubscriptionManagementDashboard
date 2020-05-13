@@ -19,7 +19,6 @@ import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -86,11 +85,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         if (entity.getCampagna() != null) {
 			throw new UnsupportedOperationException("Abbonamento associato a Campagna va gestito da Storico");
         }
-        if (entity.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-			throw new UnsupportedOperationException("Stato Abbonamento diverso da Nuovo va gestito da Campagna");
-        }
-        smdService.cancella(entity);
-        repository.delete(entity);
+        smdService.rimuovi(entity);
 	}
 
 	@Override

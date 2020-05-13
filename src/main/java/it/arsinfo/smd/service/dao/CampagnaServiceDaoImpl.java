@@ -90,13 +90,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             abbonamenti = 
               Smd.genera(entity, 
                   anagraficaDao.findAll(),
-                  storicoDao.findAll());
+                  storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0));
                                                            
         for (Abbonamento abb:abbonamenti) {
             storicoDao.findByIntestatarioAndCassa(
                   abb.getIntestatario(),abb.getCassa())
-                .stream()
-                .filter(s -> s.attivo())
                 .forEach(storico -> {
                    Smd.genera(abb, storico);
                    storico.setStatoStorico(StatoStorico.Valido);
@@ -121,7 +119,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 					+ entity.getAnno().getAnno() + ". La campagna non è nello stato 'Generata'");
 		}
 		for (Abbonamento abbonamento : abbonamentoDao.findByCampagna(entity)) {
-			abbonamentoDao.delete(abbonamento);
+			smdService.rimuovi(abbonamento);
 		}
 		entity.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
 		repository.deleteById(entity.getId());
