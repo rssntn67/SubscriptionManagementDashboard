@@ -139,7 +139,7 @@ public class Versamento implements SmdEntity {
         return dataContabile;
     }
     public void setDataContabile(Date dataContabile) {
-        this.dataContabile = dataContabile;
+        this.dataContabile = Smd.getStandardDate(dataContabile);
     }
     public String getCodeLine() {
         return codeLine;
