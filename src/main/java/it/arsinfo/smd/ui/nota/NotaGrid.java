@@ -9,9 +9,8 @@ public class NotaGrid extends SmdGrid<Nota> {
 
     public NotaGrid(String gridname) {
         super(new Grid<>(Nota.class),gridname);
-        setColumns( "operatore","data",
-                   "description"
-                    ,"storico.caption");
+        setColumns("storico.caption","data", "operatore",
+                "description");
         setColumnCaption("storico.caption", "Storico");
 
     }

@@ -9,10 +9,10 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -34,7 +34,7 @@ public class SpedizioneUI extends SmdUI {
     AnagraficaDao anagraficaDao;
 
     @Autowired
-    SpedizioneDao spedizioneDao;
+    SpedizioneServiceDao dao;
     
     @Autowired
     SpedizioneItemDao spedizioneItemDao;
@@ -55,10 +55,9 @@ public class SpedizioneUI extends SmdUI {
         List<Anagrafica> anagrafica = anagraficaDao.findAll();
         List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
-        SpedizioneSearch search = new SpedizioneSearch(spedizioneDao,abbonamenti,anagrafica,pubblicazioni);
-        search.setSmdService(smdService);
+        SpedizioneSearch search = new SpedizioneSearch(dao,abbonamenti,anagrafica,pubblicazioni);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
-        SpedizioneEditor editor = new SpedizioneEditor(spedizioneDao, anagrafica);
+        SpedizioneEditor editor = new SpedizioneEditor(dao.getRepository(), anagrafica);
         editor.setSmdService(smdService);
         SpedizioneItemGrid itemgrid = new SpedizioneItemGrid("Items");
         addSmdComponents(editor,itemgrid,search, grid);

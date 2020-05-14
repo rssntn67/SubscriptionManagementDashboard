@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.OperazioneDao;
+import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;
@@ -20,8 +20,10 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
     ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     ComboBox<Mese> filterMese = new ComboBox<Mese>();
 
-    public OperazioneSearch(OperazioneDao operazioneDao, List<Pubblicazione> pubblicazioni) {
-        super(operazioneDao);
+    private final OperazioneServiceDao dao;
+    public OperazioneSearch(OperazioneServiceDao dao, List<Pubblicazione> pubblicazioni) {
+        super(dao);
+        this.dao = dao;
         ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>();
 
         setComponents(new HorizontalLayout(filterAnno,filterMese,filterP));
@@ -59,10 +61,7 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
     
     @Override
     public List<Operazione> find() {
-        if (p == null) {
-            return filterAll(findAll());
-        }
-        return filterAll(((OperazioneDao)getRepo()).findByPubblicazione(p));   
+    	return filterAll(dao.searchBy(p));
     }
     
     private List<Operazione> filterAll(List<Operazione> operazioni) {

@@ -34,8 +34,10 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
     private final PasswordField confirm = new PasswordField("confirm");
 
     private boolean persisted;
-    public UserInfoEditor(UserInfoServiceDao repo, PasswordEncoder passwordEncoder) {
-        super(repo, new Binder<>(UserInfo.class));
+    private final UserInfoServiceDao dao;
+    public UserInfoEditor(UserInfoServiceDao dao, PasswordEncoder passwordEncoder) {
+        super(dao, new Binder<>(UserInfo.class));
+        this.dao=dao;
         setComponents(getActions(),
                       new HorizontalLayout(username,role),
                       new HorizontalLayout(password,confirm));
@@ -65,7 +67,7 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         }
         
         if (!persisted &&
-            ((UserInfoServiceDao)getServiceDao()).getRepository().findByUsername(username.getValue()) != null) {
+            dao.findByUsername(username.getValue()) != null) {
             Notification.show("Utente non salvato",
                               "username esiste",
                               Notification.Type.HUMANIZED_MESSAGE);

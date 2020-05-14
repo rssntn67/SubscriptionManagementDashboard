@@ -35,7 +35,7 @@ import it.arsinfo.smd.service.Smd;
         })
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, cassa);
-public class Abbonamento implements SmdEntityItems<EstrattoConto> {
+public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -78,7 +78,7 @@ public class Abbonamento implements SmdEntityItems<EstrattoConto> {
     private String progressivo;
 
     @Transient
-    private List<EstrattoConto> estrattiConto = new ArrayList<EstrattoConto>();
+    private List<RivistaAbbonamento> estrattiConto = new ArrayList<RivistaAbbonamento>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -355,19 +355,19 @@ public class Abbonamento implements SmdEntityItems<EstrattoConto> {
 		this.speseEstrattoConto = speseEstrattoConto;
 	}
 
-	public List<EstrattoConto> getItems() {
+	public List<RivistaAbbonamento> getItems() {
 		return estrattiConto;
 	}
 
-	public void setItems(List<EstrattoConto> estrattiConto) {
+	public void setItems(List<RivistaAbbonamento> estrattiConto) {
 		this.estrattiConto = estrattiConto;
 	}
 	
-	public boolean addItem(EstrattoConto ec) {
+	public boolean addItem(RivistaAbbonamento ec) {
 		return estrattiConto.add(ec);
 	}
     
-	public boolean removeItem(EstrattoConto ec) {
+	public boolean removeItem(RivistaAbbonamento ec) {
 		return estrattiConto.remove(ec);
 	}
 

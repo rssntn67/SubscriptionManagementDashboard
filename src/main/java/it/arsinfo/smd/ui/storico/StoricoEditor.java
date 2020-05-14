@@ -9,25 +9,25 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class StoricoEditor
-        extends SmdRepositoryDaoEditor<Storico> {
+        extends SmdEntityEditor<Storico> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
-    private final ComboBox<TipoEstrattoConto> tipoEstrattoConto = new ComboBox<TipoEstrattoConto>("Tipo",
-                                                                    EnumSet.allOf(TipoEstrattoConto.class));
+    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>("Tipo",
+                                                                    EnumSet.allOf(TipoAbbonamentoRivista.class));
     private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
                                                               EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
@@ -38,14 +38,12 @@ public class StoricoEditor
 
     private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
-    private final TextField nota = new TextField("Aggiungi Nota");
-
     public StoricoEditor(
-            StoricoDao storicoDao,
+            StoricoServiceDao dao,
             List<Pubblicazione> pubblicazioni, 
             List<Anagrafica> anagrafiche) {
 
-        super(storicoDao, new Binder<>(Storico.class) );
+        super(dao, new Binder<>(Storico.class) );
         
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
@@ -64,7 +62,7 @@ public class StoricoEditor
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
 
         cassa.setEmptySelectionAllowed(false);
-        tipoEstrattoConto.setEmptySelectionAllowed(false);
+        tipoAbbonamentoRivista.setEmptySelectionAllowed(false);
         invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
@@ -77,7 +75,7 @@ public class StoricoEditor
         destinatarioHL.addComponentsAndExpand(destinatario);
 
         HorizontalLayout tipoECHL = new HorizontalLayout();
-        tipoECHL.addComponentsAndExpand(tipoEstrattoConto);
+        tipoECHL.addComponentsAndExpand(tipoAbbonamentoRivista);
 
         HorizontalLayout dati1HL = new HorizontalLayout();
         dati1HL.addComponent(pubblicazione);
@@ -87,10 +85,7 @@ public class StoricoEditor
         HorizontalLayout dati2HL = new HorizontalLayout();
         dati2HL.addComponents(cassa,invio,invioSpedizione);
 
-        HorizontalLayout noteHL = new HorizontalLayout();
-        noteHL.addComponentsAndExpand(nota);
-
-        setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL,noteHL);
+        setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL);
          
         getBinder()
             .forField(numero)
@@ -116,22 +111,11 @@ public class StoricoEditor
             getSave().setEnabled(true);
         }
         getDelete().setEnabled(persisted && obj.getStatoStorico() == StatoStorico.Nuovo);
-        
-        numero.focus();
-    }
-    public TextField getNota() {
-        return nota;
+        if (persisted) {
+        	numero.focus();
+        } else {
+        	intestatario.focus();
+        }
     }
     
-    public ComboBox<Pubblicazione> getPubblicazione() {
-        return pubblicazione;
-    }
-
-    public ComboBox<Anagrafica> getDestinatario() {
-        return destinatario;
-    }
-
-    public ComboBox<Anagrafica> getIntestatario() {
-        return intestatario;
-    }
 }

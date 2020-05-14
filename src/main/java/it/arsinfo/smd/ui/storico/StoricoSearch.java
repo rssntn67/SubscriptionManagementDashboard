@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
 import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
@@ -23,15 +23,17 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private Anagrafica intestatario;
     private Anagrafica destinatario;
     private Pubblicazione pubblicazione;
-    private final ComboBox<TipoEstrattoConto> filterTipoEstrattoConto = new ComboBox<TipoEstrattoConto>();
+    private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
     private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
 
-    public StoricoSearch(StoricoDao storicoDao,
+    private final StoricoServiceDao dao;
+    public StoricoSearch(StoricoServiceDao dao,
             List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
-        super(storicoDao);
+        super(dao);
+        this.dao =dao;
 
         ComboBox<Anagrafica> filterIntestatario = new ComboBox<Anagrafica>();
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
@@ -40,7 +42,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
         HorizontalLayout anagr = new HorizontalLayout(filterPubblicazione);
         anagr.addComponentsAndExpand(filterIntestatario,filterDestinatario);
         HorizontalLayout stat = new HorizontalLayout(filterCassa,filterStatoStorico,filterInvioSped,filterInvio);
-        stat.addComponentsAndExpand(filterTipoEstrattoConto);
+        stat.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         setComponents(anagr,stat);
 
         filterIntestatario.setEmptySelectionAllowed(true);
@@ -82,23 +84,23 @@ public class StoricoSearch extends SmdSearch<Storico> {
             onChange();
         });
 
-        filterTipoEstrattoConto.setPlaceholder("Seleziona Tipo EC");
-        filterTipoEstrattoConto.addSelectionListener(e ->onChange());
-        filterTipoEstrattoConto.setItems(EnumSet.allOf(TipoEstrattoConto.class));
+        filterTipoAbbonamentoRivista.setPlaceholder("Cerca per Tipo");
+        filterTipoAbbonamentoRivista.addSelectionListener(e ->onChange());
+        filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
 
-        filterCassa.setPlaceholder("Seleziona Cassa");
+        filterCassa.setPlaceholder("Cerca per Cassa");
         filterCassa.addSelectionListener(e ->onChange());
         filterCassa.setItems(EnumSet.allOf(Cassa.class));
 
-        filterInvio.setPlaceholder("Seleziona Invio");
+        filterInvio.setPlaceholder("Cerca per Invio");
         filterInvio.addSelectionListener(e ->onChange());
         filterInvio.setItems(EnumSet.allOf(Invio.class));
         
-        filterInvioSped.setPlaceholder("Seleziona Sped");
+        filterInvioSped.setPlaceholder("Cerca per Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
         filterInvioSped.setItems(EnumSet.allOf(InvioSpedizione.class));
 
-        filterStatoStorico.setPlaceholder("Seleziona Stato");
+        filterStatoStorico.setPlaceholder("Cerca per Stato");
         filterStatoStorico.addSelectionListener(e ->onChange());
         filterStatoStorico.setItems(EnumSet.allOf(StatoStorico.class));
 
@@ -108,33 +110,12 @@ public class StoricoSearch extends SmdSearch<Storico> {
 
     @Override
     public List<Storico> find() {
-        if (destinatario == null && intestatario == null && pubblicazione == null) {
-            return filterAll(findAll());            
-        }
-        if (destinatario == null && intestatario == null) {
-            return filterAll(((StoricoDao) getRepo()).findByPubblicazione(pubblicazione));
-        }
-        if (destinatario == null && pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatario(intestatario));
-        }
-        if (intestatario == null && pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByDestinatario(destinatario));
-        }
-        if (pubblicazione == null) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndDestinatario(intestatario,destinatario));
-        }
-        if (intestatario == null) {
-            return filterAll(((StoricoDao) getRepo()).findByDestinatarioAndPubblicazione(destinatario,pubblicazione));
-        }
-        if (destinatario == null ) {
-            return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndPubblicazione(intestatario, pubblicazione));
-        }
-        return filterAll(((StoricoDao) getRepo()).findByIntestatarioAndDestinatarioAndPubblicazione(intestatario, destinatario, pubblicazione));
+    	return filterAll(dao.searchBy(intestatario, destinatario, pubblicazione));
     }
 
     private List<Storico> filterAll(List<Storico> storici) {
-        if (filterTipoEstrattoConto.getValue() != null) {
-            storici=storici.stream().filter(s -> s.getTipoEstrattoConto() == filterTipoEstrattoConto.getValue()).collect(Collectors.toList());      
+        if (filterTipoAbbonamentoRivista.getValue() != null) {
+            storici=storici.stream().filter(s -> s.getTipoAbbonamentoRivista() == filterTipoAbbonamentoRivista.getValue()).collect(Collectors.toList());      
         }
         if (filterCassa.getValue() != null) {
             storici=storici.stream().filter(s -> s.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      

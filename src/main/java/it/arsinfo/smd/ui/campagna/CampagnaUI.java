@@ -26,7 +26,7 @@ public class CampagnaUI extends SmdEditorUI<Campagna> {
     @Override
     protected void init(VaadinRequest request) {
         CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
-        CampagnaSearch search = new CampagnaSearch(campagnaDao.getRepository());
+        CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("Campagne");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao);
         init(request, add, search, editor, grid, "Campagne Abbonamenti");

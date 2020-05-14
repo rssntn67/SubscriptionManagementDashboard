@@ -18,11 +18,11 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.service.Smd;
 
 @Entity
-public class EstrattoConto implements SmdEntity {
+public class RivistaAbbonamento implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -38,7 +38,7 @@ public class EstrattoConto implements SmdEntity {
     private Storico storico;
 
     @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     private Mese meseInizio=Mese.GENNAIO;
     private Anno annoInizio=Anno.getAnnoCorrente();
@@ -58,7 +58,7 @@ public class EstrattoConto implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
-    public EstrattoConto() {
+    public RivistaAbbonamento() {
     }
 
     public boolean isAbbonamentoAnnuale() {
@@ -113,23 +113,23 @@ public class EstrattoConto implements SmdEntity {
         this.numero = numero;
     }
 
-    public TipoEstrattoConto getTipoEstrattoConto() {
-        return tipoEstrattoConto;
+    public TipoAbbonamentoRivista getTipoAbbonamentoRivista() {
+        return tipoAbbonamentoRivista;
     }
 
-    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
-        this.tipoEstrattoConto = omaggio;
+    public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
+        this.tipoAbbonamentoRivista = omaggio;
     }
 
     @Transient
     public String getHeader() {
-        return String.format("EstrattoConto:Edit");
+        return String.format("id=%d",id);
     }
 
     @Override
     public String toString() {
-        return String.format("EstrattoConto[id=%d, Abb.%d, '%d %s' %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoEstrattoConto);
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
     }
         
     public BigDecimal getImporto() {
@@ -180,7 +180,7 @@ public class EstrattoConto implements SmdEntity {
         this.numeroTotaleRiviste = numeroTotaleRiviste;
     }
 
-    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(EstrattoConto ec) throws UnsupportedOperationException {
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(RivistaAbbonamento ec) throws UnsupportedOperationException {
         
         if (ec.getPubblicazione() == null) {
             throw new UnsupportedOperationException("pubblicazione null");

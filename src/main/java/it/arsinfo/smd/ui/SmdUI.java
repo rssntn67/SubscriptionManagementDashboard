@@ -46,6 +46,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_INCASSI = "/incassi";
     public final static String URL_VERSAMENTI = "/versamenti";
+    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/duplicati";
     public final static String URL_INCASSA_ABB = "/incassaabb";
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
@@ -97,7 +98,22 @@ public abstract class SmdUI extends UI {
         });
 
         MenuItem abbonamenti = menu.addItem("Gestione Abbonamento",null);
-        
+        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ABBONAMENTI);
+            }
+        } );
+
+        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_SPEDIZIONI);
+            }
+        } );
+
         abbonamenti.addItem("Campagna",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -120,22 +136,6 @@ public abstract class SmdUI extends UI {
             }
         } );
         
-        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_ABBONAMENTI);
-            }
-        } );
-
-        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_SPEDIZIONI);
-            }
-        } );
-
         MenuItem incassi = menu.addItem("Gestione Incassi",null);
         incassi.addItem("Incassi",new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
@@ -149,6 +149,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_VERSAMENTI);
+            }
+        } );
+        incassi.addItem("Duplicati",new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_VERSAMENTI_DUPLICATI);
             }
         } );
         incassi.addItem("Incassa Abbonamenti",new MenuBar.Command() {
@@ -253,11 +260,11 @@ public abstract class SmdUI extends UI {
 
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
+        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         links.add(new Link("Campagna",   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
         links.add(new Link("Note", new ExternalResource(URL_NOTE)));
-        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
         return links.toArray((new Link[links.size()]));
     }
 
@@ -265,6 +272,7 @@ public abstract class SmdUI extends UI {
         List<Link> links = new ArrayList<>();
         links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
         links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
+        links.add(new Link("Duplicati", new ExternalResource(URL_VERSAMENTI_DUPLICATI)));
         links.add(new Link("Incassa Abbonamenti", new ExternalResource(URL_INCASSA_ABB)));
         return links.toArray((new Link[links.size()]));
     }

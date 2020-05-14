@@ -14,7 +14,7 @@ import com.google.common.collect.Table.Cell;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
@@ -30,10 +30,10 @@ import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -52,7 +52,7 @@ public class SmdLoadSampleData implements Runnable {
     protected final PubblicazioneDao pubblicazioneDao;
     private final SpesaSpedizioneDao spesaSpedizioneDao;
     protected final AbbonamentoDao abbonamentoDao;
-    private final EstrattoContoDao estrattoContoDao;
+    private final RivistaAbbonamentoDao rivistaAbbonamentoDao;
     private final SpedizioneDao spedizioneDao;
     private final SpedizioneItemDao spedizioneItemDao;
     protected final StoricoDao storicoDao;
@@ -99,7 +99,7 @@ public class SmdLoadSampleData implements Runnable {
             PubblicazioneDao pubblicazioneDao, 
             SpesaSpedizioneDao spesaSpedizioneDao, 
             AbbonamentoDao abbonamentoDao,
-            EstrattoContoDao estrattoContoDao,
+            RivistaAbbonamentoDao rivistaAbbonamentoDao,
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 
@@ -114,7 +114,7 @@ public class SmdLoadSampleData implements Runnable {
         this.pubblicazioneDao=pubblicazioneDao;
         this.spesaSpedizioneDao=spesaSpedizioneDao;
         this.abbonamentoDao=abbonamentoDao;
-        this.estrattoContoDao=estrattoContoDao;
+        this.rivistaAbbonamentoDao=rivistaAbbonamentoDao;
         this.spedizioneDao=spedizioneDao;
         this.spedizioneItemDao=spedizioneItemDao;
         this.incassoDao=incassoDao;
@@ -169,7 +169,7 @@ public class SmdLoadSampleData implements Runnable {
         Anno anno = abb.getAnno();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();        
         for (Cell<Pubblicazione, Anagrafica, Integer> ect: table.cellSet()) {
-            EstrattoConto ec = new EstrattoConto();
+            RivistaAbbonamento ec = new RivistaAbbonamento();
             ec.setAbbonamento(abb);
             ec.setPubblicazione(ect.getRowKey());
             ec.setNumero(ect.getValue());
@@ -187,7 +187,7 @@ public class SmdLoadSampleData implements Runnable {
                        
                   );
             abbonamentoDao.save(abb);
-            estrattoContoDao.save(ec);
+            rivistaAbbonamentoDao.save(ec);
             for (SpedizioneWithItems sped:spedizioni) {
                 spedizioneDao.save(sped.getSpedizione());
                 for (SpedizioneItem item: sped.getSpedizioneItems()) {
@@ -199,13 +199,13 @@ public class SmdLoadSampleData implements Runnable {
         }        
     }
 
-    private void save(Abbonamento abb, EstrattoConto...contos) {
-        for (EstrattoConto ec:contos) {
+    private void save(Abbonamento abb, RivistaAbbonamento...contos) {
+        for (RivistaAbbonamento ec:contos) {
             abb.setImporto(abb.getImporto().add(ec.getImporto()));
         }
         abbonamentoDao.save(abb);
-        for (EstrattoConto ec: contos) {
-            estrattoContoDao.save(ec);
+        for (RivistaAbbonamento ec: contos) {
+            rivistaAbbonamentoDao.save(ec);
         }
         
     }
@@ -213,105 +213,105 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento telematici001 = SmdHelper.getAbbonamentoBy(t001);
         telematici001.setAnno(Anno.ANNO2017);
         telematici001.setCodeLine("000000018000792609");
-        EstrattoConto ec001t001 = SmdHelper.addEC(telematici001, messaggio,1,new BigDecimal(15));
+        RivistaAbbonamento ec001t001 = SmdHelper.addEC(telematici001, messaggio,1,new BigDecimal(15));
         save(telematici001,ec001t001);
         
         Abbonamento venezia002 = SmdHelper.getAbbonamentoBy(ve002);
         venezia002.setCodeLine("000000018000854368");
         venezia002.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v002 = SmdHelper.addEC(venezia002, messaggio,1,new BigDecimal(15));
+        RivistaAbbonamento ec001v002 = SmdHelper.addEC(venezia002, messaggio,1,new BigDecimal(15));
         save(venezia002,ec001v002);
         
         Abbonamento venezia003 = SmdHelper.getAbbonamentoBy(ve003);
         venezia003.setCodeLine("000000018000263519");
         venezia003.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v003 = SmdHelper.addEC(venezia003, lodare,1,new BigDecimal(18));
+        RivistaAbbonamento ec001v003 = SmdHelper.addEC(venezia003, lodare,1,new BigDecimal(18));
         save(venezia003,ec001v003);
 
         Abbonamento venezia004 = SmdHelper.getAbbonamentoBy(ve004);
         venezia004.setCodeLine("000000018000254017");
         venezia004.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v004 = SmdHelper.addEC(venezia004, messaggio,2,new BigDecimal(30));
+        RivistaAbbonamento ec001v004 = SmdHelper.addEC(venezia004, messaggio,2,new BigDecimal(30));
         save(venezia004,ec001v004);
 
         Abbonamento venezia005 = SmdHelper.getAbbonamentoBy(ve005);
         venezia005.setCodeLine("000000018000761469");
         venezia005.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v005 = SmdHelper.addEC(venezia005, messaggio,1,new BigDecimal(15));
-        EstrattoConto ec002v005 = SmdHelper.addEC(venezia005, lodare,1,new BigDecimal(16));
-        EstrattoConto ec003v005 = SmdHelper.addEC(venezia005, blocchetti,1,new BigDecimal(6));
+        RivistaAbbonamento ec001v005 = SmdHelper.addEC(venezia005, messaggio,1,new BigDecimal(15));
+        RivistaAbbonamento ec002v005 = SmdHelper.addEC(venezia005, lodare,1,new BigDecimal(16));
+        RivistaAbbonamento ec003v005 = SmdHelper.addEC(venezia005, blocchetti,1,new BigDecimal(6));
         save(venezia005, ec001v005,ec002v005,ec003v005);
 
         Abbonamento venezia006 = SmdHelper.getAbbonamentoBy(ve006);
         venezia006.setCodeLine("000000018000253916");
         venezia006.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v006 = SmdHelper.addEC(venezia006, blocchetti,8,new BigDecimal(48));
+        RivistaAbbonamento ec001v006 = SmdHelper.addEC(venezia006, blocchetti,8,new BigDecimal(48));
         save(venezia006, ec001v006);
 
         Abbonamento venezia007 = SmdHelper.getAbbonamentoBy(ve007);
         venezia007.setCodeLine("000000018000800386");
         venezia007.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v007 = SmdHelper.addEC(venezia007, blocchetti,12,new BigDecimal(70));
+        RivistaAbbonamento ec001v007 = SmdHelper.addEC(venezia007, blocchetti,12,new BigDecimal(70));
         save(venezia007, ec001v007);
         
         Abbonamento venezia008 = SmdHelper.getAbbonamentoBy(ve008);
         venezia008.setCodeLine("000000018000508854");
         venezia008.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001v008 = SmdHelper.addEC(venezia008, blocchetti,15,new BigDecimal(84));
+        RivistaAbbonamento ec001v008 = SmdHelper.addEC(venezia008, blocchetti,15,new BigDecimal(84));
         save(venezia008, ec001v008);
 
         Abbonamento firenze009 = SmdHelper.getAbbonamentoBy(fi009);
         firenze009.setCodeLine("000000018000686968");
         firenze009.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001f009 = SmdHelper.addEC(firenze009, estratti,1,new BigDecimal(10));
+        RivistaAbbonamento ec001f009 = SmdHelper.addEC(firenze009, estratti,1,new BigDecimal(10));
         save(firenze009, ec001f009);
         
         Abbonamento firenze010 = SmdHelper.getAbbonamentoBy(fi010);
         firenze010.setCodeLine("000000018000198318");
         firenze010.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001f010 = SmdHelper.addEC(firenze010, lodare,1,new BigDecimal(15));
+        RivistaAbbonamento ec001f010 = SmdHelper.addEC(firenze010, lodare,1,new BigDecimal(15));
         save(firenze010, ec001f010);
 
         Abbonamento firenze011 = SmdHelper.getAbbonamentoBy(fi011);
         firenze011.setCodeLine("000000018000201449");
         firenze011.setAnno(Anno.ANNO2017);
-        EstrattoConto ec001f011 = SmdHelper.addEC(firenze011, lodare,1,new BigDecimal(15));
+        RivistaAbbonamento ec001f011 = SmdHelper.addEC(firenze011, lodare,1,new BigDecimal(15));
         save(firenze011, ec001f011);
 
         Abbonamento firenze012 = SmdHelper.getAbbonamentoBy(fi012);
         firenze012.setAnno(Anno.ANNO2017);
         firenze012.setCodeLine("000000018000633491");
-        EstrattoConto ec001f012 = SmdHelper.addEC(firenze012, lodare,2,new BigDecimal(33));
+        RivistaAbbonamento ec001f012 = SmdHelper.addEC(firenze012, lodare,2,new BigDecimal(33));
         save(firenze012, ec001f012);
         
         Abbonamento firenze013 = SmdHelper.getAbbonamentoBy(fi013);
         firenze013.setAnno(Anno.ANNO2017);
         firenze013.setCodeLine("000000018000196500");
-        EstrattoConto ec001f013 = SmdHelper.addEC(firenze013, blocchetti,18,new BigDecimal(108));
+        RivistaAbbonamento ec001f013 = SmdHelper.addEC(firenze013, blocchetti,18,new BigDecimal(108));
         save(firenze013, ec001f013);
         
         Abbonamento bari014 = SmdHelper.getAbbonamentoBy(ba014);
         bari014.setAnno(Anno.ANNO2017);
         bari014.setCodeLine("000000018000106227");
-        EstrattoConto ec001b014 = SmdHelper.addEC(bari014, blocchetti,2,new BigDecimal(12));
+        RivistaAbbonamento ec001b014 = SmdHelper.addEC(bari014, blocchetti,2,new BigDecimal(12));
         save(bari014, ec001b014);
 
         Abbonamento bari015 = SmdHelper.getAbbonamentoBy(ba015);
         bari015.setAnno(Anno.ANNO2017);
         bari015.setCodeLine("000000018000077317");
-        EstrattoConto ec001b015 = SmdHelper.addEC(bari015, blocchetti,6,new BigDecimal(36));
+        RivistaAbbonamento ec001b015 = SmdHelper.addEC(bari015, blocchetti,6,new BigDecimal(36));
         save(bari015, ec001b015);
 
         Abbonamento bari016 = SmdHelper.getAbbonamentoBy(ba016);
         bari016.setAnno(Anno.ANNO2017);
         bari016.setCodeLine("000000018000125029");
-        EstrattoConto ec001b016 = SmdHelper.addEC(bari016, messaggio,4,new BigDecimal(60));
+        RivistaAbbonamento ec001b016 = SmdHelper.addEC(bari016, messaggio,4,new BigDecimal(60));
         save(bari016, ec001b016);
 
         Abbonamento bari017 = SmdHelper.getAbbonamentoBy(ba017);
         bari017.setAnno(Anno.ANNO2017);
         bari017.setCodeLine("000000018000065383");
-        EstrattoConto ec001b017 = SmdHelper.addEC(bari017, estratti,12,new BigDecimal(67));
+        RivistaAbbonamento ec001b017 = SmdHelper.addEC(bari017, estratti,12,new BigDecimal(67));
         save(bari017, ec001b017);
 
     }
@@ -423,21 +423,21 @@ public class SmdLoadSampleData implements Runnable {
     private void loadStorico() {
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoEstrattoConto.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, Invio.Intestatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Scontato,Invio.Destinatario,InvioSpedizione.Spedizioniere));
 
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, Cassa.Ccp,TipoEstrattoConto.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, Cassa.Ccp,TipoAbbonamentoRivista.OmaggioGesuiti,Invio.Destinatario,InvioSpedizione.AdpSede));
 
-        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,Cassa.Ccp,TipoEstrattoConto.OmaggioCuriaGeneralizia,Invio.Destinatario,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaGeneralizia,Invio.Destinatario,InvioSpedizione.AdpSede));
         
-        storici.add(SmdHelper.getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, Cassa.Ccp,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,Cassa.Ccp,TipoEstrattoConto.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));        
+        storici.add(SmdHelper.getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, Cassa.Ccp,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,Cassa.Ccp,TipoAbbonamentoRivista.Ordinario,Invio.Destinatario,InvioSpedizione.Spedizioniere));        
 
         storici.stream().forEach(s -> {
             storicoDao.save(s);

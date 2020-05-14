@@ -3,14 +3,12 @@ package it.arsinfo.smd.ui.user;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.springframework.util.StringUtils;
-
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.UserInfoDao;
+import it.arsinfo.smd.dao.UserInfoServiceDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
@@ -20,8 +18,10 @@ public class UserInfoSearch extends SmdSearch<UserInfo> {
     private String searchText;
     private Role role;
 
-    public UserInfoSearch(UserInfoDao userInfoDao) {
-        super(userInfoDao);
+    private final UserInfoServiceDao dao;
+    public UserInfoSearch(UserInfoServiceDao dao) {
+        super(dao);
+        this.dao=dao;
         TextField filter = new TextField();
         filter.setPlaceholder("Cerca per username");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
@@ -52,16 +52,7 @@ public class UserInfoSearch extends SmdSearch<UserInfo> {
 
     @Override
     public List<UserInfo> find() {
-        if (StringUtils.isEmpty(searchText) && role == null) {
-            return findAll();
-        }
-        if (StringUtils.isEmpty(searchText)) {
-            return ((UserInfoDao) getRepo()).findByRole(role);
-        }
-        if (role == null ) {
-            return ((UserInfoDao) getRepo()).findByUsernameContainingIgnoreCase(searchText);
-        }
-        return ((UserInfoDao) getRepo()).findByUsernameContainingIgnoreCaseAndRole(searchText, role);
+    	return dao.searchBy(searchText,role);
      }
 
 }

@@ -1,41 +1,12 @@
 package it.arsinfo.smd.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.entity.Versamento;
 
-@Service
-public class VersamentoServiceDao implements SmdServiceDao<Versamento> {
+public interface VersamentoServiceDao extends SmdServiceDao<Versamento> {
 
-    @Autowired
-    private VersamentoDao repository;
-
-	@Override
-	public Versamento save(Versamento entity) throws Exception {
-		return repository.save(entity);
-	}
-
-	@Override
-	public void delete(Versamento entity) throws Exception {
-		repository.delete(entity);
-	}
-
-	@Override
-	public Versamento findById(Long id) {
-		return repository.findById(id).get();
-	}
-
-	@Override
-	public List<Versamento> findAll() {
-		return repository.findAll();
-	}
-
-	public VersamentoDao getRepository() {
-		return repository;
-	}
-	
+	List<Versamento> searchBy(String importo, LocalDate dataContabile, LocalDate dataPagamento,
+			String codeLine);	
 }

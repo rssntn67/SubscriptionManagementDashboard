@@ -1,13 +1,12 @@
 package it.arsinfo.smd.ui.spesaspedizione;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
+import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -18,9 +17,10 @@ public class SpesaSpedizioneSearch extends SmdSearch<SpesaSpedizione> {
     private AreaSpedizione area;
     private RangeSpeseSpedizione range;
 
-    public SpesaSpedizioneSearch(SpesaSpedizioneDao spesaSpedizioneDao) {
-        super(spesaSpedizioneDao);
-
+    private final SpesaSpedizioneServiceDao dao;
+    public SpesaSpedizioneSearch(SpesaSpedizioneServiceDao dao) {
+        super(dao);
+        this.dao = dao;
         ComboBox<AreaSpedizione> filterArea = new ComboBox<AreaSpedizione>(null,
                                                                                  EnumSet.allOf(AreaSpedizione.class));
         ComboBox<RangeSpeseSpedizione> filterRange = new ComboBox<RangeSpeseSpedizione>(null,
@@ -59,17 +59,7 @@ public class SpesaSpedizioneSearch extends SmdSearch<SpesaSpedizione> {
 
     @Override
     public List<SpesaSpedizione> find() {
-        if (area == null && range == null) {
-            return findAll();
-        }
-        if (range == null ) {
-        	return ((SpesaSpedizioneDao)getRepo()).findByAreaSpedizione(area);
-        } 
-        if (area == null ) {
-        	return ((SpesaSpedizioneDao)getRepo()).findByRangeSpeseSpedizione(range);
-        }
-
-        return Arrays.asList(((SpesaSpedizioneDao)getRepo()).findByAreaSpedizioneAndRangeSpeseSpedizione(area, range));
+    	return dao.searchBy(area, range);
     }
 
 }

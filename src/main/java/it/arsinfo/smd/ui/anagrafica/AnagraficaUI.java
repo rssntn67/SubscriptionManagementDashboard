@@ -26,7 +26,7 @@ public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
     @Override
     protected void init(VaadinRequest request) {
         AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
-        AnagraficaSearch search = new AnagraficaSearch(anagraficaServiceDao.getRepository());
+        AnagraficaSearch search = new AnagraficaSearch(anagraficaServiceDao);
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaServiceDao);
         super.init(request,add,search,editor,grid, "Anagrafica");        

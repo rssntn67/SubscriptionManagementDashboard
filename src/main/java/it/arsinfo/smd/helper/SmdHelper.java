@@ -18,12 +18,12 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.Regione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -683,7 +683,7 @@ public class SmdHelper {
             Pubblicazione pubblicazione, 
             int numero, 
             Cassa cassa,
-            TipoEstrattoConto omaggio,
+            TipoAbbonamentoRivista omaggio,
             Invio invio,
             InvioSpedizione invioSpedizione
         ) {
@@ -692,7 +692,7 @@ public class SmdHelper {
         storico.setDestinatario(destinatario);
         storico.setPubblicazione(pubblicazione);
         storico.setNumero(numero);
-        storico.setTipoEstrattoConto(omaggio);
+        storico.setTipoAbbonamentoRivista(omaggio);
         storico.setCassa(cassa);
         storico.setInvio(invio);
         storico.setInvioSpedizione(invioSpedizione);
@@ -733,9 +733,9 @@ public class SmdHelper {
         return abb;   
     }
 
-    public static EstrattoConto addEC(Abbonamento abb, Pubblicazione pubblicazione,
+    public static RivistaAbbonamento addEC(Abbonamento abb, Pubblicazione pubblicazione,
         Integer numero, BigDecimal importo) {
-        EstrattoConto ec = new EstrattoConto();
+        RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(pubblicazione);
         ec.setDestinatario(abb.getIntestatario());

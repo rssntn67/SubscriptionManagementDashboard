@@ -1,5 +1,8 @@
 package it.arsinfo.smd.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,10 +17,10 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 
 @Entity
-public class Storico implements SmdEntity {
+public class Storico implements SmdEntityItems<Nota> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,7 +38,7 @@ public class Storico implements SmdEntity {
     private Integer numero = 1;
 
     @Enumerated(EnumType.STRING)
-    private TipoEstrattoConto tipoEstrattoConto = TipoEstrattoConto.Ordinario;
+    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
@@ -48,6 +51,9 @@ public class Storico implements SmdEntity {
     
     @Enumerated(EnumType.STRING)
     private StatoStorico statoStorico = StatoStorico.Nuovo;
+
+    @Transient
+    private List<Nota> items = new ArrayList<Nota>();
 
     public Storico() {
         super();
@@ -113,33 +119,74 @@ public class Storico implements SmdEntity {
     
     @Transient
     public String getCaption() {
-        return String.format("Intestatario:'%s', Pubblicazione:'%s', Destinatario:'%s'", getIntestazione(), pubblicazione.getNome(),getBeneficiario());
+    	if (intestatario.equals(destinatario)) {
+            return String.format("'%s', %d %s", getIntestazione(),numero,  pubblicazione.getNome());
+    	}
+        return String.format("'%s', %d %s ->'%s'", getIntestazione(),numero,  pubblicazione.getNome(),getBeneficiario());
     }
     @Transient
     public String getHeader() {
-        return String.format("Storico:Edit");
+        return String.format("'%s' %d %s %s",
+                intestatario.getHeader(),
+                numero, 
+                pubblicazione.getNome(),
+                tipoAbbonamentoRivista);
     }
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, '%d %s' %d -> %d, %s %s, %s, %s]",
+    	if (id == null) {
+            return String.format("Storico[ %d %s '%s' -> '%s', %s %s, %s, %s]",
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getIntestazione(), 
+                    destinatario.getIntestazione(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    		
+    	}
+    	if (id == null && intestatario.getId().longValue() == destinatario.getId().longValue()) {
+            return String.format("Storico[ %d %s '%s', %s %s, %s, %s]",
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getIntestazione(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    	}
+    	if (intestatario.getId().longValue() == destinatario.getId().longValue()) {
+            return String.format("Storico[id=%d, %d %s '%s', %s %s, %s, %s]",
+                    id, 
+                    numero, 
+                    pubblicazione.getNome(), 
+                    intestatario.getCaption(), 
+                    tipoAbbonamentoRivista,
+                    invio,
+                    statoStorico,
+                    cassa);
+    		
+    	}
+        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s, %s, %s]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
-                             intestatario.getId(), 
-                             destinatario.getId(), 
-                             tipoEstrattoConto,
+                             intestatario.getIntestazione(), 
+                             destinatario.getIntestazione(), 
+                             tipoAbbonamentoRivista,
                              invio,
                              statoStorico,
                              cassa);
     }
 
-    public TipoEstrattoConto getTipoEstrattoConto() {
-        return tipoEstrattoConto;
+    public TipoAbbonamentoRivista getTipoAbbonamentoRivista() {
+        return tipoAbbonamentoRivista;
     }
 
-    public void setTipoEstrattoConto(TipoEstrattoConto omaggio) {
-        this.tipoEstrattoConto = omaggio;
+    public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
+        this.tipoAbbonamentoRivista = omaggio;
     }
 
     public Invio getInvio() {
@@ -166,25 +213,6 @@ public class Storico implements SmdEntity {
         this.statoStorico = statoStorico;
     }
     
-    @Transient
-    public boolean attivo() {
-        boolean attivo = false;
-        switch (statoStorico) {
-        case Nuovo:
-            attivo=(numero > 0);
-            break;
-        case Valido:
-            attivo=(numero > 0);
-            break;
-        case Sospeso:
-            break;
-        default:
-            break;
-        }
-        
-        return attivo;
-    }
-
     public InvioSpedizione getInvioSpedizione() {
         return invioSpedizione;
     }
@@ -192,5 +220,26 @@ public class Storico implements SmdEntity {
     public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
         this.invioSpedizione = invioSpedizione;
     }
+
+	@Override
+	public boolean addItem(Nota item) {
+		return items.add(item);
+	}
+
+	@Override
+	public boolean removeItem(Nota item) {
+		return items.remove(item);
+	}
+
+	@Override
+	public List<Nota> getItems() {
+		return items;
+	}
+
+	@Override
+	public void setItems(List<Nota> items) {
+		this.items=items;
+		
+	}
     
 }

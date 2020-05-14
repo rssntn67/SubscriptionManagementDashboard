@@ -44,7 +44,7 @@ public class IncassaAbbonamentoUI extends SmdUI {
 
         SmdButton back = new SmdButton("Indietro",null);
 
-        OperazioneIncassoGrid versamentoGrid = new OperazioneIncassoGrid("Operazioni su Versamenti Associate");
+        IncassaAbbonamentoGrid versamentoGrid = new IncassaAbbonamentoGrid("Operazioni su Versamenti Associate");
         
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica) {
         	@Override

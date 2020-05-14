@@ -1,7 +1,6 @@
 package it.arsinfo.smd.ui.storico;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,151 +13,163 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.NotaDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
-import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.SmdService;
+import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.nota.NotaGrid;
+import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 
 @SpringUI(path = SmdUI.URL_STORICO)
 @Title("Storico Anagrafica Pubblicazioni ADP")
 @Push
-public class StoricoUI extends SmdUI {
+public class StoricoUI extends SmdEditorUI<Storico> {
 
+	private class MyDao implements StoricoServiceDao {
+
+		@Override
+		public List<Nota> getItems(Storico t) {
+			return dao.getItems(t);
+		}
+
+		@Override
+		public Storico deleteItem(Storico t, Nota item) throws Exception {
+			return dao.deleteItem(t, item);
+		}
+
+		@Override
+		public Storico saveItem(Storico t, Nota item) throws Exception {
+			return dao.saveItem(t, item);
+		}
+
+		@Override
+		public List<Nota> findAllItems() {
+			return dao.findAllItems();
+		}
+
+		@Override
+		public Storico save(Storico entity) throws Exception {
+        	entity.addItem(dao.getNotaOnSave(entity,getLoggedInUser().getUsername()));
+        	return dao.save(entity);
+		}
+
+		@Override
+		public void delete(Storico entity) throws Exception {
+			dao.delete(entity);
+		}
+
+		@Override
+		public Storico findById(Long id) {
+			return dao.findById(id);
+		}
+
+		@Override
+		public List<Storico> findAll() {
+			return dao.findAll();
+		}
+
+		@Override
+		public List<Storico> searchBy(Anagrafica intestatario, Anagrafica destinatario, Pubblicazione pubblicazione) {
+			return dao.searchBy(intestatario, destinatario, pubblicazione);
+		}
+
+		@Override
+		public List<Pubblicazione> findPubblicazioni() {
+			return dao.findPubblicazioni();
+		}
+
+		@Override
+		public List<Anagrafica> findAnagrafica() {
+			return dao.findAnagrafica();
+		}
+
+		@Override
+		public List<Campagna> findCampagne() {
+			return dao.findCampagne();
+		}
+
+		@Override
+		public void aggiornaCampagna(Campagna campagna, Storico storico,String username) throws Exception {
+        	storico.addItem(dao.getNotaOnSave(storico,username));
+			dao.aggiornaCampagna(campagna, storico,username);
+		}
+
+		@Override
+		public Nota getNotaOnSave(Storico storico, String username) {
+			return dao.getNotaOnSave(storico, username);
+		}
+		
+	}
     /**
      * 
      */
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private CampagnaDao campagnaDao;
+    private StoricoServiceDao dao;
     
-    @Autowired
-    private PubblicazioneDao pubblicazioneDao;
-
-    @Autowired
-    private AnagraficaDao anagraficaDao;
-
-    @Autowired
-    private StoricoDao storicoDao;
-
-    @Autowired
-    private NotaDao notaDao;
-
-    @Autowired
-    private SmdService smdService;
-
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Storico");
-        List<Anagrafica> anagrafica = anagraficaDao.findAll();
-        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+    	
+    	MyDao myDao = new MyDao();
+        List<Anagrafica> anagrafica = myDao.findAnagrafica();
+        List<Pubblicazione> pubblicazioni = myDao.findPubblicazioni();
+
         StoricoAdd add = new StoricoAdd("Aggiungi Storico");
-        StoricoSearch search = new StoricoSearch(storicoDao,anagrafica,pubblicazioni);
+        StoricoSearch search = new StoricoSearch(myDao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
-        
-        StoricoEditor editor = 
-                new StoricoEditor(
-                                  storicoDao, 
-                                  pubblicazioni, 
-                                  anagrafica) {
-            @Override
-            public void save() {
-                if (!isStoricoValid(this)) {
-                    return;
-                }
-                try {
-                    smdService.save(get(), getNote(this));
-                    onChange();
-                } catch (Exception e) {
-                    Notification.show("Non è possibile salvare questo record: ",
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            }
-            
-            @Override
-            public void delete() {
-                smdService.delete(get());
-                onChange();
-            }
-        };
-        
-        NotaGrid notaGrid = new NotaGrid("Note");
-        notaGrid.getGrid().setColumns("operatore","data","description");
-        notaGrid.getGrid().setHeight("200px");
 
+
+        NotaAdd itemAdd = new NotaAdd("Aggiungi Nota");        
+     	SmdButton itemDel = new SmdButton("Rimuovi Nota", VaadinIcons.TRASH);
+	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
+    	SmdButton itemSave = new SmdButton("Salva Nota", VaadinIcons.CHECK);
+	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         SmdButtonComboBox<Campagna> update = 
-            new SmdButtonComboBox<Campagna>("Seleziona", campagnaDao.findAll().stream().filter(c -> c.getStatoCampagna() != StatoCampagna.Chiusa).collect(Collectors.toList()),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
-        update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-        update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
-        update.getComboBox().setEmptySelectionAllowed(false);
-        addSmdComponents(add,update,editor,notaGrid,search, grid);
-        editor.setVisible(false);
-        notaGrid.setVisible(false);
-        update.setVisible(false);
+                new SmdButtonComboBox<Campagna>("Seleziona", 
+                		myDao.findCampagne(),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
+            update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+            update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
+            update.getComboBox().setEmptySelectionAllowed(false);
+
+            
+        StoricoEditor maineditor = new StoricoEditor(myDao, 
+                                  pubblicazioni, 
+                                  anagrafica);
+        maineditor.getActions().addComponents(itemDel.getComponents());
+		maineditor.getActions().addComponents(itemSave.getComponents());
+		maineditor.getActions().addComponents(itemAdd.getComponents());        
+        maineditor.getActions().addComponents(update.getComponents());
         
-        search.setChangeHandler(()-> {
-            grid.populate(search.find());
-        });
+        NotaGrid itemGrid = new NotaGrid("Note");
+        itemGrid.getGrid().setHeight("200px");
+        NotaEditor itemEditor = new NotaEditor();
+
+
+        StoricoNotaEditor editor = new StoricoNotaEditor(myDao, itemAdd, itemDel, itemSave, itemGrid, itemEditor, maineditor);
+        editor.addComponents(itemEditor.getComponents());
+        editor.addComponents(maineditor.getComponents());
+        editor.addComponents(itemGrid.getComponents());
+
+
+        super.init(request, add, search, editor, grid, "Storico");
         
-        grid.setChangeHandler(() -> {
-            if (grid.getSelected() == null) {
-                return;
-            }
-            hideMenu();
-            search.setVisible(false);
-            editor.edit(grid.getSelected());
-            update.setVisible(true);
-            notaGrid.populate(notaDao.findByStorico(grid.getSelected()));
-            setHeader(grid.getSelected().getHeader());
-            add.setVisible(false);
-        });
+        itemAdd.setUser(getLoggedInUser());
+        addSmdComponents(editor, 
+                add,
+                search, 
+                grid);
 
-        editor.setChangeHandler(() -> {
-            grid.populate(search.find());
-            showMenu();
-            search.setVisible(true);
-            setHeader("Storico");
-            editor.setVisible(false);
-            notaGrid.setVisible(false);
-            update.setVisible(false);
-            add.setVisible(true);
-        });
 
-        add.setChangeHandler(() -> {
-            editor.edit(add.generate());
-            setHeader(String.format("Storico:Nuovo"));
-            add.setVisible(false);
-        });
-
-        add.getButton().addClickListener(event ->
-            search.setVisible(false));
+        grid.populate(search.findAll());
         
-        notaGrid.setChangeHandler(() -> {});
-
         update.setChangeHandler(() -> {
-            if (update.getValue() == null) {
-                Notification.show("La Campagna da aggiornare deve essere valorizzato", Type.WARNING_MESSAGE);                 
-                return;
-            }
             try {
-                if (editor.get().getNumero() <= 0) {
-                    Nota[] note = getUNote(editor, update.getValue(), "rimuovi");
-                    smdService.rimuovi(update.getValue(),editor.get(),note);
-                } else {
-                    Nota[] note = getUNote(editor, update.getValue(), "aggiorna");
-                    smdService.aggiorna(update.getValue(),editor.get(),note);
-                }
+            	myDao.aggiornaCampagna(update.getValue(), maineditor.get(), "admin->"+getLoggedInUser().getUsername());
                 editor.onChange();
             } catch (Exception e) {
                 Notification.show("Campagna ed Abbonamento non aggiornati:" + e.getMessage(), Type.ERROR_MESSAGE);
@@ -166,58 +177,6 @@ public class StoricoUI extends SmdUI {
             }
         });
 
-        grid.populate(search.find());
 
     }
-
-    private boolean isStoricoValid(StoricoEditor editor) {
-        if (editor.getIntestatario().isEmpty()) {
-            Notification.show("Intestatario deve essere valorizzato", Type.WARNING_MESSAGE);
-            return false;                    
-        }
-        if (editor.getDestinatario().isEmpty()) {
-            Notification.show("Destinatario deve essere valorizzato", Type.WARNING_MESSAGE);
-            return false;                    
-        }
-        if (editor.getPubblicazione().isEmpty()) {
-            Notification.show("Pubblicazione deve essere valorizzata", Type.WARNING_MESSAGE);
-            return false;
-        }        
-        return true;
-    }
-    
-    private  Nota[] getNote(StoricoEditor editor) {
-        Storico storico = editor.get();
-        Nota nota = new Nota(storico);
-        nota.setOperatore(getLoggedInUser().getUsername());
-        if (storico.getId() == null) {
-            nota.setDescription("Nuovo: " + storico.toString());
-        } else {
-            nota.setDescription("Aggiornato: " + storico.toString());                    
-        }
-        
-        if (editor.getNota().isEmpty()) {
-            Nota[] note = {nota}; 
-            return note;
-        }
-        Nota unota = new Nota(storico);
-        unota.setOperatore(getLoggedInUser().getUsername());
-        unota.setDescription(editor.getNota().getValue());
-        editor.getNota().clear();
-        Nota[] note = {nota,unota}; 
-        return note;
-    }
-
-    private  Nota[] getUNote(StoricoEditor editor,Campagna campagna, String action) {
-        Nota[] dnote = getNote(editor);
-        Nota unota = new Nota(editor.get());
-        unota.setOperatore(getLoggedInUser().getUsername());
-        unota.setDescription(action+": " + campagna.getCaption());
-        Nota[] note = new Nota[dnote.length+1];
-        for (int i = 0;i<dnote.length;i++)
-            note[i] = dnote[i];
-        note[dnote.length] = unota;
-        return note;
-    }
-
 }

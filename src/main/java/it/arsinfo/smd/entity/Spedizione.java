@@ -30,7 +30,7 @@ public class Spedizione implements SmdEntity {
 
     @ManyToOne(fetch=FetchType.EAGER)
     private Anagrafica destinatario;
-    
+
     @Enumerated(EnumType.STRING)
     private Invio invio = Invio.Destinatario;
 
@@ -60,19 +60,24 @@ public class Spedizione implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("Spedizione:Edit");
+        return String.format("abb.%s %s %s, dest. %s", 
+                abbonamento.getHeader(),
+                meseSpedizione,
+                annoSpedizione,
+                destinatario.getHeader()
+                );
     }
 
     @Override
     public String toString() {
         return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s %s]", 
                              id,
-                             abbonamento.getId(),
+                             abbonamento,
                              meseSpedizione,
                              annoSpedizione,
                              pesoStimato,
                              spesePostali,
-                             destinatario.getId(), 
+                             destinatario, 
                              statoSpedizione,
                              invioSpedizione,
                              invio);
@@ -203,5 +208,4 @@ public class Spedizione implements SmdEntity {
     public String getDestinazione() {
         return Anagrafica.generaIntestazione(destinatario);
     }
-
 }

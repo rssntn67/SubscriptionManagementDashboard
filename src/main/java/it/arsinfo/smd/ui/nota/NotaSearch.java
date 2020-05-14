@@ -1,16 +1,13 @@
 package it.arsinfo.smd.ui.nota;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.util.StringUtils;
 
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.NotaServiceDao;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
@@ -19,9 +16,11 @@ public class NotaSearch extends SmdSearch<Nota> {
 
     private String searchText;
     private Storico storico;
+    private NotaServiceDao dao;
 
-    public NotaSearch(NotaDao notaDao, List<Storico> storici) {
-        super(notaDao);
+    public NotaSearch(NotaServiceDao dao, List<Storico> storici) {
+        super(dao);
+        this.dao=dao;
         TextField filter = new TextField();
         filter.setPlaceholder("Cerca per Descrizione");
         filter.setValueChangeMode(ValueChangeMode.EAGER);
@@ -52,21 +51,7 @@ public class NotaSearch extends SmdSearch<Nota> {
 
     @Override
     public List<Nota> find() {
-        if (StringUtils.isEmpty(searchText) && storico == null) {
-            return findAll();
-        }
-        if (StringUtils.isEmpty(searchText)) {
-            return ((NotaDao) getRepo()).findByStorico(storico);
-        }
-        if (storico == null) {
-            return ((NotaDao) getRepo()).findByDescriptionContainingIgnoreCase(searchText);
-        }
-        return ((NotaDao) getRepo()).findByDescriptionContainingIgnoreCase(searchText)
-                .stream()
-                .filter(n -> 
-                n.getStorico().getId() 
-                        == storico.getId())
-                .collect(Collectors.toList());
+    	return dao.searchBy(searchText, storico);
     }
 
 }

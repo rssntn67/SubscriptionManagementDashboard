@@ -48,11 +48,11 @@ import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoEstrattoConto;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Incasso;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
@@ -229,13 +229,13 @@ public class Smd {
         return map;
     }
 
-    public static EstrattoConto genera(Abbonamento abb,Storico storico) {
-        final EstrattoConto ec = new EstrattoConto();
+    public static RivistaAbbonamento genera(Abbonamento abb,Storico storico) {
+        final RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setStorico(storico);
         ec.setAbbonamento(abb);
         ec.setPubblicazione(storico.getPubblicazione());
         ec.setNumero(storico.getNumero());
-        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
+        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
         ec.setMeseInizio(Mese.GENNAIO);
         ec.setAnnoInizio(abb.getAnno());
         ec.setMeseFine(Mese.DICEMBRE);
@@ -248,7 +248,7 @@ public class Smd {
     }
 
     public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
-            EstrattoConto ec,
+            RivistaAbbonamento ec,
             List<SpedizioneWithItems> spedizioni,
             List<SpesaSpedizione> spese)
     throws UnsupportedOperationException {      
@@ -277,8 +277,8 @@ public class Smd {
         .forEach(sped -> {
             sped.getSpedizioneItems()
             .stream()
-            .filter(item -> item.getEstrattoConto() == ec || 
-               (item.getEstrattoConto().getId() != null && ec.getId() != null && item.getEstrattoConto().getId().longValue() == ec.getId().longValue()))
+            .filter(item -> item.getRivistaAbbonamento() == ec || 
+               (item.getRivistaAbbonamento().getId() != null && ec.getId() != null && item.getRivistaAbbonamento().getId().longValue() == ec.getId().longValue()))
             .forEach(item -> {
                 if (ec.getPubblicazione() == item.getPubblicazione() || 
                   (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
@@ -410,7 +410,7 @@ public class Smd {
 
     public static List<SpedizioneItem> rimuoviEC(
             Abbonamento abb, 
-            EstrattoConto ec, 
+            RivistaAbbonamento ec, 
             List<SpedizioneWithItems> spedizioni,
             List<SpesaSpedizione> spese) 
     {
@@ -423,10 +423,10 @@ public class Smd {
             sped.getSpedizioneItems()
             .stream()
             .filter(item -> 
-                item.getEstrattoConto() == ec 
+                item.getRivistaAbbonamento() == ec 
                 || 
-                (ec.getId() != null && item.getEstrattoConto().getId() != null &&
-                    item.getEstrattoConto().getId().longValue() == ec.getId().longValue()
+                (ec.getId() != null && item.getRivistaAbbonamento().getId() != null &&
+                    item.getRivistaAbbonamento().getId().longValue() == ec.getId().longValue()
                     )
                 )
             .forEach(item -> {
@@ -480,8 +480,8 @@ public class Smd {
         return rimossi;
     }
 
-    public static List<SpedizioneItem> generaECItems(EstrattoConto ec) throws UnsupportedOperationException {
-        log.debug("generaECItems: tipo: "+ ec.getTipoEstrattoConto());
+    public static List<SpedizioneItem> generaECItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
+        log.debug("generaECItems: tipo: "+ ec.getTipoAbbonamentoRivista());
         log.debug("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
         log.debug("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
         log.debug("generaECItems: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
@@ -489,11 +489,11 @@ public class Smd {
         log.debug("generaECItems: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
         log.debug("generaECItems: quantità: "+ ec.getNumero());
         List<SpedizioneItem> items = new ArrayList<>();
-        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = EstrattoConto.getAnnoMeseMap(ec);
+        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).stream().forEach(mese -> {
                 SpedizioneItem item = new SpedizioneItem();
-                item.setEstrattoConto(ec);
+                item.setRivistaAbbonamento(ec);
                 item.setAnnoPubblicazione(anno);
                 item.setMesePubblicazione(mese);
                 item.setNumero(ec.getNumero());
@@ -502,12 +502,12 @@ public class Smd {
             });
         }
       if (items.isEmpty()) {
-          throw new UnsupportedOperationException("Nessuna spedizione per estratto conto");
+          throw new UnsupportedOperationException("Nessuna spedizione per rivista in Abbonamento");
       }
       return items; 
     }
 
-    public static void aggiungiItemSpedizione(Abbonamento abb, EstrattoConto ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
+    public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
         Anagrafica destinatario = ec.getDestinatario();
         Invio invio = ec.getInvio();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
@@ -565,7 +565,7 @@ public class Smd {
     }
     
     public static List<SpedizioneWithItems> genera(Abbonamento abb,
-            EstrattoConto ec, 
+            RivistaAbbonamento ec, 
             List<SpedizioneWithItems> spedizioni, 
             List<SpesaSpedizione> spese) throws UnsupportedOperationException {
 
@@ -653,8 +653,8 @@ public class Smd {
         }
     }
     
-    public static List<EstrattoConto> 
-        generaEstrattoContoAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
+    public static List<RivistaAbbonamento> 
+        generaRivisteAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
         throws UnsupportedOperationException {
         if (abbonamento.getCampagna() != campagna) {
             throw new UnsupportedOperationException("Campagna ed abbonamento non matchano");
@@ -662,11 +662,10 @@ public class Smd {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo || campagna.getStatoCampagna() != StatoCampagna.Generata) {
             throw new UnsupportedOperationException("Campagna ed abbonamento non nuovi");
         }
-        final List<EstrattoConto> ecs = new ArrayList<>();
+        final List<RivistaAbbonamento> ecs = new ArrayList<>();
         storici
         .stream()
         .filter(storico -> 
-            storico.attivo() &&
             storico.getIntestatario().getId().longValue() == abbonamento.getIntestatario().getId().longValue()
             && 
             campagna.hasPubblicazione(storico.getPubblicazione())
@@ -693,8 +692,7 @@ public class Smd {
             .stream()
             .filter(
                     storico -> 
-                        storico.attivo()
-                        && campagna.hasPubblicazione(storico.getPubblicazione()) 
+                    	campagna.hasPubblicazione(storico.getPubblicazione()) 
                         && storico.getIntestatario().equals(a) 
                         && !cassaStorico.contains(storico.getCassa())
                     )
@@ -729,9 +727,9 @@ public class Smd {
         return abbonamento;
     }
 
-    public static void calcoloImportoEC(EstrattoConto ec) throws UnsupportedOperationException {
+    public static void calcoloImportoEC(RivistaAbbonamento ec) throws UnsupportedOperationException {
         BigDecimal costo=BigDecimal.ZERO;
-        switch (ec.getTipoEstrattoConto()) {
+        switch (ec.getTipoAbbonamentoRivista()) {
         case Ordinario:
             costo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
             if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
@@ -741,21 +739,21 @@ public class Smd {
 
         case Web:
             if (!ec.isAbbonamentoAnnuale()) {
-                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Scontato:
             if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Sostenitore:
             if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoEstrattoConto.Web);
+                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             costo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
             break;

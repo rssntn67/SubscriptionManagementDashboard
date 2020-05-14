@@ -45,21 +45,21 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         
-        EstrattoContoAdd itemAdd = new EstrattoContoAdd("Aggiungi EC");
-     	SmdButton itemDel = new SmdButton("Rimuovi Item", VaadinIcons.TRASH);
+        RivistaAbbonamentoAdd itemAdd = new RivistaAbbonamentoAdd("Aggiungi Rivista");
+     	SmdButton itemDel = new SmdButton("Rimuovi Rivista", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
-    	SmdButton itemSave = new SmdButton("Salva Item", VaadinIcons.CHECK);
+    	SmdButton itemSave = new SmdButton("Salva Rivista", VaadinIcons.CHECK);
 	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-	    AbbonamentoEditor abbeditor = new AbbonamentoEditor(dao,anagrafica,campagne);
-	    abbeditor.getActions().addComponents(itemDel.getComponents());
-		abbeditor.getActions().addComponents(itemSave.getComponents());
-		abbeditor.getActions().addComponents(itemAdd.getComponents());
-        EstrattoContoGrid itemGrid = new EstrattoContoGrid("Estratti Conto");
-        EstrattoContoEditor itemEditor = new EstrattoContoEditor(pubblicazioni, anagrafica);
+	    AbbonamentoEditor maineditor = new AbbonamentoEditor(dao,anagrafica,campagne);
+	    maineditor.getActions().addComponents(itemDel.getComponents());
+		maineditor.getActions().addComponents(itemSave.getComponents());
+		maineditor.getActions().addComponents(itemAdd.getComponents());
+        RivistaAbbonamentoGrid itemGrid = new RivistaAbbonamentoGrid("Riviste in Abbonamento");
+        RivistaAbbonamentoEditor itemEditor = new RivistaAbbonamentoEditor(pubblicazioni, anagrafica);
    	    
-        AbbonamentoEstrattoContoEditor editor = new AbbonamentoEstrattoContoEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, abbeditor);
+        AbbonamentoRivisteEditor editor = new AbbonamentoRivisteEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
-        editor.addComponents(abbeditor.getComponents());
+        editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());
 
         super.init(request, add, search, editor, grid, "Abbonamento");

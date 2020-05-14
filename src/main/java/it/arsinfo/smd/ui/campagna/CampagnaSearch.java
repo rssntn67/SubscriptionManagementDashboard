@@ -1,23 +1,25 @@
 package it.arsinfo.smd.ui.campagna;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class CampagnaSearch extends SmdSearch<Campagna> {
 
-    Anno anno;
+    private Anno anno;
+    
+    private final CampagnaServiceDao dao;
 
-    public CampagnaSearch(CampagnaDao repo) {
-        super(repo);
+    public CampagnaSearch(CampagnaServiceDao dao) {
+        super(dao);
+        this.dao=dao;
         ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno",
                                                        EnumSet.allOf(Anno.class));
 
@@ -40,15 +42,7 @@ public class CampagnaSearch extends SmdSearch<Campagna> {
 
     @Override
     public List<Campagna> find() {
-        if (anno != null) {
-            Campagna campagna = ((CampagnaDao) getRepo()).findByAnno(anno);
-            List<Campagna> campagne = new ArrayList<>();
-            if (campagna != null) {
-                campagne.add(campagna);
-            }
-            return campagne;
-        }
-        return findAll();
+        return dao.searchBy(anno);
     }
 
 }

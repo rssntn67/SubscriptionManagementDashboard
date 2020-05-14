@@ -10,9 +10,9 @@ import org.springframework.util.Assert;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.EstrattoConto;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 
-public class AbbonamentoConEC extends Indirizzo {
+public class AbbonamentoConRiviste extends Indirizzo {
 
 	public static String numeroPlaceHolder="-";
     private final Abbonamento abbonamento;
@@ -27,13 +27,13 @@ public class AbbonamentoConEC extends Indirizzo {
     private BigDecimal importoLodare=BigDecimal.ZERO;
     private BigDecimal importoManifesti=BigDecimal.ZERO;
 
-    public AbbonamentoConEC(Abbonamento abbonamento, List<EstrattoConto> estrattiConto, Anagrafica intestatario, Anagrafica co) {
+    public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
     	super(intestatario,co);
     	fmt_IT.setMaximumFractionDigits(2);    	
     	fmt_IT.setMinimumFractionDigits(2);    	
     	Assert.notNull(abbonamento,"abbonamento must be not null");
     	this.abbonamento= abbonamento;
-    	for (EstrattoConto ec:estrattiConto) {
+    	for (RivistaAbbonamento ec:estrattiConto) {
     		if (ec.getPubblicazione().getNome().equals("Messaggio")) {
     			numeroMessaggi+=ec.getNumero();
     			importoMessaggi=importoMessaggi.add(ec.getImporto());

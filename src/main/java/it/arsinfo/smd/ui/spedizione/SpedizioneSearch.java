@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
+import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -33,11 +33,14 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
     private final Map<Long,Abbonamento> abbMap;
-    public SpedizioneSearch(SpedizioneDao spedizioneDao,
+    
+    private final SpedizioneServiceDao dao;
+    public SpedizioneSearch(SpedizioneServiceDao dao,
             List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {
-        super(spedizioneDao);
+        super(dao);
+        this.dao=dao;
         abbMap = abbonamenti.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
@@ -101,19 +104,10 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     @Override
     public List<Spedizione> find() {
-        if (p != null) {
-            return filterAll(getSmdService().findSpedizioneByPubblicazione(p));
-        }
-        if (a == null) {
-            return filterAll(getSmdService().findSpedizioneAll());            
-        }
-        return filterAll(getSmdService().findSpedizioneByDestinatario(a));
+    	return filterAll(dao.searchBy(p, a));
     }
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
-        if (a != null) {
-            spedizioni = spedizioni.stream().filter( s -> s.getDestinatario().equals(a)).collect(Collectors.toList());
-        }
         if (filterAnno.getValue() != null) {
             spedizioni = spedizioni.stream().filter( s -> s.getAnnoSpedizione() == filterAnno.getValue()).collect(Collectors.toList());
         }

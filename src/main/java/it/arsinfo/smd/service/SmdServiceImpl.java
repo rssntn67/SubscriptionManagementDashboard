@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.EstrattoContoDao;
 import it.arsinfo.smd.dao.repository.IncassoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
@@ -35,23 +35,20 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.dto.AbbonamentoConEC;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.EstrattoConto;
 import it.arsinfo.smd.entity.Incasso;
-import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.Storico;
@@ -78,7 +75,7 @@ public class SmdServiceImpl implements SmdService {
     AbbonamentoDao abbonamentoDao;
     
     @Autowired
-    EstrattoContoDao estrattoContoDao;
+    RivistaAbbonamentoDao rivistaAbbonamentoDao;
     
     @Autowired
     SpedizioneDao spedizioneDao;
@@ -162,48 +159,22 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<AbbonamentoConEC> get(List<Abbonamento> abbonamenti) {
-    	List<AbbonamentoConEC> list = new ArrayList<>();
+    public List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti) {
+    	List<AbbonamentoConRiviste> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
     		list.add(new 
-				AbbonamentoConEC(abbonamento, 
-						estrattoContoDao.findByAbbonamento(abbonamento),
+				AbbonamentoConRiviste(abbonamento, 
+						rivistaAbbonamentoDao.findByAbbonamento(abbonamento),
     					abbonamento.getIntestatario(),abbonamento.getIntestatario().getCo()));
     	}
     	return list;
     }
 
-    @Override
-    public void genera(Campagna campagna) throws Exception {
-        log.info("genera Campagna start {}", campagna);
-        List<Abbonamento> 
-            abbonamenti = 
-              Smd.genera(campagna, 
-                  anagraficaDao.findAll(),
-                  storicoDao.findAll());
-                                                           
-        abbonamenti.forEach(abb -> {
-            storicoDao.findByIntestatarioAndCassa(
-                  abb.getIntestatario(),abb.getCassa())
-                .stream()
-                .filter(s -> s.attivo())
-                .forEach(storico -> {
-                   Smd.genera(abb, storico);
-                   storico.setStatoStorico(StatoStorico.Valido);
-                   storicoDao.save(storico);
-            });
-            if (abb.getItems().size() >= 1) {
-                genera(abb);
-            }
-        });
-        log.info("genera Campagna end");
-
-    }
 
     @Override
-    public void cancella(Abbonamento abbonamento) {
+    public void rimuovi(Abbonamento abbonamento) {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-        	log.warn("Non si può cancellare un abbonamento nello stato Nuovo: {}", abbonamento);
+        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento in uno stato diverso da Nuovo.", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
         }
         spedizioneDao
@@ -216,82 +187,19 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getId());
             }
         );
-        estrattoContoDao.findByAbbonamento(abbonamento).forEach(ec -> estrattoContoDao.deleteById(ec.getId()));
-    }
-
-    private EstrattoConto getByStorico(Campagna campagna,Storico storico) throws Exception{
-        List<EstrattoConto> ecs = 
-                estrattoContoDao
-                .findByStorico(storico)
-                .stream()
-                .filter(ec -> {
-                    Abbonamento abb = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
-                    return abb.getAnno() == campagna.getAnno();
-                })
-                .collect(Collectors.toList());
-
-        if (ecs.size() > 1 ) {
-            throw new Exception("Un solo Estratto Conto per storico ogni anno");
-        }        
-        if (ecs.size()  == 0) {
-        	return null;
-        }        
-        return ecs.iterator().next();
-        
-    }
-    @Override
-    public void rimuovi(Campagna campagna, Storico storico, Nota...note) throws Exception {
-        if (campagna == null || storico == null 
-             || campagna.getStatoCampagna() == StatoCampagna.Chiusa 
-                ) {
-            return;
-        }
-        storico.setStatoStorico(StatoStorico.Sospeso);
-        save(storico, note);
-        EstrattoConto ec = getByStorico(campagna, storico);
-        Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
-        rimuovi(abbonamento,ec);
-    }
-
-  
-    @Override
-    public void aggiorna(Campagna campagna, Storico storico, Nota...note) throws Exception {
-        if (campagna != null && campagna.getStatoCampagna() == StatoCampagna.Chiusa 
-                ) {
-        	log.warn("aggiorna: Non è possibile aggiornare la campagna {}, {}",campagna,storico);
-            throw new UnsupportedOperationException("Non è possibile aggiornare la campagna");
-        }
-        EstrattoConto ec = getByStorico(campagna, storico);
-        
-        if (ec == null) {
-            storico.setStatoStorico(StatoStorico.Valido);
-            save(storico, note);        
-            Abbonamento abbonamento =
-                    abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(storico.getIntestatario(), campagna, storico.getCassa()); 
-            if (abbonamento == null) {
-                Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
-                abbonamento = Smd.genera(campagna, a, storico);
-            }
-            Smd.genera(abbonamento, storico);
-            genera(abbonamento);
-            return;
-        }
-        //Only updates are Numero and EstrattoConto other changes
-        ec.setNumero(storico.getNumero());
-        ec.setTipoEstrattoConto(storico.getTipoEstrattoConto());
-        save(storico, note);
-        aggiorna(ec);
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
+        abbonamentoDao.delete(abbonamento);
     }
 
     @Override
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        for (EstrattoConto ec: abbonamento.getItems()) {
+        for (RivistaAbbonamento ec: abbonamento.getItems()) {
             spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
-        for (EstrattoConto ec: abbonamento.getItems()) {
-            estrattoContoDao.save(ec);
+        for (RivistaAbbonamento ec: abbonamento.getItems()) {
+            rivistaAbbonamentoDao.save(ec);
         }
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
@@ -300,14 +208,14 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiorna(EstrattoConto estrattoConto) throws Exception {
+    public void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception {
         // quantita -> spedizioneItem Importo Abbonamento
         // Tipo -> ordinario -> Importo Abbonamento
-        Abbonamento abbonamento = abbonamentoDao.findById(estrattoConto.getAbbonamento().getId()).get();
+        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         List<SpedizioneItem> deleted = Smd.aggiornaEC(abbonamento,
-                                                     estrattoConto, 
+                                                     rivistaAbbonamento, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
@@ -323,7 +231,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        estrattoContoDao.save(estrattoConto);
+        rivistaAbbonamentoDao.save(rivistaAbbonamento);
         
         abbonamentoDao
         .findByIntestatarioAndAnnoAndCassa(
@@ -342,21 +250,13 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void rimuovi(Abbonamento abbonamento) throws Exception {
-        if (abbonamento == null) return;
-        for (EstrattoConto ec: estrattoContoDao.findByAbbonamento(abbonamento)) {
-            rimuovi(abbonamento,ec);
-        }
-    }
-
-    @Override
-    public void rimuovi(Abbonamento abbonamento, EstrattoConto estrattoConto) throws Exception {
-        if (estrattoConto == null || abbonamento == null)
+    public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception {
+        if (rivistaAbbonamento == null || abbonamento == null)
             return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
         List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
-                                                     estrattoConto, 
+                                                     rivistaAbbonamento, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
@@ -376,12 +276,10 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        if (estrattoConto.getNumeroTotaleRiviste() == 0 && estrattoConto.getStorico() == null) { 
-            estrattoContoDao.deleteById(estrattoConto.getId());
-        } else {
-            estrattoContoDao.save(estrattoConto);
+        if (rivistaAbbonamento.getNumeroTotaleRiviste() == 0 && spedizioneItemDao.findByRivistaAbbonamento(rivistaAbbonamento).isEmpty()) { 
+            rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId());
         }
-        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && estrattoContoDao.findByAbbonamento(abbonamento).isEmpty()) {
+        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && rivistaAbbonamentoDao.findByAbbonamento(abbonamento).isEmpty()) {
         	abbonamentoDao.delete(abbonamento);
         } else {
         	abbonamentoDao.save(abbonamento);
@@ -599,7 +497,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void sospendiStorico(Abbonamento abbonamento) throws Exception {
-        estrattoContoDao.findByAbbonamento(abbonamento)
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(ec -> ec.getStorico() != null)
         .forEach(ec -> {
@@ -611,7 +509,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void riattivaStorico(Abbonamento abbonamento) throws Exception {
-        estrattoContoDao.findByAbbonamento(abbonamento)
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(ec -> ec.getStorico() != null)
         .forEach(ec -> {
@@ -619,50 +517,6 @@ public class SmdServiceImpl implements SmdService {
             storico.setStatoStorico(StatoStorico.Valido);
             storicoDao.save(storico);
         });
-    }
-
-    @Override
-    public List<Spedizione> findSpedizioneByDestinatario(Anagrafica a) {
-        log.info("Spedizioni By Destinatario fetch start");
-        List<Spedizione> spedizioni = spedizioneDao.findByDestinatario(a);
-        log.info("Spedizioni By Destinatario fetch end");
-        return spedizioni;
-    }
-
-    @Override
-    public List<Spedizione> findSpedizioneByPubblicazione(Pubblicazione p) {
-        log.info("Spedizioni By Pubblicazione fetch start");
-        final List<Spedizione> spedizioni = new ArrayList<Spedizione>();
-        spedizioneItemDao.findByPubblicazione(p).forEach(si -> spedizioni.add(si.getSpedizione()));
-        log.info("Spedizioni By Pubblicazione fetch end");
-        return spedizioni;
-    }
-
-
-    @Override
-    public List<Spedizione> findSpedizioneAll() {
-        log.info("Spedizioni All fetch start");
-        List<Spedizione> spedizioni = spedizioneDao.findAll();
-        log.info("Spedizioni All fetch end");
-        return spedizioni;
-    }
-
-    @Override
-    public void delete(Storico storico) {
-        notaDao.findByStorico(storico).forEach(nota->notaDao.deleteById(nota.getId()));
-        storicoDao.delete(storico);
-    }
-
-    @Override
-    public void save(Storico storico, Nota...note) {
-        log.info("save: {}" + storico);
-        if (storico.getNumero() <= 0) {
-            storico.setNumero(0);
-            storico.setStatoStorico(StatoStorico.Sospeso);
-        }
-        storicoDao.save(storico);
-        for (Nota nota:note)
-            notaDao.save(nota);
     }
 
     @Override
