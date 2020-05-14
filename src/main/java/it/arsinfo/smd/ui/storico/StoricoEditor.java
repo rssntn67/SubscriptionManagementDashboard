@@ -111,8 +111,11 @@ public class StoricoEditor
             getSave().setEnabled(true);
         }
         getDelete().setEnabled(persisted && obj.getStatoStorico() == StatoStorico.Nuovo);
-        
-        numero.focus();
+        if (persisted) {
+        	numero.focus();
+        } else {
+        	intestatario.focus();
+        }
     }
     
 }
