@@ -146,16 +146,16 @@ public class RivistaAbbonamentoEditor
 
     @Override
     public void focus(boolean persisted, RivistaAbbonamento obj) {
-        pubblicazione.setReadOnly(persisted || obj.getStorico() != null);
-        destinatario.setReadOnly(persisted|| obj.getStorico() != null);
-        invio.setReadOnly(persisted|| obj.getStorico() != null);
-        invioSpedizione.setReadOnly(persisted|| obj.getStorico() != null);
+        pubblicazione.setReadOnly(persisted);
+        destinatario.setReadOnly(persisted);
+        invio.setReadOnly(persisted);
+        invioSpedizione.setReadOnly(persisted);
         numero.setReadOnly(obj.getStorico() != null);
         tipoAbbonamentoRivista.setReadOnly(obj.getStorico() != null);
         meseInizio.setReadOnly(persisted|| obj.getStorico() != null);
-        meseFine.setReadOnly(persisted|| obj.getStorico() != null);
-        annoInizio.setReadOnly(persisted|| obj.getStorico() != null);
-        annoFine.setReadOnly(persisted|| obj.getStorico() != null);        
+        meseFine.setReadOnly(persisted);
+        annoInizio.setReadOnly(persisted);
+        annoFine.setReadOnly(persisted);        
         numeroTotaleRiviste.setVisible(persisted);
         importo.setVisible(persisted);
         pubblicazione.focus();
