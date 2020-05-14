@@ -174,7 +174,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void rimuovi(Abbonamento abbonamento) {
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento in uno stato diverso da Nuovo.", abbonamento);
+        	log.warn("Non si può cancellare un abbonamento nello stato Nuovo: {}", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
         }
         spedizioneDao
@@ -276,8 +276,10 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        if (rivistaAbbonamento.getNumeroTotaleRiviste() == 0 && spedizioneItemDao.findByRivistaAbbonamento(rivistaAbbonamento).isEmpty()) { 
+        if (rivistaAbbonamento.getNumeroTotaleRiviste() == 0 && rivistaAbbonamento.getStorico() == null) { 
             rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId());
+        } else {
+            rivistaAbbonamentoDao.save(rivistaAbbonamento);
         }
         if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && rivistaAbbonamentoDao.findByAbbonamento(abbonamento).isEmpty()) {
         	abbonamentoDao.delete(abbonamento);

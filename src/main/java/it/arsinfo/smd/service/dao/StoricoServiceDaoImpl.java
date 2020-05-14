@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
@@ -155,7 +154,6 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 		return campagnaDao.findByStatoCampagnaNot(StatoCampagna.Chiusa);
 	}
 
-	@Transactional
 	public void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception {
         if (storico == null) {
         	log.warn("aggiornaCampagna: Lo Storico è nullo");
@@ -166,12 +164,14 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
             throw new UnsupportedOperationException("La Campagna da aggiornare deve essere valorizzato");                 
         }
         if (campagna.getStatoCampagna() == StatoCampagna.Chiusa) {
-        	log.warn("aggiornaCampagna: {} {} Campagna Chiusa, non aggiornabile",campagna,storico);
+        	log.warn("aggiornaCampagna: Non è possibile aggiornare la campagna {}, {}",campagna,storico);
             throw new UnsupportedOperationException(campagna + " - La Campagna è chiusa non può essere cambiata.");                 
         }
         if (storico.getId() == null && storico.getNumero() <= 0) {
-        	log.warn("aggiornaCampagna: {} {} Storico nuovo con numero <= , non aggiornabile",campagna,storico);
-            throw new UnsupportedOperationException(storico + "Errore impossibile aggiungere con Numero < 0.");                 
+        	log.info("aggiornaCampagna: salva {} {}",storico,campagna);
+            storico.addItem(getNotaOnUpdate(storico, campagna, "salva",username));
+    		save(storico);
+        	return;
         }
         if (storico.getId() == null ) {
         	log.info("aggiornaCampagna: genera {} {}",storico,campagna);

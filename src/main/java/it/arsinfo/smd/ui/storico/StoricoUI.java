@@ -124,7 +124,14 @@ public class StoricoUI extends SmdEditorUI<Storico> {
         StoricoGrid grid = new StoricoGrid("Storico");
 
 
-        NotaAdd itemAdd = new NotaAdd("Aggiungi Nota");        
+        NotaAdd itemAdd = new NotaAdd("Aggiungi Nota");
+        if (anagrafica.iterator().hasNext()) {
+        	add.setIntestatario(anagrafica.iterator().next());
+        }
+        if (pubblicazioni.iterator().hasNext()) {
+        	add.setPubblicazione(pubblicazioni.iterator().next());
+        }
+        
      	SmdButton itemDel = new SmdButton("Rimuovi Nota", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
     	SmdButton itemSave = new SmdButton("Salva Nota", VaadinIcons.CHECK);
