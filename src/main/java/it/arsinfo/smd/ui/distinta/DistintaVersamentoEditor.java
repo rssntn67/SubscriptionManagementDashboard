@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.time.ZoneId;
 import java.util.EnumSet;
@@ -19,7 +19,7 @@ import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
-public class IncassoEditor extends SmdRepositoryDaoEditor<DistintaVersamento> {
+public class DistintaVersamentoEditor extends SmdRepositoryDaoEditor<DistintaVersamento> {
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
@@ -36,7 +36,7 @@ public class IncassoEditor extends SmdRepositoryDaoEditor<DistintaVersamento> {
     private final TextField importoErrati = new TextField("Importo Errati");
     private final DateField dataContabile = new DateField("Data contabile");
     
-    public IncassoEditor(DistintaVersamentoDao incassoDao) {
+    public DistintaVersamentoEditor(DistintaVersamentoDao incassoDao) {
         super(incassoDao, new Binder<>(DistintaVersamento.class));
 
         setComponents(

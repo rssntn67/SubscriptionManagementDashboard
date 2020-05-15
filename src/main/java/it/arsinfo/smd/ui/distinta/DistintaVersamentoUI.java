@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -21,7 +21,7 @@ import it.arsinfo.smd.ui.vaadin.SmdButton;
 
 @SpringUI(path = SmdUI.URL_INCASSI)
 @Title("Incassi ADP")
-public class IncassoUI extends SmdUI {
+public class DistintaVersamentoUI extends SmdUI {
     /**
      * 
      */
@@ -38,13 +38,13 @@ public class IncassoUI extends SmdUI {
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
-        IncassoAdd add = new IncassoAdd("Aggiungi Incasso");
+        DistintaVersamentoAdd add = new DistintaVersamentoAdd("Aggiungi Incasso");
         IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
-        IncassoSearch search = new IncassoSearch(dao);
+        DistintaVersamentoSearch search = new DistintaVersamentoSearch(dao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
-        IncassoGrid grid = new IncassoGrid("Incassi");
+        DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Incassi");
 
-        IncassoEditor editor = new IncassoEditor(dao.getRepository()) {
+        DistintaVersamentoEditor editor = new DistintaVersamentoEditor(dao.getRepository()) {
             @Override
             public void save() {
                 if (get().getId() == null && get().getVersamenti().isEmpty()) {

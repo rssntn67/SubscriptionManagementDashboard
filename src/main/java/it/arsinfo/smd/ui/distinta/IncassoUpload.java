@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.io.File;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.util.EnumSet;
 

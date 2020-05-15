@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -15,7 +15,7 @@ import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
-public class IncassoSearch extends SmdSearch<DistintaVersamento> {
+public class DistintaVersamentoSearch extends SmdSearch<DistintaVersamento> {
 
     private Ccp ccp;
     private Cassa cassa;
@@ -24,7 +24,7 @@ public class IncassoSearch extends SmdSearch<DistintaVersamento> {
     
     private final DistintaVersamentoServiceDao dao;
 
-    public IncassoSearch(DistintaVersamentoServiceDao dao) {
+    public DistintaVersamentoSearch(DistintaVersamentoServiceDao dao) {
         super(dao);
         this.dao = dao;
 

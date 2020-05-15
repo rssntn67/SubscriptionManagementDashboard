@@ -1,12 +1,12 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdAdd;
 
-public class IncassoAdd extends SmdAdd<DistintaVersamento> {
+public class DistintaVersamentoAdd extends SmdAdd<DistintaVersamento> {
 
 
-    public IncassoAdd(String caption) {
+    public DistintaVersamentoAdd(String caption) {
         super(caption);
     }
 
