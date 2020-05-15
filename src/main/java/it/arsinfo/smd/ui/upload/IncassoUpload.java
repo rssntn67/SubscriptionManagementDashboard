@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.distinta;
+package it.arsinfo.smd.ui.upload;
 
 import java.io.File;
 import java.io.OutputStream;

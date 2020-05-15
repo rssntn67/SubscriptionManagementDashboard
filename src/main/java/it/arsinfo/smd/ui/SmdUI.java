@@ -46,10 +46,13 @@ public abstract class SmdUI extends UI {
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
+
     public final static String URL_DISTINTA_VERSAMENTI = "/distinta/versamenti";
     public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
     public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/doppi";
     public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
+    public final static String URL_UPLOAD_POSTE = "/upload/poste";
+    
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
     public final static String URL_NOTE = "/note";
@@ -70,6 +73,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
     public final static String TITLE_VERSAMENTI_DUPLICATI = "Versamenti Doppi";
     public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
+    public final static String TITLE_UPLOAD_POSTE = "Importa Versamenti ccp";
     
     public final static String TITLE_TIPOGRAFIA = "Tipografo";
     public final static String TITLE_SPEDIZIONERE = "Spedizioniere";
@@ -159,6 +163,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_DISTINTA_VERSAMENTI);
+            }
+        } );
+        incassi.addItem(TITLE_UPLOAD_POSTE,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_UPLOAD_POSTE);
             }
         } );
         incassi.addItem(TITLE_INCASSA_VERSAMENTI,new MenuBar.Command() {
@@ -288,6 +299,7 @@ public abstract class SmdUI extends UI {
     public Link[] getIncassoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_DISTINTA_VERSAMENTI, new ExternalResource(URL_DISTINTA_VERSAMENTI)));
+        links.add(new Link(TITLE_UPLOAD_POSTE, new ExternalResource(URL_UPLOAD_POSTE)));
         links.add(new Link(TITLE_INCASSA_VERSAMENTI, new ExternalResource(URL_INCASSA_VERSAMENTI)));
         links.add(new Link(TITLE_INCASSA_ABBONAMENTI, new ExternalResource(URL_INCASSA_ABBONAMENTI)));
         links.add(new Link(TITLE_VERSAMENTI_DUPLICATI, new ExternalResource(URL_VERSAMENTI_DUPLICATI)));

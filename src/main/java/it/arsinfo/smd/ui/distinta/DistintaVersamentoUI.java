@@ -39,7 +39,6 @@ public class DistintaVersamentoUI extends SmdUI {
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
         DistintaVersamentoAdd add = new DistintaVersamentoAdd("Aggiungi Incasso");
-        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
         DistintaVersamentoSearch search = new DistintaVersamentoSearch(dao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti");
@@ -115,8 +114,7 @@ public class DistintaVersamentoUI extends SmdUI {
         buttons.addComponents(add.getComponents());
         buttons.addComponents(incassa.getComponents());
         addComponents(buttons);
-        addSmdComponents(upload,
-                         search,
+        addSmdComponents(search,
                          editor,
                          versAdd,
                          versEditor,
@@ -134,7 +132,6 @@ public class DistintaVersamentoUI extends SmdUI {
             if (grid.getSelected() == null) {
                 showMenu();
                 incassa.setVisible(true);
-                upload.setVisible(true);
                 add.setVisible(true);
                 search.setVisible(true);
 
@@ -148,8 +145,6 @@ public class DistintaVersamentoUI extends SmdUI {
                 versAdd.setIncasso(grid.getSelected());
                 versAdd.setVisible(true);
                 versGrid.populate(versamentoDao.findByDistintaVersamento(grid.getSelected()));
-
-                upload.setVisible(false);
                 incassa.setVisible(false);
                 add.setVisible(false);
                 search.setVisible(false);
@@ -160,7 +155,6 @@ public class DistintaVersamentoUI extends SmdUI {
         editor.setChangeHandler(() -> {
             showMenu();
             setHeader("Incassi");
-            upload.setVisible(true);
             incassa.setVisible(true);
             add.setVisible(true);
             search.setVisible(true);
@@ -176,7 +170,6 @@ public class DistintaVersamentoUI extends SmdUI {
             hideMenu();
             add.setVisible(false);
             incassa.setVisible(false);
-            upload.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
             
@@ -184,19 +177,7 @@ public class DistintaVersamentoUI extends SmdUI {
             versAdd.setIncasso(editor.get());
             versAdd.setVisible(true);           
         });
-        
-        upload.setChangeHandler(() -> {
-            upload.getIncassi().stream().forEach(incasso -> {
-                try {
-                    smdService.save(incasso);
-                } catch (Exception e) {
-                    Notification.show(e.getMessage(),
-                                      Notification.Type.ERROR_MESSAGE);
-                }
-            });
-            grid.populate(upload.getIncassi());
-        });
-        
+                
         search.setChangeHandler(() ->grid.populate(search.find()));
 
         versAdd.setChangeHandler(() -> {
