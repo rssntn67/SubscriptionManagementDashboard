@@ -12,7 +12,7 @@ import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
-@SpringUI(path=SmdUI.URL_USER)
+@SpringUI(path=SmdUI.URL_ADMIN_USER)
 @Title("Amministrazione Utenti")
 public class UserInfoUI extends SmdEditorUI<UserInfo> {
 

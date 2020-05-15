@@ -22,7 +22,7 @@ import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 
-@SpringUI(path = SmdUI.URL_VERSAMENTI)
+@SpringUI(path = SmdUI.URL_INCASSA_VERSAMENTI)
 @Title("Versamenti")
 public class VersamentoUI extends SmdUI {
 

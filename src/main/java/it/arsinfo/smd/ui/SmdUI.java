@@ -37,22 +37,44 @@ public abstract class SmdUI extends UI {
     public final static String URL_LOGIN_PROCESSING = "/login";
     public final static String URL_LOGIN_FAILURE = "/login.html?error";
     public final static String URL_LOGOUT = "/logout";
+
     public final static String URL_ANAGRAFICA = "/anagrafica";
-    public final static String URL_STORICO = "/storico";
     public final static String URL_PUBBLICAZIONI = "/pubblicazioni";
-    public final static String URL_SPESESPEDIZIONE = "/spesespedizione";
+    public final static String URL_SPESESPEDIZIONE = "/spese/spedizione";
+
+    public final static String URL_STORICO = "/storico";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
-    public final static String URL_DISTINTA_VERSAMENTI = "/distintaversamenti";
-    public final static String URL_VERSAMENTI = "/versamenti";
-    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/duplicati";
-    public final static String URL_INCASSA_ABB = "/incassaabb";
+    public final static String URL_DISTINTA_VERSAMENTI = "/distinta/versamenti";
+    public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
+    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/doppi";
+    public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
     public final static String URL_NOTE = "/note";
-    public final static String URL_USER = "/user";
-    public final static String URL_RESET = "/reset";
+    public final static String URL_ADMIN_USER = "/admin/user";
+    public final static String URL_RESET_PASS = "/reset/pass";
+
+    public static final String TITLE_HOME = "Home";
+    public final static String TITLE_ANAGRAFICA = "Anagrafica";
+    public final static String TITLE_PUBBLICAZIONI = "Pubblicazioni";
+    public final static String TITLE_SPESESPEDIZIONE = "Spese Spedizione";
+    public final static String TITLE_ABBONAMENTI = "Abbonamenti";
+    public final static String TITLE_STORICO = "Storici";
+    public final static String TITLE_SPEDIZIONI = "Spedizioni";
+    public final static String TITLE_CAMPAGNA = "Campagne";
+    public final static String TITLE_NOTE = "Note";
+
+    public final static String TITLE_DISTINTA_VERSAMENTI = "Distinta Versamenti";
+    public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
+    public final static String TITLE_VERSAMENTI_DUPLICATI = "Versamenti Doppi";
+    public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
+    
+    public final static String TITLE_TIPOGRAFIA = "Tipografo";
+    public final static String TITLE_SPEDIZIONERE = "Spedizioniere";
+    public final static String TITLE_ADMIN_USER = "Amministrazione Utenti";
+    public final static String TITLE_RESET_PASS = "Reset Password";
 
     private UserInfo loggedInUser;
     protected void init(VaadinRequest request, String head) {
@@ -63,7 +85,7 @@ public abstract class SmdUI extends UI {
         layout.addComponent(header);
         setContent(layout);
         
-        menu.addItem("Home",new MenuBar.Command() {
+        menu.addItem(TITLE_HOME,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
@@ -72,24 +94,21 @@ public abstract class SmdUI extends UI {
         });
 
         MenuItem anagrafiche = menu.addItem("Gestione Anagrafiche",null);
-        anagrafiche.addItem("Anagrafica",new MenuBar.Command() {
+        anagrafiche.addItem(TITLE_ANAGRAFICA,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ANAGRAFICA);
             }
         });
-
-        
-        anagrafiche.addItem("Pubblicazioni",new MenuBar.Command() {
+        anagrafiche.addItem(TITLE_PUBBLICAZIONI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_PUBBLICAZIONI);
             }
         });
-
-        anagrafiche.addItem("Spese Spedizione",new MenuBar.Command() {
+        anagrafiche.addItem(TITLE_SPESESPEDIZIONE,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
@@ -98,37 +117,35 @@ public abstract class SmdUI extends UI {
         });
 
         MenuItem abbonamenti = menu.addItem("Gestione Abbonamento",null);
-        abbonamenti.addItem("Abbonamento",new MenuBar.Command() {
+        abbonamenti.addItem(TITLE_ABBONAMENTI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ABBONAMENTI);
             }
         } );
-
-        abbonamenti.addItem("Spedizioni",new MenuBar.Command() {
+        abbonamenti.addItem(TITLE_SPEDIZIONI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_SPEDIZIONI);
             }
         } );
-
-        abbonamenti.addItem("Campagna",new MenuBar.Command() {
+        abbonamenti.addItem(TITLE_CAMPAGNA,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_CAMPAGNA);
             }
         } );
-        abbonamenti.addItem("Storico",new MenuBar.Command() {
+        abbonamenti.addItem(TITLE_STORICO,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_STORICO);
             }
         } );
-        abbonamenti.addItem("Note",new MenuBar.Command() {
+        abbonamenti.addItem(TITLE_NOTE,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
@@ -137,37 +154,37 @@ public abstract class SmdUI extends UI {
         } );
         
         MenuItem incassi = menu.addItem("Gestione Incassi",null);
-        incassi.addItem("Incassi",new MenuBar.Command() {
+        incassi.addItem(TITLE_DISTINTA_VERSAMENTI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_DISTINTA_VERSAMENTI);
             }
         } );
-        incassi.addItem("Versamenti",new MenuBar.Command() {
+        incassi.addItem(TITLE_INCASSA_VERSAMENTI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_VERSAMENTI);
+                getUI().getPage().setLocation(URL_INCASSA_VERSAMENTI);
             }
         } );
-        incassi.addItem("Duplicati",new MenuBar.Command() {
+        incassi.addItem(TITLE_INCASSA_ABBONAMENTI,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_INCASSA_ABBONAMENTI);
+            }
+        } );
+        incassi.addItem(TITLE_VERSAMENTI_DUPLICATI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_VERSAMENTI_DUPLICATI);
             }
         } );
-        incassi.addItem("Incassa Abbonamenti",new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_INCASSA_ABB);
-            }
-        } );
 
         MenuItem ordini = menu.addItem("Gestione Ordini",null);
-        ordini.addItem("Tipografo" ,new MenuBar.Command() {
+        ordini.addItem(TITLE_TIPOGRAFIA ,new MenuBar.Command() {
             
             private static final long serialVersionUID = 1L;
             
@@ -176,7 +193,7 @@ public abstract class SmdUI extends UI {
             }
         });
 
-        ordini.addItem("Spedizioniere" ,new MenuBar.Command() {
+        ordini.addItem(TITLE_SPEDIZIONERE ,new MenuBar.Command() {
             
             private static final long serialVersionUID = 1L;
             
@@ -193,20 +210,20 @@ public abstract class SmdUI extends UI {
             }
         } );
        if (loggedInUser.getRole() == Role.ADMIN ) {
-           menu.addItem("Amministrazione Utenti",new MenuBar.Command() {
+           menu.addItem(TITLE_ADMIN_USER,new MenuBar.Command() {
                 private static final long serialVersionUID = 1L;
                 
                 public void menuSelected(MenuItem selectedItem) {
-                    getUI().getPage().setLocation(URL_USER);
+                    getUI().getPage().setLocation(URL_ADMIN_USER);
                 }
             } );
         } 
         if (!(loggedInUser.getRole() == Role.LOCKED)) {
-            menu.addItem("Reset Password",new MenuBar.Command() {
+            menu.addItem(TITLE_RESET_PASS,new MenuBar.Command() {
                 private static final long serialVersionUID = 1L;
                 
                 public void menuSelected(MenuItem selectedItem) {
-                    getUI().getPage().setLocation(URL_RESET);
+                    getUI().getPage().setLocation(URL_RESET_PASS);
                 }
             } );
         }
@@ -240,40 +257,40 @@ public abstract class SmdUI extends UI {
     }
     
     public Link getHomePageLink() {
-        return new Link("Home",new ExternalResource(HOME));        
+        return new Link(TITLE_HOME,new ExternalResource(HOME));        
     }
     
     public Link[] getAnagraficaLink() {
     	List<Link> links = new ArrayList<>();
-    	links.add(new Link("Anagrafica", new ExternalResource(URL_ANAGRAFICA)));
-    	links.add(new Link("Pubblicazioni",new ExternalResource(URL_PUBBLICAZIONI)));    
-    	links.add(new Link("Spese Spedizione",new ExternalResource(URL_SPESESPEDIZIONE)));    
+    	links.add(new Link(TITLE_ANAGRAFICA, new ExternalResource(URL_ANAGRAFICA)));
+    	links.add(new Link(TITLE_PUBBLICAZIONI,new ExternalResource(URL_PUBBLICAZIONI)));    
+    	links.add(new Link(TITLE_SPESESPEDIZIONE,new ExternalResource(URL_SPESESPEDIZIONE)));    
     	return links.toArray(new Link[links.size()]);
     }
 
     public Link[] getOrdiniLinks() {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("Tipografo", new ExternalResource(URL_TIPOGRAFIA)));
-        links.add(new Link("Spedizioniere", new ExternalResource(URL_SPEDIZIONERE)));
+        links.add(new Link(TITLE_TIPOGRAFIA, new ExternalResource(URL_TIPOGRAFIA)));
+        links.add(new Link(TITLE_SPEDIZIONERE, new ExternalResource(URL_SPEDIZIONERE)));
         return links.toArray(new Link[links.size()]);
     }
 
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("Abbonamenti",  new ExternalResource(URL_ABBONAMENTI)));
-        links.add(new Link("Spedizioni",  new ExternalResource(URL_SPEDIZIONI)));
-        links.add(new Link("Campagna",   new ExternalResource(URL_CAMPAGNA)));
-        links.add(new Link("Storico",   new ExternalResource(URL_STORICO)));
-        links.add(new Link("Note", new ExternalResource(URL_NOTE)));
+        links.add(new Link(TITLE_ABBONAMENTI,  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link(TITLE_SPEDIZIONI,  new ExternalResource(URL_SPEDIZIONI)));
+        links.add(new Link(TITLE_CAMPAGNA,   new ExternalResource(URL_CAMPAGNA)));
+        links.add(new Link(TITLE_STORICO,   new ExternalResource(URL_STORICO)));
+        links.add(new Link(TITLE_NOTE, new ExternalResource(URL_NOTE)));
         return links.toArray((new Link[links.size()]));
     }
 
     public Link[] getIncassoLinks() {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("Incassi", new ExternalResource(URL_DISTINTA_VERSAMENTI)));
-        links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
-        links.add(new Link("Duplicati", new ExternalResource(URL_VERSAMENTI_DUPLICATI)));
-        links.add(new Link("Incassa Abbonamenti", new ExternalResource(URL_INCASSA_ABB)));
+        links.add(new Link(TITLE_DISTINTA_VERSAMENTI, new ExternalResource(URL_DISTINTA_VERSAMENTI)));
+        links.add(new Link(TITLE_INCASSA_VERSAMENTI, new ExternalResource(URL_INCASSA_VERSAMENTI)));
+        links.add(new Link(TITLE_INCASSA_ABBONAMENTI, new ExternalResource(URL_INCASSA_ABBONAMENTI)));
+        links.add(new Link(TITLE_VERSAMENTI_DUPLICATI, new ExternalResource(URL_VERSAMENTI_DUPLICATI)));
         return links.toArray((new Link[links.size()]));
     }
 
