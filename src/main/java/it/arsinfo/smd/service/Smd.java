@@ -54,6 +54,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -857,7 +858,57 @@ public class Smd {
               );                        
         return op;        
     }
-            
+ 
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("incassa: Offerte null");
+            throw new UnsupportedOperationException("incassa: Abbonamento null");
+        }
+ 
+        BigDecimal incassato = BigDecimal.ZERO;
+    	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        offerte.setImporto(offerte.getImporto().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+    
+    public static void storna(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("storna: Offerte null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (offerte.getImporto().compareTo(importo) < 0) {
+            log.error("storna: incassato Offerte minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale Offerte minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        offerte.setImporto(offerte.getImporto().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+
     public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
