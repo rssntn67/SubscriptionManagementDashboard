@@ -39,8 +39,6 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
         if (anagrafica.size() == 0) {
             add.setVisible(false);
-        } else {
-            add.setPrimoIntestatario(anagrafica.iterator().next());
         }
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");

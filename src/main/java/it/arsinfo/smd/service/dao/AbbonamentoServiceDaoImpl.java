@@ -65,6 +65,9 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         if (entity.getId() == null && entity.getItems().size() == 0) {
         	throw new UnsupportedOperationException("Aggiungere Rivista Prima di Salvare");
         }
+        if (entity.getIntestatario() == null) {
+        	throw new UnsupportedOperationException("Aggiungere Intestatario Prima di Salvare");
+        }
         if (entity.getId() == null) {
             entity.setCodeLine(Abbonamento.generaCodeLine(entity.getAnno()));
         }
