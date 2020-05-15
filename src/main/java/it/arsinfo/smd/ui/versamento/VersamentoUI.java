@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.versamento;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -11,12 +13,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
@@ -37,30 +37,24 @@ public class VersamentoUI extends SmdUI {
     @Autowired
     private AbbonamentoServiceDao abbonamentoDao;
 
-    @Autowired
-    private AnagraficaDao anagraficaDao;
-
-    @Autowired
-    private CampagnaDao campagnaDao;
-    
-    @Autowired
-    private SmdService smdService;
-    
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Versamenti");
+        super.init(request, "Incasso Versamenti");
         
+        List<Anagrafica> anagrafica = abbonamentoDao.getAnagrafica();
+        List<Campagna> campagne = abbonamentoDao.getCampagne();
         VersamentoAbbonamentoSearch abbSearch = 
-        new VersamentoAbbonamentoSearch(abbonamentoDao,anagraficaDao.findAll(), campagnaDao.findAll());
+        		new VersamentoAbbonamentoSearch(abbonamentoDao,anagrafica, campagne);
         VersamentoSearch search = new VersamentoSearch(dao);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
+        
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");
         AbbonamentoGrid abbonamentiAssociabiliGrid = new AbbonamentoGrid("Abbonamenti Associabili");
 
         SmdButtonComboBox<Anagrafica> associacommittente = 
         		new SmdButtonComboBox<>("Selezionare Committente", 
-        				anagraficaDao.findAll(), 
+        				anagrafica, 
         				"Associa Committente", VaadinIcons.ABACUS);
         associacommittente.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         associacommittente.getButton().setWidth("300px");
@@ -89,13 +83,13 @@ public class VersamentoUI extends SmdUI {
 
         grid.setChangeHandler(() -> {
             if (grid.getSelected() != null) {
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
-                abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
+                abbonamentiAssociatiGrid.populate(dao.getAssociati(grid.getSelected()));
+                abbSearch.setItems(dao.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
                 associacommittente.getComboBox().setValue(null);
                 if (grid.getSelected().getCommittente() != null) {
-                	associacommittente.getComboBox().setValue(anagraficaDao.findById(grid.getSelected().getCommittente().getId()).get());
+                	associacommittente.getComboBox().setValue(dao.findCommittente(grid.getSelected()));
                 	dissociacommittente.setVisible(true);
                 }
                 associacommittente.setVisible(true);
@@ -118,14 +112,14 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Storna");
             button.addClickListener(click -> {
                 try {
-                    smdService.storna(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
+                    dao.storna(operazioneIncasso, getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                 }
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
-                abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
+                abbonamentiAssociatiGrid.populate(dao.getAssociati(grid.getSelected()));
+                abbSearch.setItems(dao.getAssociabili(grid.getSelected()));
                 abbonamentiAssociabiliGrid.populate(abbSearch.find());
                 abbSearch.setVisible(true);
             });
@@ -141,17 +135,17 @@ public class VersamentoUI extends SmdUI {
             Button button = new Button("Incassa");
             button.addClickListener(click -> {
                 try {
-                    smdService.incassa(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
+                    dao.incassa(abbonamento, grid.getSelected(),getLoggedInUser(),"Eseguita da Versamento UI");
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
                     return;
                }
                 
-               abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
+               abbonamentiAssociatiGrid.populate(dao.getAssociati(grid.getSelected()));
                abbSearch.reset();
                if (grid.getSelected().getResiduo().signum() > 0) {
-                    abbSearch.setItems(smdService.getAssociabili(grid.getSelected()));
+                    abbSearch.setItems(dao.getAssociabili(grid.getSelected()));
                     abbonamentiAssociabiliGrid.populate(abbSearch.find());
                     abbSearch.setVisible(true);
                } else {
@@ -167,7 +161,7 @@ public class VersamentoUI extends SmdUI {
         });
 
         dissociacommittente.setChangeHandler(() -> {
-			smdService.rimuoviCommittente(grid.getSelected());
+			dao.rimuoviCommittente(grid.getSelected());
 			Notification.show("Committente rimosso da Versamento",
                  Notification.Type.HUMANIZED_MESSAGE);
 			grid.populate(search.find());
@@ -177,7 +171,7 @@ public class VersamentoUI extends SmdUI {
         	if (associacommittente.getValue() == null ) {
         		return;
         	}
-        	smdService.associaCommittente(associacommittente.getValue(),grid.getSelected());				
+        	dao.associaCommittente(associacommittente.getValue(),grid.getSelected());				
         	Notification.show("Committente associato a Versamento",
                          Notification.Type.HUMANIZED_MESSAGE);
 			grid.populate(search.find());

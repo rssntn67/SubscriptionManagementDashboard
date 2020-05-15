@@ -13,7 +13,6 @@ import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -48,15 +47,10 @@ public interface SmdService {
 
     List<SpedizioniereItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione, StatoSpedizione statoSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
-
-    List<OperazioneIncasso> getAssociati(Versamento versamento);
-    List<Abbonamento> getAssociabili(Versamento versamento);
         
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
     
-    void associaCommittente(Anagrafica committente, Versamento versamento);
-    void rimuoviCommittente(Versamento versamento);
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
 

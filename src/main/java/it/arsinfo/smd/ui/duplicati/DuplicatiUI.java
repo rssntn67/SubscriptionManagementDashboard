@@ -6,9 +6,8 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.versamento.OperazioneIncassoGrid;
 
@@ -25,16 +24,13 @@ public class DuplicatiUI extends SmdUI {
     private VersamentoServiceDao dao;
 
     @Autowired
-    private AnagraficaDao anagraficaDao;
-
-    @Autowired
-    private SmdService smdService;
+    private AbbonamentoServiceDao abbonamentoDao;
     
     @Override
     protected void init(VaadinRequest request) {
         super.init(request, "Versamenti");
         
-        DuplicatiSearch search = new DuplicatiSearch(dao,anagraficaDao.findAll());
+        DuplicatiSearch search = new DuplicatiSearch(dao,abbonamentoDao.getAnagrafica());
         DuplicatiGrid grid = new DuplicatiGrid("Versamenti Duplicati");
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");
@@ -50,7 +46,7 @@ public class DuplicatiUI extends SmdUI {
 
         grid.setChangeHandler(() -> {
             if (grid.getSelected() != null) {
-                abbonamentiAssociatiGrid.populate(smdService.getAssociati(grid.getSelected()));
+                abbonamentiAssociatiGrid.populate(dao.getAssociati(grid.getSelected()));
             } else {
                 abbonamentiAssociatiGrid.setVisible(false);
             }

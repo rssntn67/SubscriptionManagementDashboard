@@ -10,8 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
+import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
+import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.OperazioneIncasso;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
 
@@ -20,6 +28,18 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
     @Autowired
     private VersamentoDao repository;
+
+    @Autowired
+    private AnagraficaDao anagraficaDao;
+
+    @Autowired
+    private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private OperazioneIncassoDao operazioneIncassoDao;
+    
+    @Autowired
+    private SmdService smdService;
 
 	@Override
 	public Versamento save(Versamento entity) throws Exception {
@@ -176,6 +196,55 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                 && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                 && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                 .collect(Collectors.toList());
+	}
+
+	@Override
+	public void associaCommittente(Anagrafica committente, Versamento versamento) {
+		versamento.setCommittente(committente);
+		repository.save(versamento);		
+	}
+
+	@Override
+	public void rimuoviCommittente(Versamento versamento) {
+		if (versamento.getCommittente() == null) {
+			return;
+		}
+		versamento.setCommittente(null);
+		repository.save(versamento);		
+	}
+
+	@Override
+	public List<OperazioneIncasso> getAssociati(Versamento versamento) {
+    	return operazioneIncassoDao.findByVersamento(versamento);
+	}
+
+	@Override
+	public List<Abbonamento> getAssociabili(Versamento versamento) {
+        if (versamento == null || versamento.getResiduo().signum() == 0) {
+        	return new ArrayList<>();
+        }
+
+        return abbonamentoDao
+        .findAll()
+        .stream()
+        .filter(abb -> 
+            abb.getResiduo().signum() > 0 
+            ).collect(Collectors.toList());       
+	}
+
+	@Override
+	public void storna(OperazioneIncasso operazioneIncasso, UserInfo loggedInUser, String string) throws Exception {
+		smdService.storna(operazioneIncasso, loggedInUser, string);
+	}
+
+	@Override
+	public void incassa(Abbonamento abbonamento, Versamento selected, UserInfo loggedInUser, String string) throws Exception {
+		smdService.incassa(abbonamento,selected,loggedInUser, string);		
+	}
+
+	@Override
+	public Anagrafica findCommittente(Versamento selected) {
+		return anagraficaDao.findById(selected.getCommittente().getId()).get();
 	}
 	
 }

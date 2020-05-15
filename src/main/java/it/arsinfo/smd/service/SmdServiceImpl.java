@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -460,25 +459,6 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public List<OperazioneIncasso> getAssociati(Versamento versamento) {
-    	return operazioneIncassoDao.findByVersamento(versamento);
-    }
-
-    @Override
-    public List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null || versamento.getResiduo().signum() == 0) {
-        	return new ArrayList<>();
-        }
-
-        return abbonamentoDao
-        .findAll()
-        .stream()
-        .filter(abb -> 
-            abb.getResiduo().signum() > 0 
-            ).collect(Collectors.toList());       
-    }
-
-    @Override
     public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
         spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento, StatoSpedizione.PROGRAMMATA)
         .forEach(sped -> {
@@ -543,20 +523,5 @@ public class SmdServiceImpl implements SmdService {
         }
         return spedizioni;
     }
-    
-	@Override
-	public void associaCommittente(Anagrafica committente, Versamento versamento) {
-		versamento.setCommittente(committente);
-		versamentoDao.save(versamento);
-	}
-
-	@Override
-	public void rimuoviCommittente(Versamento versamento) {
-		if (versamento.getCommittente() == null) {
-			return;
-		}
-		versamento.setCommittente(null);
-		versamentoDao.save(versamento);		
-	}
 
 }
