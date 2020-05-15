@@ -1,6 +1,6 @@
 package it.arsinfo.smd.ui.versamento;
 
-public class OperazioneIncassoGrid extends it.arsinfo.smd.ui.incassa.IncassaAbbonamentoGrid {
+public class OperazioneIncassoGrid extends it.arsinfo.smd.ui.incassa.abbonamento.IncassaAbbonamentoGrid {
 
     public OperazioneIncassoGrid(String gridName) {
         super(gridName);

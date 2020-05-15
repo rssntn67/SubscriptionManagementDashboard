@@ -13,8 +13,8 @@ import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoGrid;
 import it.arsinfo.smd.ui.distinta.VersamentoGrid;
 
-@SpringUI(path = SmdUI.URL_DISTINTA_VERSAMENTI)
-@Title("Distinta versamenti")
+@SpringUI(path = SmdUI.URL_UPLOAD_POSTE)
+@Title(SmdUI.TITLE_UPLOAD_POSTE)
 public class UploadUI extends SmdUI {
     /**
      * 

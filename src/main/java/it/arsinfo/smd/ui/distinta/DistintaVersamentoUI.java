@@ -6,10 +6,8 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
@@ -17,7 +15,6 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.vaadin.SmdButton;
 
 @SpringUI(path = SmdUI.URL_DISTINTA_VERSAMENTI)
 @Title("Distinta versamenti")
@@ -37,10 +34,9 @@ public class DistintaVersamentoUI extends SmdUI {
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Incassi");
-        DistintaVersamentoAdd add = new DistintaVersamentoAdd("Aggiungi Incasso");
+        super.init(request,"Distinte");
+        DistintaVersamentoAdd add = new DistintaVersamentoAdd("Aggiungi Distinta");
         DistintaVersamentoSearch search = new DistintaVersamentoSearch(dao);
-        SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti");
 
         DistintaVersamentoEditor editor = new DistintaVersamentoEditor(dao.getRepository()) {
@@ -110,11 +106,7 @@ public class DistintaVersamentoUI extends SmdUI {
             }              
         };
 
-        HorizontalLayout buttons = new HorizontalLayout();
-        buttons.addComponents(add.getComponents());
-        buttons.addComponents(incassa.getComponents());
-        addComponents(buttons);
-        addSmdComponents(search,
+        addSmdComponents(add,search,
                          editor,
                          versAdd,
                          versEditor,
@@ -131,7 +123,6 @@ public class DistintaVersamentoUI extends SmdUI {
         grid.setChangeHandler(() -> {
             if (grid.getSelected() == null) {
                 showMenu();
-                incassa.setVisible(true);
                 add.setVisible(true);
                 search.setVisible(true);
 
@@ -145,7 +136,6 @@ public class DistintaVersamentoUI extends SmdUI {
                 versAdd.setIncasso(grid.getSelected());
                 versAdd.setVisible(true);
                 versGrid.populate(versamentoDao.findByDistintaVersamento(grid.getSelected()));
-                incassa.setVisible(false);
                 add.setVisible(false);
                 search.setVisible(false);
                 grid.setVisible(false);
@@ -155,7 +145,6 @@ public class DistintaVersamentoUI extends SmdUI {
         editor.setChangeHandler(() -> {
             showMenu();
             setHeader("Incassi");
-            incassa.setVisible(true);
             add.setVisible(true);
             search.setVisible(true);
             grid.populate(search.find());
@@ -169,7 +158,6 @@ public class DistintaVersamentoUI extends SmdUI {
             setHeader("Incasso:Aggiungi");
             hideMenu();
             add.setVisible(false);
-            incassa.setVisible(false);
             search.setVisible(false);
             grid.setVisible(false);
             
@@ -186,16 +174,6 @@ public class DistintaVersamentoUI extends SmdUI {
             versEditor.edit(versAdd.generate());
             editor.setVisible(false);
             versAdd.setVisible(false);
-        });
-
-        incassa.setChangeHandler(() -> {
-            try {
-                smdService.incassaCodeLine(search.find(),getLoggedInUser());
-            } catch (Exception e) {
-                Notification.show("Incassa con Code Line. Errore: " +e.getMessage()+  ".",Notification.Type.ERROR_MESSAGE);
-                return;
-            }
-            grid.populate(search.find());
         });
 
         versEditor.setChangeHandler(() -> {

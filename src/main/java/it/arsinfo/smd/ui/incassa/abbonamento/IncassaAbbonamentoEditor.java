@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incassa;
+package it.arsinfo.smd.ui.incassa.abbonamento;
 
 import java.util.EnumSet;
 import java.util.List;

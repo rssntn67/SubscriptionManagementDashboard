@@ -48,10 +48,11 @@ public abstract class SmdUI extends UI {
     public final static String URL_CAMPAGNA = "/campagna";
 
     public final static String URL_DISTINTA_VERSAMENTI = "/distinta/versamenti";
-    public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
-    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/doppi";
-    public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
     public final static String URL_UPLOAD_POSTE = "/upload/poste";
+    public final static String URL_INCASSA_CODELINE = "/incassa/codeline";
+    public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
+    public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
+    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/doppi";
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
@@ -62,6 +63,7 @@ public abstract class SmdUI extends UI {
     public static final String TITLE_HOME = "Home";
     public final static String TITLE_ANAGRAFICA = "Anagrafica";
     public final static String TITLE_PUBBLICAZIONI = "Pubblicazioni";
+    
     public final static String TITLE_SPESESPEDIZIONE = "Spese Spedizione";
     public final static String TITLE_ABBONAMENTI = "Abbonamenti";
     public final static String TITLE_STORICO = "Storici";
@@ -74,6 +76,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_VERSAMENTI_DUPLICATI = "Versamenti Doppi";
     public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
     public final static String TITLE_UPLOAD_POSTE = "Importa Versamenti ccp";
+    public final static String TITLE_INCASSA_CODELINE = "Incassa Codeline";
     
     public final static String TITLE_TIPOGRAFIA = "Tipografo";
     public final static String TITLE_SPEDIZIONERE = "Spedizioniere";
@@ -170,6 +173,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_UPLOAD_POSTE);
+            }
+        } );
+        incassi.addItem(TITLE_INCASSA_CODELINE,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_INCASSA_CODELINE);
             }
         } );
         incassi.addItem(TITLE_INCASSA_VERSAMENTI,new MenuBar.Command() {
@@ -300,6 +310,7 @@ public abstract class SmdUI extends UI {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_DISTINTA_VERSAMENTI, new ExternalResource(URL_DISTINTA_VERSAMENTI)));
         links.add(new Link(TITLE_UPLOAD_POSTE, new ExternalResource(URL_UPLOAD_POSTE)));
+        links.add(new Link(TITLE_INCASSA_CODELINE, new ExternalResource(URL_INCASSA_CODELINE)));
         links.add(new Link(TITLE_INCASSA_VERSAMENTI, new ExternalResource(URL_INCASSA_VERSAMENTI)));
         links.add(new Link(TITLE_INCASSA_ABBONAMENTI, new ExternalResource(URL_INCASSA_ABBONAMENTI)));
         links.add(new Link(TITLE_VERSAMENTI_DUPLICATI, new ExternalResource(URL_VERSAMENTI_DUPLICATI)));

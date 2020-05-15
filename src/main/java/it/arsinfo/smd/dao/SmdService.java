@@ -60,7 +60,7 @@ public interface SmdService {
     
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
-    void incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception;
+    List<Versamento> incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception;
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
     
     void associaCommittente(Anagrafica committente, Versamento versamento);

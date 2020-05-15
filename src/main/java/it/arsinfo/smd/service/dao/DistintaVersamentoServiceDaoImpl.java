@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
 
 @Service
@@ -20,6 +23,9 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
     @Autowired
     private DistintaVersamentoDao repository;
+
+    @Autowired
+    private SmdService smdService;
 
 	@Override
 	public DistintaVersamento save(DistintaVersamento entity) throws Exception {
@@ -132,6 +138,11 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
                 .stream()
                 .filter(inc -> inc.getCassa() == cassa && inc.getCuas() == cuas && inc.getCcp() == ccp)            
                 .collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Versamento> incassaCodeLine(List<DistintaVersamento> find, UserInfo loggedInUser) throws Exception {
+		return smdService.incassaCodeLine(find, loggedInUser);
 	}
 	
 }

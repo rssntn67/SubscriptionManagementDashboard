@@ -3,7 +3,9 @@ package it.arsinfo.smd.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -643,7 +645,8 @@ public class SmdServiceImpl implements SmdService {
     }
     
     @Override
-    public void incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception {
+    public List<Versamento> incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception {
+    	Map<Long, Versamento> versamentoMap = new HashMap<Long, Versamento>();
     	for (DistintaVersamento incasso:incassi) {
     		if (incasso.getResiduo().signum() == 0) {
     			continue;
@@ -655,9 +658,11 @@ public class SmdServiceImpl implements SmdService {
     			final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(v.getCodeLine());
     			if (abbonamento != null && abbonamento.getResiduo().signum() > 0 ) {
     				incassa(abbonamento,v,user,"Incassato con CodeLine");
+    				versamentoMap.put(v.getId(), v);
     			}
     		}
 		}
+    	return versamentoMap.values().stream().collect(Collectors.toList());
 
     }
 
