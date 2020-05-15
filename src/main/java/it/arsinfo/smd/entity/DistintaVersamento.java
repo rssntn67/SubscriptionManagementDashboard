@@ -29,7 +29,7 @@ import it.arsinfo.smd.service.Smd;
         @UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})
         })
 //create unique index ukh0do4klnqwq54yhlvtj5hjcbe on incasso (data_contabile, cassa, cuas, ccp);
-public class Incasso implements SmdEntity {
+public class DistintaVersamento implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
             
-    @OneToMany(mappedBy="incasso", orphanRemoval=true, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="distintaVersamento", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,7 +58,7 @@ public class Incasso implements SmdEntity {
     private int errati=0;
     private BigDecimal importoErrati=BigDecimal.ZERO;
     
-    public Incasso() {
+    public DistintaVersamento() {
         super();
     }
     public Long getId() {

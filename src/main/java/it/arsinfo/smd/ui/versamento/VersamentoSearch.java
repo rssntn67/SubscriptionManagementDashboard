@@ -97,19 +97,19 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
         if (filterCassa.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCassa() == filterCassa.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCassa() == filterCassa.getValue())
                     .collect(Collectors.toList());
         }
         if (filterCcp.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCcp() == filterCcp.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCcp() == filterCcp.getValue())
                     .collect(Collectors.toList());
         }
         if (filterCuas.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCuas() == filterCuas.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCuas() == filterCuas.getValue())
                     .collect(Collectors.toList());
         }
         return versamenti;

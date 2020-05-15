@@ -12,14 +12,14 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
-public class IncassoEditor extends SmdRepositoryDaoEditor<Incasso> {
+public class IncassoEditor extends SmdRepositoryDaoEditor<DistintaVersamento> {
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
@@ -36,8 +36,8 @@ public class IncassoEditor extends SmdRepositoryDaoEditor<Incasso> {
     private final TextField importoErrati = new TextField("Importo Errati");
     private final DateField dataContabile = new DateField("Data contabile");
     
-    public IncassoEditor(IncassoDao incassoDao) {
-        super(incassoDao, new Binder<>(Incasso.class));
+    public IncassoEditor(DistintaVersamentoDao incassoDao) {
+        super(incassoDao, new Binder<>(DistintaVersamento.class));
 
         setComponents(
                       getActions(), 
@@ -64,30 +64,30 @@ public class IncassoEditor extends SmdRepositoryDaoEditor<Incasso> {
 
         getBinder().forField(documenti)
             .withConverter(new StringToIntegerConverter(""))
-            .bind(Incasso::getDocumenti, Incasso::setDocumenti);
+            .bind(DistintaVersamento::getDocumenti, DistintaVersamento::setDocumenti);
         
         getBinder().forField(esatti)
             .withConverter(new StringToIntegerConverter(""))
-            .bind(Incasso::getEsatti, Incasso::setEsatti);
+            .bind(DistintaVersamento::getEsatti, DistintaVersamento::setEsatti);
         getBinder().forField(errati)
             .withConverter(new StringToIntegerConverter(""))
-            .bind(Incasso::getErrati, Incasso::setErrati);
+            .bind(DistintaVersamento::getErrati, DistintaVersamento::setErrati);
 
         getBinder().forField(importo)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-            .bind(Incasso::getImporto,Incasso::setImporto);
+            .bind(DistintaVersamento::getImporto,DistintaVersamento::setImporto);
         getBinder().forField(incassato)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-        .bind(Incasso::getIncassato,Incasso::setIncassato);
+        .bind(DistintaVersamento::getIncassato,DistintaVersamento::setIncassato);
         getBinder().forField(residuo)
         .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-        .bind(Incasso::getResiduo,null);
+        .bind(DistintaVersamento::getResiduo,null);
        getBinder().forField(importoEsatti)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-            .bind(Incasso::getImportoEsatti,Incasso::setImportoEsatti);
+            .bind(DistintaVersamento::getImportoEsatti,DistintaVersamento::setImportoEsatti);
         getBinder().forField(importoErrati)
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
-            .bind(Incasso::getImportoErrati,Incasso::setImportoErrati);
+            .bind(DistintaVersamento::getImportoErrati,DistintaVersamento::setImportoErrati);
         getBinder().forField(dataContabile)
             .withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind("dataContabile");
         getBinder().bindInstanceFields(this);
@@ -96,7 +96,7 @@ public class IncassoEditor extends SmdRepositoryDaoEditor<Incasso> {
 
 
     @Override
-    public void focus(boolean persisted, Incasso incasso) {
+    public void focus(boolean persisted, DistintaVersamento incasso) {
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         cassa.setReadOnly(persisted);

@@ -16,7 +16,7 @@ import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
@@ -56,7 +56,7 @@ public class SmdApplication {
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 
-            IncassoDao incassoDao, 
+            DistintaVersamentoDao incassoDao, 
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao, 
             UserInfoDao userInfoDao, 

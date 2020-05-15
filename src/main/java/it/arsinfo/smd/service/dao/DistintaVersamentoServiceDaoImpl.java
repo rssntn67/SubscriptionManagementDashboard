@@ -7,46 +7,46 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.dao.IncassoServiceDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.service.Smd;
 
 @Service
-public class IncassoServiceDaoImpl implements IncassoServiceDao {
+public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServiceDao {
 
     @Autowired
-    private IncassoDao repository;
+    private DistintaVersamentoDao repository;
 
 	@Override
-	public Incasso save(Incasso entity) throws Exception {
+	public DistintaVersamento save(DistintaVersamento entity) throws Exception {
 		return repository.save(entity);
 	}
 
 	@Override
-	public void delete(Incasso entity) throws Exception {
+	public void delete(DistintaVersamento entity) throws Exception {
 		repository.delete(entity);
 	}
 
 	@Override
-	public Incasso findById(Long id) {
+	public DistintaVersamento findById(Long id) {
 		return repository.findById(id).get();
 	}
 
 	@Override
-	public List<Incasso> findAll() {
+	public List<DistintaVersamento> findAll() {
 		return repository.findAll();
 	}
 
-	public IncassoDao getRepository() {
+	public DistintaVersamentoDao getRepository() {
 		return repository;
 	}
 
 	@Override
-	public List<Incasso> searchBy(Cuas cuas, LocalDate dataContabile, Cassa cassa, Ccp ccp) {
+	public List<DistintaVersamento> searchBy(Cuas cuas, LocalDate dataContabile, Cassa cassa, Ccp ccp) {
         if (cuas == null && dataContabile == null && cassa == null && ccp == null) {
             return findAll();
         }

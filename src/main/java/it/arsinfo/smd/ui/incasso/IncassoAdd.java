@@ -1,9 +1,9 @@
 package it.arsinfo.smd.ui.incasso;
 
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdAdd;
 
-public class IncassoAdd extends SmdAdd<Incasso> {
+public class IncassoAdd extends SmdAdd<DistintaVersamento> {
 
 
     public IncassoAdd(String caption) {
@@ -11,8 +11,8 @@ public class IncassoAdd extends SmdAdd<Incasso> {
     }
 
     @Override
-    public Incasso generate() {
-        return new Incasso();
+    public DistintaVersamento generate() {
+        return new DistintaVersamento();
     }
 
 }

@@ -12,7 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.IncassoServiceDao;
+import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.service.Smd;
@@ -28,7 +28,7 @@ public class IncassoUI extends SmdUI {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private IncassoServiceDao dao;
+    private DistintaVersamentoServiceDao dao;
     @Autowired    
     private VersamentoDao versamentoDao;
 
@@ -147,7 +147,7 @@ public class IncassoUI extends SmdUI {
                 editor.edit(grid.getSelected());
                 versAdd.setIncasso(grid.getSelected());
                 versAdd.setVisible(true);
-                versGrid.populate(versamentoDao.findByIncasso(grid.getSelected()));
+                versGrid.populate(versamentoDao.findByDistintaVersamento(grid.getSelected()));
 
                 upload.setVisible(false);
                 incassa.setVisible(false);
@@ -220,12 +220,12 @@ public class IncassoUI extends SmdUI {
         versEditor.setChangeHandler(() -> {
             setHeader("Incasso");
             if (editor.get().getId() != null) {
-               versGrid.populate(versamentoDao.findByIncasso(editor.get()));
+               versGrid.populate(versamentoDao.findByDistintaVersamento(editor.get()));
             } else {
                 versGrid.populate(editor.get().getVersamenti());
             }
             versEditor.setVisible(false);
-            editor.edit(versEditor.get().getIncasso());
+            editor.edit(versEditor.get().getDistintaVersamento());
             versAdd.setVisible(true);
         });
 

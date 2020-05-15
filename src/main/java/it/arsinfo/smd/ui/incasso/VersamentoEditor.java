@@ -117,9 +117,9 @@ public class VersamentoEditor extends SmdRepositoryDaoEditor<Versamento> {
         getSave().setEnabled(inn);
         getCancel().setEnabled(inn);
         
-        ccp.setValue(versamento.getIncasso().getCcp());
-        cuas.setValue(versamento.getIncasso().getCuas());
-        cassa.setValue(versamento.getIncasso().getCassa());
+        ccp.setValue(versamento.getDistintaVersamento().getCcp());
+        cuas.setValue(versamento.getDistintaVersamento().getCuas());
+        cassa.setValue(versamento.getDistintaVersamento().getCassa());
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         

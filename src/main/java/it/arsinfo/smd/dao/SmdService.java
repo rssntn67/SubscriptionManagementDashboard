@@ -15,7 +15,7 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -54,13 +54,13 @@ public interface SmdService {
     List<OperazioneIncasso> getAssociati(Versamento versamento);
     List<Abbonamento> getAssociabili(Versamento versamento);
     
-    void save(Incasso incasso) throws Exception;
+    void save(DistintaVersamento incasso) throws Exception;
     void save(Versamento versamento) throws Exception;
     void delete(Versamento versamento) throws Exception;
     
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
-    void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
+    void incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception;
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
     
     void associaCommittente(Anagrafica committente, Versamento versamento);

@@ -53,7 +53,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -90,8 +90,8 @@ public class Smd {
     	return new File("/tmp/" + filename);
     }
     
-    public static List<Incasso> uploadIncasso(File file) throws Exception {
-    	List<Incasso> incassi = new ArrayList<>();
+    public static List<DistintaVersamento> uploadIncasso(File file) throws Exception {
+    	List<DistintaVersamento> incassi = new ArrayList<>();
         FileInputStream fstream;
         try {
             fstream = new FileInputStream(file);
@@ -858,7 +858,7 @@ public class Smd {
         return op;        
     }
             
-    public static BigDecimal incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
             throw new UnsupportedOperationException("incassa: Incasso null");
@@ -885,7 +885,7 @@ public class Smd {
         return incassato;
     }
 
-    public static void storna(Incasso incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
+    public static void storna(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("storna: Incasso null");
             throw new UnsupportedOperationException("storna: Incasso null");
@@ -926,9 +926,9 @@ public class Smd {
                 );
     }
     
-    public static Incasso generaIncasso(Set<String> versamenti,
+    public static DistintaVersamento generaIncasso(Set<String> versamenti,
             String riepilogo) throws UnsupportedOperationException {
-        final Incasso incasso = new Incasso();
+        final DistintaVersamento incasso = new DistintaVersamento();
         incasso.setCassa(Cassa.Ccp);
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
         incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
@@ -954,7 +954,7 @@ public class Smd {
         return incasso;
     }
 
-    private static void checkIncasso(Incasso incasso) throws UnsupportedOperationException {
+    private static void checkIncasso(DistintaVersamento incasso) throws UnsupportedOperationException {
     	BigDecimal importoVersamenti = BigDecimal.ZERO;
     	for (Versamento v: incasso.getVersamenti()) {
     		importoVersamenti = importoVersamenti.add(v.getImporto());
@@ -965,7 +965,7 @@ public class Smd {
     	}
     }
     
-    private static Versamento generateVersamento(Incasso incasso,String value)
+    private static Versamento generateVersamento(DistintaVersamento incasso,String value)
             {
         Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setBobina(value.substring(0, 3));
@@ -985,7 +985,7 @@ public class Smd {
         return versamento;
     }
         
-    public static void calcoloImportoIncasso(Incasso incasso) {
+    public static void calcoloImportoIncasso(DistintaVersamento incasso) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Versamento versamento: incasso.getVersamenti()) {
             importo=importo.add(versamento.getImporto());
@@ -998,7 +998,7 @@ public class Smd {
         incasso.setImportoEsatti(incasso.getImporto());
     }
 
-    public static void calcoloImportoIncasso(Incasso incasso, List<Versamento> versamenti) {
+    public static void calcoloImportoIncasso(DistintaVersamento incasso, List<Versamento> versamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Versamento versamento: versamenti) {
             importo=importo.add(versamento.getImporto());

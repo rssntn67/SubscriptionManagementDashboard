@@ -28,7 +28,7 @@ public class Versamento implements SmdEntity {
     private Long id;
         
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Incasso incasso;
+    private DistintaVersamento distintaVersamento;
 
     private String bobina;
     private String progressivoBobina;
@@ -66,14 +66,14 @@ public class Versamento implements SmdEntity {
     }
 
     
-    public Versamento(Incasso incasso) {
+    public Versamento(DistintaVersamento incasso) {
         super();
-        this.incasso=incasso;
+        this.distintaVersamento=incasso;
         this.dataContabile = incasso.getDataContabile();
     }
     
-    public Versamento(Incasso incasso, BigDecimal importo) {
-        this.incasso=incasso;
+    public Versamento(DistintaVersamento incasso, BigDecimal importo) {
+        this.distintaVersamento=incasso;
         this.dataContabile = incasso.getDataContabile();
         this.importo=importo;
     }
@@ -84,11 +84,11 @@ public class Versamento implements SmdEntity {
     public void setId(Long id) {
         this.id = id;
     }
-    public Incasso getIncasso() {
-        return incasso;
+    public DistintaVersamento getDistintaVersamento() {
+        return distintaVersamento;
     }
-    public void setIncasso(Incasso incasso) {
-        this.incasso = incasso;
+    public void setDistintaVersamento(DistintaVersamento distintaVersamento) {
+        this.distintaVersamento = distintaVersamento;
     }
     public String getBobina() {
         return bobina;

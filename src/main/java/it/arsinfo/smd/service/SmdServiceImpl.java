@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
@@ -45,7 +45,7 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -97,7 +97,7 @@ public class SmdServiceImpl implements SmdService {
     VersamentoDao versamentoDao;
     
     @Autowired
-    IncassoDao incassoDao;
+    DistintaVersamentoDao incassoDao;
 
     @Autowired
     UserInfoDao userInfoDao;
@@ -386,7 +386,7 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }
         
-        Incasso incasso = versamento.getIncasso();
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
         BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);        
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
@@ -439,7 +439,7 @@ public class SmdServiceImpl implements SmdService {
             log.warn("dissocia: Versamento con Incasso 0, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
-        Incasso incasso = versamento.getIncasso();
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
         Smd.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
         operazioneIncasso.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         operazioneIncassoDao.save(operazioneIncasso);
@@ -545,9 +545,9 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void save(Incasso incasso) {
+    public void save(DistintaVersamento incasso) {
         boolean alreadyPersisted = incasso.getId() != null;
-    	List<Incasso> found = incassoDao
+    	List<DistintaVersamento> found = incassoDao
         .findByDataContabile(incasso.getDataContabile())
         .stream()
         .filter(inc -> 
@@ -574,7 +574,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void save(Versamento versamento) throws Exception {
         log.info("save: {}", versamento);
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
+        if (versamento.getDistintaVersamento() == null || versamento.getDistintaVersamento().getId() == null ) {
         	log.warn("save: Versamento: incasso non esistente, {} ", versamento);
             throw new UnsupportedOperationException("save: Versamento: incasso non esistente" );
         	
@@ -584,15 +584,15 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("save: Versamento: non posso aggiornare un versamento incassato");
         }
         versamentoDao.save(versamento);
-        Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
-        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
+        DistintaVersamento incasso = incassoDao.findById(versamento.getDistintaVersamento().getId()).get();
+        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByDistintaVersamento(incasso));
         incassoDao.save(incasso);        
     }
 
     @Override
     public void delete(Versamento versamento) throws Exception{
         log.info("delete: {}", versamento);
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
+        if (versamento.getDistintaVersamento() == null || versamento.getDistintaVersamento().getId() == null ) {
         	log.warn("delete: Versamento: incasso non esistente, {} ", versamento);
             throw new UnsupportedOperationException("delete: Versamento: incasso non esistente" );
         	
@@ -602,8 +602,8 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("delete: Versamento: non posso calcellare un versamento incassato");
         }
         versamentoDao.delete(versamento);
-    	Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
-        List<Versamento> versamenti = versamentoDao.findByIncasso(incasso);
+    	DistintaVersamento incasso = incassoDao.findById(versamento.getDistintaVersamento().getId()).get();
+        List<Versamento> versamenti = versamentoDao.findByDistintaVersamento(incasso);
         if (versamenti.size() == 0) {
             incassoDao.delete(incasso);
         } else {
@@ -615,7 +615,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void incassa(Abbonamento abbonamento, BigDecimal incassato, UserInfo user) throws Exception {
 
-        Incasso incasso = 
+        DistintaVersamento incasso = 
                 incassoDao
                     .findByDataContabileAndCassaAndCcpAndCuas(
                                 abbonamento.getDataContabile(),
@@ -624,7 +624,7 @@ public class SmdServiceImpl implements SmdService {
                                 abbonamento.getCuas()
                             );
         if (incasso == null) {
-            incasso = new Incasso();
+            incasso = new DistintaVersamento();
             incasso.setDataContabile(abbonamento.getDataContabile());
             incasso.setCassa(abbonamento.getCassa());
             incasso.setCcp(abbonamento.getCcp());
@@ -637,18 +637,18 @@ public class SmdServiceImpl implements SmdService {
         versamento.setDataPagamento(abbonamento.getDataPagamento());
         versamentoDao.save(versamento);
         Smd.calcoloImportoIncasso(incasso,
-                                  versamentoDao.findByIncasso(incasso));
+                                  versamentoDao.findByDistintaVersamento(incasso));
         incassoDao.save(incasso);
         incassa(abbonamento, versamento,user,"Incassato da Abbonamento");
     }
     
     @Override
-    public void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception {
-    	for (Incasso incasso:incassi) {
+    public void incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception {
+    	for (DistintaVersamento incasso:incassi) {
     		if (incasso.getResiduo().signum() == 0) {
     			continue;
     		}
-    		for (Versamento v: versamentoDao.findByIncasso(incasso)) {
+    		for (Versamento v: versamentoDao.findByDistintaVersamento(incasso)) {
     			if (v.getResiduo().signum() == 0) {
     				continue;
     			}

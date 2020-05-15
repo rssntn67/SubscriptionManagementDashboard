@@ -39,7 +39,7 @@ import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
@@ -71,7 +71,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -111,7 +111,7 @@ public class SmdApplicationTests {
     @Autowired
     private CampagnaItemDao campagnaItemDao;
     @Autowired
-    private IncassoDao incassoDao;
+    private DistintaVersamentoDao incassoDao;
     @Autowired
     private VersamentoDao versamentoDao;
     @Autowired
@@ -1613,7 +1613,7 @@ public class SmdApplicationTests {
         log.info("----------------->testVersamentoCRUD<----------------");
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
-        Incasso incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
         
@@ -1637,7 +1637,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(ar);
         assertEquals(1, anagraficaDao.findAll().size());
 
-        Incasso incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
@@ -1710,7 +1710,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         
-        Incasso incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
+        DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
         incasso.getVersamenti().stream().forEach(v-> {
             versamentoDao.save(v);
@@ -1835,9 +1835,9 @@ public class SmdApplicationTests {
         assertEquals(1, versamentoDao.count());
         assertEquals(1, operazioneIncassoDao.count());
         
-        Incasso inc1 = incassoDao.findAll().iterator().next();
+        DistintaVersamento inc1 = incassoDao.findAll().iterator().next();
         assertEquals(Smd.getStandardDate(inc1.getDataContabile()), Smd.getStandardDate(abb1.getDataContabile()));
-        Incasso incasso = 
+        DistintaVersamento incasso = 
         incassoDao
         .findByDataContabileAndCassaAndCcpAndCuas(
               abb1.getDataContabile(),

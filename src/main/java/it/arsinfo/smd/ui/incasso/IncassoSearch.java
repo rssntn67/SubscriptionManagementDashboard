@@ -8,23 +8,23 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.IncassoServiceDao;
+import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
-public class IncassoSearch extends SmdSearch<Incasso> {
+public class IncassoSearch extends SmdSearch<DistintaVersamento> {
 
     private Ccp ccp;
     private Cassa cassa;
     private Cuas cuas;
     private LocalDate dataContabile;
     
-    private final IncassoServiceDao dao;
+    private final DistintaVersamentoServiceDao dao;
 
-    public IncassoSearch(IncassoServiceDao dao) {
+    public IncassoSearch(DistintaVersamentoServiceDao dao) {
         super(dao);
         this.dao = dao;
 
@@ -71,7 +71,7 @@ public class IncassoSearch extends SmdSearch<Incasso> {
     }
 
     @Override
-    public List<Incasso> find() {
+    public List<DistintaVersamento> find() {
     	return dao.searchBy(cuas,dataContabile,cassa,ccp);
     }
 
