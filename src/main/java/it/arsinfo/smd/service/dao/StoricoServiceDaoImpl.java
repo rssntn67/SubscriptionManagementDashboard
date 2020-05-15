@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
@@ -27,7 +28,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 @Service
 public class StoricoServiceDaoImpl implements StoricoServiceDao {

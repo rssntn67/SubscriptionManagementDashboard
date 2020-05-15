@@ -6,9 +6,9 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.versamento.OperazioneIncassoGrid;
 

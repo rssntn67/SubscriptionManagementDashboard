@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
@@ -83,7 +84,6 @@ import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.service.SmdServiceImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;

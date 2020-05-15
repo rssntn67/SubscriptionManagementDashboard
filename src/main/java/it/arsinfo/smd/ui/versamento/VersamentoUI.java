@@ -11,12 +11,12 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;

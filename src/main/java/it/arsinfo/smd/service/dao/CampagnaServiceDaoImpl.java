@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
@@ -32,7 +33,6 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 @Service
 public class CampagnaServiceDaoImpl implements CampagnaServiceDao {

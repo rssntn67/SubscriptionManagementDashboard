@@ -1,4 +1,4 @@
-package it.arsinfo.smd.service;
+package it.arsinfo.smd.dao;
 
 import java.math.BigDecimal;
 import java.util.List;

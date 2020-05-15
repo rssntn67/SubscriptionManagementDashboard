@@ -11,6 +11,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
@@ -40,7 +41,6 @@ import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 
 public class SmdLoadSampleData implements Runnable {
