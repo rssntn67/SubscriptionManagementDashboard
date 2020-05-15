@@ -49,7 +49,7 @@ public class IncassaAbbonamentoUI extends SmdUI {
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica) {
         	@Override
         	public List<Abbonamento> find() {
-        		return super.find().stream().filter(a -> a.getTotale().longValue() > 0).collect(Collectors.toList());
+        		return super.find().stream().filter(a -> a.getResiduo().signum() > 0).collect(Collectors.toList());
         	}; 
         };
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
