@@ -52,7 +52,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_INCASSA_CODELINE = "/incassa/codeline";
     public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
     public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
-    public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/doppi";
+    public final static String URL_VERSAMENTI_COMMITTENTI = "/versamenti/committenti";
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
@@ -73,7 +73,7 @@ public abstract class SmdUI extends UI {
 
     public final static String TITLE_DISTINTA_VERSAMENTI = "Distinta Versamenti";
     public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
-    public final static String TITLE_VERSAMENTI_DUPLICATI = "Versamenti Doppi";
+    public final static String TITLE_VERSAMENTI_COMMITTENTI = "Versamenti con Committenti ";
     public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
     public final static String TITLE_UPLOAD_POSTE = "Importa Versamenti ccp";
     public final static String TITLE_INCASSA_CODELINE = "Incassa Codeline";
@@ -196,11 +196,11 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(URL_INCASSA_ABBONAMENTI);
             }
         } );
-        incassi.addItem(TITLE_VERSAMENTI_DUPLICATI,new MenuBar.Command() {
+        incassi.addItem(TITLE_VERSAMENTI_COMMITTENTI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_VERSAMENTI_DUPLICATI);
+                getUI().getPage().setLocation(URL_VERSAMENTI_COMMITTENTI);
             }
         } );
 
@@ -313,7 +313,7 @@ public abstract class SmdUI extends UI {
         links.add(new Link(TITLE_INCASSA_CODELINE, new ExternalResource(URL_INCASSA_CODELINE)));
         links.add(new Link(TITLE_INCASSA_VERSAMENTI, new ExternalResource(URL_INCASSA_VERSAMENTI)));
         links.add(new Link(TITLE_INCASSA_ABBONAMENTI, new ExternalResource(URL_INCASSA_ABBONAMENTI)));
-        links.add(new Link(TITLE_VERSAMENTI_DUPLICATI, new ExternalResource(URL_VERSAMENTI_DUPLICATI)));
+        links.add(new Link(TITLE_VERSAMENTI_COMMITTENTI, new ExternalResource(URL_VERSAMENTI_COMMITTENTI)));
         return links.toArray((new Link[links.size()]));
     }
 

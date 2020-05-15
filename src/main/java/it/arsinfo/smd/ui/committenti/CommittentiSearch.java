@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.duplicati;
+package it.arsinfo.smd.ui.committenti;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +14,12 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.versamento.VersamentoSearch;
 
-public class DuplicatiSearch extends VersamentoSearch {
+public class CommittentiSearch extends VersamentoSearch {
   
     private Anagrafica committente;
 
 	private Map<Long,Anagrafica> anagraficaMap=new HashMap<Long, Anagrafica>();
-    public DuplicatiSearch(VersamentoServiceDao dao,List<Anagrafica> anagrafica) {
+    public CommittentiSearch(VersamentoServiceDao dao,List<Anagrafica> anagrafica) {
         super(dao);
         anagraficaMap=anagrafica.stream().collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();

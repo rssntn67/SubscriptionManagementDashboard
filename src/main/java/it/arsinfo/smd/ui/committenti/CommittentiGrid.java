@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.duplicati;
+package it.arsinfo.smd.ui.committenti;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -12,10 +12,10 @@ import com.vaadin.ui.components.grid.FooterRow;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class DuplicatiGrid extends SmdGrid<Versamento> {
+public class CommittentiGrid extends SmdGrid<Versamento> {
 
     private final FooterRow gridfooter;
-    public DuplicatiGrid(String gridname) {
+    public CommittentiGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
         setColumns(                  
                 "committente.intestazione",

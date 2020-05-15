@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.duplicati;
+package it.arsinfo.smd.ui.committenti;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,9 +11,9 @@ import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.versamento.OperazioneIncassoGrid;
 
-@SpringUI(path = SmdUI.URL_VERSAMENTI_DUPLICATI)
-@Title("Versamenti Duplicati")
-public class DuplicatiUI extends SmdUI {
+@SpringUI(path = SmdUI.URL_VERSAMENTI_COMMITTENTI)
+@Title(SmdUI.TITLE_VERSAMENTI_COMMITTENTI)
+public class CommittentiUI extends SmdUI {
 
     /**
      * 
@@ -28,10 +28,10 @@ public class DuplicatiUI extends SmdUI {
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, "Versamenti");
+        super.init(request, SmdUI.TITLE_VERSAMENTI_COMMITTENTI);
         
-        DuplicatiSearch search = new DuplicatiSearch(dao,abbonamentoDao.getAnagrafica());
-        DuplicatiGrid grid = new DuplicatiGrid("Versamenti Duplicati");
+        CommittentiSearch search = new CommittentiSearch(dao,abbonamentoDao.getAnagrafica());
+        CommittentiGrid grid = new CommittentiGrid("Versamenti con Committenti");
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");
 
