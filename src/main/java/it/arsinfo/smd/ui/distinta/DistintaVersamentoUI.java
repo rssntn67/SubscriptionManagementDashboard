@@ -19,8 +19,8 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
-@SpringUI(path = SmdUI.URL_INCASSI)
-@Title("Incassi ADP")
+@SpringUI(path = SmdUI.URL_DISTINTA_VERSAMENTI)
+@Title("Distinta versamenti")
 public class DistintaVersamentoUI extends SmdUI {
     /**
      * 
@@ -42,7 +42,7 @@ public class DistintaVersamentoUI extends SmdUI {
         IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
         DistintaVersamentoSearch search = new DistintaVersamentoSearch(dao);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
-        DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Incassi");
+        DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti");
 
         DistintaVersamentoEditor editor = new DistintaVersamentoEditor(dao.getRepository()) {
             @Override

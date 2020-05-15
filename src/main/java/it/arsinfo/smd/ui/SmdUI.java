@@ -44,7 +44,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
-    public final static String URL_INCASSI = "/incassi";
+    public final static String URL_DISTINTA_VERSAMENTI = "/distintaversamenti";
     public final static String URL_VERSAMENTI = "/versamenti";
     public final static String URL_VERSAMENTI_DUPLICATI = "/versamenti/duplicati";
     public final static String URL_INCASSA_ABB = "/incassaabb";
@@ -141,7 +141,7 @@ public abstract class SmdUI extends UI {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_INCASSI);
+                getUI().getPage().setLocation(URL_DISTINTA_VERSAMENTI);
             }
         } );
         incassi.addItem("Versamenti",new MenuBar.Command() {
@@ -270,7 +270,7 @@ public abstract class SmdUI extends UI {
 
     public Link[] getIncassoLinks() {
         List<Link> links = new ArrayList<>();
-        links.add(new Link("Incassi", new ExternalResource(URL_INCASSI)));
+        links.add(new Link("Incassi", new ExternalResource(URL_DISTINTA_VERSAMENTI)));
         links.add(new Link("Versamenti", new ExternalResource(URL_VERSAMENTI)));
         links.add(new Link("Duplicati", new ExternalResource(URL_VERSAMENTI_DUPLICATI)));
         links.add(new Link("Incassa Abbonamenti", new ExternalResource(URL_INCASSA_ABB)));
