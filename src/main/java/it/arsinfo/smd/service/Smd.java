@@ -949,14 +949,14 @@ public class Smd {
         log.info("generaIncasso: {}", incasso);
 
         versamenti.
-            forEach(s -> incasso.addVersamento(generateVersamento(incasso,s)));
+            forEach(s -> incasso.addItem(generateVersamento(incasso,s)));
         checkIncasso(incasso);
         return incasso;
     }
 
     private static void checkIncasso(DistintaVersamento incasso) throws UnsupportedOperationException {
     	BigDecimal importoVersamenti = BigDecimal.ZERO;
-    	for (Versamento v: incasso.getVersamenti()) {
+    	for (Versamento v: incasso.getItems()) {
     		importoVersamenti = importoVersamenti.add(v.getImporto());
     	}
     	if (incasso.getImporto().subtract(importoVersamenti).signum() != 0 ) {
@@ -987,11 +987,11 @@ public class Smd {
         
     public static void calcoloImportoIncasso(DistintaVersamento incasso) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Versamento versamento: incasso.getVersamenti()) {
+        for (Versamento versamento: incasso.getItems()) {
             importo=importo.add(versamento.getImporto());
         }
         incasso.setImporto(importo);
-        incasso.setDocumenti(incasso.getVersamenti().size());
+        incasso.setDocumenti(incasso.getItems().size());
         incasso.setErrati(0);
         incasso.setEsatti(incasso.getDocumenti());
         incasso.setImportoErrati(BigDecimal.ZERO);

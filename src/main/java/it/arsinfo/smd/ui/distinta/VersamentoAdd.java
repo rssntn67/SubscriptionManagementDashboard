@@ -2,9 +2,9 @@ package it.arsinfo.smd.ui.distinta;
 
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.ui.vaadin.SmdAdd;
+import it.arsinfo.smd.ui.vaadin.SmdAddItem;
 
-public class VersamentoAdd extends SmdAdd<Versamento> {
+public class VersamentoAdd extends SmdAddItem<Versamento,DistintaVersamento> {
 
     private DistintaVersamento incasso;
 
@@ -17,12 +17,10 @@ public class VersamentoAdd extends SmdAdd<Versamento> {
         return new Versamento(incasso);
     }
 
-    public DistintaVersamento getIncasso() {
-        return incasso;
-    }
-
-    public void setIncasso(DistintaVersamento incasso) {
-        this.incasso = incasso;
-    }
+	@Override
+	public void set(DistintaVersamento t) {
+        this.incasso = t;
+		
+	}
 
 }

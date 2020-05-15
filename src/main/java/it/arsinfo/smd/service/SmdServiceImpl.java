@@ -3,9 +3,7 @@ package it.arsinfo.smd.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -545,127 +543,7 @@ public class SmdServiceImpl implements SmdService {
         }
         return spedizioni;
     }
-
-    @Override
-    public void save(DistintaVersamento incasso) {
-        boolean alreadyPersisted = incasso.getId() != null;
-    	List<DistintaVersamento> found = incassoDao
-        .findByDataContabile(incasso.getDataContabile())
-        .stream()
-        .filter(inc -> 
-           inc.getCassa() == incasso.getCassa() 
-        && inc.getCuas() == incasso.getCuas() 
-        && inc.getCcp() == incasso.getCcp())
-        .collect(Collectors.toList());
-        if (!found.isEmpty()) {
-        	log.warn("save: Incasso esistente, {} ", incasso);
-            throw new UnsupportedOperationException("save: Non posso Salvare: Incasso esistente ");
-        }
-        incassoDao.save(incasso);
-        log.info("save: {}", incasso);
-        if (alreadyPersisted) {
-        	return;
-        }
-        incasso.getVersamenti().forEach(vers -> {
-        	versamentoDao.save(vers);
-            log.info("save: {}", vers);
-        	
-        });
-    }
-
-    @Override
-    public void save(Versamento versamento) throws Exception {
-        log.info("save: {}", versamento);
-        if (versamento.getDistintaVersamento() == null || versamento.getDistintaVersamento().getId() == null ) {
-        	log.warn("save: Versamento: incasso non esistente, {} ", versamento);
-            throw new UnsupportedOperationException("save: Versamento: incasso non esistente" );
-        	
-    	}
-    	if (versamento.getIncassato().signum() != 0) {
-        	log.warn("save: Versamento: non posso aggiornare un versamento incassato, {} ", versamento);
-            throw new UnsupportedOperationException("save: Versamento: non posso aggiornare un versamento incassato");
-        }
-        versamentoDao.save(versamento);
-        DistintaVersamento incasso = incassoDao.findById(versamento.getDistintaVersamento().getId()).get();
-        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByDistintaVersamento(incasso));
-        incassoDao.save(incasso);        
-    }
-
-    @Override
-    public void delete(Versamento versamento) throws Exception{
-        log.info("delete: {}", versamento);
-        if (versamento.getDistintaVersamento() == null || versamento.getDistintaVersamento().getId() == null ) {
-        	log.warn("delete: Versamento: incasso non esistente, {} ", versamento);
-            throw new UnsupportedOperationException("delete: Versamento: incasso non esistente" );
-        	
-    	}
-    	if (versamento.getIncassato().signum() != 0) {
-        	log.warn("delete: Versamento: non posso cancellare un versamento incassato, {} ", versamento);
-            throw new UnsupportedOperationException("delete: Versamento: non posso calcellare un versamento incassato");
-        }
-        versamentoDao.delete(versamento);
-    	DistintaVersamento incasso = incassoDao.findById(versamento.getDistintaVersamento().getId()).get();
-        List<Versamento> versamenti = versamentoDao.findByDistintaVersamento(incasso);
-        if (versamenti.size() == 0) {
-            incassoDao.delete(incasso);
-        } else {
-            Smd.calcoloImportoIncasso(incasso,versamenti);
-            incassoDao.save(incasso);
-        }                
-    }
-
-    @Override
-    public void incassa(Abbonamento abbonamento, BigDecimal incassato, UserInfo user) throws Exception {
-
-        DistintaVersamento incasso = 
-                incassoDao
-                    .findByDataContabileAndCassaAndCcpAndCuas(
-                                abbonamento.getDataContabile(),
-                                abbonamento.getCassa(),
-                                abbonamento.getCcp(),
-                                abbonamento.getCuas()
-                            );
-        if (incasso == null) {
-            incasso = new DistintaVersamento();
-            incasso.setDataContabile(abbonamento.getDataContabile());
-            incasso.setCassa(abbonamento.getCassa());
-            incasso.setCcp(abbonamento.getCcp());
-            incasso.setCuas(abbonamento.getCuas());
-            incassoDao.save(incasso);
-        }
-        Versamento versamento = new Versamento(incasso,incassato);
-        versamento.setCodeLine(abbonamento.getCodeLine());
-        versamento.setProgressivo(abbonamento.getProgressivo());
-        versamento.setDataPagamento(abbonamento.getDataPagamento());
-        versamentoDao.save(versamento);
-        Smd.calcoloImportoIncasso(incasso,
-                                  versamentoDao.findByDistintaVersamento(incasso));
-        incassoDao.save(incasso);
-        incassa(abbonamento, versamento,user,"Incassato da Abbonamento");
-    }
     
-    @Override
-    public List<Versamento> incassaCodeLine(List<DistintaVersamento> incassi,UserInfo user) throws Exception {
-    	Map<Long, Versamento> versamentoMap = new HashMap<Long, Versamento>();
-    	for (DistintaVersamento incasso:incassi) {
-    		if (incasso.getResiduo().signum() == 0) {
-    			continue;
-    		}
-    		for (Versamento v: versamentoDao.findByDistintaVersamento(incasso)) {
-    			if (v.getResiduo().signum() == 0) {
-    				continue;
-    			}
-    			final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(v.getCodeLine());
-    			if (abbonamento != null && abbonamento.getResiduo().signum() > 0 ) {
-    				incassa(abbonamento,v,user,"Incassato con CodeLine");
-    				versamentoMap.put(v.getId(), v);
-    			}
-    		}
-		}
-    	return versamentoMap.values().stream().collect(Collectors.toList());
-
-    }
-
 	@Override
 	public void associaCommittente(Anagrafica committente, Versamento versamento) {
 		versamento.setCommittente(committente);

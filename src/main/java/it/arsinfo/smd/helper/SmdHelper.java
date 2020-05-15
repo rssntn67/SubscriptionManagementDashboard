@@ -95,7 +95,7 @@ public class SmdHelper {
         Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
         versamentoIncasso5.setCodeLine(codeLine);
         versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
-        incasso5.addVersamento(versamentoIncasso5);
+        incasso5.addItem(versamentoIncasso5);
         Smd.calcoloImportoIncasso(incasso5);
         return incasso5;
     }

@@ -33,7 +33,7 @@ public class IncassaCodelineUI extends SmdUI {
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request,"Incassi");
+        super.init(request,SmdUI.TITLE_INCASSA_CODELINE);
         SmdButton incassa = new SmdButton("Incassa con Code Line",VaadinIcons.AUTOMATION);
         incassa.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKSPACE);

@@ -16,18 +16,23 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
+import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.service.Smd;
 
 @Service
 public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
@@ -46,6 +51,12 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
     @Autowired
     private CampagnaDao campagnaDao;
+
+    @Autowired
+    private DistintaVersamentoDao incassoDao;
+
+    @Autowired
+    private VersamentoDao versamentoDao;
 
     @Autowired
     private OperazioneIncassoDao operazioneIncassoDao;
@@ -162,7 +173,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         return findById(t.getId());
 	}
 
-	public void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception { 
+	public void incassa(Abbonamento entity, BigDecimal incassato, UserInfo user ) throws Exception { 
     	if (incassato == null) {
     		throw new UnsupportedOperationException("Devi inserire l'importo da incassare");
     	}
@@ -175,7 +186,31 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
     	if (entity.getProgressivo() == null) {
     		new UnsupportedOperationException("Aggiungere Riferimento nel Campo Progressivo");
     	}
-        smdService.incassa(entity, new BigDecimal(incassato),user);
+        DistintaVersamento incasso = 
+                incassoDao
+                    .findByDataContabileAndCassaAndCcpAndCuas(
+                    		entity.getDataContabile(),
+                    		entity.getCassa(),
+                    		entity.getCcp(),
+                    		entity.getCuas()
+                            );
+        if (incasso == null) {
+            incasso = new DistintaVersamento();
+            incasso.setDataContabile(entity.getDataContabile());
+            incasso.setCassa(entity.getCassa());
+            incasso.setCcp(entity.getCcp());
+            incasso.setCuas(entity.getCuas());
+            incassoDao.save(incasso);
+        }
+        Versamento versamento = new Versamento(incasso,incassato);
+        versamento.setCodeLine(entity.getCodeLine());
+        versamento.setProgressivo(entity.getProgressivo());
+        versamento.setDataPagamento(entity.getDataPagamento());
+        versamentoDao.save(versamento);
+        Smd.calcoloImportoIncasso(incasso,
+                                  versamentoDao.findByDistintaVersamento(incasso));
+        incassoDao.save(incasso);
+        smdService.incassa(entity, versamento,user,"Incassato da Abbonamento");
 	}
 	
 	public List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento) {

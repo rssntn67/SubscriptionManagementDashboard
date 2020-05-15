@@ -7,8 +7,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
+import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoGrid;
 import it.arsinfo.smd.ui.distinta.VersamentoGrid;
@@ -21,11 +20,8 @@ public class UploadUI extends SmdUI {
      */
     private static final long serialVersionUID = 7884064928998716106L;
 
-    @Autowired    
-    private VersamentoDao versamentoDao;
-
-    @Autowired 
-    private SmdService smdService;
+    @Autowired
+    private DistintaVersamentoServiceDao dao;
     
     @Override
     protected void init(VaadinRequest request) {
@@ -49,7 +45,7 @@ public class UploadUI extends SmdUI {
                 versGrid.setVisible(false);
             } else {
                 hideMenu();
-                versGrid.populate(versamentoDao.findByDistintaVersamento(grid.getSelected()));
+                versGrid.populate(dao.getItems(grid.getSelected()));
                 grid.setVisible(true);
             }
         });
@@ -57,7 +53,7 @@ public class UploadUI extends SmdUI {
         upload.setChangeHandler(() -> {
             upload.getIncassi().stream().forEach(incasso -> {
                 try {
-                    smdService.save(incasso);
+                    dao.save(incasso);
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);

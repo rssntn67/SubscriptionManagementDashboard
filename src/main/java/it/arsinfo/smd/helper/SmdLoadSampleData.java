@@ -447,7 +447,7 @@ public class SmdLoadSampleData implements Runnable {
 
     private void save(DistintaVersamento incasso) {
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
     }
     
     private void saveIncassi() {

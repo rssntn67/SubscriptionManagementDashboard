@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
@@ -104,6 +105,8 @@ public class SmdApplicationTests {
     private PubblicazioneDao pubblicazioneDao;
     @Autowired
     private AbbonamentoDao abbonamentoDao;
+    @Autowired
+    private AbbonamentoServiceDao abbonamentoServiceDao;
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
     @Autowired
@@ -1615,7 +1618,7 @@ public class SmdApplicationTests {
         assertEquals(0, incassoDao.findAll().size());
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
         
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
@@ -1639,7 +1642,7 @@ public class SmdApplicationTests {
 
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
         
@@ -1712,7 +1715,7 @@ public class SmdApplicationTests {
         
         DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v-> {
+        incasso.getItems().stream().forEach(v-> {
             versamentoDao.save(v);
         });
 
@@ -1721,7 +1724,7 @@ public class SmdApplicationTests {
         assertEquals(0, operazioneIncassoDao.findAll().size());
 
         BigDecimal incassato = BigDecimal.ZERO;
-        for (Versamento v: incasso.getVersamenti()) {
+        for (Versamento v: incasso.getItems()) {
         	assertEquals(abb.getCodeLine(), v.getCodeLine());
             incassato = incassato.add(Smd.incassa(incasso,v, abb));
             versamentoDao.save(v);
@@ -1829,7 +1832,7 @@ public class SmdApplicationTests {
         abb1.setDataPagamento(date);
         abb1.setDataContabile(date);
         assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
-        smdService.incassa(abb1,abb1.getTotale(),userInfoDao.findByUsername("adp"));
+        abbonamentoServiceDao.incassa(abb1,abb1.getTotale(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
@@ -1849,7 +1852,7 @@ public class SmdApplicationTests {
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
         assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
-        smdService.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
+        abbonamentoServiceDao.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(2, versamentoDao.count());  

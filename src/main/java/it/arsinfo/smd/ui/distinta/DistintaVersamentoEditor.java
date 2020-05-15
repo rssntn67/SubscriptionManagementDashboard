@@ -12,14 +12,14 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
+import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-public class DistintaVersamentoEditor extends SmdRepositoryDaoEditor<DistintaVersamento> {
+public class DistintaVersamentoEditor extends SmdEntityEditor<DistintaVersamento> {
     
     private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",EnumSet.allOf(Cuas.class));
@@ -36,8 +36,8 @@ public class DistintaVersamentoEditor extends SmdRepositoryDaoEditor<DistintaVer
     private final TextField importoErrati = new TextField("Importo Errati");
     private final DateField dataContabile = new DateField("Data contabile");
     
-    public DistintaVersamentoEditor(DistintaVersamentoDao incassoDao) {
-        super(incassoDao, new Binder<>(DistintaVersamento.class));
+    public DistintaVersamentoEditor(DistintaVersamentoServiceDao dao) {
+        super(dao, new Binder<>(DistintaVersamento.class));
 
         setComponents(
                       getActions(), 

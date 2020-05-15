@@ -11,7 +11,7 @@ import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 
-public interface DistintaVersamentoServiceDao extends SmdServiceDao<DistintaVersamento> {
+public interface DistintaVersamentoServiceDao extends SmdServiceItemDao<DistintaVersamento,Versamento> {
 
 	List<DistintaVersamento> searchBy(Cuas cuas, LocalDate dataContabile, Cassa cassa, Ccp ccp);
 	DistintaVersamentoDao getRepository();
