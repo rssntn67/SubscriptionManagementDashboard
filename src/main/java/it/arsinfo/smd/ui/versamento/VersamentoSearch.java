@@ -93,7 +93,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     	return filterAll(dao.searchBy(importo,dataContabile,dataPagamento,codeLine));
     }
      
-    public List<Versamento> filterAll(List<Versamento> versamenti) {
+    private List<Versamento> filterAll(List<Versamento> versamenti) {
         if (filterCassa.getValue() != null) {
             versamenti = versamenti
                     .stream()

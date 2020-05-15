@@ -27,6 +27,7 @@ public class DuplicatiGrid extends SmdGrid<Versamento> {
                "dataPagamento",
                "dataContabile"
               );
+        setColumnCaption("committente.intestazione", "Committente");
         gridfooter = getGrid().prependFooterRow();
 
     }
