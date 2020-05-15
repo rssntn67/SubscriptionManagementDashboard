@@ -44,12 +44,11 @@ public class CommittentiSearch extends VersamentoSearch {
      
     @Override
     public List<Versamento> find() {
-    	List<Versamento> veri = super.find().stream()
-                .filter(v -> v.getCommittente() != null)
-                .collect(Collectors.toList());
+    	List<Versamento> veri = super.find();
     	for (Versamento versamento: veri) {
-    		Anagrafica committente = anagraficaMap.get(versamento.getCommittente().getId());
-    		versamento.setCommittente(committente);
+    		if (versamento.getCommittente() != null) {
+    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+    		}
     	}
     	if (committente == null) {
     		return veri;

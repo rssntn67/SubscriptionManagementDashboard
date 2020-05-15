@@ -17,8 +17,8 @@ import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoGrid;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoSearch;
-import it.arsinfo.smd.ui.distinta.VersamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
+import it.arsinfo.smd.ui.versamento.VersamentoGrid;
 
 @SpringUI(path = SmdUI.URL_INCASSA_CODELINE)
 @Title(SmdUI.TITLE_INCASSA_CODELINE)

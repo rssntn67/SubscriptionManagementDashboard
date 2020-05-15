@@ -13,6 +13,7 @@ import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
+import it.arsinfo.smd.ui.versamento.VersamentoGrid;
 
 @SpringUI(path = SmdUI.URL_DISTINTA_VERSAMENTI)
 @Title(SmdUI.TITLE_DISTINTA_VERSAMENTI)

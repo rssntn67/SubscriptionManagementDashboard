@@ -184,6 +184,15 @@ public class Versamento implements SmdEntity {
     	}
     	return "no";
     }
+    
+    @Transient
+    public String getNomeCommittente() {
+    	if (committente != null) {
+    		return committente.getIntestazione();
+    	}
+    	return "";
+    }
+
     public void setIncassato(BigDecimal incassato) {
         this.incassato = incassato;
     }
