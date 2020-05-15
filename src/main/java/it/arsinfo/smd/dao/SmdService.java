@@ -13,6 +13,9 @@ import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Offerta;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -50,8 +53,12 @@ public interface SmdService {
         
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
+
+    void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void storna(Offerta offerta, UserInfo loggedInUser, Anagrafica committente) throws Exception;
     
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
+
 
 }

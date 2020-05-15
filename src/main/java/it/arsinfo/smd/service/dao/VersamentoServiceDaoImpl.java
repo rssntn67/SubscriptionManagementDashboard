@@ -18,6 +18,8 @@ import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Offerta;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
@@ -245,6 +247,16 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	@Override
 	public Anagrafica findCommittente(Versamento selected) {
 		return anagraficaDao.findById(selected.getCommittente().getId()).get();
+	}
+
+	@Override
+	public void storna(Offerta offerta, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+		smdService.storna(offerta, loggedInUser,committente);
+	}
+
+	@Override
+	public void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+		smdService.incassa(offerte,selected,loggedInUser, committente);				
 	}
 	
 }
