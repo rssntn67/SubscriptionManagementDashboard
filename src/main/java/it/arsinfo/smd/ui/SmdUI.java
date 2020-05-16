@@ -49,11 +49,12 @@ public abstract class SmdUI extends UI {
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_NOTE = "/note";
 
-    public final static String URL_DISTINTA_VERSAMENTI = "/distinta/versamenti";
-    public final static String URL_UPLOAD_POSTE = "/upload/poste";
-    public final static String URL_INCASSA_CODELINE = "/incassa/codeline";
-    public final static String URL_INCASSA_VERSAMENTI = "/incassa/versamenti";
-    public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
+    public final static String URL_DISTINTA_VERSAMENTI = "/versamenti/distinta";
+    public final static String URL_UPLOAD_POSTE = "/versamenti/upload/poste";
+    public final static String URL_INCASSA_CODELINE = "/versamenti/incassa/codeline";
+    public final static String URL_INCASSA_VERSAMENTI = "/versamenti/incassa";
+    public final static String URL_INCASSA_ABBONAMENTI = " /versamenti/incassa/abbonamenti";
+    public final static String URL_INCASSA_OFFERTA = " /versamenti/incassa/offerte";
     public final static String URL_VERSAMENTI_COMMITTENTI = "/versamenti/committenti";
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
@@ -75,9 +76,10 @@ public abstract class SmdUI extends UI {
 
     public final static String TITLE_DISTINTA_VERSAMENTI = "Distinta Versamenti";
     public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
-    public final static String TITLE_VERSAMENTI_COMMITTENTI = "Versamenti con Committenti ";
+    public final static String TITLE_VERSAMENTI_COMMITTENTI = "Committenti Versamenti";
     public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
-    public final static String TITLE_UPLOAD_POSTE = "Importa Versamenti ccp";
+    public final static String TITLE_INCASSA_OFFERTA = "Incassa Offerte";
+    public final static String TITLE_UPLOAD_POSTE = "Importa ccp";
     public final static String TITLE_INCASSA_CODELINE = "Incassa Codeline";
     
     public final static String TITLE_TIPOGRAFIA = "Tipografo";
@@ -205,6 +207,13 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(URL_INCASSA_ABBONAMENTI);
             }
         } );
+        incassi.addItem(TITLE_INCASSA_OFFERTA,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_INCASSA_OFFERTA);
+            }
+        } );
         incassi.addItem(TITLE_VERSAMENTI_COMMITTENTI,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -323,6 +332,7 @@ public abstract class SmdUI extends UI {
         links.add(new Link(TITLE_INCASSA_CODELINE, new ExternalResource(URL_INCASSA_CODELINE)));
         links.add(new Link(TITLE_INCASSA_VERSAMENTI, new ExternalResource(URL_INCASSA_VERSAMENTI)));
         links.add(new Link(TITLE_INCASSA_ABBONAMENTI, new ExternalResource(URL_INCASSA_ABBONAMENTI)));
+        links.add(new Link(TITLE_INCASSA_OFFERTA, new ExternalResource(URL_INCASSA_OFFERTA)));
         links.add(new Link(TITLE_VERSAMENTI_COMMITTENTI, new ExternalResource(URL_VERSAMENTI_COMMITTENTI)));
         return links.toArray((new Link[links.size()]));
     }

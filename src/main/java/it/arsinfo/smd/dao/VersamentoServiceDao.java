@@ -3,10 +3,10 @@ package it.arsinfo.smd.dao;
 import java.time.LocalDate;
 import java.util.List;
 
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Offerta;
-import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
@@ -23,7 +23,8 @@ public interface VersamentoServiceDao extends SmdServiceDao<Versamento> {
 	void incassa(Abbonamento abbonamento, Versamento selected, UserInfo loggedInUser, String description) throws Exception;
 
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
-	void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void incassa(Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	Anagrafica findCommittente(Versamento selected);
+	List<Offerta> getOfferte(Versamento selected);
 
 }

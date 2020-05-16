@@ -8,14 +8,18 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.OffertaDao;
+import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Offerta;
@@ -39,7 +43,12 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
     @Autowired
     private OperazioneIncassoDao operazioneIncassoDao;
-    
+
+    @Autowired
+    private OffertaDao offertaDao;
+    @Autowired
+    private OfferteCumulateDao offerteCumulateDao;
+
     @Autowired
     private SmdService smdService;
 
@@ -235,11 +244,13 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	}
 
 	@Override
+	@Transactional
 	public void storna(OperazioneIncasso operazioneIncasso, UserInfo loggedInUser, String string) throws Exception {
 		smdService.storna(operazioneIncasso, loggedInUser, string);
 	}
 
 	@Override
+	@Transactional
 	public void incassa(Abbonamento abbonamento, Versamento selected, UserInfo loggedInUser, String string) throws Exception {
 		smdService.incassa(abbonamento,selected,loggedInUser, string);		
 	}
@@ -250,13 +261,39 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	}
 
 	@Override
+	@Transactional
 	public void storna(Offerta offerta, UserInfo loggedInUser) throws Exception {
 		smdService.storna(offerta, loggedInUser);
 	}
 
 	@Override
-	public void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
-		smdService.incassa(offerte,selected,loggedInUser, committente);				
+	@Transactional
+	public void incassa(Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+		if (anno == null) {
+			throw new UnsupportedOperationException("Selezionare Anno");
+		}
+		if (selected == null) {
+			throw new UnsupportedOperationException("Selezionare Versamento");
+		}
+		if (loggedInUser == null) {
+			throw new UnsupportedOperationException("loggedInUser null!");
+		}
+		if (committente == null) {
+			throw new UnsupportedOperationException("Selezionare Committente");
+		}
+		
+		OfferteCumulate offerteAnno = offerteCumulateDao.findByAnno(anno);
+		if (offerteAnno == null) {
+			offerteAnno = new OfferteCumulate();
+			offerteAnno.setAnno(anno);
+			offerteCumulateDao.save(offerteAnno);
+		}
+		smdService.incassa(offerteAnno,selected,loggedInUser, committente);				
+	}
+
+	@Override
+	public List<Offerta> getOfferte(Versamento selected) {
+		return offertaDao.findByVersamento(selected);
 	}
 	
 }
