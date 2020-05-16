@@ -55,7 +55,7 @@ public interface SmdService {
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
 
     void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
-	void storna(Offerta offerta, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
     
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);

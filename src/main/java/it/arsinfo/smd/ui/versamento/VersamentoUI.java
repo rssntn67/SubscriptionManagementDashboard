@@ -41,7 +41,7 @@ public class VersamentoUI extends SmdUI {
         List<Campagna> campagne = abbonamentoDao.getCampagne();
         VersamentoAbbonamentoSearch abbSearch = 
         		new VersamentoAbbonamentoSearch(abbonamentoDao,anagrafica, campagne);
-        VersamentoSearch search = new VersamentoSearch(dao);
+        VersamentoSearch search = new VersamentoSearch(dao,anagrafica);
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         
         

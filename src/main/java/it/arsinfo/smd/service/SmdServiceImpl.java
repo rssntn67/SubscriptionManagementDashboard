@@ -386,7 +386,10 @@ public class SmdServiceImpl implements SmdService {
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);        
+        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
+        if (versamento.getCommittente() == null) {
+        	versamento.setCommittente(abbonamento.getIntestatario());
+        }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
@@ -435,7 +438,10 @@ public class SmdServiceImpl implements SmdService {
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte);        
+        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte);    
+        if (versamento.getCommittente() == null) {
+        	versamento.setCommittente(committente);
+        }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         offerteDao.save(offerte);        
@@ -451,7 +457,7 @@ public class SmdServiceImpl implements SmdService {
         log.info("incassa: {}", offerta);
     }
     @Override
-    public void storna(Offerta offerta, UserInfo user, Anagrafica committente) throws Exception {
+    public void storna(Offerta offerta, UserInfo user) throws Exception {
     	if (offerta.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
             log.warn("storna: tipo Storno, non dissociabile {}", offerta);
             throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
@@ -466,6 +472,10 @@ public class SmdServiceImpl implements SmdService {
         Smd.storna(distinta, versamento, offerte, offerta.getImporto());
         offerta.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         offertaDao.save(offerta);
+
+        if (offerta.getCommittente().equals(versamento.getCommittente()) && versamento.getIncassato().signum() == 0) {
+        	versamento.setCommittente(null);
+        }
         versamentoDao.save(versamento);
         incassoDao.save(distinta);        
         offerteDao.save(offerte); 
@@ -474,7 +484,7 @@ public class SmdServiceImpl implements SmdService {
         operStorno.setOfferteCumulate(offerte);
         operStorno.setVersamento(versamento);
         operStorno.setStatoOperazioneIncasso(StatoOperazioneIncasso.Storno);
-        operStorno.setCommittente(committente);
+        operStorno.setCommittente(offerta.getCommittente());
         operStorno.setOperatore(user.getUsername());
         operStorno.setImporto(offerta.getImporto());
         offertaDao.save(operStorno);

@@ -2,7 +2,10 @@ package it.arsinfo.smd.ui.versamento;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -15,6 +18,7 @@ import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
@@ -28,11 +32,34 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>("Conto Corrente", EnumSet.allOf(Ccp.class));
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
-  
+
+	private Map<Long,Anagrafica> anagraficaMap=new HashMap<Long, Anagrafica>();
+    private Anagrafica committente;
+
     private final VersamentoServiceDao dao;
-    public VersamentoSearch(VersamentoServiceDao dao) {
+    public VersamentoSearch(VersamentoServiceDao dao, List<Anagrafica> anagrafica) {
         super(dao);
         this.dao=dao;
+        
+        anagraficaMap=anagrafica.stream().collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
+        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
+        HorizontalLayout ana = new HorizontalLayout();
+        ana.addComponentsAndExpand(filterAnagrafica);
+        addComponents(ana);
+        
+        filterAnagrafica.setEmptySelectionAllowed(true);
+        filterAnagrafica.setPlaceholder("Cerca per Anagrafica");
+        filterAnagrafica.setItems(anagrafica);
+        filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
+        filterAnagrafica.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+            	committente = null;
+            } else {
+            	committente = e.getSelectedItem().get();
+            }
+            onChange();
+        });
+
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
         filterDataContabile.setDateFormat("yyyy-MM-dd");
 
@@ -111,7 +138,20 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
                     .stream()
                     .filter(v -> v.getDistintaVersamento().getCuas() == filterCuas.getValue())
                     .collect(Collectors.toList());
-        }
+        }       
+    	if (committente != null) {
+    		versamenti = versamenti
+    				.stream()
+    				.filter(v -> committente.equals(v.getCommittente()))
+    				.collect(Collectors.toList());
+    	}
+ 
+      	for (Versamento versamento: versamenti) {
+    		if (versamento.getCommittente() != null) {
+    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+    		}
+    	}
+ 
         return versamenti;
     }
 }

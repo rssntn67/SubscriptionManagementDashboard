@@ -56,18 +56,10 @@ public class IncassaCodelineUI extends SmdUI {
         versGrid.setVisible(false);
         indietro.setVisible(false);
 
-        grid.setChangeHandler(() -> {
-        });
-
-        indietro.setChangeHandler(() -> {
-        	search.setVisible(true);
-        	incassa.setVisible(true);
-        	grid.populate(search.find());
-        	versGrid.setVisible(false);
-        	indietro.setVisible(false);
-        });
+        search.setChangeHandler(() -> grid.populate(search.find()));
 
         incassa.setChangeHandler(() -> {
+        	hideMenu();
             try {
                 versGrid.populate(dao.incassaCodeLine(search.find(),getLoggedInUser()));
             } catch (Exception e) {
@@ -76,9 +68,21 @@ public class IncassaCodelineUI extends SmdUI {
                 return;
             }
         	search.setVisible(false);
-        	incassa.setVisible(false);
         	grid.setVisible(false);
+        	incassa.setVisible(false);
             indietro.setVisible(true);
+        });
+
+        grid.setChangeHandler(() -> {});
+        versGrid.setChangeHandler(() -> {});
+
+        indietro.setChangeHandler(() -> {
+        	showMenu();
+        	search.setVisible(true);
+        	incassa.setVisible(true);
+        	grid.populate(search.find());
+        	versGrid.setVisible(false);
+        	indietro.setVisible(false);
         });
         
         grid.populate(search.find());
