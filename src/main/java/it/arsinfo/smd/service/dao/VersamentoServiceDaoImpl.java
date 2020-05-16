@@ -250,8 +250,8 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	}
 
 	@Override
-	public void storna(Offerta offerta, UserInfo loggedInUser, Anagrafica committente) throws Exception {
-		smdService.storna(offerta, loggedInUser,committente);
+	public void storna(Offerta offerta, UserInfo loggedInUser) throws Exception {
+		smdService.storna(offerta, loggedInUser);
 	}
 
 	@Override

@@ -244,8 +244,8 @@ public class SmdApplicationTests {
 	        campagnaDao.deleteAll();
 	        notaDao.deleteAll();
 	        storicoDao.deleteAll();
-	        anagraficaDao.deleteAll();
 	        versamentoDao.deleteAll();
+	        anagraficaDao.deleteAll();
 	        incassoDao.deleteAll();  
 	        pubblicazioneDao.deleteAll();
 	        spesaSpedizioneDao.deleteAll();

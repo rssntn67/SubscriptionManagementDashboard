@@ -44,8 +44,10 @@ public abstract class SmdUI extends UI {
 
     public final static String URL_STORICO = "/storico";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
+    public final static String URL_OFFERTE = "/offerte";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
+    public final static String URL_NOTE = "/note";
 
     public final static String URL_DISTINTA_VERSAMENTI = "/distinta/versamenti";
     public final static String URL_UPLOAD_POSTE = "/upload/poste";
@@ -56,7 +58,6 @@ public abstract class SmdUI extends UI {
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
-    public final static String URL_NOTE = "/note";
     public final static String URL_ADMIN_USER = "/admin/user";
     public final static String URL_RESET_PASS = "/reset/pass";
 
@@ -66,6 +67,7 @@ public abstract class SmdUI extends UI {
     
     public final static String TITLE_SPESESPEDIZIONE = "Spese Spedizione";
     public final static String TITLE_ABBONAMENTI = "Abbonamenti";
+    public final static String TITLE_OFFERTE = "Offerte";
     public final static String TITLE_STORICO = "Storici";
     public final static String TITLE_SPEDIZIONI = "Spedizioni";
     public final static String TITLE_CAMPAGNA = "Campagne";
@@ -129,6 +131,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_ABBONAMENTI);
+            }
+        } );
+        abbonamenti.addItem(TITLE_OFFERTE,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_OFFERTE);
             }
         } );
         abbonamenti.addItem(TITLE_SPEDIZIONI,new MenuBar.Command() {
@@ -299,6 +308,7 @@ public abstract class SmdUI extends UI {
     public Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_ABBONAMENTI,  new ExternalResource(URL_ABBONAMENTI)));
+        links.add(new Link(TITLE_OFFERTE,  new ExternalResource(URL_OFFERTE)));
         links.add(new Link(TITLE_SPEDIZIONI,  new ExternalResource(URL_SPEDIZIONI)));
         links.add(new Link(TITLE_CAMPAGNA,   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link(TITLE_STORICO,   new ExternalResource(URL_STORICO)));
