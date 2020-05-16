@@ -49,12 +49,12 @@ public abstract class SmdUI extends UI {
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_NOTE = "/note";
 
-    public final static String URL_DISTINTA_VERSAMENTI = "/versamenti/distinta";
-    public final static String URL_UPLOAD_POSTE = "/versamenti/upload/poste";
-    public final static String URL_INCASSA_CODELINE = "/versamenti/incassa/codeline";
-    public final static String URL_INCASSA_VERSAMENTI = "/versamenti/incassa";
-    public final static String URL_INCASSA_ABBONAMENTI = " /versamenti/incassa/abbonamenti";
-    public final static String URL_INCASSA_OFFERTA = " /versamenti/incassa/offerte";
+    public final static String URL_DISTINTA_VERSAMENTI = "/distinta";
+    public final static String URL_UPLOAD_POSTE = "/upload/poste";
+    public final static String URL_INCASSA_CODELINE = "/incassa/codeline";
+    public final static String URL_INCASSA_VERSAMENTI = "/versamenti";
+    public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
+    public final static String URL_INCASSA_OFFERTA = "/incassa/offerte";
     public final static String URL_VERSAMENTI_COMMITTENTI = "/versamenti/committenti";
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
