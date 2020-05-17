@@ -11,6 +11,6 @@ import it.arsinfo.smd.entity.Offerta;
 @Service
 public interface OffertaServiceDao extends SmdServiceDao<Offerta> {
 
-	List<Offerta> findByCommittente(Anagrafica tValue, Anno sValue);
+	List<Offerta> findByCommittente(Anagrafica tValue, Anno sValue) throws Exception;
 	
 }

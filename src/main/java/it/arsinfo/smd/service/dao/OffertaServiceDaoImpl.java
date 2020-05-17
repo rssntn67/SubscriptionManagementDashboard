@@ -43,7 +43,13 @@ public class OffertaServiceDaoImpl implements OffertaServiceDao {
 	}
 
 	@Override
-	public List<Offerta> findByCommittente(Anagrafica committente, Anno anno) {
+	public List<Offerta> findByCommittente(Anagrafica committente, Anno anno) throws Exception {
+    	if (committente == null) {
+    		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");
+    	}
+    	if (anno == null) {
+    		throw new UnsupportedOperationException("Anno deve essere valorizzato");
+    	}
 		return repository.findByCommittente(committente)
 				.stream()
 				.filter(o -> o.getOfferteCumulate().getAnno() == anno)

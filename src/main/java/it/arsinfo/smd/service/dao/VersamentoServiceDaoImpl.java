@@ -291,8 +291,9 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
     	SimpleDateFormat dateFor = new SimpleDateFormat("dd/MM/yyyy");
     	Date start = dateFor.parse("01/01/"+anno.getAnnoAsString());
     	Date end = dateFor.parse("01/01/"+Anno.getAnnoSuccessivo(anno).getAnnoAsString());
-		return repository.findByCommittente(tValue)
+		List<Versamento> versamenti = repository.findByCommittente(tValue)
 				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))
 				.collect(Collectors.toList());
+		return Smd.getWithAnagrafiche(versamenti, anagraficaDao.findAll());
 	}	
 }
