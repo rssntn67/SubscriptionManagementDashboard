@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.incassa.abbonamento;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,10 +100,11 @@ public class IncassaAbbonamentoUI extends SmdUI {
 
         incassa.setChangeHandler(() -> {
 	    	try {
-	    		dao.incassa(editor.get(), new BigDecimal(incassa.getValue()), getLoggedInUser());
+	    		dao.incassa(editor.get(), incassa.getValue(), getLoggedInUser());
 	        } catch (Exception e) {
 	            Notification.show(e.getMessage(),
 	                              Notification.Type.ERROR_MESSAGE);
+	            return;
 	        }
         	incassa.setVisible(false);
         	editor.edit(editor.get());

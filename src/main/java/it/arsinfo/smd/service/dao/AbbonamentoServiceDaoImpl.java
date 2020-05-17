@@ -173,19 +173,26 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         return findById(t.getId());
 	}
 
-	public void incassa(Abbonamento entity, BigDecimal incassato, UserInfo user ) throws Exception { 
+	public void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception { 
     	if (incassato == null) {
     		throw new UnsupportedOperationException("Devi inserire l'importo da incassare");
     	}
     	if (entity.getDataContabile() == null) {
-    		new UnsupportedOperationException("Devi inserire la data contabile");
+    		throw new UnsupportedOperationException("Devi inserire la data contabile");
     	}
     	if (entity.getDataPagamento() == null) {
-    		new UnsupportedOperationException("Devi inserire la data pagamento");
+    		throw new UnsupportedOperationException("Devi inserire la data pagamento");
     	}
     	if (entity.getProgressivo() == null) {
-    		new UnsupportedOperationException("Aggiungere Riferimento nel Campo Progressivo");
+    		throw new UnsupportedOperationException("Aggiungere Riferimento nel Campo Progressivo");
     	}
+    	
+    	try {
+    		new BigDecimal(incassato);
+    	} catch (Exception e) {
+    		throw new UnsupportedOperationException("Incassato non è un valore accettabile " + incassato);
+		}
+
         DistintaVersamento incasso = 
                 incassoDao
                     .findByDataContabileAndCassaAndCcpAndCuas(
@@ -202,7 +209,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             incasso.setCuas(entity.getCuas());
             incassoDao.save(incasso);
         }
-        Versamento versamento = new Versamento(incasso,incassato);
+        Versamento versamento = new Versamento(incasso,new BigDecimal(incassato));
         versamento.setCodeLine(entity.getCodeLine());
         versamento.setProgressivo(entity.getProgressivo());
         versamento.setDataPagamento(entity.getDataPagamento());

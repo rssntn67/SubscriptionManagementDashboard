@@ -1,6 +1,5 @@
 package it.arsinfo.smd.dao;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import it.arsinfo.smd.data.Anno;
@@ -18,7 +17,7 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 	List<Anagrafica> getAnagrafica();
 	List<Pubblicazione> getPubblicazioni();
 	List<Campagna> getCampagne();
-	void incassa(Abbonamento entity, BigDecimal incassato, UserInfo user ) throws Exception;
+	void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception;
 	List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento);
 	List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t);
 }
