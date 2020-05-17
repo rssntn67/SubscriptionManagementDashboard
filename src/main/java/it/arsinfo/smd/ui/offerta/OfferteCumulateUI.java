@@ -23,6 +23,7 @@ public class OfferteCumulateUI extends SmdUI {
 
     @Autowired
     private OfferteCumulateDao dao;
+    @Autowired
     private OffertaDao itemDao; 
 
     @Override

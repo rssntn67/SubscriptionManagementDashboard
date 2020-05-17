@@ -46,11 +46,10 @@ public class IncassaOffertaUI extends SmdUI {
         List<Anagrafica> anagrafica = abbonamentoDao.getAnagrafica();
         VersamentoSearch search = new VersamentoSearch(dao,abbonamentoDao.getAnagrafica());
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
+        grid.getGrid().setHeight("600px");
         
         OfferteGrid offerteGrid = new OfferteGrid("Offerte Associate");
-
-        grid.getGrid().setHeight("200px");
-        offerteGrid.getGrid().setHeight("200px");
+        offerteGrid.getGrid().setHeight("300px");
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKSPACE);
 
         SmdButtonTwoComboBox<Anagrafica,Anno> incassaOfferta = 
@@ -82,9 +81,11 @@ public class IncassaOffertaUI extends SmdUI {
             	search.setVisible(false);
             	offerteGrid.populate(dao.getOfferte(grid.getSelected()));
                 incassaOfferta.getTComboBox().setValue(null);
-                if (grid.getSelected().getCommittente() != null && grid.getSelected().getResiduo().signum() > 0) {
+                if ( grid.getSelected().getResiduo().signum() > 0) {
+    				incassaOfferta.setVisible(true);
+                }
+                if (grid.getSelected().getCommittente() != null) {
                 	incassaOfferta.getTComboBox().setValue(dao.findCommittente(grid.getSelected()));
-                	incassaOfferta.setVisible(true);
                 }
                 indietro.setVisible(true);
             } else {
