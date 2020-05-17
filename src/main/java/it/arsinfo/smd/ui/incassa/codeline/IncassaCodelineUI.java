@@ -46,7 +46,7 @@ public class IncassaCodelineUI extends SmdUI {
         				collect(Collectors.toList());
         	}        	
         };
-        DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti");
+        DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti con Residuo");
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti Incassati");
        
         addSmdComponents(search,incassa,indietro,versGrid,

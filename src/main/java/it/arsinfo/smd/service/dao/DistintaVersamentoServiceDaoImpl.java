@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Cassa;
@@ -40,6 +43,10 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
     @Autowired
     private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private AnagraficaDao anagraficaDao;
+
 
     @Autowired
     private SmdService smdService;
@@ -192,7 +199,14 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
 	@Override
 	public List<Versamento> getItems(DistintaVersamento t) {
-		return versamentoDao.findByDistintaVersamento(t);
+        List<Versamento> versamenti = versamentoDao.findByDistintaVersamento(t);
+      	Set<Long> ids = new HashSet<Long>();
+        for (Versamento v: versamenti) {
+    		if (v.getCommittente() != null) {
+    			ids.add(v.getCommittente().getId());
+    		}
+    	}
+      	return Smd.getWithAnagrafiche(versamentoDao.findByDistintaVersamento(t), anagraficaDao.findAllById(ids));
 	}
 
 	@Override

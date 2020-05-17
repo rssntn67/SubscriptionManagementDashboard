@@ -2,10 +2,7 @@ package it.arsinfo.smd.ui.versamento;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.vaadin.shared.ui.ValueChangeMode;
@@ -33,7 +30,6 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
 
-	private Map<Long,Anagrafica> anagraficaMap=new HashMap<Long, Anagrafica>();
     private Anagrafica committente;
 
     private final VersamentoServiceDao dao;
@@ -41,7 +37,6 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
         super(dao);
         this.dao=dao;
         
-        anagraficaMap=anagrafica.stream().collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
         ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
         HorizontalLayout ana = new HorizontalLayout();
         ana.addComponentsAndExpand(filterAnagrafica);
@@ -144,14 +139,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     				.stream()
     				.filter(v -> committente.equals(v.getCommittente()))
     				.collect(Collectors.toList());
-    	}
- 
-      	for (Versamento versamento: versamenti) {
-    		if (versamento.getCommittente() != null) {
-    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
-    		}
-    	}
- 
+    	}  
         return versamenti;
     }
 }

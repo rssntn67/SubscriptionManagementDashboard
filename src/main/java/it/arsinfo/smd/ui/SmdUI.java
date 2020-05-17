@@ -295,11 +295,11 @@ public abstract class SmdUI extends UI {
         layout.addComponents(components);
     }
     
-    public Link getHomePageLink() {
+    public static Link getHomePageLink() {
         return new Link(TITLE_HOME,new ExternalResource(HOME));        
     }
     
-    public Link[] getAnagraficaLink() {
+    public static Link[] getAnagraficaLink() {
     	List<Link> links = new ArrayList<>();
     	links.add(new Link(TITLE_ANAGRAFICA, new ExternalResource(URL_ANAGRAFICA)));
     	links.add(new Link(TITLE_PUBBLICAZIONI,new ExternalResource(URL_PUBBLICAZIONI)));    
@@ -307,14 +307,14 @@ public abstract class SmdUI extends UI {
     	return links.toArray(new Link[links.size()]);
     }
 
-    public Link[] getOrdiniLinks() {
+    public static Link[] getOrdiniLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_TIPOGRAFIA, new ExternalResource(URL_TIPOGRAFIA)));
         links.add(new Link(TITLE_SPEDIZIONERE, new ExternalResource(URL_SPEDIZIONERE)));
         return links.toArray(new Link[links.size()]);
     }
 
-    public Link[] getAbbonamentoLinks() {
+    public static Link[] getAbbonamentoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_ABBONAMENTI,  new ExternalResource(URL_ABBONAMENTI)));
         links.add(new Link(TITLE_OFFERTE,  new ExternalResource(URL_OFFERTE)));
@@ -325,7 +325,7 @@ public abstract class SmdUI extends UI {
         return links.toArray((new Link[links.size()]));
     }
 
-    public Link[] getIncassoLinks() {
+    public static Link[] getIncassoLinks() {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_DISTINTA_VERSAMENTI, new ExternalResource(URL_DISTINTA_VERSAMENTI)));
         links.add(new Link(TITLE_UPLOAD_POSTE, new ExternalResource(URL_UPLOAD_POSTE)));
@@ -337,6 +337,9 @@ public abstract class SmdUI extends UI {
         return links.toArray((new Link[links.size()]));
     }
 
+    public Link getLogoutLink() {
+    	return new Link("Logout: "+ loggedInUser.getUsername(), new ExternalResource(URL_LOGOUT));
+    }
     public UserInfo getLoggedInUser() {
         return loggedInUser;
     }

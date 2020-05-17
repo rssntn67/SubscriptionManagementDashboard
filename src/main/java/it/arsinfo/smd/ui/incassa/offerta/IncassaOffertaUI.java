@@ -82,8 +82,9 @@ public class IncassaOffertaUI extends SmdUI {
             	search.setVisible(false);
             	offerteGrid.populate(dao.getOfferte(grid.getSelected()));
                 incassaOfferta.getTComboBox().setValue(null);
-                if (grid.getSelected().getCommittente() != null) {
+                if (grid.getSelected().getCommittente() != null && grid.getSelected().getResiduo().signum() > 0) {
                 	incassaOfferta.getTComboBox().setValue(dao.findCommittente(grid.getSelected()));
+                	incassaOfferta.setVisible(true);
                 }
                 indietro.setVisible(true);
             } else {

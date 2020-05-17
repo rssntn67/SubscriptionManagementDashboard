@@ -55,6 +55,10 @@ public class DistintaVersamentoUI extends SmdEditorUI<DistintaVersamento> {
                 add,
                 search, 
                 grid);
+        
+        itemGrid.setChangeHandler(() -> {
+        	
+        });
 
         grid.populate(search.findAll());
 

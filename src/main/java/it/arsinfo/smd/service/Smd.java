@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -1056,6 +1057,26 @@ public class Smd {
         }
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
+    }
+    
+    public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
+    	if (v != null && a != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
+        	v.setCommittente(a);    		
+    	}
+    	return v;
+    }
+    
+    public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
+        Map<Long,Anagrafica> anagraficaMap=anagrafica
+        		.stream()
+        		.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
+      	for (Versamento versamento: versamenti) {
+    		if (versamento.getCommittente() != null) {
+    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+    		}
+    	}
+      	return versamenti;
+
     }
     
 }

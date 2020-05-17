@@ -64,12 +64,17 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
 	@Override
 	public Versamento findById(Long id) {
-		return repository.findById(id).get();
+		Versamento v = repository.findById(id).get();
+		if (v.getCommittente() != null) {
+			return Smd.getWithAnagrafica(v, anagraficaDao.findById(v.getCommittente().getId()).get());
+		}
+
+		return v;
 	}
 
 	@Override
 	public List<Versamento> findAll() {
-		return repository.findAll();
+      	return Smd.getWithAnagrafiche(repository.findAll(), anagraficaDao.findAll());
 	}
 
 	public VersamentoDao getRepository() {
@@ -78,10 +83,6 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
 	public List<Versamento> searchBy(String importo, LocalDate dataContabile, LocalDate dataPagamento,
 			String codeLine) {
-        if (StringUtils.isEmpty(importo) && dataContabile == null
-                && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return findAll();
-        }
         if (!StringUtils.isEmpty(importo)) {
             try {
                 new BigDecimal(importo);
@@ -89,98 +90,78 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                 return new ArrayList<>();
             }
         }
-         
+
+        if (StringUtils.isEmpty(importo) && dataContabile == null
+                && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+            return findAll();
+        }
+        List<Versamento> vs;
         if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-                return repository
+                vs =  repository
                     .findByImporto(new BigDecimal(importo));
-        }
-
-        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(importo)) {
-            return repository
+        } else if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(importo)) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine);
-        }
-
-        if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return repository
+        } else if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+            vs =  repository
                     .findByDataContabile(Smd.getStandardDate(dataContabile));
-        }
-
-        if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(codeLine)) {
-            return repository
+        } else  if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(codeLine)) {
+            vs =  repository
                     .findByDataPagamento(Smd.getStandardDate(dataPagamento));
-        }
-
-        if (dataContabile == null && dataPagamento == null) {
-            return repository
+        } else if (dataContabile == null && dataPagamento == null) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v-> v.getImporto().compareTo(new BigDecimal(importo)) == 0)
                     .collect(Collectors.toList());
-        }
-
-
-        if (dataContabile == null && StringUtils.isEmpty(codeLine)) {
-            return repository
+        } else if (dataContabile == null && StringUtils.isEmpty(codeLine)) {
+            vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (dataPagamento == null && StringUtils.isEmpty(codeLine)) {
-            return repository
+        } else if (dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+            vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (dataContabile == null && StringUtils.isEmpty(importo)) {
-            return repository
+        } else if (dataContabile == null && StringUtils.isEmpty(importo)) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (dataPagamento == null && StringUtils.isEmpty(importo)) {
-            return repository
+        } else if (dataPagamento == null && StringUtils.isEmpty(importo)) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (StringUtils.isEmpty(codeLine) && StringUtils.isEmpty(importo)) {
-            return repository
+        } else if (StringUtils.isEmpty(codeLine) && StringUtils.isEmpty(importo)) {
+            vs =  repository
                     .findByDataPagamento(Smd.getStandardDate(dataPagamento))
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (StringUtils.isEmpty(codeLine)) {
-            return repository
+        } else if (StringUtils.isEmpty(codeLine)) {
+            vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> 
                        v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
                     && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (StringUtils.isEmpty(importo)) {
-            return repository
+        } else if (StringUtils.isEmpty(importo)) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
                        v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
                     && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        }
-
-        if (dataPagamento == null) {
-            return repository
+        } else if (dataPagamento == null) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
@@ -188,9 +169,8 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                     .collect(Collectors.toList());
             
-        }
-        if (dataContabile == null) {
-            return repository
+        } else if (dataContabile == null) {
+            vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
@@ -198,8 +178,8 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                     .collect(Collectors.toList());
             
-        }
-        return repository
+        } else {
+        	vs =  repository
                 .findByCodeLineContainingIgnoreCase(codeLine)
                 .stream()
                 .filter(v -> 
@@ -207,6 +187,8 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                 && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
                 && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                 .collect(Collectors.toList());
+        }
+        return Smd.getWithAnagrafiche(vs, anagraficaDao.findAll());
 	}
 
 	@Override
