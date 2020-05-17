@@ -46,7 +46,7 @@ public class IncassaOffertaUI extends SmdUI {
         List<Anagrafica> anagrafica = abbonamentoDao.getAnagrafica();
         VersamentoSearch search = new VersamentoSearch(dao,abbonamentoDao.getAnagrafica());
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
-        grid.getGrid().setHeight("600px");
+        grid.getGrid().setHeight("300px");
         
         OfferteGrid offerteGrid = new OfferteGrid("Offerte Associate");
         offerteGrid.getGrid().setHeight("300px");
@@ -55,7 +55,7 @@ public class IncassaOffertaUI extends SmdUI {
         SmdButtonTwoComboBox<Anagrafica,Anno> incassaOfferta = 
         		new SmdButtonTwoComboBox<>("Selezionare Anno e Committente", 
         				anagrafica, Arrays.asList(Anno.values()),
-        				"Associa Anno e Committente", VaadinIcons.ABACUS);
+        				"Incassa Offerta", VaadinIcons.ABACUS);
         incassaOfferta.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         incassaOfferta.getButton().setWidth("300px");
         incassaOfferta.getTComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
