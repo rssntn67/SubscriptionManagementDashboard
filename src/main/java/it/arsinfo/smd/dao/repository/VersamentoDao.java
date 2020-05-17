@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Versamento;
 
@@ -16,5 +17,6 @@ public interface VersamentoDao extends JpaRepository<Versamento, Long> {
     List<Versamento> findByDataPagamento(Date data);
     List<Versamento> findByImporto(BigDecimal importo);
     List<Versamento> findByCodeLineContainingIgnoreCase(String codeLine);
+	List<Versamento> findByCommittente(Anagrafica tValue);
 	
 }

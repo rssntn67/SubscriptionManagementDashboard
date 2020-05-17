@@ -257,4 +257,12 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 		return itemRepository.findAll();
 	}
 
+	@Override
+	public List<Storico> searchBy(Anagrafica a) throws Exception {
+    	if (a == null) {
+    		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");
+    	}
+		return repository.findByDestinatarioOrIntestatario(a,a);
+	}
+
 }

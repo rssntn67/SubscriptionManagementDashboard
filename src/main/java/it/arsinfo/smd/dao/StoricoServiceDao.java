@@ -18,4 +18,6 @@ public interface StoricoServiceDao extends SmdServiceItemDao<Storico, Nota> {
 
 	void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception;
 	Nota getNotaOnSave(Storico storico,String username);
+
+	List<Storico> searchBy(Anagrafica tValue) throws Exception;
 }

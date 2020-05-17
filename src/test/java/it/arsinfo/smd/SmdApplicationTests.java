@@ -1915,8 +1915,9 @@ public class SmdApplicationTests {
         Date date = new Date();
         abb1.setDataPagamento(date);
         abb1.setDataContabile(date);
+        abb1.setProgressivo("00001");
         assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
-        abbonamentoServiceDao.incassa(abb1,abb1.getTotale(),userInfoDao.findByUsername("adp"));
+        abbonamentoServiceDao.incassa(abb1,abb1.getTotale().toString(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
@@ -1935,8 +1936,9 @@ public class SmdApplicationTests {
         assertNotNull(incasso);
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
-        assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
-        abbonamentoServiceDao.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
+        abb2.setProgressivo("00002");
+       assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
+        abbonamentoServiceDao.incassa(abb2,abb2.getTotale().toString(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(2, versamentoDao.count());  

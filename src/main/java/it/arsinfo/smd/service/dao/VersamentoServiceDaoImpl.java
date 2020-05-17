@@ -1,8 +1,10 @@
 package it.arsinfo.smd.service.dao;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -277,5 +279,20 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	public List<Offerta> getOfferte(Versamento selected) {
 		return offertaDao.findByVersamento(selected);
 	}
-	
+
+	@Override
+	public List<Versamento> searchBy(Anagrafica tValue, Anno anno) throws Exception {
+    	if (tValue == null) {
+    		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");
+    	}
+    	if (anno == null) {
+    		throw new UnsupportedOperationException("Anno deve essere valorizzato");
+    	}
+    	SimpleDateFormat dateFor = new SimpleDateFormat("dd/MM/yyyy");
+    	Date start = dateFor.parse("01/01/"+anno.getAnnoAsString());
+    	Date end = dateFor.parse("01/01/"+Anno.getAnnoSuccessivo(anno).getAnnoAsString());
+		return repository.findByCommittente(tValue)
+				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))
+				.collect(Collectors.toList());
+	}	
 }

@@ -48,6 +48,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_NOTE = "/note";
+    public final static String URL_RIEPILOGO = "/riepilogo";
 
     public final static String URL_DISTINTA_VERSAMENTI = "/distinta";
     public final static String URL_UPLOAD_POSTE = "/upload/poste";
@@ -73,6 +74,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_SPEDIZIONI = "Spedizioni";
     public final static String TITLE_CAMPAGNA = "Campagne";
     public final static String TITLE_NOTE = "Note";
+    public final static String TITLE_RIEPILOGO = "Riepilogo";
 
     public final static String TITLE_DISTINTA_VERSAMENTI = "Distinta Versamenti";
     public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
@@ -168,6 +170,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_NOTE);
+            }
+        } );
+        abbonamenti.addItem(TITLE_RIEPILOGO,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_RIEPILOGO);
             }
         } );
         
@@ -322,6 +331,7 @@ public abstract class SmdUI extends UI {
         links.add(new Link(TITLE_CAMPAGNA,   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link(TITLE_STORICO,   new ExternalResource(URL_STORICO)));
         links.add(new Link(TITLE_NOTE, new ExternalResource(URL_NOTE)));
+        links.add(new Link(TITLE_RIEPILOGO, new ExternalResource(URL_RIEPILOGO)));
         return links.toArray((new Link[links.size()]));
     }
 

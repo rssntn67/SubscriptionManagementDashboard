@@ -295,4 +295,16 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         return filterBy(t, p, abbonamenti);
 	}
 
+	@Override
+	public List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception {
+    	if (tValue == null) {
+    		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");
+    	}
+    	if (sValue == null) {
+    		throw new UnsupportedOperationException("Anno deve essere valorizzato");
+    	}
+
+		return repository.findByIntestatarioAndAnno(tValue, sValue);
+	}
+
 }

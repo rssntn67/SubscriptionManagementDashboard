@@ -11,6 +11,7 @@ public class OfferteGrid extends SmdGrid<Offerta> {
         super(new Grid<>(Offerta.class),gridName);
         setColumns(
                 "operatore",
+                "offerteCumulate.anno",
                 "statoOperazioneIncasso",
                 "committente.caption",
                 "importo");

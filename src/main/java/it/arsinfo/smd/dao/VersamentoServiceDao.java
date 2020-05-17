@@ -26,5 +26,6 @@ public interface VersamentoServiceDao extends SmdServiceDao<Versamento> {
 	void incassa(Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	Anagrafica findCommittente(Versamento selected);
 	List<Offerta> getOfferte(Versamento selected);
+	List<Versamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 
 }
