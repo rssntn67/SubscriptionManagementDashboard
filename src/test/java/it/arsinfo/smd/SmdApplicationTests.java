@@ -33,13 +33,17 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.repository.OffertaDao;
+import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
@@ -71,8 +75,10 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Nota;
+import it.arsinfo.smd.entity.Offerta;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.OperazioneSospendi;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -85,7 +91,6 @@ import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 import it.arsinfo.smd.service.SmdServiceImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
@@ -107,13 +112,15 @@ public class SmdApplicationTests {
     @Autowired
     private AbbonamentoDao abbonamentoDao;
     @Autowired
+    private AbbonamentoServiceDao abbonamentoServiceDao;
+    @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
     @Autowired
     private CampagnaDao campagnaDao;
     @Autowired
     private CampagnaItemDao campagnaItemDao;
     @Autowired
-    private IncassoDao incassoDao;
+    private DistintaVersamentoDao incassoDao;
     @Autowired
     private VersamentoDao versamentoDao;
     @Autowired
@@ -132,6 +139,10 @@ public class SmdApplicationTests {
     private SpedizioneItemDao spedizioneItemDao;
     @Autowired
     private SpesaSpedizioneDao spesaSpedizioneDao;
+    @Autowired
+    private OfferteCumulateDao offerteCumulateDao;
+    @Autowired
+    private OffertaDao offertaDao;
 
     @Autowired
     private SecurityConfig securityConfig;
@@ -170,6 +181,8 @@ public class SmdApplicationTests {
         assertNotNull(spedizioneDao);
         assertNotNull(spedizioneItemDao);
         assertNotNull(spesaSpedizioneDao);
+        assertNotNull(offerteCumulateDao);
+        assertNotNull(offertaDao);
 
         assertNotNull(smdService);
         assertTrue(smdService instanceof SmdServiceImpl);
@@ -238,8 +251,8 @@ public class SmdApplicationTests {
 	        campagnaDao.deleteAll();
 	        notaDao.deleteAll();
 	        storicoDao.deleteAll();
-	        anagraficaDao.deleteAll();
 	        versamentoDao.deleteAll();
+	        anagraficaDao.deleteAll();
 	        incassoDao.deleteAll();  
 	        pubblicazioneDao.deleteAll();
 	        spesaSpedizioneDao.deleteAll();
@@ -1646,10 +1659,9 @@ public class SmdApplicationTests {
     public void testVersamentoCRUD() {
         log.info("----------------->testVersamentoCRUD<----------------");
         assertEquals(0, incassoDao.findAll().size());
-        assertEquals(0, incassoDao.findAll().size());
-        Incasso incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
         
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
@@ -1660,20 +1672,95 @@ public class SmdApplicationTests {
                 
     }
     
+    @Test
+    public void testOfferteCumulateCRUD() {
+        log.info("----------------->testOfferteCumulateCRUD<----------------");
+        assertEquals(0, offerteCumulateDao.findAll().size());
+        OfferteCumulate offerte = new OfferteCumulate();
+    	offerteCumulateDao.save(offerte);
+        assertEquals(1, offerteCumulateDao.findAll().size());
+        OfferteCumulate offerte2 = offerteCumulateDao.findByAnno(Anno.getAnnoCorrente());
+        assertEquals(offerte.getId().longValue(), offerte2.getId().longValue());
+        offerteCumulateDao.delete(offerte2);
+        assertEquals(0, offerteCumulateDao.findAll().size());       
+    }
+    
+    @Test
+    public void testOffertaCRUD() {
+        log.info("----------------->testOffertaCRUD<----------------");
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, offerteCumulateDao.findAll().size());
+        assertEquals(0, offertaDao.findAll().size());
+        
+        Anagrafica ar = SmdHelper.getAR();
+        anagraficaDao.save(ar);
+        assertEquals(1, anagraficaDao.findAll().size());
+        
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        incassoDao.save(incasso);
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+
+        OfferteCumulate offerte = new OfferteCumulate();
+    	offerteCumulateDao.save(offerte);
+        assertEquals(1, offerteCumulateDao.findAll().size());
+        assertEquals(0, offerte.getImporto().signum());
+        
+        Versamento versamento = versamentoDao.findAll().iterator().next();
+        log.info(versamento.toString());
+        assertEquals(15.00, incasso.getImporto().doubleValue(),0);
+        assertEquals(0.00, incasso.getIncassato().doubleValue(),0);
+        assertEquals(15.00, versamento.getImporto().doubleValue(),0);
+        assertEquals(0.00, versamento.getIncassato().doubleValue(),0);
+        
+        assertEquals(0.00, offerte.getImporto().doubleValue(),0);
+        
+        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte);
+        assertEquals(15.00, offerte.getImporto().doubleValue(),0);
+        assertEquals(15.00, incassato.doubleValue(),0);
+        assertEquals(15.00, versamento.getIncassato().doubleValue(),0);
+        assertEquals(15.00, incasso.getIncassato().doubleValue(),0);
+
+        offerteCumulateDao.save(offerte);
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+        
+        Offerta offerta = new Offerta();
+        offerta.setCommittente(ar);
+        offerta.setVersamento(versamento);
+        offerta.setOfferteCumulate(offerte);
+        offerta.setImporto(incassato);
+        
+        offertaDao.save(offerta);
+        assertEquals(1, offertaDao.findAll().size());
+                
+        offertaDao.deleteAll();
+        versamentoDao.deleteAll();
+        incassoDao.deleteAll();
+        anagraficaDao.deleteAll();
+        offerteCumulateDao.deleteAll();
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+        assertEquals(0, anagraficaDao.findAll().size());
+        assertEquals(0, offertaDao.findAll().size());       
+        assertEquals(0, offerteCumulateDao.findAll().size());       
+    }
+
     @Test 
     public void testVersamentoCommittente() {
         log.info("----------------->testVersamentoCommittente<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
-        assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
         
         Anagrafica ar = SmdHelper.getAR();
         anagraficaDao.save(ar);
         assertEquals(1, anagraficaDao.findAll().size());
 
-        Incasso incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
         
@@ -1744,9 +1831,9 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         
-        Incasso incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
+        DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v-> {
+        incasso.getItems().stream().forEach(v-> {
             versamentoDao.save(v);
         });
 
@@ -1755,7 +1842,7 @@ public class SmdApplicationTests {
         assertEquals(0, operazioneIncassoDao.findAll().size());
 
         BigDecimal incassato = BigDecimal.ZERO;
-        for (Versamento v: incasso.getVersamenti()) {
+        for (Versamento v: incasso.getItems()) {
         	assertEquals(abb.getCodeLine(), v.getCodeLine());
             incassato = incassato.add(Smd.incassa(incasso,v, abb));
             versamentoDao.save(v);
@@ -1862,16 +1949,17 @@ public class SmdApplicationTests {
         Date date = new Date();
         abb1.setDataPagamento(date);
         abb1.setDataContabile(date);
+        abb1.setProgressivo("00001");
         assertEquals(abb1.getTotale().doubleValue(), abb1.getResiduo().doubleValue(),0);
-        smdService.incassa(abb1,abb1.getTotale(),userInfoDao.findByUsername("adp"));
+        abbonamentoServiceDao.incassa(abb1,abb1.getTotale().toString(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb1.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(1, versamentoDao.count());
         assertEquals(1, operazioneIncassoDao.count());
         
-        Incasso inc1 = incassoDao.findAll().iterator().next();
+        DistintaVersamento inc1 = incassoDao.findAll().iterator().next();
         assertEquals(Smd.getStandardDate(inc1.getDataContabile()), Smd.getStandardDate(abb1.getDataContabile()));
-        Incasso incasso = 
+        DistintaVersamento incasso = 
         incassoDao
         .findByDataContabileAndCassaAndCcpAndCuas(
               abb1.getDataContabile(),
@@ -1882,8 +1970,9 @@ public class SmdApplicationTests {
         assertNotNull(incasso);
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
-        assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
-        smdService.incassa(abb2,abb2.getTotale(),userInfoDao.findByUsername("adp"));
+        abb2.setProgressivo("00002");
+       assertEquals(abb2.getTotale().doubleValue(), abb2.getResiduo().doubleValue(),0);
+        abbonamentoServiceDao.incassa(abb2,abb2.getTotale().toString(),userInfoDao.findByUsername("adp"));
         assertEquals(BigDecimal.ZERO.doubleValue(), abb2.getResiduo().doubleValue(),0);
         assertEquals(1, incassoDao.count());
         assertEquals(2, versamentoDao.count());  

@@ -24,7 +24,7 @@ import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -34,7 +34,7 @@ import it.arsinfo.smd.service.Smd;
 
 public class SmdHelper {
 
-    public static Incasso getIncassoTelematici() {
+    public static DistintaVersamento getIncassoTelematici() {
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();
         versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
@@ -42,7 +42,7 @@ public class SmdHelper {
         
     }
 
-    public static Incasso getIncassoVenezia() {
+    public static DistintaVersamento getIncassoVenezia() {
         String riepilogo2="3000063470009171006              999000000090000000367000000000700000003020000000002000000006500                                                                                                        \n";
         Set<String> versamenti2= new HashSet<>();
         versamenti2.add("0865737400000020000634700091710056740000001500074046022171006000000018000854368DIN                                                                                                                      \n");
@@ -59,7 +59,7 @@ public class SmdHelper {
     
     }
 
-    public static Incasso getIncassoFirenze() {
+    public static DistintaVersamento getIncassoFirenze() {
         String riepilogo3="5000063470009171006              999000000060000000201000000000500000001810000000001000000002000                                                                                                        \n";
         Set<String> versamenti3= new HashSet<>();
         versamenti3.add("0854174400000090000634700091710046740000001000055379072171006000000018000686968DIN                                                                                                                      \n");
@@ -72,7 +72,7 @@ public class SmdHelper {
         return Smd.generaIncasso(versamenti3, riepilogo3);
     }
 
-    public static Incasso getIncassoBari() {
+    public static DistintaVersamento getIncassoBari() {
         
         String riepilogo4="7000063470009171006              999000000070000000447500000000400000001750000000003000000027250                                                                                                        \n";
         Set<String> versamenti4= new HashSet<>();
@@ -87,15 +87,15 @@ public class SmdHelper {
         return Smd.generaIncasso(versamenti4, riepilogo4);
     }
 
-    public static Incasso getIncassoByImportoAndCodeLine(BigDecimal importo,String codeLine) {
-        Incasso incasso5 = new Incasso();
+    public static DistintaVersamento getIncassoByImportoAndCodeLine(BigDecimal importo,String codeLine) {
+        DistintaVersamento incasso5 = new DistintaVersamento();
         incasso5.setCassa(Cassa.Contrassegno);
         incasso5.setCcp(Ccp.DUE);
         
         Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
         versamentoIncasso5.setCodeLine(codeLine);
         versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
-        incasso5.addVersamento(versamentoIncasso5);
+        incasso5.addItem(versamentoIncasso5);
         Smd.calcoloImportoIncasso(incasso5);
         return incasso5;
     }

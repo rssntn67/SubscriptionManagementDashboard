@@ -43,4 +43,6 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 	List<Storico> findByStatoStorico(StatoStorico statoStorico);
 	List<Storico> findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico statoStorico, Integer numero);
 
+	List<Storico> findByDestinatarioOrIntestatario(Anagrafica a, Anagrafica a2);
+
 }

@@ -10,7 +10,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.ui.SmdUI;
 
-@SpringUI(path=SmdUI.URL_RESET)
+@SpringUI(path=SmdUI.URL_RESET_PASS)
 @Title("Reset Password")
 public class ResetPassUI extends SmdUI {
 

@@ -55,8 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		reg = reg.antMatchers("/favicon.ico").permitAll();
 		reg = reg.antMatchers("/VAADIN/**").permitAll();
 		
-		reg = reg.antMatchers(SmdUI.URL_USER).hasAnyAuthority(Role.ADMIN.name());
-		reg = reg.antMatchers(SmdUI.URL_RESET).hasAnyAuthority(Role.USER.name(), Role.ADMIN.name());
+		reg = reg.antMatchers(SmdUI.URL_ADMIN_USER).hasAnyAuthority(Role.ADMIN.name());
+		reg = reg.antMatchers(SmdUI.URL_RESET_PASS).hasAnyAuthority(Role.USER.name(), Role.ADMIN.name());
 		reg = reg.antMatchers("/**").hasAnyAuthority(UserInfo.getRoleNames());
 		HttpSecurity sec = reg.and();
 

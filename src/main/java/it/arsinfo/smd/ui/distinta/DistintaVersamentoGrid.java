@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -9,21 +9,21 @@ import java.util.List;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class IncassoGrid extends SmdGrid<Incasso> {
+public class DistintaVersamentoGrid extends SmdGrid<DistintaVersamento> {
 
     private final FooterRow gridfooter;
-    public IncassoGrid(String gridname) {
-        super(new Grid<>(Incasso.class),gridname);
+    public DistintaVersamentoGrid(String gridname) {
+        super(new Grid<>(DistintaVersamento.class),gridname);
 
         setColumns("dettagli","importo","incassato","residuo", 
                    "dataContabile");
         gridfooter = getGrid().prependFooterRow();
     }
     @Override
-    public void populate(List<Incasso> items) {
+    public void populate(List<DistintaVersamento> items) {
         super.populate(items);
         gridfooter.getCell("dettagli").setHtml("<strong>"+getLastDate(items)+" Totali:</strong>");
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>");
@@ -31,35 +31,35 @@ public class IncassoGrid extends SmdGrid<Incasso> {
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduoTotale(items).toString()+"</b>");
     }
     
-    private BigDecimal getImportoTotale(List<Incasso> incassi) {
+    private BigDecimal getImportoTotale(List<DistintaVersamento> incassi) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Incasso incasso:incassi) {
+        for (DistintaVersamento incasso:incassi) {
             importo=importo.add(incasso.getImporto());
         }
         return importo;
     }
     
-    private BigDecimal getIncassatoTotale(List<Incasso> incassi) {
+    private BigDecimal getIncassatoTotale(List<DistintaVersamento> incassi) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Incasso incasso:incassi) {
+        for (DistintaVersamento incasso:incassi) {
             importo=importo.add(incasso.getIncassato());
         }
         return importo;
     }
 
-    private BigDecimal getResiduoTotale(List<Incasso> incassi) {
+    private BigDecimal getResiduoTotale(List<DistintaVersamento> incassi) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Incasso incasso:incassi) {
+        for (DistintaVersamento incasso:incassi) {
             importo=importo.add(incasso.getResiduo());
         }
         return importo;
     }
     
-    private String getLastDate(List<Incasso> incassi) {
+    private String getLastDate(List<DistintaVersamento> incassi) {
         DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
         Date datainizio=null;
         Date datafine=null;
-        for (Incasso incasso:incassi) {
+        for (DistintaVersamento incasso:incassi) {
             if (datafine == null) {
                 datafine = incasso.getDataContabile();
                 datainizio = incasso.getDataContabile();

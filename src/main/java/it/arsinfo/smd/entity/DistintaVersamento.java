@@ -29,7 +29,7 @@ import it.arsinfo.smd.service.Smd;
         @UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})
         })
 //create unique index ukh0do4klnqwq54yhlvtj5hjcbe on incasso (data_contabile, cassa, cuas, ccp);
-public class Incasso implements SmdEntity {
+public class DistintaVersamento implements SmdEntityItems<Versamento> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,7 @@ public class Incasso implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Ccp ccp = Ccp.UNO;
             
-    @OneToMany(mappedBy="incasso", orphanRemoval=true, fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="distintaVersamento", orphanRemoval=true, fetch=FetchType.LAZY)
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,7 +58,7 @@ public class Incasso implements SmdEntity {
     private int errati=0;
     private BigDecimal importoErrati=BigDecimal.ZERO;
     
-    public Incasso() {
+    public DistintaVersamento() {
         super();
     }
     public Long getId() {
@@ -78,12 +78,6 @@ public class Incasso implements SmdEntity {
     }
     public void setCcp(Ccp ccp) {
         this.ccp = ccp;
-    }
-    public List<Versamento> getVersamenti() {
-        return versamenti;
-    }
-    public void setVersamenti(List<Versamento> abbonamenti) {
-        this.versamenti = abbonamenti;
     }
     public Date getDataContabile() {
         return dataContabile;
@@ -136,21 +130,30 @@ public class Incasso implements SmdEntity {
         return sb.toString();
     }
 
-    public void addVersamento(Versamento versamento) {
+    @Override
+    public List<Versamento> getItems() {
+        return versamenti;
+    }
+    @Override
+    public void setItems(List<Versamento> abbonamenti) {
+        this.versamenti = abbonamenti;
+    }
+    @Override
+    public boolean addItem(Versamento versamento) {
         if (versamenti.contains(versamento)) {
             versamenti.remove(versamento);
         }
-        versamenti.add(versamento);
+        return versamenti.add(versamento);
     }
-    
-    public boolean deleteVersamento(Versamento versamento) {
+    @Override
+    public boolean removeItem(Versamento versamento) {
        return versamenti.remove(versamento);
     }
     
     @Override
     public String toString() {
         return String.format(
-         "Incasso[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f',incassato='%.2f', residuo='%.2f',esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
+         "Distinta[id=%d,cassa='%s', dettagli='%s', documenti='%d', importo='%.2f',incassato='%.2f', residuo='%.2f',esatti='%d', imp.esatti='%.2f', errati='%d', imp.errati='%.2f']",
                              id,cassa, getDettagli(), documenti, importo,incassato,getResiduo(),esatti,importoEsatti,errati,importoErrati);
     }
 
@@ -176,7 +179,6 @@ public class Incasso implements SmdEntity {
     }
     @Transient
     public String getHeader() {
-        return String.format("Incasso:'%s %s'", cassa, ccp.getCcp());
-    }
-    
+        return String.format("'%s %s'", cassa, ccp.getCcp());
+    }    
 }

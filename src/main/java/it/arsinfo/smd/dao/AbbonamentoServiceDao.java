@@ -20,4 +20,5 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 	void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception;
 	List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento);
 	List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t);
+	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 }

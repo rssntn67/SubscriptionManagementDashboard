@@ -15,6 +15,7 @@ import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
@@ -28,11 +29,32 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>("Conto Corrente", EnumSet.allOf(Ccp.class));
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Cassa", EnumSet.allOf(Cassa.class));
     private final ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Cuas", EnumSet.allOf(Cuas.class));
-  
+
+    private Anagrafica committente;
+
     private final VersamentoServiceDao dao;
-    public VersamentoSearch(VersamentoServiceDao dao) {
+    public VersamentoSearch(VersamentoServiceDao dao, List<Anagrafica> anagrafica) {
         super(dao);
         this.dao=dao;
+        
+        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
+        HorizontalLayout ana = new HorizontalLayout();
+        ana.addComponentsAndExpand(filterAnagrafica);
+        addComponents(ana);
+        
+        filterAnagrafica.setEmptySelectionAllowed(true);
+        filterAnagrafica.setPlaceholder("Cerca per Anagrafica");
+        filterAnagrafica.setItems(anagrafica);
+        filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
+        filterAnagrafica.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+            	committente = null;
+            } else {
+            	committente = e.getSelectedItem().get();
+            }
+            onChange();
+        });
+
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
         filterDataContabile.setDateFormat("yyyy-MM-dd");
 
@@ -93,25 +115,31 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
     	return filterAll(dao.searchBy(importo,dataContabile,dataPagamento,codeLine));
     }
      
-    public List<Versamento> filterAll(List<Versamento> versamenti) {
+    private List<Versamento> filterAll(List<Versamento> versamenti) {
         if (filterCassa.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCassa() == filterCassa.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCassa() == filterCassa.getValue())
                     .collect(Collectors.toList());
         }
         if (filterCcp.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCcp() == filterCcp.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCcp() == filterCcp.getValue())
                     .collect(Collectors.toList());
         }
         if (filterCuas.getValue() != null) {
             versamenti = versamenti
                     .stream()
-                    .filter(v -> v.getIncasso().getCuas() == filterCuas.getValue())
+                    .filter(v -> v.getDistintaVersamento().getCuas() == filterCuas.getValue())
                     .collect(Collectors.toList());
-        }
+        }       
+    	if (committente != null) {
+    		versamenti = versamenti
+    				.stream()
+    				.filter(v -> committente.equals(v.getCommittente()))
+    				.collect(Collectors.toList());
+    	}  
         return versamenti;
     }
 }

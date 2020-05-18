@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -53,7 +54,8 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -90,8 +92,8 @@ public class Smd {
     	return new File("/tmp/" + filename);
     }
     
-    public static List<Incasso> uploadIncasso(File file) throws Exception {
-    	List<Incasso> incassi = new ArrayList<>();
+    public static List<DistintaVersamento> uploadIncasso(File file) throws Exception {
+    	List<DistintaVersamento> incassi = new ArrayList<>();
         FileInputStream fstream;
         try {
             fstream = new FileInputStream(file);
@@ -857,8 +859,58 @@ public class Smd {
               );                        
         return op;        
     }
-            
-    public static BigDecimal incassa(Incasso incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+ 
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("incassa: Offerte null");
+            throw new UnsupportedOperationException("incassa: Abbonamento null");
+        }
+ 
+        BigDecimal incassato = BigDecimal.ZERO;
+    	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        offerte.setImporto(offerte.getImporto().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+    
+    public static void storna(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("storna: Offerte null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (offerte.getImporto().compareTo(importo) < 0) {
+            log.error("storna: incassato Offerte minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale Offerte minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        offerte.setImporto(offerte.getImporto().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
             throw new UnsupportedOperationException("incassa: Incasso null");
@@ -885,7 +937,7 @@ public class Smd {
         return incassato;
     }
 
-    public static void storna(Incasso incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
+    public static void storna(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("storna: Incasso null");
             throw new UnsupportedOperationException("storna: Incasso null");
@@ -926,9 +978,9 @@ public class Smd {
                 );
     }
     
-    public static Incasso generaIncasso(Set<String> versamenti,
+    public static DistintaVersamento generaIncasso(Set<String> versamenti,
             String riepilogo) throws UnsupportedOperationException {
-        final Incasso incasso = new Incasso();
+        final DistintaVersamento incasso = new DistintaVersamento();
         incasso.setCassa(Cassa.Ccp);
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
         incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
@@ -949,14 +1001,14 @@ public class Smd {
         log.info("generaIncasso: {}", incasso);
 
         versamenti.
-            forEach(s -> incasso.addVersamento(generateVersamento(incasso,s)));
+            forEach(s -> incasso.addItem(generateVersamento(incasso,s)));
         checkIncasso(incasso);
         return incasso;
     }
 
-    private static void checkIncasso(Incasso incasso) throws UnsupportedOperationException {
+    private static void checkIncasso(DistintaVersamento incasso) throws UnsupportedOperationException {
     	BigDecimal importoVersamenti = BigDecimal.ZERO;
-    	for (Versamento v: incasso.getVersamenti()) {
+    	for (Versamento v: incasso.getItems()) {
     		importoVersamenti = importoVersamenti.add(v.getImporto());
     	}
     	if (incasso.getImporto().subtract(importoVersamenti).signum() != 0 ) {
@@ -965,7 +1017,7 @@ public class Smd {
     	}
     }
     
-    private static Versamento generateVersamento(Incasso incasso,String value)
+    private static Versamento generateVersamento(DistintaVersamento incasso,String value)
             {
         Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
         versamento.setBobina(value.substring(0, 3));
@@ -985,26 +1037,46 @@ public class Smd {
         return versamento;
     }
         
-    public static void calcoloImportoIncasso(Incasso incasso) {
+    public static void calcoloImportoIncasso(DistintaVersamento incasso) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (Versamento versamento: incasso.getVersamenti()) {
+        for (Versamento versamento: incasso.getItems()) {
             importo=importo.add(versamento.getImporto());
         }
         incasso.setImporto(importo);
-        incasso.setDocumenti(incasso.getVersamenti().size());
+        incasso.setDocumenti(incasso.getItems().size());
         incasso.setErrati(0);
         incasso.setEsatti(incasso.getDocumenti());
         incasso.setImportoErrati(BigDecimal.ZERO);
         incasso.setImportoEsatti(incasso.getImporto());
     }
 
-    public static void calcoloImportoIncasso(Incasso incasso, List<Versamento> versamenti) {
+    public static void calcoloImportoIncasso(DistintaVersamento incasso, List<Versamento> versamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Versamento versamento: versamenti) {
             importo=importo.add(versamento.getImporto());
         }
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
+    }
+    
+    public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
+    	if (v != null && a != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
+        	v.setCommittente(a);    		
+    	}
+    	return v;
+    }
+    
+    public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
+        Map<Long,Anagrafica> anagraficaMap=anagrafica
+        		.stream()
+        		.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
+      	for (Versamento versamento: versamenti) {
+    		if (versamento.getCommittente() != null) {
+    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+    		}
+    	}
+      	return versamenti;
+
     }
     
 }

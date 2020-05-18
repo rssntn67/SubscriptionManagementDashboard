@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
@@ -27,7 +28,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 @Service
 public class StoricoServiceDaoImpl implements StoricoServiceDao {
@@ -173,14 +173,23 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         	log.warn("aggiornaCampagna: {} {} Storico nuovo con numero <= , non aggiornabile",campagna,storico);
             throw new UnsupportedOperationException(storico + "Errore impossibile aggiungere con Numero < 0.");                 
         }
-        if (storico.getId() == null ) {
+        RivistaAbbonamento ec = getByStorico(campagna, storico);
+        if (storico.getId() == null || (ec == null && storico.getNumero() > 0) ) {
         	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
+    		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
+    		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(a, campagna, storico.getCassa());
+    		if (abbonamento == null) {
+    			abbonamento = Smd.genera(campagna, a, storico);
+    		}
+    		Smd.genera(abbonamento, storico);
+            storico.setStatoStorico(StatoStorico.Valido);
             storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
-    		save(storico);
-    		genera(campagna, storico);
+            save(storico);
+            if (abbonamento.getItems().size() >= 1) {
+                smdService.genera(abbonamento);
+            }
         	return;
         }
-        RivistaAbbonamento ec = getByStorico(campagna, storico);
         if (storico.getNumero() <= 0 && ec  == null) {
         	log.info("aggiornaCampagna: not updating {} {}",storico,campagna);
         	return;
@@ -193,15 +202,6 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
             smdService.rimuovi(abbonamento,ec);
             return;
         } 
-        if (ec == null) {
-        	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
-            storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
-            storico.setStatoStorico(StatoStorico.Valido);
-    		save(storico);
-    		genera(campagna, storico);
-    		return;
-        	
-        }
         
     	log.info("aggiornaCampagna: aggiorna {} {}",storico,campagna);
         storico.addItem(getNotaOnUpdate(storico, campagna, "aggiorna",username));
@@ -211,17 +211,6 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
         smdService.aggiorna(ec);
     }
-
-	private void genera(Campagna campagna, Storico storico) throws Exception {
-		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
-		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(a, campagna, storico.getCassa());
-		if (abbonamento == null) {
-			abbonamento = Smd.genera(campagna, a, storico);
-		}
-		abbonamento.addItem(Smd.genera(abbonamento, storico));
-    	smdService.genera(abbonamento);
-
-	}
 	
     private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
         List<RivistaAbbonamento> ecs = 
@@ -266,6 +255,14 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
 	@Override
 	public List<Nota> findAllItems() {
 		return itemRepository.findAll();
+	}
+
+	@Override
+	public List<Storico> searchBy(Anagrafica a) throws Exception {
+    	if (a == null) {
+    		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");
+    	}
+		return repository.findByDestinatarioOrIntestatario(a,a);
 	}
 
 }

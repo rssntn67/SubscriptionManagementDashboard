@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
-import it.arsinfo.smd.dao.repository.NotaDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
+import it.arsinfo.smd.dao.repository.OffertaDao;
+import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
@@ -44,7 +44,9 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.Offerta;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -63,43 +65,43 @@ public class SmdServiceImpl implements SmdService {
     private SpesaSpedizioneDao spesaSpedizioneDao;
     
     @Autowired
-    AnagraficaDao anagraficaDao;
+    private StoricoDao storicoDao;
 
     @Autowired
-    StoricoDao storicoDao;
-
-    @Autowired
-    NotaDao notaDao;
-
-    @Autowired
-    AbbonamentoDao abbonamentoDao;
+    private AbbonamentoDao abbonamentoDao;
     
     @Autowired
-    RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
     
     @Autowired
-    SpedizioneDao spedizioneDao;
+    private SpedizioneDao spedizioneDao;
 
     @Autowired
-    SpedizioneItemDao spedizioneItemDao;
+    private SpedizioneItemDao spedizioneItemDao;
 
     @Autowired
-    OperazioneDao operazioneDao;
+    private OperazioneDao operazioneDao;
 
     @Autowired
-    OperazioneIncassoDao operazioneIncassoDao;
+    private OperazioneIncassoDao operazioneIncassoDao;
 
     @Autowired
-    PubblicazioneDao pubblicazioneDao;
+    private PubblicazioneDao pubblicazioneDao;
 
     @Autowired
-    VersamentoDao versamentoDao;
+    private VersamentoDao versamentoDao;
     
     @Autowired
-    IncassoDao incassoDao;
+    private DistintaVersamentoDao incassoDao;
 
     @Autowired
-    UserInfoDao userInfoDao;
+    private OffertaDao offertaDao;
+
+    @Autowired
+    private OfferteCumulateDao offerteDao;
+
+    @Autowired
+    private UserInfoDao userInfoDao;
 
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 
@@ -377,16 +379,17 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {
-        log.info("incassa: {}", user);
-        log.info("incassa: {}", abbonamento);
-        log.info("incassa: {}", versamento);
+        log.info("incassa: {}, {}, {}", user, abbonamento,versamento);
         if (versamento.getResiduo().signum() == 0) {
             log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {}", abbonamento,versamento,user);
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, abbonamento non incassato");            
         }
         
-        Incasso incasso = versamento.getIncasso();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);        
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
+        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
+        if (versamento.getCommittente() == null) {
+        	versamento.setCommittente(abbonamento.getIntestatario());
+        }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
         if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
@@ -427,18 +430,80 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
+    public void incassa(OfferteCumulate offerte, Versamento versamento, UserInfo user, Anagrafica committente) throws Exception {
+        log.info("incassa: {}, {}, {}", user, offerte,versamento);
+        if (versamento.getResiduo().signum() == 0) {
+            log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {}", offerte,versamento,user);
+            throw new UnsupportedOperationException("incassa: Versamento con residuo 0, offerta non incassata");            
+        }
+        
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
+        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte);    
+        if (versamento.getCommittente() == null) {
+        	versamento.setCommittente(committente);
+        }
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+        offerteDao.save(offerte);        
+        Offerta offerta = new Offerta();
+        offerta.setOfferteCumulate(offerte);
+        offerta.setVersamento(versamento);
+        offerta.setStatoOperazioneIncasso(StatoOperazioneIncasso.Incasso);
+        offerta.setOperatore(user.getUsername());
+        offerta.setCommittente(committente);
+        offerta.setImporto(incassato);
+        offertaDao.save(offerta);
+            
+        log.info("incassa: {}", offerta);
+    }
+    @Override
+    public void storna(Offerta offerta, UserInfo user) throws Exception {
+    	if (offerta.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
+            log.warn("storna: tipo Storno, non dissociabile {}", offerta);
+            throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
+    	}
+    	Versamento versamento = offerta.getVersamento();
+    	OfferteCumulate offerte = offerta.getOfferteCumulate();
+        if (versamento.getIncassato().signum() == 0) {
+            log.warn("storna: Versamento con Incasso 0, non dissociabile {}", offerta);
+            throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
+        }
+        DistintaVersamento distinta = versamento.getDistintaVersamento();
+        Smd.storna(distinta, versamento, offerte, offerta.getImporto());
+        offerta.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
+        offertaDao.save(offerta);
+
+        if (offerta.getCommittente().equals(versamento.getCommittente()) && versamento.getIncassato().signum() == 0) {
+        	versamento.setCommittente(null);
+        }
+        versamentoDao.save(versamento);
+        incassoDao.save(distinta);        
+        offerteDao.save(offerte); 
+        
+        Offerta operStorno = new Offerta();
+        operStorno.setOfferteCumulate(offerte);
+        operStorno.setVersamento(versamento);
+        operStorno.setStatoOperazioneIncasso(StatoOperazioneIncasso.Storno);
+        operStorno.setCommittente(offerta.getCommittente());
+        operStorno.setOperatore(user.getUsername());
+        operStorno.setImporto(offerta.getImporto());
+        offertaDao.save(operStorno);
+        log.info("storna: {}",operStorno );
+    }
+
+    @Override
     public void storna(OperazioneIncasso operazioneIncasso, UserInfo user, String description) throws Exception {
     	if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
-            log.warn("dissocia: tipo Storno, non dissociabile {}", operazioneIncasso);
+            log.warn("storna: tipo Storno, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
     	}
     	Versamento versamento = operazioneIncasso.getVersamento();
     	Abbonamento abbonamento = operazioneIncasso.getAbbonamento();
         if (versamento.getIncassato().signum() == 0) {
-            log.warn("dissocia: Versamento con Incasso 0, non dissociabile {}", operazioneIncasso);
+            log.warn("storna: Versamento con Incasso 0, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
-        Incasso incasso = versamento.getIncasso();
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
         Smd.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
         operazioneIncasso.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         operazioneIncassoDao.save(operazioneIncasso);
@@ -454,27 +519,8 @@ public class SmdServiceImpl implements SmdService {
         operStorno.setOperatore(user.getUsername());
         operStorno.setImporto(operazioneIncasso.getImporto());
         operazioneIncassoDao.save(operStorno);
-        log.info("dissocia: {}",operStorno );
+        log.info("storna: {}",operStorno );
 
-    }
-
-    @Override
-    public List<OperazioneIncasso> getAssociati(Versamento versamento) {
-    	return operazioneIncassoDao.findByVersamento(versamento);
-    }
-
-    @Override
-    public List<Abbonamento> getAssociabili(Versamento versamento) {
-        if (versamento == null || versamento.getResiduo().signum() == 0) {
-        	return new ArrayList<>();
-        }
-
-        return abbonamentoDao
-        .findAll()
-        .stream()
-        .filter(abb -> 
-            abb.getResiduo().signum() > 0 
-            ).collect(Collectors.toList());       
     }
 
     @Override
@@ -542,137 +588,5 @@ public class SmdServiceImpl implements SmdService {
         }
         return spedizioni;
     }
-
-    @Override
-    public void save(Incasso incasso) {
-        boolean alreadyPersisted = incasso.getId() != null;
-    	List<Incasso> found = incassoDao
-        .findByDataContabile(incasso.getDataContabile())
-        .stream()
-        .filter(inc -> 
-           inc.getCassa() == incasso.getCassa() 
-        && inc.getCuas() == incasso.getCuas() 
-        && inc.getCcp() == incasso.getCcp())
-        .collect(Collectors.toList());
-        if (!found.isEmpty()) {
-        	log.warn("save: Incasso esistente, {} ", incasso);
-            throw new UnsupportedOperationException("save: Non posso Salvare: Incasso esistente ");
-        }
-        incassoDao.save(incasso);
-        log.info("save: {}", incasso);
-        if (alreadyPersisted) {
-        	return;
-        }
-        incasso.getVersamenti().forEach(vers -> {
-        	versamentoDao.save(vers);
-            log.info("save: {}", vers);
-        	
-        });
-    }
-
-    @Override
-    public void save(Versamento versamento) throws Exception {
-        log.info("save: {}", versamento);
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
-        	log.warn("save: Versamento: incasso non esistente, {} ", versamento);
-            throw new UnsupportedOperationException("save: Versamento: incasso non esistente" );
-        	
-    	}
-    	if (versamento.getIncassato().signum() != 0) {
-        	log.warn("save: Versamento: non posso aggiornare un versamento incassato, {} ", versamento);
-            throw new UnsupportedOperationException("save: Versamento: non posso aggiornare un versamento incassato");
-        }
-        versamentoDao.save(versamento);
-        Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
-        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByIncasso(incasso));
-        incassoDao.save(incasso);        
-    }
-
-    @Override
-    public void delete(Versamento versamento) throws Exception{
-        log.info("delete: {}", versamento);
-        if (versamento.getIncasso() == null || versamento.getIncasso().getId() == null ) {
-        	log.warn("delete: Versamento: incasso non esistente, {} ", versamento);
-            throw new UnsupportedOperationException("delete: Versamento: incasso non esistente" );
-        	
-    	}
-    	if (versamento.getIncassato().signum() != 0) {
-        	log.warn("delete: Versamento: non posso cancellare un versamento incassato, {} ", versamento);
-            throw new UnsupportedOperationException("delete: Versamento: non posso calcellare un versamento incassato");
-        }
-        versamentoDao.delete(versamento);
-    	Incasso incasso = incassoDao.findById(versamento.getIncasso().getId()).get();
-        List<Versamento> versamenti = versamentoDao.findByIncasso(incasso);
-        if (versamenti.size() == 0) {
-            incassoDao.delete(incasso);
-        } else {
-            Smd.calcoloImportoIncasso(incasso,versamenti);
-            incassoDao.save(incasso);
-        }                
-    }
-
-    @Override
-    public void incassa(Abbonamento abbonamento, BigDecimal incassato, UserInfo user) throws Exception {
-
-        Incasso incasso = 
-                incassoDao
-                    .findByDataContabileAndCassaAndCcpAndCuas(
-                                abbonamento.getDataContabile(),
-                                abbonamento.getCassa(),
-                                abbonamento.getCcp(),
-                                abbonamento.getCuas()
-                            );
-        if (incasso == null) {
-            incasso = new Incasso();
-            incasso.setDataContabile(abbonamento.getDataContabile());
-            incasso.setCassa(abbonamento.getCassa());
-            incasso.setCcp(abbonamento.getCcp());
-            incasso.setCuas(abbonamento.getCuas());
-            incassoDao.save(incasso);
-        }
-        Versamento versamento = new Versamento(incasso,incassato);
-        versamento.setCodeLine(abbonamento.getCodeLine());
-        versamento.setProgressivo(abbonamento.getProgressivo());
-        versamento.setDataPagamento(abbonamento.getDataPagamento());
-        versamentoDao.save(versamento);
-        Smd.calcoloImportoIncasso(incasso,
-                                  versamentoDao.findByIncasso(incasso));
-        incassoDao.save(incasso);
-        incassa(abbonamento, versamento,user,"Incassato da Abbonamento");
-    }
-    
-    @Override
-    public void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception {
-    	for (Incasso incasso:incassi) {
-    		if (incasso.getResiduo().signum() == 0) {
-    			continue;
-    		}
-    		for (Versamento v: versamentoDao.findByIncasso(incasso)) {
-    			if (v.getResiduo().signum() == 0) {
-    				continue;
-    			}
-    			final Abbonamento abbonamento = abbonamentoDao.findByCodeLine(v.getCodeLine());
-    			if (abbonamento != null && abbonamento.getResiduo().signum() > 0 ) {
-    				incassa(abbonamento,v,user,"Incassato con CodeLine");
-    			}
-    		}
-		}
-
-    }
-
-	@Override
-	public void associaCommittente(Anagrafica committente, Versamento versamento) {
-		versamento.setCommittente(committente);
-		versamentoDao.save(versamento);
-	}
-
-	@Override
-	public void rimuoviCommittente(Versamento versamento) {
-		if (versamento.getCommittente() == null) {
-			return;
-		}
-		versamento.setCommittente(null);
-		versamentoDao.save(versamento);		
-	}
 
 }

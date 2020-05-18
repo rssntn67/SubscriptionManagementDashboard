@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.upload;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -13,7 +13,7 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
@@ -26,7 +26,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
 
     private File file;
         
-    private final List<Incasso> incassi = new ArrayList<>();
+    private final List<DistintaVersamento> incassi = new ArrayList<>();
 
     public IncassoUpload(String caption) {
         super();
@@ -69,7 +69,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
         }
     }
 
-    public List<Incasso> getIncassi() {
+    public List<DistintaVersamento> getIncassi() {
         return incassi;
     }
 

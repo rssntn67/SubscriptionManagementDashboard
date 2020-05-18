@@ -102,6 +102,11 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		public Nota getNotaOnSave(Storico storico, String username) {
 			return dao.getNotaOnSave(storico, username);
 		}
+
+		@Override
+		public List<Storico> searchBy(Anagrafica tValue) throws Exception {
+			return dao.searchBy(tValue);
+		}
 		
 	}
     /**

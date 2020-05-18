@@ -41,7 +41,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
@@ -1176,7 +1176,7 @@ public class SmdUnitTests {
     public void testIncassaEsatto() throws Exception {
     	Abbonamento abbonamento = new Abbonamento();
     	abbonamento.setImporto(new BigDecimal("200.00"));
-    	Incasso incasso = new Incasso();
+    	DistintaVersamento incasso = new DistintaVersamento();
     	incasso.setImporto(new BigDecimal("200.00"));
     	
     	Versamento versamento1 = new Versamento(incasso);
@@ -1200,7 +1200,7 @@ public class SmdUnitTests {
     public void testIncassaMultipli() throws Exception {
     	Abbonamento abbonamento = new Abbonamento();
     	abbonamento.setImporto(new BigDecimal("200.00"));
-    	Incasso incasso = new Incasso();
+    	DistintaVersamento incasso = new DistintaVersamento();
     	incasso.setImporto(new BigDecimal("215.00"));
     	
     	Versamento versamento1 = new Versamento(incasso);
@@ -1258,7 +1258,7 @@ public class SmdUnitTests {
     	Abbonamento abbonamento2 = new Abbonamento();
     	abbonamento2.setImporto(new BigDecimal("225.00"));
 
-    	Incasso incasso = new Incasso();
+    	DistintaVersamento incasso = new DistintaVersamento();
     	
     	Versamento versamento1 = new Versamento(incasso);
     	versamento1.setImporto(new BigDecimal("100.00"));

@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incassa;
+package it.arsinfo.smd.ui.incassa.abbonamento;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ import it.arsinfo.smd.ui.abbonamento.AbbonamentoSearch;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.vaadin.SmdButtonTextField;
 
-@SpringUI(path = SmdUI.URL_INCASSA_ABB)
+@SpringUI(path = SmdUI.URL_INCASSA_ABBONAMENTI)
 @Title("Incassa da Abbonamenti ADP")
 public class IncassaAbbonamentoUI extends SmdUI {
 
@@ -49,7 +49,7 @@ public class IncassaAbbonamentoUI extends SmdUI {
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica) {
         	@Override
         	public List<Abbonamento> find() {
-        		return super.find().stream().filter(a -> a.getTotale().longValue() > 0).collect(Collectors.toList());
+        		return super.find().stream().filter(a -> a.getResiduo().signum() > 0).collect(Collectors.toList());
         	}; 
         };
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
@@ -104,6 +104,7 @@ public class IncassaAbbonamentoUI extends SmdUI {
 	        } catch (Exception e) {
 	            Notification.show(e.getMessage(),
 	                              Notification.Type.ERROR_MESSAGE);
+	            return;
 	        }
         	incassa.setVisible(false);
         	editor.edit(editor.get());

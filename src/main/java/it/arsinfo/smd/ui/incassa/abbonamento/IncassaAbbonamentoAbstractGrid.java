@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incassa;
+package it.arsinfo.smd.ui.incassa.abbonamento;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -12,35 +12,27 @@ import com.vaadin.ui.components.grid.FooterRow;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class IncassaAbbonamentoGrid extends SmdGrid<OperazioneIncasso> {
+public abstract class IncassaAbbonamentoAbstractGrid extends SmdGrid<OperazioneIncasso> {
 
-    private final FooterRow gridfooter;
-    public IncassaAbbonamentoGrid(String gridname) {
+    private FooterRow gridfooter;
+
+    public IncassaAbbonamentoAbstractGrid(String gridname) {
         super(new Grid<>(OperazioneIncasso.class),gridname);
-        setColumns(                  
-                "operatore",
-                "statoOperazioneIncasso",
-                "importo",
-                "versamento.codeLine",
-                "versamento.progressivo",
-                "versamento.dataContabile",
-                "versamento.importo",
-                "versamento.incassato"
-		);
-        setColumnCaption("versamento.importo", "importo ver.");
-        setColumnCaption("versamento.incassato", "incassato ver.");
-        gridfooter = getGrid().prependFooterRow();
     }
-
+    
+    public void prependGridFooter() {
+    	gridfooter = getGrid().prependFooterRow();
+    }
+    
     @Override
     public void populate(List<OperazioneIncasso> items) {
         super.populate(items);
         gridfooter.getCell("operatore").setHtml("<strong>"+getLastDate(items)+"</strong>");
         gridfooter.getCell("statoOperazioneIncasso").setHtml("<strong>Totale Incassato:</strong>");
         gridfooter.getCell("importo").setHtml("<b>"+getImportoTotale(items).toString()+"</b>"); 
-    }
-    
-    private BigDecimal getImportoTotale(List<OperazioneIncasso> incassi) {
+    }    
+
+    public BigDecimal getImportoTotale(List<OperazioneIncasso> incassi) {
         BigDecimal importo = BigDecimal.ZERO;
         for (OperazioneIncasso incasso:incassi) {
         	switch (incasso.getStatoOperazioneIncasso()) {
@@ -54,7 +46,7 @@ public class IncassaAbbonamentoGrid extends SmdGrid<OperazioneIncasso> {
         return importo;
     }
         
-    private String getLastDate(List<OperazioneIncasso> incassi) {
+    public String getLastDate(List<OperazioneIncasso> incassi) {
         DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
         Date datainizio=null;
         Date datafine=null;

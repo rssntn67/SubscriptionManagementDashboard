@@ -11,11 +11,12 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.IncassoDao;
+import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
@@ -34,13 +35,12 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdService;
 
 
 public class SmdLoadSampleData implements Runnable {
@@ -57,7 +57,7 @@ public class SmdLoadSampleData implements Runnable {
     private final SpedizioneItemDao spedizioneItemDao;
     protected final StoricoDao storicoDao;
     protected final NotaDao notaDao;
-    private final IncassoDao incassoDao; 
+    private final DistintaVersamentoDao incassoDao; 
     private final VersamentoDao versamentoDao;
     
     protected Pubblicazione messaggio;
@@ -103,7 +103,7 @@ public class SmdLoadSampleData implements Runnable {
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 
-            IncassoDao incassoDao, 
+            DistintaVersamentoDao incassoDao, 
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao
     ) {
@@ -445,9 +445,9 @@ public class SmdLoadSampleData implements Runnable {
         });
     }
 
-    private void save(Incasso incasso) {
+    private void save(DistintaVersamento incasso) {
         incassoDao.save(incasso);
-        incasso.getVersamenti().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
     }
     
     private void saveIncassi() {
@@ -469,7 +469,7 @@ public class SmdLoadSampleData implements Runnable {
         
         
         Abbonamento abbonamentoDp = abbonamentoDao.findByIntestatario(davidePalma).iterator().next();
-        Incasso incasso = SmdHelper.getIncassoByImportoAndCodeLine(abbonamentoDp.getTotale(), abbonamentoDp.getCodeLine());
+        DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abbonamentoDp.getTotale(), abbonamentoDp.getCodeLine());
         save(incasso);                   
     }   
             

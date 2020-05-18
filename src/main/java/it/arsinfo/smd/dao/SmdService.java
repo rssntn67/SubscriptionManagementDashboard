@@ -1,6 +1,5 @@
-package it.arsinfo.smd.service;
+package it.arsinfo.smd.dao;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -15,7 +14,8 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Incasso;
+import it.arsinfo.smd.entity.Offerta;
+import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -50,22 +50,15 @@ public interface SmdService {
 
     List<SpedizioniereItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione, StatoSpedizione statoSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
-
-    List<OperazioneIncasso> getAssociati(Versamento versamento);
-    List<Abbonamento> getAssociabili(Versamento versamento);
-    
-    void save(Incasso incasso) throws Exception;
-    void save(Versamento versamento) throws Exception;
-    void delete(Versamento versamento) throws Exception;
-    
+        
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
-    void incassa(Abbonamento abbonamento, BigDecimal incassato,UserInfo user) throws Exception;
-    void incassaCodeLine(List<Incasso> incassi,UserInfo user) throws Exception;
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
+
+    void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
     
-    void associaCommittente(Anagrafica committente, Versamento versamento);
-    void rimuoviCommittente(Versamento versamento);
     SpedizioniereItem genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
+
 
 }

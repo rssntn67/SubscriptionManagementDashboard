@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incasso;
+package it.arsinfo.smd.ui.distinta;
 
 import java.util.EnumSet;
 
@@ -10,7 +10,6 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Cassa;
@@ -18,9 +17,9 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
-public class VersamentoEditor extends SmdRepositoryDaoEditor<Versamento> {
+public class VersamentoEditor extends SmdItemEditor<Versamento> {
 
     private final TextField  importo = new TextField("Importo");
     private final TextField  incassato = new TextField("Incassato");
@@ -48,8 +47,8 @@ public class VersamentoEditor extends SmdRepositoryDaoEditor<Versamento> {
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
 
-    public VersamentoEditor(VersamentoDao versamentoDao) {
-        super(versamentoDao, new Binder<>(Versamento.class));
+    public VersamentoEditor() {
+        super(new Binder<>(Versamento.class));
 
         ccp.setItemCaptionGenerator(Ccp::getCcp);
         ccp.setReadOnly(true);
@@ -113,13 +112,10 @@ public class VersamentoEditor extends SmdRepositoryDaoEditor<Versamento> {
         
     	boolean inn = versamento.getIncassato().signum() == 0;
         importo.setReadOnly(!inn);            
-        getDelete().setEnabled(inn);
-        getSave().setEnabled(inn);
-        getCancel().setEnabled(inn);
         
-        ccp.setValue(versamento.getIncasso().getCcp());
-        cuas.setValue(versamento.getIncasso().getCuas());
-        cassa.setValue(versamento.getIncasso().getCassa());
+        ccp.setValue(versamento.getDistintaVersamento().getCcp());
+        cuas.setValue(versamento.getDistintaVersamento().getCuas());
+        cassa.setValue(versamento.getDistintaVersamento().getCassa());
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         
