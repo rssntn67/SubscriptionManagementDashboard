@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -33,14 +34,18 @@ public class OperazioneSospendi implements SmdEntity {
     private Pubblicazione pubblicazione;
         
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Anno anno = Anno.getAnnoCorrente();
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Mese meseSpedizione = Mese.getMeseCorrente();
 
+    @Column(nullable = false)
     private String operatore="admin";
     
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private final Date data = new Date();
 
 
@@ -103,7 +108,7 @@ public class OperazioneSospendi implements SmdEntity {
 	@Override
 	public String getHeader() {
 		return pubblicazione.getNome() + " " + anno
-				+ " " + meseSpedizione + " " + operatore + " " + data;
+				+ " " + meseSpedizione;
 	}
 
 }
