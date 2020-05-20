@@ -289,7 +289,7 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
     		throw new UnsupportedOperationException("Anno deve essere valorizzato");
     	}
     	SimpleDateFormat dateFor = new SimpleDateFormat("dd/MM/yyyy");
-    	Date start = dateFor.parse("01/01/"+anno.getAnnoAsString());
+    	Date start = dateFor.parse("01/01/"+Anno.getAnnoPrecedente(anno).getAnnoAsString());
     	Date end = dateFor.parse("01/01/"+Anno.getAnnoSuccessivo(anno).getAnnoAsString());
 		List<Versamento> versamenti = repository.findByCommittente(tValue)
 				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))
