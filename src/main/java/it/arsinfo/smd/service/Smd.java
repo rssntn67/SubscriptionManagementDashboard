@@ -860,7 +860,7 @@ public class Smd {
         return op;        
     }
  
-    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte) throws UnsupportedOperationException {
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
             throw new UnsupportedOperationException("incassa: Incasso null");
@@ -874,9 +874,10 @@ public class Smd {
             throw new UnsupportedOperationException("incassa: Abbonamento null");
         }
  
-        BigDecimal incassato = BigDecimal.ZERO;
-    	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
-        
+        BigDecimal incassato = importo;
+        if (importo.compareTo(versamento.getResiduo()) > 0) {
+        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        }        
         versamento.setIncassato(versamento.getIncassato().add(incassato));
         offerte.setImporto(offerte.getImporto().add(incassato));
         incasso.setIncassato(incasso.getIncassato().add(incassato));

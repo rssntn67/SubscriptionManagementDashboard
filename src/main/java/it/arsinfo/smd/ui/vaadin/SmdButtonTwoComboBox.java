@@ -6,17 +6,27 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextField;
 
 public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
 
     private final Button button;
     private final ComboBox<T> tComboBox;
     private final ComboBox<S> sComboBox;
+    private final TextField textField;
     private T t;
     private S s;
+    private String value;
 
     public SmdButtonTwoComboBox(String placeholder, List<T> tItems, List<S> sItems,String bcaption,VaadinIcons bicon) {
-        tComboBox = new ComboBox<>();
+
+        textField = new TextField();
+        textField.setPlaceholder(placeholder);
+        textField.addValueChangeListener(e -> {
+            value = e.getValue();
+        });
+
+    	tComboBox = new ComboBox<>();
         tComboBox.setPlaceholder(placeholder);
         tComboBox.setItems(tItems);
         tComboBox.addValueChangeListener(e -> {
@@ -33,7 +43,7 @@ public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
         button = new Button(bcaption, bicon);
         button.addClickListener(e -> onChange());
 
-        setComponents(new HorizontalLayout(button,tComboBox,sComboBox));
+        setComponents(new HorizontalLayout(button,textField,tComboBox,sComboBox));
 
     }
     
@@ -55,6 +65,14 @@ public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
     
     public S getSValue() {
         return s;
+    }
+
+    public TextField getTextField() {
+        return textField;
+    }
+    
+    public String getValue() {
+        return value;
     }
 
 

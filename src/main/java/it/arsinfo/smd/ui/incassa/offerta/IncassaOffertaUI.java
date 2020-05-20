@@ -52,18 +52,18 @@ public class IncassaOffertaUI extends SmdUI {
         offerteGrid.getGrid().setHeight("300px");
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKSPACE);
 
-        SmdButtonTwoComboBox<Anagrafica,Anno> incassaOfferta = 
-        		new SmdButtonTwoComboBox<>("Selezionare Anno e Committente", 
-        				anagrafica, Arrays.asList(Anno.values()),
+        SmdButtonTwoComboBox<Anno,Anagrafica> incassaOfferta = 
+        		new SmdButtonTwoComboBox<>("Importo Anno e Committente", 
+        				 Arrays.asList(Anno.values()),anagrafica,
         				"Incassa Offerta", VaadinIcons.ABACUS);
         incassaOfferta.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         incassaOfferta.getButton().setWidth("300px");
-        incassaOfferta.getTComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
-        incassaOfferta.getTComboBox().setEmptySelectionAllowed(false);
-        incassaOfferta.getTComboBox().setWidth("1000px");;
-        incassaOfferta.getSComboBox().setItemCaptionGenerator(Anno::getAnnoAsString);
+        incassaOfferta.getSComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
         incassaOfferta.getSComboBox().setEmptySelectionAllowed(false);
-        incassaOfferta.getSComboBox().setValue(Anno.getAnnoCorrente());
+        incassaOfferta.getSComboBox().setWidth("800px");;
+        incassaOfferta.getTComboBox().setItemCaptionGenerator(Anno::getAnnoAsString);
+        incassaOfferta.getTComboBox().setEmptySelectionAllowed(false);
+        incassaOfferta.getTComboBox().setValue(Anno.getAnnoCorrente());
         incassaOfferta.setVisible(false);
                 
         addSmdComponents(search,indietro,grid,incassaOfferta,offerteGrid);
@@ -85,7 +85,7 @@ public class IncassaOffertaUI extends SmdUI {
     				incassaOfferta.setVisible(true);
                 }
                 if (grid.getSelected().getCommittente() != null) {
-                	incassaOfferta.getTComboBox().setValue(dao.findCommittente(grid.getSelected()));
+                	incassaOfferta.getSComboBox().setValue(dao.findCommittente(grid.getSelected()));
                 }
                 indietro.setVisible(true);
             } else {
@@ -95,7 +95,7 @@ public class IncassaOffertaUI extends SmdUI {
         
         incassaOfferta.setChangeHandler(() -> {
         	try {
-				dao.incassa(incassaOfferta.getSValue(), grid.getSelected(), getLoggedInUser(), incassaOfferta.getTValue());
+				dao.incassa(incassaOfferta.getValue(),incassaOfferta.getTValue(), grid.getSelected(), getLoggedInUser(), incassaOfferta.getSValue());
                 offerteGrid.populate(dao.getOfferte(grid.getSelected()));
 			} catch (Exception e) {
                 Notification.show(e.getMessage(),

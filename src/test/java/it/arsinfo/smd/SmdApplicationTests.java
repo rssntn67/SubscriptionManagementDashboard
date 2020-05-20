@@ -1683,11 +1683,11 @@ public class SmdApplicationTests {
         
         assertEquals(0.00, offerte.getImporto().doubleValue(),0);
         
-        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte);
-        assertEquals(15.00, offerte.getImporto().doubleValue(),0);
-        assertEquals(15.00, incassato.doubleValue(),0);
-        assertEquals(15.00, versamento.getIncassato().doubleValue(),0);
-        assertEquals(15.00, incasso.getIncassato().doubleValue(),0);
+        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte,new BigDecimal(10));
+        assertEquals(10.00, offerte.getImporto().doubleValue(),0);
+        assertEquals(10.00, incassato.doubleValue(),0);
+        assertEquals(10.00, versamento.getIncassato().doubleValue(),0);
+        assertEquals(10.00, incasso.getIncassato().doubleValue(),0);
 
         offerteCumulateDao.save(offerte);
         versamentoDao.save(versamento);

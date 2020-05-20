@@ -23,7 +23,7 @@ public interface VersamentoServiceDao extends SmdServiceDao<Versamento> {
 	void incassa(Abbonamento abbonamento, Versamento selected, UserInfo loggedInUser, String description) throws Exception;
 
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
-	void incassa(Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void incassa(String importo,Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	Anagrafica findCommittente(Versamento selected);
 	List<Offerta> getOfferte(Versamento selected);
 	List<Versamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
