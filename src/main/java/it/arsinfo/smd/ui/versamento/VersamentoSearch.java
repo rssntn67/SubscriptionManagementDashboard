@@ -68,7 +68,7 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
         filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
         
         setComponents(new HorizontalLayout(filterCodeLine, filterImporto, filterDataPagamento,
-                                           filterDataContabile,filterCcp,filterCassa,filterCuas));
+                                           filterDataContabile,filterCcp,filterCassa,filterCuas),ana);
 
         filterDataContabile.addValueChangeListener(e -> {
             dataContabile = e.getValue();
