@@ -29,7 +29,7 @@ public class DistintaVersamentoSearch extends SmdSearch<DistintaVersamento> {
         this.dao = dao;
 
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
-        filterDataContabile.setDateFormat("yyyy-MM-dd");
+        filterDataContabile.setDateFormat("dd/MM/yyyy");
         ComboBox<Ccp> filterCcp = new ComboBox<Ccp>("Selezionare Conto Corrente",EnumSet.allOf(Ccp.class));
         ComboBox<Cassa> filterCassa = new ComboBox<Cassa>("Selezionare Cassa",EnumSet.allOf(Cassa.class));
         ComboBox<Cuas> filterCuas = new ComboBox<Cuas>("Selezionare C.U.A.S.",EnumSet.allOf(Cuas.class));

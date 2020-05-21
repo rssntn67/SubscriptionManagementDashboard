@@ -56,10 +56,10 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
         });
 
         DateField filterDataContabile = new DateField("Selezionare la data Contabile");
-        filterDataContabile.setDateFormat("yyyy-MM-dd");
+        filterDataContabile.setDateFormat("dd/MM/yyyy");
 
         DateField filterDataPagamento = new DateField("Selezionare la data Pagamento");
-        filterDataPagamento.setDateFormat("yyyy-MM-dd");
+        filterDataPagamento.setDateFormat("dd/MM/yyyy");
 
         TextField filterImporto = new TextField("Inserire Importo");
         filterImporto.setValueChangeMode(ValueChangeMode.LAZY);
