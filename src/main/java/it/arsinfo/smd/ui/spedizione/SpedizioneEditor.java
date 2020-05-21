@@ -142,8 +142,11 @@ public class SpedizioneEditor
     		subContent.addComponent(new Label(indirizzo.getSottoIntestazione()));
     	}
     	subContent.addComponent(new Label(indirizzo.getIndirizzo()));
-    	subContent.addComponent(new Label(indirizzo.getCap() + " " + indirizzo.getCitta()));
-    	subContent.addComponent(new Label(indirizzo.getProvincia().name()));
+    	subContent.addComponent(
+			new Label(
+				indirizzo.getCap() + " " + indirizzo.getCitta() + " ("+indirizzo.getProvincia().name()+")"
+			)
+		);
     	subContent.addComponent(new Label(indirizzo.getPaese().getNome()));
 
     	subWindow.setContent(subContent);
