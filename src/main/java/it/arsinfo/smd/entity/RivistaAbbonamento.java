@@ -123,7 +123,8 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("id=%d",id);
+        return String.format("' %d %s' %s]", 
+                numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
     }
 
     @Override

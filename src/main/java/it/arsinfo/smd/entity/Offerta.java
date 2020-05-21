@@ -83,7 +83,7 @@ public class Offerta implements SmdEntity {
 	}
     
 	public String getHeader() {
-		return String.format("%s %.2f", importo,committente.getIntestazione());
+		return String.format("%s:%s %.2f",offerteCumulate.getHeader(), committente.getHeader(),importo);
 	}
 
 	@Override

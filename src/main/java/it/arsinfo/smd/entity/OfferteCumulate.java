@@ -57,12 +57,12 @@ public class OfferteCumulate implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return String.format("%s %%.2f", anno.getAnnoAsString(),importo);
+		return String.format("%s %.2f", anno.getAnnoAsString(),importo);
 	}
 
 	@Override
 	public String toString() {
-		return "OfferteCumulate [id=" + id + ", anno=" + anno + ", importo=" + importo + "]";
+		return String.format("OfferteCumulate [id=%d %s %.2f]",id, anno.getAnnoAsString(),importo);
 	}
 
 }

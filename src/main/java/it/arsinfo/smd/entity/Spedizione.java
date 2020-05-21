@@ -60,11 +60,10 @@ public class Spedizione implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("abb.%s %s %s, dest. %s", 
-                abbonamento.getHeader(),
+        return String.format("'%s' %s %s", 
+                destinatario.getHeader(),
                 meseSpedizione,
-                annoSpedizione,
-                destinatario.getHeader()
+                annoSpedizione
                 );
     }
 

@@ -129,7 +129,7 @@ public class Storico implements SmdEntityItems<Nota> {
         return String.format("'%s' %d %s %s",
                 intestatario.getHeader(),
                 numero, 
-                pubblicazione.getNome(),
+                pubblicazione.getHeader(),
                 tipoAbbonamentoRivista);
     }
     
