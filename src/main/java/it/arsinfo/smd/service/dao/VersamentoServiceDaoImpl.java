@@ -252,7 +252,15 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
 	@Override
 	@Transactional
-	public void incassa(Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+	public void incassa(String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+		if (importo == null) {
+			throw new UnsupportedOperationException("Selezionare Importo");
+		}
+		try {
+			new BigDecimal(importo);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException("formato importo non corretto " + importo);
+		}
 		if (anno == null) {
 			throw new UnsupportedOperationException("Selezionare Anno");
 		}
@@ -272,7 +280,7 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 			offerteAnno.setAnno(anno);
 			offerteCumulateDao.save(offerteAnno);
 		}
-		smdService.incassa(offerteAnno,selected,loggedInUser, committente);				
+		smdService.incassa(new BigDecimal(importo),offerteAnno,selected,loggedInUser, committente);				
 	}
 
 	@Override
@@ -289,7 +297,7 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
     		throw new UnsupportedOperationException("Anno deve essere valorizzato");
     	}
     	SimpleDateFormat dateFor = new SimpleDateFormat("dd/MM/yyyy");
-    	Date start = dateFor.parse("01/01/"+anno.getAnnoAsString());
+    	Date start = dateFor.parse("01/01/"+Anno.getAnnoPrecedente(anno).getAnnoAsString());
     	Date end = dateFor.parse("01/01/"+Anno.getAnnoSuccessivo(anno).getAnnoAsString());
 		List<Versamento> versamenti = repository.findByCommittente(tValue)
 				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))

@@ -59,7 +59,6 @@ import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
@@ -657,7 +656,6 @@ public class SmdApplicationTests {
         storico1.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.OmaggioGesuiti);
         storico1.setInvioSpedizione(InvioSpedizione.AdpSede);
         storico1.setNumero(10);
-        storico1.setInvio(Invio.Intestatario);
         storicoDao.save(storico1);
         assertEquals(2, storicoDao.findAll().size());
         assertEquals(0, notaDao.findAll().size());
@@ -687,9 +685,6 @@ public class SmdApplicationTests {
         assertEquals(0, storicoDao.findByStatoStorico(StatoStorico.Valido).size());
         assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Nuovo).size());
         assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Sospeso).size());
-
-        assertEquals(1, storicoDao.findByInvio(Invio.Intestatario).size());
-        assertEquals(1, storicoDao.findByInvio(Invio.Destinatario).size());
         
         assertEquals(2, storicoDao.findByCassa(Cassa.Ccp).size());
         assertEquals(0, storicoDao.findByCassa(Cassa.Contrassegno).size());
@@ -752,7 +747,7 @@ public class SmdApplicationTests {
         Anagrafica matteo = SmdHelper.getMS();
         anagraficaDao.save(matteo);
         
-        Storico storico = SmdHelper.getStoricoBy(matteo, matteo, blocchetti, 100, Cassa.Carte, TipoAbbonamentoRivista.Sostenitore, Invio.Destinatario, InvioSpedizione.AdpSede);
+        Storico storico = SmdHelper.getStoricoBy(matteo, matteo, blocchetti, 100, Cassa.Carte, TipoAbbonamentoRivista.Sostenitore, InvioSpedizione.AdpSede);
         storicoDao.save(storico);
         notaDao.save(SmdHelper.getNota(storico));
         assertEquals(1, notaDao.findAll().size());
@@ -1717,11 +1712,11 @@ public class SmdApplicationTests {
         
         assertEquals(0.00, offerte.getImporto().doubleValue(),0);
         
-        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte);
-        assertEquals(15.00, offerte.getImporto().doubleValue(),0);
-        assertEquals(15.00, incassato.doubleValue(),0);
-        assertEquals(15.00, versamento.getIncassato().doubleValue(),0);
-        assertEquals(15.00, incasso.getIncassato().doubleValue(),0);
+        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte,new BigDecimal(10));
+        assertEquals(10.00, offerte.getImporto().doubleValue(),0);
+        assertEquals(10.00, incassato.doubleValue(),0);
+        assertEquals(10.00, versamento.getIncassato().doubleValue(),0);
+        assertEquals(10.00, incasso.getIncassato().doubleValue(),0);
 
         offerteCumulateDao.save(offerte);
         versamentoDao.save(versamento);

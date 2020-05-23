@@ -30,7 +30,6 @@ import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
@@ -359,22 +358,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public SpedizioniereItem genera(SpedizioneItem spedItem) {
-		if (spedItem.getSpedizione().getInvio() == Invio.Destinatario) {
-			return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());
-		} 
-		Anagrafica intestatario = abbonamentoDao.findById(spedItem.getSpedizione().getAbbonamento().getId()).get().getIntestatario();
-		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), intestatario, intestatario.getCo());
-	
+		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());	
     }
 
     @Override
     public Indirizzo genera(Spedizione spedizione) {
-		if (spedizione.getInvio() == Invio.Destinatario) {
-			return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());
-		} 
-		Anagrafica intestatario = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).get().getIntestatario();
-		return new Indirizzo(spedizione.getDestinatario(), intestatario, intestatario.getCo());
-	
+		return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());	
     }
 
     @Override
@@ -430,15 +419,23 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void incassa(OfferteCumulate offerte, Versamento versamento, UserInfo user, Anagrafica committente) throws Exception {
-        log.info("incassa: {}, {}, {}", user, offerte,versamento);
+    public void incassa(BigDecimal importo,OfferteCumulate offerte, Versamento versamento, UserInfo user, Anagrafica committente) throws Exception {
+        log.info("incassa: {} {}, {}, {}",importo, user, offerte,versamento);
+        if (importo == null) {
+            log.warn("incassa: Importo null, non incassabile {} {} {}", offerte,versamento,user);
+            throw new UnsupportedOperationException("incassa: I mporto null, offerta non incassata");            
+        }
         if (versamento.getResiduo().signum() == 0) {
-            log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {}", offerte,versamento,user);
+            log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {} {}",importo, offerte,versamento,user);
             throw new UnsupportedOperationException("incassa: Versamento con residuo 0, offerta non incassata");            
+        }
+        if (versamento.getResiduo().compareTo(importo) < 0) {
+            log.warn("incassa: Versamento con residuo minore di importo, non incassabile {} {} {} {}", importo,offerte,versamento,user);
+            throw new UnsupportedOperationException("incassa: Versamento con residuo minore di importo, offerta non incassata");            
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte);    
+        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte,importo);    
         if (versamento.getCommittente() == null) {
         	versamento.setCommittente(committente);
         }

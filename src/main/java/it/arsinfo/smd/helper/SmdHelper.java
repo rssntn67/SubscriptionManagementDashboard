@@ -11,7 +11,6 @@ import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Diocesi;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
@@ -684,7 +683,6 @@ public class SmdHelper {
             int numero, 
             Cassa cassa,
             TipoAbbonamentoRivista omaggio,
-            Invio invio,
             InvioSpedizione invioSpedizione
         ) {
         Storico storico = new Storico(); 
@@ -694,7 +692,6 @@ public class SmdHelper {
         storico.setNumero(numero);
         storico.setTipoAbbonamentoRivista(omaggio);
         storico.setCassa(cassa);
-        storico.setInvio(invio);
         storico.setInvioSpedizione(invioSpedizione);
         return storico;
     }

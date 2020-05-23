@@ -21,7 +21,7 @@ public class CampagnaItem
         @ManyToOne(optional=false,fetch=FetchType.EAGER)
         private Campagna campagna;
 
-        @ManyToOne(optional=false,fetch=FetchType.LAZY)
+        @ManyToOne(optional=false,fetch=FetchType.EAGER)
         private Pubblicazione pubblicazione;
         
         public Long getId() {
@@ -53,7 +53,8 @@ public class CampagnaItem
 
 		@Override
 		public String getHeader() {
-			return "Elemento Campagna";
+            return String.format("%s:%s", 
+                    campagna.getHeader(), pubblicazione.getHeader());
 		}
 
 }

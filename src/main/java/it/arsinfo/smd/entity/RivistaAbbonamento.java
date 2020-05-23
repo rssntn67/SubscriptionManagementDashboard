@@ -15,7 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -52,9 +51,6 @@ public class RivistaAbbonamento implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
     
-    @Enumerated(EnumType.STRING)
-    private Invio invio = Invio.Destinatario;
-
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
@@ -123,7 +119,8 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("id=%d",id);
+        return String.format("' %d %s' %s]", 
+                numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
     }
 
     @Override
@@ -194,14 +191,6 @@ public class RivistaAbbonamento implements SmdEntity {
 
     public void setDestinatario(Anagrafica destinatario) {
         this.destinatario = destinatario;
-    }
-
-    public Invio getInvio() {
-        return invio;
-    }
-
-    public void setInvio(Invio invio) {
-        this.invio = invio;
     }
 
     public InvioSpedizione getInvioSpedizione() {

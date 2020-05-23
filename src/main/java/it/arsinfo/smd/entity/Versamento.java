@@ -184,7 +184,6 @@ public class Versamento implements SmdEntity {
     	}
     	return "no";
     }
-    
     @Transient
     public String getNomeCommittente() {
     	if (committente != null) {
@@ -218,6 +217,7 @@ public class Versamento implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "Versamento";
+        return String.format("'%s' '%s':'%.2f'->'%.2f']",
+                progressivo,codeLine, importo,incassato);
 	}
 }

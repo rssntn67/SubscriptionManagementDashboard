@@ -1,5 +1,6 @@
 package it.arsinfo.smd.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -54,7 +55,7 @@ public interface SmdService {
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
 
-    void incassa(OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+    void incassa(BigDecimal importo, OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
     
     SpedizioniereItem genera(SpedizioneItem spedItem);

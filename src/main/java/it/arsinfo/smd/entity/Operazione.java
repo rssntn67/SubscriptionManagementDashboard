@@ -206,7 +206,11 @@ public class Operazione implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return "Operazione";
+        return String.format("%s %s %s '%s'", 
+                mese.getNomeBreve(),
+                anno.getAnno(),
+                pubblicazione.getHeader(),
+                statoOperazione);
 	}
 
 }

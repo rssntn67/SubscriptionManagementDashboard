@@ -45,8 +45,7 @@ public class CommittentiUI extends SmdUI {
         
         OperazioneIncassoGrid abbonamentiAssociatiGrid = new OperazioneIncassoGrid("Operazioni Incasso Associate");
 
-        grid.getGrid().setHeight("200px");
-        abbonamentiAssociatiGrid.getGrid().setHeight("200px");
+        abbonamentiAssociatiGrid.getGrid().setHeight("300px");
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKSPACE);
 
         SmdButtonComboBox<Anagrafica> associacommittente = 

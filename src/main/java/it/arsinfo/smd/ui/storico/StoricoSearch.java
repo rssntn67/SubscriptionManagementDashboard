@@ -9,7 +9,6 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -25,7 +24,6 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
     private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
 
@@ -41,7 +39,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
 
         HorizontalLayout anagr = new HorizontalLayout(filterPubblicazione);
         anagr.addComponentsAndExpand(filterIntestatario,filterDestinatario);
-        HorizontalLayout stat = new HorizontalLayout(filterCassa,filterStatoStorico,filterInvioSped,filterInvio);
+        HorizontalLayout stat = new HorizontalLayout(filterCassa,filterStatoStorico,filterInvioSped);
         stat.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         setComponents(anagr,stat);
 
@@ -91,10 +89,6 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterCassa.setPlaceholder("Cerca per Cassa");
         filterCassa.addSelectionListener(e ->onChange());
         filterCassa.setItems(EnumSet.allOf(Cassa.class));
-
-        filterInvio.setPlaceholder("Cerca per Invio");
-        filterInvio.addSelectionListener(e ->onChange());
-        filterInvio.setItems(EnumSet.allOf(Invio.class));
         
         filterInvioSped.setPlaceholder("Cerca per Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
@@ -119,9 +113,6 @@ public class StoricoSearch extends SmdSearch<Storico> {
         }
         if (filterCassa.getValue() != null) {
             storici=storici.stream().filter(s -> s.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      
-        }
-        if (filterInvio.getValue() != null) {
-            storici=storici.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      
         }
         if (filterInvioSped.getValue() != null) {
             storici=storici.stream().filter(s -> s.getInvioSpedizione() == filterInvioSped.getValue()).collect(Collectors.toList());      

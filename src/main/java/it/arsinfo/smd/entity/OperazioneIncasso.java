@@ -107,7 +107,10 @@ public class OperazioneIncasso implements SmdEntity {
 	}
     
 	public String getHeader() {
-		return "OperazioneIncasso";
+		return String.format("'%s' %.2f,'%td %tb %tY %tR %tZ']",
+                operatore,
+                importo,
+               data, data, data, data, data);
 	}
     
 }

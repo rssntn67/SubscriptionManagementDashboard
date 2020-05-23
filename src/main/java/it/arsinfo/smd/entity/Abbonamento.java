@@ -165,7 +165,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         
     @Transient
     public String getHeader() {
-        return String.format("Abbonamento:Edit:%s %s", getIntestazione(), anno.getAnnoAsString());
+        return String.format("%s:%s", anno.getAnnoAsString(),getIntestazione());
     }
     
     @Transient

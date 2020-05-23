@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.data.StatoStorico;
@@ -35,9 +34,6 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 	List<Storico> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
 
 	List<Storico> findByCassa(Cassa cassa);
-
-	List<Storico> findByInvio(Invio invio);
-
 	List<Storico> findByInvioSpedizione(InvioSpedizione invioSpedizione);
 
 	List<Storico> findByStatoStorico(StatoStorico statoStorico);

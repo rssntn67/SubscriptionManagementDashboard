@@ -11,7 +11,6 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -26,10 +25,8 @@ public class StoricoEditor
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
-    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>("Tipo",
-                                                                    EnumSet.allOf(TipoAbbonamentoRivista.class));
-    private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
-                                                              EnumSet.allOf(Invio.class));
+    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista = 
+    		new ComboBox<TipoAbbonamentoRivista>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
     private final TextField numero = new TextField("Numero");
@@ -63,7 +60,6 @@ public class StoricoEditor
 
         cassa.setEmptySelectionAllowed(false);
         tipoAbbonamentoRivista.setEmptySelectionAllowed(false);
-        invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
         statoStorico.setReadOnly(true);
@@ -83,7 +79,7 @@ public class StoricoEditor
         dati1HL.addComponents(statoStorico);
         
         HorizontalLayout dati2HL = new HorizontalLayout();
-        dati2HL.addComponents(cassa,invio,invioSpedizione);
+        dati2HL.addComponents(cassa,invioSpedizione);
 
         setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL);
          
@@ -102,7 +98,6 @@ public class StoricoEditor
         cassa.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
-        invio.setReadOnly(persisted);
         invioSpedizione.setReadOnly(persisted);
         
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
