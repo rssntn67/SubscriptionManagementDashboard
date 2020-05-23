@@ -93,8 +93,8 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                   storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0));
                                                            
         for (Abbonamento abb:abbonamenti) {
-            storicoDao.findByIntestatarioAndCassa(
-                  abb.getIntestatario(),abb.getCassa())
+            storicoDao.findByIntestatarioAndContrassegno(
+                  abb.getIntestatario(),abb.isContrassegno())
                 .forEach(storico -> {
                    Smd.genera(abb, storico);
                    storico.setStatoStorico(StatoStorico.Valido);

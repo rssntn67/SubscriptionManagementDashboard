@@ -25,7 +25,7 @@ public class StoricoGrid extends SmdGrid<Storico> {
         		"invioSpedizione",
         		"invio",
         		"statoStorico",
-        		"cassa");
+        		"contrassegno");
         setColumnCaption("captionPubblicazione", "Pubblicazione");
         setColumnCaption("invioSpedizione", "Sped.");
         setColumnCaption("statoStorico", "Stato");

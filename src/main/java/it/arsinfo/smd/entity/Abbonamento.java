@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,10 +32,10 @@ import it.arsinfo.smd.service.Smd;
 @Entity
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"codeLine"}),
-        @UniqueConstraint(columnNames = {"intestatario_id","campagna_id", "cassa"})
+        @UniqueConstraint(columnNames = {"intestatario_id","campagna_id","contrassegno"})
         })
 //create unique index abb_idx_codeline on abbonamento (codeline);
-//create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, cassa);
+//create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Id
@@ -64,7 +65,10 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
+    @Column(nullable=false)
+    private boolean contrassegno = false;
 
+    @Transient
     @Enumerated(EnumType.STRING)
     private Cassa cassa = Cassa.Ccp;
 
@@ -111,7 +115,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s , Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, %s, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
                                    id, 
                                    statoAbbonamento, 
                                    importo,
@@ -369,6 +373,14 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     
 	public boolean removeItem(RivistaAbbonamento ec) {
 		return estrattiConto.remove(ec);
+	}
+
+	public boolean isContrassegno() {
+		return contrassegno;
+	}
+
+	public void setContrassegno(boolean contrassegno) {
+		this.contrassegno = contrassegno;
 	}
 
 

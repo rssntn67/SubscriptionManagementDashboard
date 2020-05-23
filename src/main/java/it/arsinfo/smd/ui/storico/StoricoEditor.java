@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -31,7 +31,7 @@ public class StoricoEditor
             EnumSet.allOf(InvioSpedizione.class));
     private final TextField numero = new TextField("Numero");
     
-    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",EnumSet.allOf(Cassa.class));
+    private final CheckBox contrassegno = new CheckBox("Contrassegno");
 
     private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
     
@@ -58,7 +58,6 @@ public class StoricoEditor
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
 
-        cassa.setEmptySelectionAllowed(false);
         tipoAbbonamentoRivista.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
@@ -79,7 +78,7 @@ public class StoricoEditor
         dati1HL.addComponents(statoStorico);
         
         HorizontalLayout dati2HL = new HorizontalLayout();
-        dati2HL.addComponents(cassa,invioSpedizione);
+        dati2HL.addComponents(contrassegno,invioSpedizione);
 
         setComponents(getActions(),intestatarioHL,destinatarioHL,tipoECHL,dati1HL,dati2HL);
          
@@ -95,7 +94,7 @@ public class StoricoEditor
     @Override
     public void focus(boolean persisted, Storico obj) {
         intestatario.setReadOnly(persisted);
-        cassa.setReadOnly(persisted);
+        contrassegno.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
         invioSpedizione.setReadOnly(persisted);

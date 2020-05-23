@@ -422,21 +422,21 @@ public class SmdLoadSampleData implements Runnable {
     private void loadStorico() {
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Scontato,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,true,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,true,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,true,TipoAbbonamentoRivista.Scontato,InvioSpedizione.Spedizioniere));
 
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, Cassa.Ccp,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
 
-        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaGeneralizia,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaGeneralizia,InvioSpedizione.AdpSede));
         
-        storici.add(SmdHelper.getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, Cassa.Ccp,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,Cassa.Ccp,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));        
+        storici.add(SmdHelper.getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, false,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,false,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));        
 
         storici.stream().forEach(s -> {
             storicoDao.save(s);

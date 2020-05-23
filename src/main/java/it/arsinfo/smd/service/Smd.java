@@ -615,7 +615,7 @@ public class Smd {
                 break;
             }
         }
-        if (abb.getCassa() == Cassa.Contrassegno) {
+        if (abb.isContrassegno()) {
             abb.setSpese(abb.getSpese().add(contrassegno));                
         }
 
@@ -667,7 +667,7 @@ public class Smd {
             && 
             campagna.hasPubblicazione(storico.getPubblicazione())
             &&
-            abbonamento.getCassa() == storico.getCassa()
+            abbonamento.isContrassegno() == storico.isContrassegno()
                 ).forEach(storico ->
             genera(abbonamento, storico));
         return ecs;
@@ -684,41 +684,49 @@ public class Smd {
     
     public static List<Abbonamento> genera(Campagna campagna,Anagrafica a, List<Storico> storici) {
         final List<Abbonamento> abbonamenti = new ArrayList<>();
-        final EnumSet<Cassa> cassaStorico = EnumSet.noneOf(Cassa.class);
-        storici
-            .stream()
-            .filter(
-                    storico -> 
-                    	campagna.hasPubblicazione(storico.getPubblicazione()) 
-                        && storico.getIntestatario().equals(a) 
-                        && !cassaStorico.contains(storico.getCassa())
-                    )
-            .forEach(storico -> { 
-                cassaStorico.add(storico.getCassa());
-                try {
-                    abbonamenti.add(genera(campagna, a,storico));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-        });
+        for (Storico storico: storici) {
+        	if (
+            	campagna.hasPubblicazione(storico.getPubblicazione()) 
+            	&& storico.getIntestatario().equals(a) 
+                && storico.isContrassegno()
+            ) {
+    		    try {
+    	            abbonamenti.add(genera(campagna, a,true));
+    	            break;
+    	        } catch (Exception e) {
+    	            e.printStackTrace();
+    	        }        	
+        	}
+        }
+        for (Storico storico: storici) {
+        	if (
+            	campagna.hasPubblicazione(storico.getPubblicazione()) 
+            	&& storico.getIntestatario().equals(a) 
+                && !storico.isContrassegno()
+            ) {
+    		    try {
+    	            abbonamenti.add(genera(campagna, a,false));
+    	            break;
+    	        } catch (Exception e) {
+    	            e.printStackTrace();
+    	        }        	
+        	}
+        }
         return abbonamenti;
     }
 
-    public static Abbonamento genera(Campagna campagna, Anagrafica a,Storico storico) throws Exception {
+    public static Abbonamento genera(Campagna campagna, Anagrafica a,boolean contrassegno) throws Exception {
         if (campagna == null) {
             throw new Exception("genera: Null Campagna");
         }
         if (a == null) {
             throw new Exception("genera: Null Intestatario");
         }
-        if (!a.equals(storico.getIntestatario())) {
-            throw new Exception("genera: Mismatch intestatario storico anagrafica");
-        }
         Abbonamento abbonamento = new Abbonamento();
         abbonamento.setIntestatario(a);
         abbonamento.setCampagna(campagna);
         abbonamento.setAnno(campagna.getAnno());
-        abbonamento.setCassa(storico.getCassa());
+        abbonamento.setContrassegno(contrassegno);
         abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
         abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
         return abbonamento;

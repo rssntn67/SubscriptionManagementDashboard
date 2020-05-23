@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 
 import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -30,7 +30,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Anno anno;
     private Campagna campagna;
     private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>();
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
+    private final CheckBox filterContrassegno = new CheckBox("Contrassegno");
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
@@ -49,7 +49,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         
         TextField filterCodeLine = new TextField();
 
-        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterCassa);
+        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterContrassegno);
         anag.addComponentsAndExpand(filterAnagrafica);
         HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCodeLine,filterCampagna,filterCcp);
         tipo.addComponentsAndExpand(filterTipoAbbonamentoRivista);
@@ -114,9 +114,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             onChange();
         });
         
-        filterCassa.setPlaceholder("Cerca per Cassa");
-        filterCassa.setItems(EnumSet.allOf(Cassa.class));
-        filterCassa.addSelectionListener(e ->onChange());
+        filterContrassegno.addValueChangeListener(e -> onChange());
 
         filterStatoAbbonamento.setPlaceholder("Cerca per Stato");
         filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
@@ -143,8 +141,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         if (filterCcp.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCcp() == filterCcp.getValue()).collect(Collectors.toList());      
         }
-        if (filterCassa.getValue() != null) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      
+        if (filterContrassegno.getValue() != null) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.isContrassegno() == filterContrassegno.getValue()).collect(Collectors.toList());      
         }
         if (filterStatoAbbonamento.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getStatoAbbonamento() == filterStatoAbbonamento.getValue()).collect(Collectors.toList());      

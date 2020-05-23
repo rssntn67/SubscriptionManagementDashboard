@@ -4,11 +4,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.dao.StoricoServiceDao;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -23,9 +23,9 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private Anagrafica destinatario;
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
-    private final ComboBox<Cassa> filterCassa = new ComboBox<Cassa>();
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
+    private final CheckBox filterContrassegno = new CheckBox("Contrassegno");
 
     private final StoricoServiceDao dao;
     public StoricoSearch(StoricoServiceDao dao,
@@ -39,7 +39,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
 
         HorizontalLayout anagr = new HorizontalLayout(filterPubblicazione);
         anagr.addComponentsAndExpand(filterIntestatario,filterDestinatario);
-        HorizontalLayout stat = new HorizontalLayout(filterCassa,filterStatoStorico,filterInvioSped);
+        HorizontalLayout stat = new HorizontalLayout(filterStatoStorico,filterInvioSped,filterContrassegno);
         stat.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         setComponents(anagr,stat);
 
@@ -86,10 +86,6 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterTipoAbbonamentoRivista.addSelectionListener(e ->onChange());
         filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
 
-        filterCassa.setPlaceholder("Cerca per Cassa");
-        filterCassa.addSelectionListener(e ->onChange());
-        filterCassa.setItems(EnumSet.allOf(Cassa.class));
-        
         filterInvioSped.setPlaceholder("Cerca per Sped");
         filterInvioSped.addSelectionListener(e ->onChange());
         filterInvioSped.setItems(EnumSet.allOf(InvioSpedizione.class));
@@ -98,7 +94,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterStatoStorico.addSelectionListener(e ->onChange());
         filterStatoStorico.setItems(EnumSet.allOf(StatoStorico.class));
 
-        
+        filterContrassegno.addValueChangeListener(e -> onChange());
+
 
     }
 
@@ -111,16 +108,15 @@ public class StoricoSearch extends SmdSearch<Storico> {
         if (filterTipoAbbonamentoRivista.getValue() != null) {
             storici=storici.stream().filter(s -> s.getTipoAbbonamentoRivista() == filterTipoAbbonamentoRivista.getValue()).collect(Collectors.toList());      
         }
-        if (filterCassa.getValue() != null) {
-            storici=storici.stream().filter(s -> s.getCassa() == filterCassa.getValue()).collect(Collectors.toList());      
-        }
         if (filterInvioSped.getValue() != null) {
             storici=storici.stream().filter(s -> s.getInvioSpedizione() == filterInvioSped.getValue()).collect(Collectors.toList());      
         }
         if (filterStatoStorico.getValue() != null) {
             storici=storici.stream().filter(s -> s.getStatoStorico() == filterStatoStorico.getValue()).collect(Collectors.toList());      
         }
-        
+        if (filterContrassegno.getValue() != null) {
+            storici=storici.stream().filter(s -> s.isContrassegno() == filterContrassegno.getValue()).collect(Collectors.toList());              	
+        }
         return storici;
     }
 

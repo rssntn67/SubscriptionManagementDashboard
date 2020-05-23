@@ -3,6 +3,7 @@ package it.arsinfo.smd.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -28,24 +28,27 @@ public class Storico implements SmdEntityItems<Nota> {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica intestatario;
 
-    @Enumerated(EnumType.STRING)
-    private Cassa cassa = Cassa.Ccp;
-
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
 
     private Integer numero = 1;
 
+    @Column(nullable=false)
+    private boolean contrassegno = false;
+    
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
     
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
     
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private StatoStorico statoStorico = StatoStorico.Nuovo;
 
     @Transient
@@ -131,15 +134,14 @@ public class Storico implements SmdEntityItems<Nota> {
     
     @Override
     public String toString() {
-        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s, %s]",
+        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s contrassegno %b]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
                              intestatario.getIntestazione(), 
                              destinatario.getIntestazione(), 
                              tipoAbbonamentoRivista,
-                             statoStorico,
-                             cassa);
+                             statoStorico, contrassegno);
     }
 
     public TipoAbbonamentoRivista getTipoAbbonamentoRivista() {
@@ -148,14 +150,6 @@ public class Storico implements SmdEntityItems<Nota> {
 
     public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
         this.tipoAbbonamentoRivista = omaggio;
-    }
-
-    public Cassa getCassa() {
-        return cassa;
-    }
-
-    public void setCassa(Cassa cassa) {
-        this.cassa = cassa;
     }
 
     public StatoStorico getStatoStorico() {
@@ -193,6 +187,14 @@ public class Storico implements SmdEntityItems<Nota> {
 	public void setItems(List<Nota> items) {
 		this.items=items;
 		
+	}
+
+	public boolean isContrassegno() {
+		return contrassegno;
+	}
+
+	public void setContrassegno(boolean contrassegno) {
+		this.contrassegno = contrassegno;
 	}
     
 }

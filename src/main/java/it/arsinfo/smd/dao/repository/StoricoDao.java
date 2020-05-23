@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.data.StatoStorico;
@@ -20,7 +19,7 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 
 	List<Storico> findByPubblicazione(Pubblicazione pubblicazione);
 
-	List<Storico> findByIntestatarioAndCassa(Anagrafica intestatario, Cassa cassa);
+	List<Storico> findByIntestatarioAndContrassegno(Anagrafica intestatario, boolean contrassegno);
 
 	List<Storico> findByIntestatarioAndDestinatario(Anagrafica intestatario, Anagrafica destinatario);
 
@@ -33,7 +32,7 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 
 	List<Storico> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
 
-	List<Storico> findByCassa(Cassa cassa);
+	List<Storico> findByContrassegno(boolean contrassegno);
 	List<Storico> findByInvioSpedizione(InvioSpedizione invioSpedizione);
 
 	List<Storico> findByStatoStorico(StatoStorico statoStorico);

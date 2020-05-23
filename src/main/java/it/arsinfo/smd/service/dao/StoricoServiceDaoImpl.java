@@ -177,9 +177,9 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         if (storico.getId() == null || (ec == null && storico.getNumero() > 0) ) {
         	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
     		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
-    		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndCassa(a, campagna, storico.getCassa());
+    		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndContrassegno(a, campagna, storico.isContrassegno());
     		if (abbonamento == null) {
-    			abbonamento = Smd.genera(campagna, a, storico);
+    			abbonamento = Smd.genera(campagna, a, storico.isContrassegno());
     		}
     		Smd.genera(abbonamento, storico);
             storico.setStatoStorico(StatoStorico.Valido);

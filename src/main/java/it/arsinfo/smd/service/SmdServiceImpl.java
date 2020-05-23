@@ -235,10 +235,10 @@ public class SmdServiceImpl implements SmdService {
         rivistaAbbonamentoDao.save(rivistaAbbonamento);
         
         abbonamentoDao
-        .findByIntestatarioAndAnnoAndCassa(
+        .findByIntestatarioAndAnnoAndContrassegno(
                    abbonamento.getIntestatario(), 
                    Anno.getAnnoPrecedente(abbonamento.getAnno()), 
-                   abbonamento.getCassa()
+                   abbonamento.isContrassegno()
                )
         .forEach(abb -> 
         {

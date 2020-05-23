@@ -686,8 +686,8 @@ public class SmdApplicationTests {
         assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Nuovo).size());
         assertEquals(1, storicoDao.findByStatoStorico(StatoStorico.Sospeso).size());
         
-        assertEquals(2, storicoDao.findByCassa(Cassa.Ccp).size());
-        assertEquals(0, storicoDao.findByCassa(Cassa.Contrassegno).size());
+        assertEquals(2, storicoDao.findByContrassegno(false).size());
+        assertEquals(0, storicoDao.findByContrassegno(true).size());
         
         assertEquals(1, storicoDao.findByInvioSpedizione(InvioSpedizione.AdpSede).size());
         assertEquals(1, storicoDao.findByInvioSpedizione(InvioSpedizione.Spedizioniere).size());
@@ -747,7 +747,7 @@ public class SmdApplicationTests {
         Anagrafica matteo = SmdHelper.getMS();
         anagraficaDao.save(matteo);
         
-        Storico storico = SmdHelper.getStoricoBy(matteo, matteo, blocchetti, 100, Cassa.Carte, TipoAbbonamentoRivista.Sostenitore, InvioSpedizione.AdpSede);
+        Storico storico = SmdHelper.getStoricoBy(matteo, matteo, blocchetti, 100, false, TipoAbbonamentoRivista.Sostenitore, InvioSpedizione.AdpSede);
         storicoDao.save(storico);
         notaDao.save(SmdHelper.getNota(storico));
         assertEquals(1, notaDao.findAll().size());

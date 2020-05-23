@@ -945,9 +945,9 @@ public class SmdUnitTests {
         pubblicazioni.add(estratti);
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,Cassa.Contrassegno,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,Cassa.Contrassegno,TipoAbbonamentoRivista.Scontato,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, messaggio, 10,true,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,true,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,true,TipoAbbonamentoRivista.Scontato,InvioSpedizione.Spedizioniere));
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));
@@ -1076,10 +1076,10 @@ public class SmdUnitTests {
         pubblicazioni.add(estratti);
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,Cassa.Ccp,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));

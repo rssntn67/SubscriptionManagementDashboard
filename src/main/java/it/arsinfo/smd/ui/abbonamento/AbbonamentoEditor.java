@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -40,8 +40,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
     private final TextField incassato = new TextField("Incassato");
-    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
-            EnumSet.allOf(Cassa.class));
+    private final CheckBox contrassegno = new CheckBox("Contrassegno");
     private final TextField codeLine = new TextField("Code Line");
 
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
@@ -54,7 +53,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
                 anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(cassa,statoAbbonamento,statoIncasso);
+        HorizontalLayout status = new HorizontalLayout(contrassegno,statoAbbonamento,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
@@ -81,8 +80,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         incassato.setReadOnly(true);
         residuo.setReadOnly(true);
         speseEstrattoConto.setReadOnly(true);
-
-        cassa.setEmptySelectionAllowed(false);
 
         getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
                 "Deve essere definito").bind(Abbonamento::getCodeLine,
@@ -136,7 +133,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
             .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
             .bind("residuo");
                
-        getBinder().forField(cassa).bind("cassa");
+        getBinder().forField(contrassegno).bind("contrassegno");
         
     }
 
@@ -164,8 +161,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         incassato.setVisible(noV);
         residuo.setVisible(noV);
         
-        cassa.setVisible(noV);
-        cassa.setEnabled(!persisted);
+        contrassegno.setVisible(noV);
+        contrassegno.setEnabled(!persisted);
                 
         intestatario.focus();
 

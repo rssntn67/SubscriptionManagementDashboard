@@ -681,7 +681,7 @@ public class SmdHelper {
             Anagrafica destinatario, 
             Pubblicazione pubblicazione, 
             int numero, 
-            Cassa cassa,
+            boolean contrassegno,
             TipoAbbonamentoRivista omaggio,
             InvioSpedizione invioSpedizione
         ) {
@@ -691,7 +691,7 @@ public class SmdHelper {
         storico.setPubblicazione(pubblicazione);
         storico.setNumero(numero);
         storico.setTipoAbbonamentoRivista(omaggio);
-        storico.setCassa(cassa);
+        storico.setContrassegno(contrassegno);
         storico.setInvioSpedizione(invioSpedizione);
         return storico;
     }
