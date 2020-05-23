@@ -11,7 +11,6 @@ import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -29,7 +28,6 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     private final ComboBox<Mese> filterMese = new ComboBox<Mese>();
     private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>();
-    private final ComboBox<Invio> filterInvio = new ComboBox<Invio>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
             
     private final Map<Long,Abbonamento> abbMap;
@@ -48,7 +46,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterAnno,filterMese);
         anag.addComponentsAndExpand(filterDestinatario);
 
-        HorizontalLayout tipo = new HorizontalLayout(filterInvio,filterStatoSpedizione,filterInvioSpedizione);
+        HorizontalLayout tipo = new HorizontalLayout(filterStatoSpedizione,filterInvioSpedizione);
         setComponents(anag,tipo);
 
         filterPubblicazione.setEmptySelectionAllowed(true);
@@ -92,10 +90,6 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         filterInvioSpedizione.setItems(EnumSet.allOf(InvioSpedizione.class));
         filterInvioSpedizione.addSelectionListener(e ->onChange());
 
-        filterInvio.setPlaceholder("Seleziona Invio");
-        filterInvio.setItems(EnumSet.allOf(Invio.class));
-        filterInvio.addSelectionListener(e ->onChange());        
-
         filterStatoSpedizione.setPlaceholder("Seleziona Stato");
         filterStatoSpedizione.setItems(EnumSet.allOf(StatoSpedizione.class));
         filterStatoSpedizione.addSelectionListener(e ->onChange());        
@@ -113,9 +107,6 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         }
         if (filterMese.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getMeseSpedizione() == filterMese.getValue()).collect(Collectors.toList());      
-        }
-        if (filterInvio.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getInvio() == filterInvio.getValue()).collect(Collectors.toList());      
         }
         if (filterInvioSpedizione.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == filterInvioSpedizione.getValue()).collect(Collectors.toList());      

@@ -40,7 +40,6 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
@@ -242,7 +241,6 @@ public class Smd {
         ec.setAnnoInizio(abb.getAnno());
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(abb.getAnno());
-        ec.setInvio(storico.getInvio());
         ec.setInvioSpedizione(storico.getInvioSpedizione());
         ec.setDestinatario(storico.getDestinatario());
         abb.addItem(ec);
@@ -511,10 +509,9 @@ public class Smd {
 
     public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
         Anagrafica destinatario = ec.getDestinatario();
-        Invio invio = ec.getInvio();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        log.info("aggiungiItemSpedizione: " + destinatario + destinatario.getAreaSpedizione() + invio + invioSpedizione);
-        log.info("aggiungiItemSpedizione: item" + item);
+        log.info("aggiungiItemSpedizione: {}, {}, {} ",destinatario ,destinatario.getAreaSpedizione(), invioSpedizione);
+        log.info("aggiungiItemSpedizione: {}", item);
         InvioSpedizione isped = invioSpedizione;
         Mese mesePubblicazione = item.getMesePubblicazione();
         Anno annoPubblicazione = item.getAnnoPubblicazione();
@@ -533,7 +530,7 @@ public class Smd {
                     - anticipoSpedizione);
             spedAnno = annoPubblicazione;
         }
-        log.info("geneneraSpedizioni: teorico: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
+        log.info("geneneraSpedizioni: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
         if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
                 || (spedAnno == Anno.getAnnoCorrente()
@@ -542,21 +539,19 @@ public class Smd {
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
             posticipata=true;
-            log.info("geneneraSpedizioni: spedizione anticipata");
+            log.info("geneneraSpedizioni: posticipata: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
         }
         if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
             isped = InvioSpedizione.AdpSede;
-            log.info("geneneraSpedizioni: spedizione estero");
+            log.info("geneneraSpedizioni: estero: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
         }
-        log.debug("geneneraSpedizioni: effettivo: " + spedMese.getNomeBreve()+spedAnno.getAnnoAsString()+isped);
         Spedizione spedizione = new Spedizione();
         spedizione.setMeseSpedizione(spedMese);
         spedizione.setAnnoSpedizione(spedAnno);
         spedizione.setInvioSpedizione(isped);
         spedizione.setAbbonamento(abb);
         spedizione.setDestinatario(destinatario);
-        spedizione.setInvio(invio);
         if (!spedMap.containsKey(spedizione.hashCode())) {
             spedMap.put(spedizione.hashCode(), new SpedizioneWithItems(spedizione));
         }

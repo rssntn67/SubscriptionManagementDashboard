@@ -30,7 +30,6 @@ import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
@@ -359,22 +358,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public SpedizioniereItem genera(SpedizioneItem spedItem) {
-		if (spedItem.getSpedizione().getInvio() == Invio.Destinatario) {
-			return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());
-		} 
-		Anagrafica intestatario = abbonamentoDao.findById(spedItem.getSpedizione().getAbbonamento().getId()).get().getIntestatario();
-		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), intestatario, intestatario.getCo());
-	
+		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());	
     }
 
     @Override
     public Indirizzo genera(Spedizione spedizione) {
-		if (spedizione.getInvio() == Invio.Destinatario) {
-			return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());
-		} 
-		Anagrafica intestatario = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).get().getIntestatario();
-		return new Indirizzo(spedizione.getDestinatario(), intestatario, intestatario.getCo());
-	
+		return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());	
     }
 
     @Override

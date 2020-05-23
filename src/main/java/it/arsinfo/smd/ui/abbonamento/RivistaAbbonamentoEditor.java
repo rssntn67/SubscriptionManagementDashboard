@@ -11,7 +11,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -43,10 +42,7 @@ public class RivistaAbbonamentoEditor
     private final TextField numero = new TextField("Quant.");
 
     private final TextField importo = new TextField("Importo");
-
     
-    private final ComboBox<Invio> invio = new ComboBox<Invio>("Invio",
-            EnumSet.allOf(Invio.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
 
@@ -64,7 +60,6 @@ public class RivistaAbbonamentoEditor
         destinatario.setItems(anagrafica);
         destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
         
-        invio.setEmptySelectionAllowed(false);
         invioSpedizione.setEmptySelectionAllowed(false);
 
         tipoAbbonamentoRivista.setEmptySelectionAllowed(false);
@@ -82,7 +77,7 @@ public class RivistaAbbonamentoEditor
         meseFine.setItemCaptionGenerator(Mese::getNomeBreve);
         meseFine.setSelectedItem(Mese.DICEMBRE);
         
-        HorizontalLayout lay = new HorizontalLayout(pubblicazione,tipoAbbonamentoRivista,invio,invioSpedizione);
+        HorizontalLayout lay = new HorizontalLayout(pubblicazione,tipoAbbonamentoRivista,invioSpedizione);
         lay.addComponentsAndExpand(destinatario);
         setComponents(
     					lay,
@@ -122,9 +117,6 @@ public class RivistaAbbonamentoEditor
         getBinder().forField(tipoAbbonamentoRivista)
         .asRequired().bind(RivistaAbbonamento::getTipoAbbonamentoRivista,RivistaAbbonamento::setTipoAbbonamentoRivista);
 
-        getBinder().forField(invio)
-        .asRequired().bind(RivistaAbbonamento::getInvio,RivistaAbbonamento::setInvio);
-
         getBinder().forField(invioSpedizione)
         .asRequired().bind(RivistaAbbonamento::getInvioSpedizione,RivistaAbbonamento::setInvioSpedizione);
 
@@ -148,11 +140,10 @@ public class RivistaAbbonamentoEditor
     public void focus(boolean persisted, RivistaAbbonamento obj) {
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
-        invio.setReadOnly(persisted);
         invioSpedizione.setReadOnly(persisted);
         numero.setReadOnly(obj.getStorico() != null);
         tipoAbbonamentoRivista.setReadOnly(obj.getStorico() != null);
-        meseInizio.setReadOnly(persisted|| obj.getStorico() != null);
+        meseInizio.setReadOnly(persisted);
         meseFine.setReadOnly(persisted);
         annoInizio.setReadOnly(persisted);
         annoFine.setReadOnly(persisted);        

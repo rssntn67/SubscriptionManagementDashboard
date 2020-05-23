@@ -13,7 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -30,9 +29,6 @@ public class Spedizione implements SmdEntity {
 
     @ManyToOne(fetch=FetchType.EAGER)
     private Anagrafica destinatario;
-
-    @Enumerated(EnumType.STRING)
-    private Invio invio = Invio.Destinatario;
 
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
@@ -69,7 +65,7 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s %s]", 
+        return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s]", 
                              id,
                              abbonamento.getId(),
                              meseSpedizione,
@@ -78,8 +74,8 @@ public class Spedizione implements SmdEntity {
                              spesePostali,
                              destinatario, 
                              statoSpedizione,
-                             invioSpedizione,
-                             invio);
+                             invioSpedizione
+                             );
     }
 
     public Mese getMeseSpedizione() {
@@ -130,14 +126,6 @@ public class Spedizione implements SmdEntity {
         this.abbonamento = abbonamento;
     }
 
-    public Invio getInvio() {
-        return invio;
-    }
-
-    public void setInvio(Invio invio) {
-        this.invio = invio;
-    }
-
     public Integer getPesoStimato() {
         return pesoStimato;
     }
@@ -164,7 +152,6 @@ public class Spedizione implements SmdEntity {
                 + ((annoSpedizione == null) ? 0 : annoSpedizione.hashCode());
         result = prime * result
                 + ((destinatario == null) ? 0 : destinatario.hashCode());
-        result = prime * result + ((invio == null) ? 0 : invio.hashCode());
         result = prime * result
                 + ((invioSpedizione == null) ? 0
                                              : invioSpedizione.hashCode());
@@ -193,8 +180,6 @@ public class Spedizione implements SmdEntity {
             if (other.destinatario != null)
                 return false;
         } else if (!destinatario.equals(other.destinatario))
-            return false;
-        if (invio != other.invio)
             return false;
         if (invioSpedizione != other.invioSpedizione)
             return false;

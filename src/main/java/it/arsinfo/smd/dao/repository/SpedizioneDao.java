@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -22,7 +21,6 @@ public interface SpedizioneDao extends JpaRepository<Spedizione, Long> {
     List<Spedizione> findByAbbonamentoAndStatoSpedizione(Abbonamento abbonamento,StatoSpedizione statoSpedizione);
     List<Spedizione> findByInvioSpedizione(InvioSpedizione invioSpedizione);
     List<Spedizione> findByDestinatario(Anagrafica destinatario);
-    List<Spedizione> findByInvio(Invio invio);
     void deleteByAbbonamento(Abbonamento abbonamento);
 
 }

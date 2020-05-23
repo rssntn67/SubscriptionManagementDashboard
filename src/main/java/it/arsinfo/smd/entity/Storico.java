@@ -14,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Invio;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -43,9 +42,6 @@ public class Storico implements SmdEntityItems<Nota> {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Anagrafica destinatario;
     
-    @Enumerated(EnumType.STRING)
-    private Invio invio = Invio.Destinatario;
-
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
     
@@ -135,48 +131,13 @@ public class Storico implements SmdEntityItems<Nota> {
     
     @Override
     public String toString() {
-    	if (id == null) {
-            return String.format("Storico[ %d %s '%s' -> '%s', %s %s, %s, %s]",
-                    numero, 
-                    pubblicazione.getNome(), 
-                    intestatario.getIntestazione(), 
-                    destinatario.getIntestazione(), 
-                    tipoAbbonamentoRivista,
-                    invio,
-                    statoStorico,
-                    cassa);
-    		
-    	}
-    	if (id == null && intestatario.getId().longValue() == destinatario.getId().longValue()) {
-            return String.format("Storico[ %d %s '%s', %s %s, %s, %s]",
-                    numero, 
-                    pubblicazione.getNome(), 
-                    intestatario.getIntestazione(), 
-                    tipoAbbonamentoRivista,
-                    invio,
-                    statoStorico,
-                    cassa);
-    	}
-    	if (intestatario.getId().longValue() == destinatario.getId().longValue()) {
-            return String.format("Storico[id=%d, %d %s '%s', %s %s, %s, %s]",
-                    id, 
-                    numero, 
-                    pubblicazione.getNome(), 
-                    intestatario.getCaption(), 
-                    tipoAbbonamentoRivista,
-                    invio,
-                    statoStorico,
-                    cassa);
-    		
-    	}
-        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s, %s, %s]",
+        return String.format("Storico[id=%d, %d %s '%s' -> '%s', %s %s, %s]",
                              id, 
                              numero, 
                              pubblicazione.getNome(), 
                              intestatario.getIntestazione(), 
                              destinatario.getIntestazione(), 
                              tipoAbbonamentoRivista,
-                             invio,
                              statoStorico,
                              cassa);
     }
@@ -187,14 +148,6 @@ public class Storico implements SmdEntityItems<Nota> {
 
     public void setTipoAbbonamentoRivista(TipoAbbonamentoRivista omaggio) {
         this.tipoAbbonamentoRivista = omaggio;
-    }
-
-    public Invio getInvio() {
-        return invio;
-    }
-
-    public void setInvio(Invio invio) {
-        this.invio = invio;
     }
 
     public Cassa getCassa() {
