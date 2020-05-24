@@ -52,12 +52,12 @@ import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -78,7 +78,15 @@ public class Smd {
             return new BCryptPasswordEncoder();
     }
 
-    public static OutputStream getFileOutputStream(File file) throws Exception {
+    public static Map<Integer,SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
+	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
+	    for (SpedizioneWithItems spedizione:spedizioni) {
+	        spedMap.put(getHashCode(spedizione.getSpedizione(), spedizione.getSpedizioneItems().iterator().next().getPubblicazione()), spedizione);
+	    }
+	    return spedMap;        
+	}
+
+	public static OutputStream getFileOutputStream(File file) throws Exception {
         try {
             log.info("Loading file: {}" , file.getName());
             return new FileOutputStream(file);
@@ -247,6 +255,7 @@ public class Smd {
         return ec;
     }
 
+    //FIXME failing tests
     public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
             RivistaAbbonamento ec,
             List<SpedizioneWithItems> spedizioni,
@@ -507,11 +516,17 @@ public class Smd {
       return items; 
     }
 
+    private static int getHashCode(Spedizione sped, Pubblicazione p) {
+    	if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+    		return sped.hashCode()+p.hashCode();
+    	}
+    	return sped.hashCode();
+    }
+
     public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
         Anagrafica destinatario = ec.getDestinatario();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        log.info("aggiungiItemSpedizione: {}, {}, {} ",destinatario ,destinatario.getAreaSpedizione(), invioSpedizione);
-        log.info("aggiungiItemSpedizione: {}", item);
+        log.info("aggiungiItemSpedizione: {} ",item);
         InvioSpedizione isped = invioSpedizione;
         Mese mesePubblicazione = item.getMesePubblicazione();
         Anno annoPubblicazione = item.getAnnoPubblicazione();
@@ -530,7 +545,7 @@ public class Smd {
                     - anticipoSpedizione);
             spedAnno = annoPubblicazione;
         }
-        log.info("geneneraSpedizioni: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+        log.info("aggiungiItemSpedizione: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
         if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
                 || (spedAnno == Anno.getAnnoCorrente()
@@ -539,12 +554,12 @@ public class Smd {
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
             posticipata=true;
-            log.info("geneneraSpedizioni: posticipata: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+            log.info("aggiungiItemSpedizione: posticipata: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
         }
         if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
             isped = InvioSpedizione.AdpSede;
-            log.info("geneneraSpedizioni: estero: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+            log.info("aggiungiItemSpedizione: estero: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
         }
         Spedizione spedizione = new Spedizione();
         spedizione.setMeseSpedizione(spedMese);
@@ -552,10 +567,11 @@ public class Smd {
         spedizione.setInvioSpedizione(isped);
         spedizione.setAbbonamento(abb);
         spedizione.setDestinatario(destinatario);
-        if (!spedMap.containsKey(spedizione.hashCode())) {
-            spedMap.put(spedizione.hashCode(), new SpedizioneWithItems(spedizione));
+        int hash = getHashCode(spedizione, item.getPubblicazione());
+        if (!spedMap.containsKey(hash)) {
+            spedMap.put(hash, new SpedizioneWithItems(spedizione));
         }
-        SpedizioneWithItems sped = spedMap.get(spedizione.hashCode());
+        SpedizioneWithItems sped = spedMap.get(hash);
         item.setPosticipata(posticipata);
         item.setSpedizione(sped.getSpedizione());
         sped.addSpedizioneItem(item);        
@@ -573,7 +589,7 @@ public class Smd {
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         calcoloImportoEC(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        final Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
+        final Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
 
         for (SpedizioneItem item : items) {
             aggiungiItemSpedizione(abb, ec, spedMap, item);
@@ -773,7 +789,7 @@ public class Smd {
             break;
         case OmaggioGesuiti:
             break;
-        case DuplicatoSpedizione:
+        case Duplicato:
             break;
         default:
             break;

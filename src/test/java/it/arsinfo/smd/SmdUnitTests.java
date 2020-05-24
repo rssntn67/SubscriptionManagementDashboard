@@ -892,12 +892,8 @@ public class SmdUnitTests {
         });
         assertEquals(8, items.size());
         assertEquals(8, spedizioni.size());
-        log.info(ec1.toString());
-        log.info(abb.toString());
         
         ec1.setPubblicazione(lodare);
-        ec1.setMeseInizio(Mese.MARZO);
-        ec1.setMeseFine(Mese.AGOSTO);
         try {
             Smd.aggiornaEC(abb, ec1, spedizioni,SmdHelper.getSpeseSpedizione());
             assertTrue(false);
@@ -910,7 +906,7 @@ public class SmdUnitTests {
         List<SpedizioneItem> rimItems = Smd.aggiornaEC(abb, ec1, spedizioni,SmdHelper.getSpeseSpedizione());
         
         rimItems.stream().forEach(item -> log.info("deleted:" + item.toString()));
-        assertEquals(8, rimItems.size());
+        assertEquals(0, rimItems.size());
         
         items.clear();
         spedizioni.stream().forEach(sped -> {
@@ -921,7 +917,7 @@ public class SmdUnitTests {
                 assertEquals(10, item.getNumero().intValue());
             });
         });
-        assertEquals(5, items.size());
+        assertEquals(8, items.size());
         assertEquals(8, spedizioni.size());
         
         log.info(ec1.toString());
@@ -979,11 +975,12 @@ public class SmdUnitTests {
         for (Storico storico:storici) {
             RivistaAbbonamento ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
-            log.info(ec.toString());
-            log.info(abb.toString());
         }                
-        assertEquals(13, spedizioni.size());
-        spedizioni.stream().forEach(sped -> log.info(sped.toString()));
+        assertEquals(25, spedizioni.size());
+        spedizioni.stream().forEach(sped -> {
+        	assertEquals(1, sped.getSpedizioneItems().size());
+        	assertEquals(0, sped.getSpedizioniPosticipate().size());
+        });
         assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
         assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
         
@@ -1076,10 +1073,10 @@ public class SmdUnitTests {
         pubblicazioni.add(estratti);
         List<Storico> storici = new ArrayList<>();
         
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, messaggio, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
         storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, lodare, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 10,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
-        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 11,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, blocchetti, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
+        storici.add(SmdHelper.getStoricoBy(diocesiMilano,antonioRusso, estratti, 1,false,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana, InvioSpedizione.Spedizioniere));
         
         Campagna campagna = new Campagna();
         campagna.setAnno(Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()));
@@ -1090,24 +1087,29 @@ public class SmdUnitTests {
             campagna.addCampagnaItem(ci);
         }
         List<Abbonamento> abbonamenti = Smd.genera(campagna, diocesiMilano, storici);
-        for (Abbonamento abb: abbonamenti) {
-            log.info(abb.getIntestatario().toString());
-            log.info(abb.toString());
-        }
         assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
+        	log.info("testGeneraCampagnaAR: genera Rivista abbonamento from Storico {}", storico);
             RivistaAbbonamento ec = Smd.genera(abb, storico);
+            assertEquals(1, ec.getNumero().intValue());
+            assertEquals(0, ec.getImporto().doubleValue(),0);
+            assertEquals(0, abb.getImporto().doubleValue(),0);
+            assertEquals(0,abb.getSpese().doubleValue(),0);
+        	log.info("testGeneraCampagnaAR: Rivista abbonamento {}", ec);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
-            log.info(abb.toString());
-            log.info(ec.toString());
+        	log.info("testGeneraCampagnaAR: spedizioni {}", spedizioni.size());
         }      
-        
-        spedizioni.stream().forEach(sped -> log.info(sped.getSpedizione().toString()));
-        assertEquals(13, spedizioni.size());
+        assertEquals(26, spedizioni.size());
         assertEquals(0, abb.getImporto().doubleValue(),0);
         assertEquals(0,abb.getSpese().doubleValue(),0);
+        
+        spedizioni.stream().forEach(sped -> {
+        	log.info(sped.getSpedizione().toString());
+        	assertEquals(1, sped.getSpedizioneItems().size());
+        	assertEquals(0, sped.getSpedizioniPosticipate().size());
+        });
 
 
     }

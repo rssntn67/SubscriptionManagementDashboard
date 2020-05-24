@@ -96,7 +96,6 @@ public class Campagna implements SmdEntity {
 
    @Transient
    public boolean hasPubblicazione(Pubblicazione p) {
-	   System.err.println(p);
 	   for (CampagnaItem item:campagnaItems ) {
 		   if (item.getPubblicazione().equals(p)) {
 			   return true;

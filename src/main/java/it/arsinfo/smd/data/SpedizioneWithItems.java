@@ -1,9 +1,7 @@
 package it.arsinfo.smd.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import it.arsinfo.smd.entity.Spedizione;
@@ -76,14 +74,6 @@ public class SpedizioneWithItems {
         } else if (!spedizione.equals(other.spedizione))
             return false;
         return true;
-    }
-
-    public static Map<Integer,SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
-        final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
-        for (SpedizioneWithItems spedizione:spedizioni) {
-            spedMap.put(spedizione.hashCode(), spedizione);
-        }
-        return spedMap;        
     }
 
 

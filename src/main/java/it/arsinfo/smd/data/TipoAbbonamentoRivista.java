@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum TipoAbbonamentoRivista {
+    Duplicato,
     Ordinario, 
     Web, 
     Scontato,
@@ -9,6 +10,5 @@ public enum TipoAbbonamentoRivista {
     OmaggioGesuiti,
     OmaggioCuriaDiocesiana, 
     OmaggioDirettoreAdp, 
-    OmaggioEditore,
-    DuplicatoSpedizione
+    OmaggioEditore
 }
