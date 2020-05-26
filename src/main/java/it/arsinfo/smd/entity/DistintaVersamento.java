@@ -179,8 +179,10 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     }
     @Transient
     public String getHeader() {
-		return String.format("'%td %tb %tY %tR %tZ':%s:%s",
-                cassa,ccp.getCcp(), 
-               dataContabile, dataContabile, dataContabile, dataContabile, dataContabile);
+		return String.format("%s:%s:'%td %tb %tY'",                 
+				ccp.getCcp(),
+				cassa,
+               dataContabile, dataContabile, dataContabile
+				);
     }    
 }
