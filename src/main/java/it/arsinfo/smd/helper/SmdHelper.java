@@ -719,12 +719,12 @@ public class SmdHelper {
     public static Abbonamento getAbbonamentoBy(
             Anagrafica intestatario, 
             Anno anno, 
-            Cassa cassa
+            boolean contrassegno
             ) {
     
         final Abbonamento abb = new Abbonamento();
         abb.setAnno(anno);
-        abb.setCassa(cassa);
+        abb.setContrassegno(contrassegno);
         abb.setIntestatario(intestatario);
         abb.setCodeLine(Abbonamento.generaCodeLine(anno));
         return abb;   

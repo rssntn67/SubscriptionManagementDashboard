@@ -24,7 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -39,9 +38,9 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -386,7 +385,7 @@ public class SmdUnitTests {
     public void testRimuoviECConSpedizioniInviate() {
         Anagrafica tizio = SmdHelper.getGP();
         Pubblicazione messaggio = SmdHelper.getMessaggio();
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), false);
         int numeroRiviste =0;
         int numeroRivisteSpedizioneMeseA=0;
         int numeroRivisteSpedizionePosticipata=0;
@@ -545,7 +544,7 @@ public class SmdUnitTests {
         Pubblicazione lodare = SmdHelper.getLodare();
         Pubblicazione blocchetti = SmdHelper.getBlocchetti();
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -864,7 +863,7 @@ public class SmdUnitTests {
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Pubblicazione lodare = SmdHelper.getLodare();
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -892,18 +891,42 @@ public class SmdUnitTests {
         });
         assertEquals(8, items.size());
         assertEquals(8, spedizioni.size());
-        
-        ec1.setPubblicazione(lodare);
+
+        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        ec2.setAbbonamento(abb);
+        ec2.setPubblicazione(lodare);
+        ec2.setMeseInizio(Mese.GENNAIO);
+        ec2.setAnnoInizio(anno);
+        ec2.setMeseFine(Mese.SETTEMBRE);
+        ec2.setAnnoFine(anno);
+        ec2.setDestinatario(tizio);
+        ec2.setNumero(10);
+        assertTrue(!ec1.equals(ec2));
         try {
-            Smd.aggiornaEC(abb, ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+            Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
-        ec1.setPubblicazione(messaggio);
-        ec1.setNumero(10);
         
-        List<SpedizioneItem> rimItems = Smd.aggiornaEC(abb, ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+        ec2.setPubblicazione(messaggio);
+        ec2.setMeseInizio(Mese.MARZO);
+        ec2.setAnnoInizio(anno);
+        ec2.setMeseFine(Mese.GIUGNO);
+        ec2.setAnnoFine(anno);
+        assertTrue(!ec1.equals(ec2));
+        try {
+            Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+            assertTrue(false);
+        } catch (UnsupportedOperationException e) {
+            log.info(e.getMessage());
+        }
+
+        ec2.setMeseInizio(Mese.GENNAIO);
+        ec2.setMeseFine(Mese.SETTEMBRE);
+
+        List<SpedizioneItem> rimItems = Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+
         
         rimItems.stream().forEach(item -> log.info("deleted:" + item.toString()));
         assertEquals(0, rimItems.size());
@@ -990,7 +1013,7 @@ public class SmdUnitTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getAR();
         Pubblicazione blocchetti = SmdHelper.getBlocchetti();
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1024,7 +1047,7 @@ public class SmdUnitTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getAR();
         Pubblicazione messaggio = SmdHelper.getMessaggio();
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);

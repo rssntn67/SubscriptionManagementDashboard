@@ -210,15 +210,16 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception {
-        // quantita -> spedizioneItem Importo Abbonamento
-        // Tipo -> ordinario -> Importo Abbonamento
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
-        if (abbonamento == null) return;
+        if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        List<SpedizioneItem> deleted = Smd.aggiornaEC(abbonamento,
-                                                     rivistaAbbonamento, 
-                                                     spedizioni,
-                                                    spesaSpedizioneDao.findAll());  
+        List<SpedizioneItem> deleted = 
+        		Smd.aggiorna(
+        				rivistaAbbonamento, 
+        				spedizioni,
+                        spesaSpedizioneDao.findAll(),
+                        rivistaAbbonamentoDao.findById(rivistaAbbonamento.getId()).get()
+                );  
         
         spedizioni.stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());

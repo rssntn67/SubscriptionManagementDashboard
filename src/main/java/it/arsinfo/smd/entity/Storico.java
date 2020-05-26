@@ -196,5 +196,60 @@ public class Storico implements SmdEntityItems<Nota> {
 	public void setContrassegno(boolean contrassegno) {
 		this.contrassegno = contrassegno;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (contrassegno ? 1231 : 1237);
+		result = prime * result + ((destinatario == null) ? 0 : destinatario.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((intestatario == null) ? 0 : intestatario.hashCode());
+		result = prime * result + ((invioSpedizione == null) ? 0 : invioSpedizione.hashCode());
+		result = prime * result + ((items == null) ? 0 : items.hashCode());
+		result = prime * result + ((pubblicazione == null) ? 0 : pubblicazione.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Storico other = (Storico) obj;
+		if (contrassegno != other.contrassegno)
+			return false;
+		if (destinatario == null) {
+			if (other.destinatario != null)
+				return false;
+		} else if (!destinatario.equals(other.destinatario))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (intestatario == null) {
+			if (other.intestatario != null)
+				return false;
+		} else if (!intestatario.equals(other.intestatario))
+			return false;
+		if (invioSpedizione != other.invioSpedizione)
+			return false;
+		if (items == null) {
+			if (other.items != null)
+				return false;
+		} else if (!items.equals(other.items))
+			return false;
+		if (pubblicazione == null) {
+			if (other.pubblicazione != null)
+				return false;
+		} else if (!pubblicazione.equals(other.pubblicazione))
+			return false;
+		return true;
+	}
     
 }

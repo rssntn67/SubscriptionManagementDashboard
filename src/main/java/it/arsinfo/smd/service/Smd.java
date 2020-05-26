@@ -255,123 +255,117 @@ public class Smd {
         return ec;
     }
 
-    //FIXME failing tests
-    public static List<SpedizioneItem> aggiornaEC(Abbonamento abb, 
-            RivistaAbbonamento ec,
+    public static boolean aggiorna(
+    		RivistaAbbonamento updated, 
             List<SpedizioneWithItems> spedizioni,
-            List<SpesaSpedizione> spese)
-    throws UnsupportedOperationException {      
+            List<SpesaSpedizione> spese,    		
+            RivistaAbbonamento original
+		)    throws UnsupportedOperationException {
+    	Abbonamento abb = original.getAbbonamento();
         if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
-            log.warn("aggiornaEC failed {} {} : Aggiorna EC non consentita per Abbonamenti Annullati",abb,ec);
-            throw new UnsupportedOperationException("Aggiorna EC non consentita per Abbonamenti Annullati");
+            log.warn("aggiorna: failed {} {} : Aggiorna EC non consentita per Abbonamenti Annullati",abb,original);
+            throw new UnsupportedOperationException("Aggiorna non consentito per Abbonamenti Annullati");
         }
-        log.info("aggiornaEC: start: abb: intestatario: {}", abb.getIntestatario().getCaption());
-        log.info("aggiornaEC: start: abb: area: {}", abb.getIntestatario().getAreaSpedizione());
-        log.info("aggiornaEC: start: abb: importo: {}", abb.getImporto());
-        log.info("aggiornaEC: start: abb: spese: {}", abb.getSpese());
-        log.info("aggiornaEC: start: abb:pregresso: {}", abb.getPregresso());
-        log.info("aggiornaEC: start: ec: pubbli.: {}", ec.getPubblicazione().getNome());
-        log.info("aggiornaEC: start: ec: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: start: ec: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: start: ec: meseFine: {}", ec.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: start: ec: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: start: ec: quantità: {}", ec.getNumero());
-        log.info("aggiornaEC: start: ec: importo: {}", ec.getImporto());
+        if (!original.equals(updated)) {
+            log.warn("aggiorna: failed {} {} : Aggiorna consentito per numero e tipo abbonamento",original,updated);
+            throw new UnsupportedOperationException("Aggiorna non consentito: Riviste non congruenti");
+        }
+        log.info("aggiorna: {}", abb);
+        log.info("aggiorna: persisted: {}", original);
+        log.info("aggiorna: update: {}",updated);
         
-        final Map<Integer,SpedizioneWithItems> spedMap = spedizioni.stream().collect(Collectors.toMap(s->s.hashCode(), s->s));        
-        final Map<Integer,List<SpedizioneItem>> oldItems = new HashMap<>();
-        
-        spedizioni
-        .stream()
-        .forEach(sped -> {
-            sped.getSpedizioneItems()
-            .stream()
-            .filter(item -> item.getRivistaAbbonamento() == ec || 
-               (item.getRivistaAbbonamento().getId() != null && ec.getId() != null && item.getRivistaAbbonamento().getId().longValue() == ec.getId().longValue()))
-            .forEach(item -> {
-                if (ec.getPubblicazione() == item.getPubblicazione() || 
-                  (ec.getPubblicazione().getId() != null && item.getPubblicazione().getId() != null && 
-                          ec.getPubblicazione().getId().longValue() == item.getPubblicazione().getId().longValue())) {
-                    if (!oldItems.containsKey(sped.hashCode())) {
-                        oldItems.put(sped.hashCode(),new ArrayList<>());
-                    }
-                    oldItems.get(sped.hashCode()).add(item);
-                } else {
-                    log.warn("aggiornaEC failed {} {} : Aggiorna EC non consente di modificare la pubblicazione",abb,ec);
-                    throw new UnsupportedOperationException("Aggiorna EC non consente di modificare la pubblicazione");
-                }
-            });
-        });
+        //First of all I found all spedizioni for abbonamento,
+        //Second I changed One Rivista:
+        // If I changed the TipoAbbonamento, this has no impact on expedition..
+        // Second if I changed 
+        // Second I update
+        if (updated.getNumero() == original.getNumero() && updated.getTipoAbbonamentoRivista() == original.getTipoAbbonamentoRivista()) {
+            log.info("aggiorna: updated equals to persisted: {}", abb);        	
+        	return true;
+        }
 
-        abb.setImporto(abb.getImporto().subtract(ec.getImporto()));
-        log.info("aggiornaEC: update: abb: importo: {}", abb.getImporto());
-        log.info("aggiornaEC: update: abb: spese: {}", abb.getSpese());
-        log.info("aggiornaEC: update: abb:pregresso: {}", abb.getPregresso());
+        if (updated.getNumero() == original.getNumero()) {
+        	calcoloImporto(updated);
+            log.info("aggiorna: only type are different: importo updated: {}", updated.getImporto());        	
+            log.info("aggiorna: only type are different: importo persisted: {}", original.getImporto());        	
+        	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        	abb.setImporto(abb.getImporto().add(updated.getImporto()));
+        	original=null;
+            log.info("aggiorna: {}",abb);
+            log.info("aggiorna: {}",updated);
+           	return true;
+        }
+
+    	List<SpedizioneWithItems> inviate = new ArrayList<>();
+    	for (SpedizioneWithItems spedwith: spedizioni) {
+    		if (spedwith.getSpedizione().getStatoSpedizione() == StatoSpedizione.INVIATA) {
+    			inviate.add(spedwith);
+    		}
+    	}
+    	
+        if (inviate.size() == 0) {
+        	calcoloImporto(updated);
+            log.info("aggiorna: nessuna spedizione inviata: importo updated: {}", updated.getImporto());        	
+            log.info("aggiorna: nessuna spedizione inviata: importo persisted: {}", original.getImporto());        	
+        	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        	abb.setImporto(abb.getImporto().add(updated.getImporto()));
+        	
+        	int numeroTotaleRiviste = 0;
+        	for (SpedizioneWithItems s: spedizioni) {
+        		for (SpedizioneItem item: s.getSpedizioneItems()) {
+        			if (item.getRivistaAbbonamento().equals(updated)) {
+        				item.setNumero(updated.getNumero());
+                		numeroTotaleRiviste+=updated.getNumero();
+        			}
+        		}
+        	}
+        	updated.setNumeroTotaleRiviste(numeroTotaleRiviste);
+        	calcolaPesoESpesePostali(abb, spedizioni, spese);
+        	original=null;
+            log.info("aggiorna: {}",abb);
+            log.info("aggiorna: {}",updated);
+    		return true;
+        }
         
+    	if (updated.getNumero() > original.getNumero()) {
+        	original.setTipoAbbonamentoRivista(updated.getTipoAbbonamentoRivista());
+        	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        	calcoloImporto(original);
+        	abb.setImporto(abb.getImporto().add(original.getImporto()));
+        	RivistaAbbonamento r = updated.clone();
+        	r.setNumero(updated.getNumero()-original.getNumero());
+        	updated = r;
+        	calcoloImporto(updated);
+            log.info("aggiorna: spedizione inviata: updated.numero>original.numero: importo updated: {}", updated.getImporto());        	
+            log.info("aggiorna: spedizione inviata: updated.numero>original.numero:importo persisted: {}", original.getImporto());        	
+        	genera(abb,updated, spedizioni, spese);
+        	abb.setImporto(abb.getImporto().add(original.getImporto()));
+        	calcolaPesoESpesePostali(abb, spedizioni, spese);
+            log.info("aggiorna: {}",abb);
+            log.info("aggiorna: {}",updated);
+            log.info("aggiorna: {}",original);
+        	return false;
+    	}
+
+    	// original = 
+        log.info("aggiorna: importo abbonamento: {}", abb.getImporto());
+        log.info("aggiorna: spese abbonamento: {}", abb.getSpese());
+        log.info("aggiorna: pregresso abbonamento: {}", abb.getPregresso());
         
         final List<SpedizioneItem> invItems = new ArrayList<>(); 
         final List<SpedizioneItem> rimItems = new ArrayList<>();
         
-        int numeroTotaleRiviste=0;
-        for (int hash: oldItems.keySet()) {
-            SpedizioneWithItems sped = spedMap.get(hash);
-            for (SpedizioneItem oldItem : oldItems.get(hash)) {
-            log.info("aggiornaEC parsing old: {}", oldItem);
-            switch (oldItem.getSpedizione().getStatoSpedizione()) {
-            case INVIATA:
-                invItems.add(oldItem);
-                numeroTotaleRiviste+=oldItem.getNumero();
-                break;
-            case PROGRAMMATA:
-                sped.deleteSpedizioneItem(oldItem);
-                rimItems.add(oldItem);
-                break;
-            case SOSPESA:
-                sped.deleteSpedizioneItem(oldItem);
-                rimItems.add(oldItem);
-                break;                        
-            default:
-                break;
-            }
-        }
-        }
-
-        List<SpedizioneItem> items = generaECItems(ec);
-        for (SpedizioneItem invItem: invItems) {
-            log.info("aggiornaEC parsing old inviata: {}" , invItem);
-            for (SpedizioneItem item: items) {
-                if (invItem.stessaPubblicazione(item)) {
-                    log.info("aggiornaEC found new: {}", item);
-                    if (invItem.getNumero() < item.getNumero()) {
-                        item.setNumero(item.getNumero() - invItem.getNumero());
-                    } else {
-                        item.setNumero(0);
-                    }
-                }
-            }
-        }
-
-        for (SpedizioneItem item: items) {
-            if (item.getNumero() == 0) {
-                continue;
-            }
-            numeroTotaleRiviste+=item.getNumero();
-            aggiungiItemSpedizione(abb, ec, spedMap, item);
-        }
-        ec.setNumeroTotaleRiviste(numeroTotaleRiviste);
-        calcoloImportoEC(ec);
-        log.info("aggiornaEC: update: ec: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: update: ec: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: update: ec: meseFine: {}", ec.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: update: ec: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: update: ec: quantità: {}", ec.getNumero());
-        log.info("aggiornaEC: update: ec: importo: {}", ec.getImporto());
-        abb.setImporto(abb.getImporto().add(ec.getImporto()));
+        calcoloImporto(original);
+        log.info("aggiorna: update: ec: meseInizio: {}", original.getMeseInizio().getNomeBreve());
+        log.info("aggiorna: update: ec: annoInizio: {}", original.getAnnoInizio().getAnnoAsString());
+        log.info("aggiornaEC: update: ec: meseFine: {}", original.getMeseFine().getNomeBreve());
+        log.info("aggiornaEC: update: ec: annoFine: {}", original.getAnnoFine().getAnnoAsString());
+        log.info("aggiornaEC: update: ec: quantità: {}", original.getNumero());
+        log.info("aggiornaEC: update: ec: importo: {}", original.getImporto());
+        abb.setImporto(abb.getImporto().add(original.getImporto()));
         log.info("aggiornaEC: update: abb: importo: {}", abb.getImporto());
         log.info("aggiornaEC: update: abb: spese: {}", abb.getSpese());
         log.info("aggiornaEC: update: abb:pregresso: {}", abb.getPregresso());
-
-        spedizioni = spedMap.values().stream().collect(Collectors.toList());
                 
         calcolaPesoESpesePostali(abb, spedizioni, spese);
         log.info("aggiornaEC: update: abb: importo: {}", abb.getImporto());
@@ -407,14 +401,14 @@ public class Smd {
         log.info("aggiornaEC: abb: importo: {}", abb.getImporto());
         log.info("aggiornaEC: abb: spese: {}", abb.getSpese());
         log.info("aggiornaEC: abb:pregresso: {}", abb.getPregresso());
-        log.info("aggiornaEC: ec: pubbli.: {}", ec.getPubblicazione().getNome());
-        log.info("aggiornaEC: ec: meseInizio: {}", ec.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: ec: annoInizio: {}", ec.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: ec: meseFine: {}", ec.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: ec: annoFine: {}", ec.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: ec: quantità: {}", ec.getNumero());
-        log.info("aggiornaEC: ec: importo: {}", ec.getImporto());
-        return rimItems;
+        log.info("aggiornaEC: ec: pubbli.: {}", original.getPubblicazione().getNome());
+        log.info("aggiornaEC: ec: meseInizio: {}", original.getMeseInizio().getNomeBreve());
+        log.info("aggiornaEC: ec: annoInizio: {}", original.getAnnoInizio().getAnnoAsString());
+        log.info("aggiornaEC: ec: meseFine: {}", original.getMeseFine().getNomeBreve());
+        log.info("aggiornaEC: ec: annoFine: {}", original.getAnnoFine().getAnnoAsString());
+        log.info("aggiornaEC: ec: quantità: {}", original.getNumero());
+        log.info("aggiornaEC: ec: importo: {}", original.getImporto());
+        return false;
     }
 
     public static List<SpedizioneItem> rimuoviEC(
@@ -484,12 +478,12 @@ public class Smd {
         ec.setNumero(0);
         ec.setNumeroTotaleRiviste(numeroinviato);
         calcolaPesoESpesePostali(abb,spedizioni, spese);
-        calcoloImportoEC(ec);
+        calcoloImporto(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto())); 
         return rimossi;
     }
 
-    public static List<SpedizioneItem> generaECItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
+    public static List<SpedizioneItem> generaSpedizioneItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
         log.debug("generaECItems: tipo: "+ ec.getTipoAbbonamentoRivista());
         log.debug("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
         log.debug("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
@@ -582,12 +576,10 @@ public class Smd {
             List<SpedizioneWithItems> spedizioni, 
             List<SpesaSpedizione> spese) throws UnsupportedOperationException {
 
-        log.info("generaSpedizioni: intestatario: "+ abb.getIntestatario().getCaption());
-        log.info("generaSpedizioni: area: "+ abb.getIntestatario().getAreaSpedizione());
         ec.setAbbonamento(abb);
-        List<SpedizioneItem> items = generaECItems(ec);
+        List<SpedizioneItem> items = generaSpedizioneItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
-        calcoloImportoEC(ec);
+        calcoloImporto(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
         final Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
 
@@ -748,13 +740,13 @@ public class Smd {
         return abbonamento;
     }
 
-    public static void calcoloImportoEC(RivistaAbbonamento ec) throws UnsupportedOperationException {
-        BigDecimal costo=BigDecimal.ZERO;
+    public static void calcoloImporto(RivistaAbbonamento ec) throws UnsupportedOperationException {
+        BigDecimal importo=BigDecimal.ZERO;
         switch (ec.getTipoAbbonamentoRivista()) {
         case Ordinario:
-            costo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
+            importo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
             if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
-                costo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
+                importo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
             }
             break;
 
@@ -762,21 +754,21 @@ public class Smd {
             if (!ec.isAbbonamentoAnnuale()) {
                     throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
-            costo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
+            importo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Scontato:
             if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
-            costo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
+            importo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Sostenitore:
             if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
-            costo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
+            importo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
             break;
                 
         case OmaggioCuriaDiocesiana:
@@ -795,7 +787,7 @@ public class Smd {
             break;
 
         }          
-        ec.setImporto(costo);
+        ec.setImporto(importo);
     }
            
     public static Date getStandardDate(LocalDate localDate) {

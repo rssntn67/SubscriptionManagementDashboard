@@ -15,27 +15,26 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
@@ -131,7 +130,7 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb =  SmdHelper.getAbbonamentoBy(
                 micheleSantoro, 
                 Anno.getAnnoSuccessivo(Anno.getAnnoCorrente()), 
-                Cassa.Ccp
+                false
                 );
         genera(Mese.GENNAIO, Mese.DICEMBRE, abb, spedizioni);
 
@@ -148,7 +147,7 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb = SmdHelper.getAbbonamentoBy(
                             gabrielePizzo, 
                             Anno.getAnnoSuccessivo(Anno.getAnnoCorrente()), 
-                            Cassa.Ccp 
+                            false 
                             );
         genera(Mese.GENNAIO, Mese.DICEMBRE, abb, table);
     }
@@ -159,7 +158,7 @@ public class SmdLoadSampleData implements Runnable {
         Abbonamento abb = SmdHelper.getAbbonamentoBy(
                             davidePalma, 
                             Anno.getAnnoSuccessivo(Anno.getAnnoCorrente()), 
-                            Cassa.Ccp
+                            false
                             );        
         genera(Mese.MAGGIO, Mese.DICEMBRE, abb, table);
     }

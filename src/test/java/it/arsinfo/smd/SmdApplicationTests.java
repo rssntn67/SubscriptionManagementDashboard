@@ -39,7 +39,6 @@ import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.NotaDao;
 import it.arsinfo.smd.dao.repository.OffertaDao;
@@ -48,6 +47,7 @@ import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
@@ -56,7 +56,6 @@ import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
@@ -73,7 +72,6 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Offerta;
@@ -81,14 +79,15 @@ import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.OperazioneSospendi;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdServiceImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
@@ -760,7 +759,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));
         
@@ -789,7 +788,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
                 
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -828,7 +827,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -858,7 +857,7 @@ public class SmdApplicationTests {
         
         Pubblicazione lodare =pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
 
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         abb.setPregresso(new BigDecimal(10.0));
         abb.setImporto(new BigDecimal(15.0));        
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
@@ -913,7 +912,7 @@ public class SmdApplicationTests {
         
         Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
 
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
 
         RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setAbbonamento(abb);
@@ -1053,7 +1052,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1078,7 +1077,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1112,7 +1111,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1136,7 +1135,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1162,7 +1161,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1188,7 +1187,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1212,7 +1211,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
@@ -1286,7 +1285,7 @@ public class SmdApplicationTests {
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
@@ -1465,7 +1464,7 @@ public class SmdApplicationTests {
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), false);
         
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
 
@@ -1551,7 +1550,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
-        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno, Cassa.Ccp);
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno, false);
         
         Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
@@ -1591,9 +1590,14 @@ public class SmdApplicationTests {
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
         ec1.setNumero(10);
-        List<SpedizioneItem> rimItems = Smd.aggiornaEC(abb, ec1, spedizioni,SmdHelper.getSpeseSpedizione());
-        
-        assertEquals(11, rimItems.size());
+        List<SpedizioneItem> rimItems = 
+        		Smd.aggiorna(
+        				ec1, 
+        		        spedizioni,
+        		        SmdHelper.getSpeseSpedizione(),
+        				rivistaAbbonamentoDao.findById(ec1.getId()).get()
+				);       
+        assertEquals(0, rimItems.size());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
@@ -1809,7 +1813,7 @@ public class SmdApplicationTests {
         Abbonamento abb = SmdHelper.getAbbonamentoBy(
                             davidePalma, 
                             Anno.getAnnoCorrente(), 
-                            Cassa.Ccp
+                            false
                             );
         
         RivistaAbbonamento ec = new RivistaAbbonamento();
@@ -1899,7 +1903,7 @@ public class SmdApplicationTests {
         Abbonamento abb1 = SmdHelper.getAbbonamentoBy(
                                                      davidePalma, 
                                                      Anno.getAnnoCorrente(), 
-                                                     Cassa.Ccp
+                                                     false
                                                      );
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setPubblicazione(b);
@@ -1922,7 +1926,7 @@ public class SmdApplicationTests {
         Abbonamento abb2 = SmdHelper.getAbbonamentoBy(
                                                       antonioRusso, 
                                                       Anno.getAnnoCorrente(), 
-                                                      Cassa.Ccp
+                                                      false
                                                       );
         RivistaAbbonamento ec2 = new RivistaAbbonamento();
         ec2.setPubblicazione(b);

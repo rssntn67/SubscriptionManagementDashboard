@@ -206,4 +206,82 @@ public class RivistaAbbonamento implements SmdEntity {
         return Anagrafica.generaIntestazione(destinatario);
     }
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((abbonamento == null) ? 0 : abbonamento.hashCode());
+		result = prime * result + ((annoFine == null) ? 0 : annoFine.hashCode());
+		result = prime * result + ((annoInizio == null) ? 0 : annoInizio.hashCode());
+		result = prime * result + ((destinatario == null) ? 0 : destinatario.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((invioSpedizione == null) ? 0 : invioSpedizione.hashCode());
+		result = prime * result + ((meseFine == null) ? 0 : meseFine.hashCode());
+		result = prime * result + ((meseInizio == null) ? 0 : meseInizio.hashCode());
+		result = prime * result + ((pubblicazione == null) ? 0 : pubblicazione.hashCode());
+		result = prime * result + ((storico == null) ? 0 : storico.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RivistaAbbonamento other = (RivistaAbbonamento) obj;
+		if (abbonamento == null) {
+			if (other.abbonamento != null)
+				return false;
+		} else if (!abbonamento.equals(other.abbonamento))
+			return false;
+		if (annoFine != other.annoFine)
+			return false;
+		if (annoInizio != other.annoInizio)
+			return false;
+		if (destinatario == null) {
+			if (other.destinatario != null)
+				return false;
+		} else if (!destinatario.equals(other.destinatario))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (invioSpedizione != other.invioSpedizione)
+			return false;
+		if (meseFine != other.meseFine)
+			return false;
+		if (meseInizio != other.meseInizio)
+			return false;
+		if (pubblicazione == null) {
+			if (other.pubblicazione != null)
+				return false;
+		} else if (!pubblicazione.equals(other.pubblicazione))
+			return false;
+		if (storico == null) {
+			if (other.storico != null)
+				return false;
+		} else if (!storico.equals(other.storico))
+			return false;
+		return true;
+	}
+	
+	public RivistaAbbonamento clone() {
+		RivistaAbbonamento r = new RivistaAbbonamento();
+		r.setAbbonamento(abbonamento);
+		r.setAnnoFine(annoFine);
+		r.setAnnoInizio(annoInizio);
+		r.setDestinatario(destinatario);
+		r.setInvioSpedizione(invioSpedizione);
+		r.setMeseFine(meseFine);
+		r.setMeseInizio(meseInizio);
+		r.setPubblicazione(pubblicazione);
+		r.setStorico(storico);
+		return r;
+	}
+
 }
