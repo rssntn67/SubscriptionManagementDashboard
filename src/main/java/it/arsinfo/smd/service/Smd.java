@@ -255,7 +255,7 @@ public class Smd {
         return ec;
     }
 
-    public static boolean aggiorna(
+    public static List<SpedizioneItem> aggiorna(
     		RivistaAbbonamento updated, 
             List<SpedizioneWithItems> spedizioni,
             List<SpesaSpedizione> spese,    		
@@ -281,7 +281,7 @@ public class Smd {
         // Second I update
         if (updated.getNumero() == original.getNumero() && updated.getTipoAbbonamentoRivista() == original.getTipoAbbonamentoRivista()) {
             log.info("aggiorna: updated equals to persisted: {}", abb);        	
-        	return true;
+        	return new ArrayList<>();
         }
 
         if (updated.getNumero() == original.getNumero()) {
@@ -293,16 +293,45 @@ public class Smd {
         	original=null;
             log.info("aggiorna: {}",abb);
             log.info("aggiorna: {}",updated);
-           	return true;
+        	return new ArrayList<>();
         }
 
     	List<SpedizioneWithItems> inviate = new ArrayList<>();
+    	Mese meseInizioInv=null;
+       	Anno annoInizioInv=null;
+        Mese meseFineInv=null;
+       	Anno annoFineInv=null;
     	for (SpedizioneWithItems spedwith: spedizioni) {
     		if (spedwith.getSpedizione().getStatoSpedizione() == StatoSpedizione.INVIATA) {
-    			inviate.add(spedwith);
+    			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
+    				if (item.getRivistaAbbonamento().equals(original)) {
+    	    			inviate.add(spedwith);
+    					if (meseInizioInv==null) {
+    						meseInizioInv=item.getMesePubblicazione();
+    						annoInizioInv=item.getAnnoPubblicazione();
+    					} else if (annoInizioInv.getAnno() > item.getAnnoPubblicazione().getAnno()) {
+    						meseInizioInv=item.getMesePubblicazione();
+    						annoInizioInv=item.getAnnoPubblicazione();    						
+    					} else if (annoInizioInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
+    							meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
+    						meseInizioInv=item.getMesePubblicazione();
+    					}
+    					if (meseFineInv==null) {
+    						meseFineInv=item.getMesePubblicazione();
+    						annoFineInv=item.getAnnoPubblicazione();
+    					} else if (annoFineInv.getAnno() < item.getAnnoPubblicazione().getAnno()) {
+    						meseFineInv=item.getMesePubblicazione();
+    						annoFineInv=item.getAnnoPubblicazione();    						
+    					} else if (annoFineInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
+    							meseFineInv.getPosizione() < item.getMesePubblicazione().getPosizione()) {
+    						meseFineInv=item.getMesePubblicazione();
+    					}
+    				}
+    			}
     		}
     	}
-    	
+
+    	log.info("aggiorna: {} spedizioni inviate", inviate.size());
         if (inviate.size() == 0) {
         	calcoloImporto(updated);
             log.info("aggiorna: nessuna spedizione inviata: importo updated: {}", updated.getImporto());        	
@@ -324,12 +353,12 @@ public class Smd {
         	original=null;
             log.info("aggiorna: {}",abb);
             log.info("aggiorna: {}",updated);
-    		return true;
+    		return new ArrayList<>();
         }
         
     	if (updated.getNumero() > original.getNumero()) {
-        	original.setTipoAbbonamentoRivista(updated.getTipoAbbonamentoRivista());
         	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        	original.setTipoAbbonamentoRivista(updated.getTipoAbbonamentoRivista());
         	calcoloImporto(original);
         	abb.setImporto(abb.getImporto().add(original.getImporto()));
         	RivistaAbbonamento r = updated.clone();
@@ -344,71 +373,74 @@ public class Smd {
             log.info("aggiorna: {}",abb);
             log.info("aggiorna: {}",updated);
             log.info("aggiorna: {}",original);
-        	return false;
+        	return new ArrayList<>();
     	}
+    	log.info("aggiorna: spedizioni inviate: inizio {} {}, fine {} {}", meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
+    	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+    	original.setTipoAbbonamentoRivista(updated.getTipoAbbonamentoRivista());
+    	original.setMeseInizio(meseInizioInv);
+    	original.setMeseFine(meseFineInv);
+    	original.setAnnoInizio(annoInizioInv);
+    	original.setAnnoFine(annoFineInv);
+    	original.setNumero(original.getNumero()-updated.getNumero());
+    	calcoloImporto(original);
+    	abb.setImporto(abb.getImporto().add(original.getImporto()));
 
-    	// original = 
-        log.info("aggiorna: importo abbonamento: {}", abb.getImporto());
-        log.info("aggiorna: spese abbonamento: {}", abb.getSpese());
-        log.info("aggiorna: pregresso abbonamento: {}", abb.getPregresso());
-        
-        final List<SpedizioneItem> invItems = new ArrayList<>(); 
+    	RivistaAbbonamento r = updated.clone();
+    	updated =r;
+    	calcoloImporto(updated);
+    	abb.setImporto(abb.getImporto().add(updated.getImporto()));
+        log.info("aggiorna: spedizione inviata: updated.numero<original.numero: importo original: {}", original.getImporto());        	
+        log.info("aggiorna: spedizione inviata: updated.numero<original.numero: importo updated: {}", updated.getImporto());        	
+
+    	int itemsoriginal=0;
+    	int itemsupdated=0;
+        for (SpedizioneWithItems spedwith: inviate) {
+        	for (SpedizioneItem originitem: spedwith.getSpedizioneItems()) {
+        		if (originitem.getRivistaAbbonamento().equals(original)) {
+        			originitem.setNumero(original.getNumero());
+        			itemsoriginal++;
+        			SpedizioneItem item = new SpedizioneItem();
+                    item.setRivistaAbbonamento(updated);
+                    item.setAnnoPubblicazione(originitem.getAnnoPubblicazione());
+                    item.setMesePubblicazione(originitem.getMesePubblicazione());
+                    item.setNumero(updated.getNumero());
+                    item.setPubblicazione(updated.getPubblicazione());
+                    item.setPosticipata(originitem.isPosticipata());
+                    item.setSpedizione(spedwith.getSpedizione());
+                    spedwith.addSpedizioneItem(item);
+                    itemsupdated++;
+                }
+        	}
+        }
+        original.setNumeroTotaleRiviste(original.getNumero()*itemsoriginal);
+
         final List<SpedizioneItem> rimItems = new ArrayList<>();
-        
-        calcoloImporto(original);
-        log.info("aggiorna: update: ec: meseInizio: {}", original.getMeseInizio().getNomeBreve());
-        log.info("aggiorna: update: ec: annoInizio: {}", original.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: update: ec: meseFine: {}", original.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: update: ec: annoFine: {}", original.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: update: ec: quantità: {}", original.getNumero());
-        log.info("aggiornaEC: update: ec: importo: {}", original.getImporto());
-        abb.setImporto(abb.getImporto().add(original.getImporto()));
-        log.info("aggiornaEC: update: abb: importo: {}", abb.getImporto());
-        log.info("aggiornaEC: update: abb: spese: {}", abb.getSpese());
-        log.info("aggiornaEC: update: abb:pregresso: {}", abb.getPregresso());
-                
+        for (SpedizioneWithItems sw:spedizioni) {
+        	if (sw.getSpedizione().getStatoSpedizione() != StatoSpedizione.INVIATA) {
+            	for (SpedizioneItem originitem: sw.getSpedizioneItems()) {
+    				rimItems.add(originitem);
+    				sw.deleteSpedizioneItem(originitem);
+    				SpedizioneItem item = new SpedizioneItem();
+                    item.setRivistaAbbonamento(updated);
+                    item.setAnnoPubblicazione(originitem.getAnnoPubblicazione());
+                    item.setMesePubblicazione(originitem.getMesePubblicazione());
+                    item.setNumero(updated.getNumero());
+                    item.setPubblicazione(updated.getPubblicazione());
+                    item.setPosticipata(originitem.isPosticipata());
+                    item.setSpedizione(sw.getSpedizione());
+                    sw.addSpedizioneItem(item);
+                    itemsupdated++;
+            	}        		
+        	}        	
+        }
+    	updated.setNumeroTotaleRiviste(itemsupdated*updated.getNumeroTotaleRiviste());
         calcolaPesoESpesePostali(abb, spedizioni, spese);
-        log.info("aggiornaEC: update: abb: importo: {}", abb.getImporto());
-        log.info("aggiornaEC: update: abb: spese: {}", abb.getSpese());
-        log.info("aggiornaEC: update: abb:pregresso: {}", abb.getPregresso());
+        log.info("aggiorna: {}",abb);
+        log.info("aggiorna: {}",updated);
+        log.info("aggiorna: {}",original);
 
-        //Updated status
-        spedizioni.stream()
-        .filter(sped -> sped.getSpedizione().getStatoSpedizione() != StatoSpedizione.INVIATA)
-        .forEach(sped -> {
-            switch (abb.getStatoAbbonamento()) {
-            case Nuovo:
-                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-                break;
-            case Proposto:
-                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-                break;
-            case Valido:
-                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-                break;
-            case Sospeso:
-                sped.getSpedizione().setStatoSpedizione(StatoSpedizione.SOSPESA);
-                break;
-            case Annullato:
-                break;
-
-            default:
-                break;
-            }
-        });
-        log.info("aggiornaEC: abb: intestatario: {}", abb.getIntestatario().getCaption());
-        log.info("aggiornaEC: abb: area: {}", abb.getIntestatario().getAreaSpedizione());
-        log.info("aggiornaEC: abb: importo: {}", abb.getImporto());
-        log.info("aggiornaEC: abb: spese: {}", abb.getSpese());
-        log.info("aggiornaEC: abb:pregresso: {}", abb.getPregresso());
-        log.info("aggiornaEC: ec: pubbli.: {}", original.getPubblicazione().getNome());
-        log.info("aggiornaEC: ec: meseInizio: {}", original.getMeseInizio().getNomeBreve());
-        log.info("aggiornaEC: ec: annoInizio: {}", original.getAnnoInizio().getAnnoAsString());
-        log.info("aggiornaEC: ec: meseFine: {}", original.getMeseFine().getNomeBreve());
-        log.info("aggiornaEC: ec: annoFine: {}", original.getAnnoFine().getAnnoAsString());
-        log.info("aggiornaEC: ec: quantità: {}", original.getNumero());
-        log.info("aggiornaEC: ec: importo: {}", original.getImporto());
-        return false;
+        return rimItems;
     }
 
     public static List<SpedizioneItem> rimuoviEC(
