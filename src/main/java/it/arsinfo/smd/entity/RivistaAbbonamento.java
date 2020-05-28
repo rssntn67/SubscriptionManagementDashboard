@@ -125,8 +125,8 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo);
     }
         
     public BigDecimal getImporto() {
@@ -221,6 +221,35 @@ public class RivistaAbbonamento implements SmdEntity {
 		result = prime * result + ((pubblicazione == null) ? 0 : pubblicazione.hashCode());
 		result = prime * result + ((storico == null) ? 0 : storico.hashCode());
 		return result;
+	}
+
+	public boolean same(RivistaAbbonamento other) {
+		if (annoFine != other.annoFine)
+			return false;
+		if (annoInizio != other.annoInizio)
+			return false;
+		if (destinatario == null) {
+			if (other.destinatario != null)
+				return false;
+		} else if (!destinatario.equals(other.destinatario))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (invioSpedizione != other.invioSpedizione)
+			return false;
+		if (meseFine != other.meseFine)
+			return false;
+		if (meseInizio != other.meseInizio)
+			return false;
+		if (pubblicazione == null) {
+			if (other.pubblicazione != null)
+				return false;
+		} else if (!pubblicazione.equals(other.pubblicazione))
+			return false;
+		return true;
 	}
 
 	@Override

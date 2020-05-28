@@ -13,6 +13,7 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
@@ -32,6 +33,7 @@ import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoOperazione;
@@ -209,68 +211,56 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
+    @Transactional
     public void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        List<SpedizioneItem> deleted = 
+        RivistaAbbonamentoAggiorna aggiorna = 
         		Smd.aggiorna(
+        				abbonamento,
         				rivistaAbbonamento, 
         				spedizioni,
                         spesaSpedizioneDao.findAll(),
                         rivistaAbbonamentoDao.findById(rivistaAbbonamento.getId()).get()
-                );  
-        
-        spedizioni.stream().forEach(sped -> {
+                );          
+        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         
-        deleted.forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
+        aggiorna.getItemsToDelete().forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
         
-        for (SpedizioneWithItems sped:spedizioni) {
+        for (SpedizioneWithItems sped:aggiorna.getSpedizioniToSave()) {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        rivistaAbbonamentoDao.save(rivistaAbbonamento);
+        aggiorna.getRivisteToSave().forEach(r -> rivistaAbbonamentoDao.save(rivistaAbbonamento));
         
-        abbonamentoDao
-        .findByIntestatarioAndAnnoAndContrassegno(
-                   abbonamento.getIntestatario(), 
-                   Anno.getAnnoPrecedente(abbonamento.getAnno()), 
-                   abbonamento.isContrassegno()
-               )
-        .forEach(abb -> 
-        {
-        	abbonamento.setPregresso(
-			abbonamento.getPregresso().add(abb.getResiduo()));
-        	abb.getPregresso().subtract(abb.getResiduo());
-        	abbonamentoDao.save(abb);
-        });
-        abbonamentoDao.save(abbonamento);
+        if (aggiorna.getAbbonamentoToSave() != null)
+        	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());
     }
 
     @Override
+    @Transactional
     public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception {
         if (rivistaAbbonamento == null || abbonamento == null)
             return;
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
 
-        List<SpedizioneItem> deleted = Smd.rimuoviEC(abbonamento,
+        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abbonamento,
                                                      rivistaAbbonamento, 
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
-        spedizioni.stream().forEach(sped -> {
+        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> {
                 spedizioneItemDao.save(item);
                });
         });
-        for (SpedizioneItem delitem: deleted ) {
-            spedizioneItemDao.deleteById(delitem.getId());
-        }
+        aggiorna.getItemsToDelete().forEach(item -> spedizioneItemDao.deleteById(item.getId()));
         
         for (SpedizioneWithItems sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
@@ -278,14 +268,9 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        if (rivistaAbbonamento.getNumeroTotaleRiviste() == 0 && spedizioneItemDao.findByRivistaAbbonamento(rivistaAbbonamento).isEmpty()) { 
-            rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId());
-        }
-        if (spedizioneDao.findByAbbonamento(abbonamento).isEmpty() && rivistaAbbonamentoDao.findByAbbonamento(abbonamento).isEmpty()) {
-        	abbonamentoDao.delete(abbonamento);
-        } else {
-        	abbonamentoDao.save(abbonamento);
-        }
+        aggiorna.getRivisteToDelete().forEach(r ->rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId()));
+        aggiorna.getRivisteToSave().forEach(r->rivistaAbbonamentoDao.save(r));
+    	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());        
     }
 
     @Override

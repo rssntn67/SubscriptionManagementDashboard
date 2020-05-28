@@ -12,7 +12,6 @@ public class SpedizioneWithItems {
     private final Spedizione spedizione;
     private List<SpedizioneItem> spedizioneItems = new ArrayList<SpedizioneItem>();
 
-
     public SpedizioneWithItems(Spedizione sped) {
         this.spedizione=sped;
     }
@@ -75,6 +74,5 @@ public class SpedizioneWithItems {
             return false;
         return true;
     }
-
 
 }

@@ -3,6 +3,7 @@ package it.arsinfo.smd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -29,6 +30,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
+import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -382,7 +384,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testRimuoviECConSpedizioniInviate() {
+    public void testRimuoviRivistaConSpedizioniInviate() {
         Anagrafica tizio = SmdHelper.getGP();
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), false);
@@ -497,13 +499,12 @@ public class SmdUnitTests {
             }
         }
         
-        List<SpedizioneItem> deletedItems = Smd.rimuoviEC(abb, ec1, spedizioniwithitems, SmdHelper.getSpeseSpedizione());
-        assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, deletedItems.size());
+        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb, ec1, spedizioniwithitems, SmdHelper.getSpeseSpedizione());
+        assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, aggiorna.getItemsToDelete().size());
 
         BigDecimal ss = BigDecimal.ZERO;
-        for (SpedizioneWithItems ssp:spedizioniwithitems) {
+        for (SpedizioneWithItems ssp:aggiorna.getSpedizioniToSave()) {
             Spedizione sped= ssp.getSpedizione();
-            log.info(sped.toString());
             if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 ss = sped.getSpesePostali();
                 assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
@@ -523,19 +524,22 @@ public class SmdUnitTests {
             ssp.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
         }
         
-        log.info(ec1.toString());
-        log.info(abb.toString());
-        assertEquals(0, ec1.getNumero().intValue());
-        assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, ec1.getNumeroTotaleRiviste().intValue());
-        assertEquals(ss.doubleValue(), abb.getSpese().doubleValue(),0);
+        assertEquals(0,aggiorna.getRivisteToDelete().size());
+        assertEquals(1, aggiorna.getRivisteToSave().size());
+        RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
+        assertEquals(1, rivista.getNumero().intValue());
+        Abbonamento abbonamento = aggiorna.getAbbonamentoToSave();
+        assertNotNull(abbonamento);
+        assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, rivista.getNumeroTotaleRiviste().intValue());
+        assertEquals(ss.doubleValue(), abbonamento.getSpese().doubleValue(),0);
         assertEquals(ec1.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), ec1.getImporto().doubleValue(),0);
+        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), rivista.getImporto().doubleValue(),0);
         
 
     }
     
     @Test
-    public void testRimuoviEC() {
+    public void testRimuoviRivista() {
         
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
        
@@ -596,40 +600,24 @@ public class SmdUnitTests {
         spedizioni.stream().forEach(spwi -> {
             Spedizione sped= spwi.getSpedizione();
             assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
-            log.info(sped.toString());
-            spwi.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
+            assertEquals(1, spwi.getSpedizioneItems().size());
+            assertEquals(InvioSpedizione.Spedizioniere, sped.getInvioSpedizione());
             switch (sped.getMeseSpedizione()) {
             case OTTOBRE:
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
                 break;
             case NOVEMBRE:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
                 break;
             case DICEMBRE:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
                 break;
             case GENNAIO:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
                 break;
             case FEBBRAIO:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
                 break;
             case MARZO:
-                assertEquals(messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
                 break;
             case APRILE:
-                assertEquals(blocchetti.getGrammi()+messaggio.getGrammi()+lodare.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(3, spwi.getSpedizioneItems().size());
                 break;
             case GIUGNO:
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
                 break;
             default:
                 assertTrue(false);
@@ -651,66 +639,81 @@ public class SmdUnitTests {
         assertEquals(6*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
         assertEquals(6*lodare.getCostoUnitario().doubleValue(), ec2.getImporto().doubleValue(),0);
         assertEquals(blocchetti.getAbbonamento().doubleValue(), ec3.getImporto().doubleValue(),0);
-        assertEquals(7, spedizioni.size());
+        assertEquals(14, spedizioni.size());
         assertEquals(6, ec1items.size());
         assertEquals(6, ec2items.size());
         assertEquals(2, ec3items.size());
         
         //FIRST operation Delete ec2 lodare
-        List<SpedizioneItem> deleted = Smd.rimuoviEC(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione());
-        assertEquals(6, deleted.size());
+        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione());
+        assertEquals(6, aggiorna.getItemsToDelete().size());
         
-        for (SpedizioneItem item: deleted){
-            log.info("delete: " + item.toString());
+        for (SpedizioneItem item: aggiorna.getItemsToDelete()){
             assertEquals(ec2, item.getRivistaAbbonamento());
         }
-        spedizioni.stream().forEach(spwi -> {
+        int spedizionelodarecount=0;
+        int spedizionemessaggiocount=0;
+        int spedizioneblocchetticount=0;
+        for (SpedizioneWithItems spwi: aggiorna.getSpedizioniToSave()) {
             Spedizione sped = spwi.getSpedizione();
-            log.info(sped.toString());
-            spwi.getSpedizioneItems().stream().forEach(item -> log.info(item.toString()));
+            if (spwi.getSpedizioneItems().size() == 0) {
+            	spedizionelodarecount++;
+            	continue;
+            }
+            assertEquals(1, spwi.getSpedizioneItems().size());
             switch (sped.getMeseSpedizione()) {
             case OTTOBRE:
                 assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizioneblocchetticount++;
                 break;
             case NOVEMBRE:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizionemessaggiocount++;
                 break;
             case DICEMBRE:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizionemessaggiocount++;
                 break;
             case GENNAIO:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizionemessaggiocount++;
                 break;
             case FEBBRAIO:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizionemessaggiocount++;
                 break;
             case MARZO:
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                spedizionemessaggiocount++;
                 break;
             case APRILE:
-                assertEquals(messaggio.getGrammi()+blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(2, spwi.getSpedizioneItems().size());
+                SpedizioneItem item = spwi.getSpedizioneItems().iterator().next();
+                if (item.getPubblicazione().equals(blocchetti)) {
+                    assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                    spedizioneblocchetticount++;
+                } else if (item.getPubblicazione().equals(messaggio)) {
+                    assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                    spedizionemessaggiocount++;
+                } else {
+                	assertTrue(false);
+                }
                 break;
             default:
                 assertTrue(false);
                 break;
             }
-        });
+        }
+        assertEquals(2, spedizioneblocchetticount);
+        assertEquals(6, spedizionemessaggiocount);
+        assertEquals(6, spedizionelodarecount);
         assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
         assertEquals(0, ec2.getImporto().doubleValue(),0);
         
 
-        deleted = Smd.rimuoviEC(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
-        assertEquals(6, deleted.size());
+        aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+        assertEquals(6, aggiorna.getItemsToDelete().size());
 
-        for (SpedizioneItem item: deleted){
-            log.info("delete: " + item.toString());
+        for (SpedizioneItem item: aggiorna.getItemsToDelete()){
             assertEquals(ec1, item.getRivistaAbbonamento());
         }
         spedizioni.stream().forEach(spwi -> {
@@ -743,8 +746,10 @@ public class SmdUnitTests {
                 assertEquals(0, spwi.getSpedizioneItems().size());
                 break;
             case APRILE:
+            	if (spwi.getSpedizioneItems().size() == 0) {
+            		break;
+            	}
                 assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
                 break;
             case GIUGNO:
                 assertEquals(0, sped.getPesoStimato().intValue());
@@ -758,16 +763,14 @@ public class SmdUnitTests {
         assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(0, ec1.getImporto().doubleValue(),0);
 
-        deleted = Smd.rimuoviEC(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
-        for (SpedizioneItem item: deleted){
-            log.info("delete: " + item.toString());
+        aggiorna = Smd.rimuovi(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
+        for (SpedizioneItem item: aggiorna.getItemsToDelete()) {
             assertEquals(ec3, item.getRivistaAbbonamento());
         }
-        assertEquals(2, deleted.size());
+        assertEquals(2, aggiorna.getItemsToDelete().size());
 
         spedizioni.stream().forEach(spwi -> {
             Spedizione sped = spwi.getSpedizione();
-            log.info(spwi.toString());
             assertEquals(0, spwi.getSpedizioneItems().size());
             assertEquals(0, sped.getPesoStimato().intValue());
         });
@@ -856,7 +859,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testAggiornaEC() {
+    public void testAggiornaException() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
@@ -903,7 +906,7 @@ public class SmdUnitTests {
         ec2.setNumero(10);
         assertTrue(!ec1.equals(ec2));
         try {
-            Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+            Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
@@ -916,37 +919,150 @@ public class SmdUnitTests {
         ec2.setAnnoFine(anno);
         assertTrue(!ec1.equals(ec2));
         try {
-            Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+            Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
-        ec2.setMeseInizio(Mese.GENNAIO);
-        ec2.setMeseFine(Mese.SETTEMBRE);
+        assertEquals(8, items.size());
+        assertEquals(8, spedizioni.size());        
+    }
 
-        List<SpedizioneItem> rimItems = Smd.aggiorna(ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
-
+    @Test
+    public void testAggiornaNumero() {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
-        rimItems.stream().forEach(item -> log.info("deleted:" + item.toString()));
-        assertEquals(0, rimItems.size());
+        Anagrafica tizio = SmdHelper.getGP();
+        Pubblicazione messaggio = SmdHelper.getMessaggio();
         
-        items.clear();
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
+        
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(messaggio);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.SETTEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(15);
+        List<SpedizioneWithItems> spedizioni = 
+                Smd.genera(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdHelper.getSpeseSpedizione());
+        final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> {
-            log.info(sped.toString());
             sped.getSpedizioneItems().stream().forEach(item -> {
-                items.add(item);
-                log.info(item.toString());
-                assertEquals(10, item.getNumero().intValue());
+                items.add(item); 
+                assertEquals(15, item.getNumero().intValue());
             });
         });
         assertEquals(8, items.size());
         assertEquals(8, spedizioni.size());
+        assertEquals(0, abb.getSpese().doubleValue(),0);
+        assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
+        RivistaAbbonamento ec2 = ec1.clone();
+        ec2.setTipoAbbonamentoRivista(ec1.getTipoAbbonamentoRivista());
+        ec2.setNumero(10);
+        assertTrue(ec1.equals(ec2));
+
+        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
         
-        log.info(ec1.toString());
-        log.info(abb.toString());
+        assertEquals(0, aggiorna.getItemsToDelete().size());
+        assertNotNull(aggiorna.getAbbonamentoToSave());
+        assertEquals(8, aggiorna.getSpedizioniToSave().size());
+        assertEquals(1, aggiorna.getRivisteToSave().size());
         
+        assertEquals(0, aggiorna.getAbbonamentoToSave().getSpese().doubleValue(),0);
+        assertEquals(10*8*messaggio.getCostoUnitario().doubleValue(), aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+        RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
+        assertNotNull(rivista);
+        assertEquals(aggiorna.getAbbonamentoToSave().getImporto().doubleValue(), rivista.getImporto().doubleValue(),0);
+        assertEquals(8, aggiorna.getSpedizioniToSave().size());        
+        
+        items.clear();
+        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+            sped.getSpedizioneItems().stream().forEach(item -> {
+                items.add(item);
+                assertTrue(rivista == item.getRivistaAbbonamento());
+                assertEquals(rivista, item.getRivistaAbbonamento());
+                assertEquals(10, item.getNumero().intValue());
+            });
+        });
+        assertEquals(8, items.size());
     }
+    
+    @Test
+    public void testAggiornaTipoAbbonamentoRivista() {
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+        
+        Anagrafica tizio = SmdHelper.getGP();
+        Pubblicazione messaggio = SmdHelper.getMessaggio();
+        
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
+        
+        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(messaggio);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(1);
+        List<SpedizioneWithItems> spedizioni = 
+                Smd.genera(
+                     abb, 
+                     ec1,
+                     new ArrayList<>(),
+                     SmdHelper.getSpeseSpedizione());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> {
+            sped.getSpedizioneItems().stream().forEach(item -> {
+                items.add(item); 
+                assertEquals(1, item.getNumero().intValue());
+            });
+        });
+        assertEquals(11, items.size());
+        assertEquals(11, spedizioni.size());
+        assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
+        assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        ec2.setAbbonamento(abb);
+        ec2.setPubblicazione(messaggio);
+        ec2.setMeseInizio(Mese.GENNAIO);
+        ec2.setAnnoInizio(anno);
+        ec2.setMeseFine(Mese.DICEMBRE);
+        ec2.setAnnoFine(anno);
+        ec2.setDestinatario(tizio);
+        ec2.setNumero(1);
+        ec2.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
+        assertTrue(ec1.equals(ec2));
+
+        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+        assertEquals(0, aggiorna.getSpedizioniToSave().size());        
+        assertEquals(0, aggiorna.getItemsToDelete().size());
+        assertEquals(1, aggiorna.getRivisteToSave().size());
+        assertNotNull(aggiorna.getAbbonamentoToSave());
+        RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
+        assertEquals(0, rivista.getImporto().doubleValue(),0);
+        assertEquals(0, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+        
+        items.clear();
+        spedizioni.stream().forEach(sped -> {
+            sped.getSpedizioneItems().stream().forEach(item -> {
+                items.add(item);
+                assertEquals(1, item.getNumero().intValue());
+            });
+        });
+        assertEquals(11, items.size());
+        assertEquals(11, spedizioni.size());        
+    }
+
 
     @Test
     public void testGeneraCampagnaGP() {
