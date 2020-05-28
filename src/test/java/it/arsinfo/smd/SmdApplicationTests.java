@@ -970,7 +970,7 @@ public class SmdApplicationTests {
         log.info(abbonamento.toString());
         RivistaAbbonamento rivista = rivistaAbbonamentoDao.findAll().iterator().next();
         log.info(rivista.toString());
-       assertEquals(0, abbonamento.getPregresso().doubleValue(),0);
+        assertEquals(0, abbonamento.getPregresso().doubleValue(),0);
 
         switch (tipoEC) {
         	case OmaggioDirettoreAdp:
@@ -1093,15 +1093,17 @@ public class SmdApplicationTests {
         abb.addItem(ec1);
         smdService.genera(abb);
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        
         rivista.setNumero(4);
         smdService.aggiorna(rivista);
+        rivista = rivistaAbbonamentoDao.findById(rivista.getId()).get();
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(abb,rivista);
         assertEquals(0, rivistaAbbonamentoDao.count());
-        assertEquals(0, abbonamentoDao.count());
+        assertEquals(1, abbonamentoDao.count());
         assertEquals(0, spedizioneDao.count());
         assertEquals(0, spedizioneItemDao.count());
+        abbonamentoDao.delete(abb);
+        assertEquals(0, abbonamentoDao.count());
     }
 
     @Test
@@ -1277,7 +1279,7 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamento() {
+    public void testAbbonamentoRimuoviRivistaAbbonamento() throws Exception{
         log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
@@ -1452,7 +1454,7 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() {
+    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() throws Exception {
         log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamentoConSpediti<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1548,7 +1550,7 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoAggiornaRivistaAbbonamento() {
+    public void testAbbonamentoAggiornaRivistaAbbonamento() throws Exception {
         log.info("----------------->testAbbonamentoAggiornaRivistaAbbonamento<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);

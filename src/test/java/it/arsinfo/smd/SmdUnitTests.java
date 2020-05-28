@@ -384,7 +384,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testRimuoviRivistaConSpedizioniInviate() {
+    public void testRimuoviRivistaConSpedizioniInviate() throws Exception{
         Anagrafica tizio = SmdHelper.getGP();
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), false);
@@ -539,7 +539,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testRimuoviRivista() {
+    public void testRimuoviRivista() throws Exception {
         
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
        
@@ -859,7 +859,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testAggiornaException() {
+    public void testAggiornaException() throws Exception {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
@@ -930,7 +930,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testAggiornaNumero() {
+    public void testAggiornaNumero() throws Exception {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
@@ -997,7 +997,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testAggiornaTipoAbbonamentoRivista() {
+    public void testAggiornaTipoAbbonamentoRivista() throws Exception {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();

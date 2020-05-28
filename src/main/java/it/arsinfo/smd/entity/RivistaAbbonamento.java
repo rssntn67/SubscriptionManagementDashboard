@@ -223,35 +223,6 @@ public class RivistaAbbonamento implements SmdEntity {
 		return result;
 	}
 
-	public boolean same(RivistaAbbonamento other) {
-		if (annoFine != other.annoFine)
-			return false;
-		if (annoInizio != other.annoInizio)
-			return false;
-		if (destinatario == null) {
-			if (other.destinatario != null)
-				return false;
-		} else if (!destinatario.equals(other.destinatario))
-			return false;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (invioSpedizione != other.invioSpedizione)
-			return false;
-		if (meseFine != other.meseFine)
-			return false;
-		if (meseInizio != other.meseInizio)
-			return false;
-		if (pubblicazione == null) {
-			if (other.pubblicazione != null)
-				return false;
-		} else if (!pubblicazione.equals(other.pubblicazione))
-			return false;
-		return true;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -236,7 +236,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        aggiorna.getRivisteToSave().forEach(r -> rivistaAbbonamentoDao.save(rivistaAbbonamento));
+        aggiorna.getRivisteToSave().forEach(r -> rivistaAbbonamentoDao.save(r));
         
         if (aggiorna.getAbbonamentoToSave() != null)
         	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());
@@ -268,7 +268,7 @@ public class SmdServiceImpl implements SmdService {
             }
         }
         
-        aggiorna.getRivisteToDelete().forEach(r ->rivistaAbbonamentoDao.deleteById(rivistaAbbonamento.getId()));
+        aggiorna.getRivisteToDelete().forEach(r ->rivistaAbbonamentoDao.deleteById(r.getId()));
         aggiorna.getRivisteToSave().forEach(r->rivistaAbbonamentoDao.save(r));
     	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());        
     }
