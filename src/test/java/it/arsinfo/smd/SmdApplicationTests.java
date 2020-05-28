@@ -1519,10 +1519,10 @@ public class SmdApplicationTests {
         RivistaAbbonamento rivista=aggiorna.getRivisteToSave().iterator().next();
         assertEquals(1, rivista.getNumero().intValue());
         assertEquals(Mese.GENNAIO, rivista.getMeseInizio());
-        assertEquals(Mese.getMeseCorrente(), rivista.getMeseFine());
+        assertEquals(Mese.getByPosizione(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()), rivista.getMeseFine());
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoInizio());
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoFine());
-        assertEquals(Mese.getMeseCorrente().getPosizione(), rivista.getNumeroTotaleRiviste().intValue());
+        assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione(), rivista.getNumeroTotaleRiviste().intValue());
         rivistaAbbonamentoDao.save(aggiorna.getRivisteToSave().iterator().next());
         
         spedizioni=smdService.findByAbbonamento(abb);
