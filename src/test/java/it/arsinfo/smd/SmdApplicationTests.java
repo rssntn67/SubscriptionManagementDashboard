@@ -953,13 +953,73 @@ public class SmdApplicationTests {
         assertEquals(1, rivistaAbbonamentoDao.findByAbbonamento(abb).size());
         assertEquals(items.size(), spedizioneDao.findAll().size());
         assertEquals(items.size(), spedizioneItemDao.findByRivistaAbbonamento(ec).size());
-                        
+
         abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         rivistaAbbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
         spedizioneItemDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
     }
     
+    @Test 
+    public void testAbbonamentoFindByResiduo() {
+        log.info("----------------->testAbbonamentoFindByResiduo<----------------");
+        Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
+
+        Anagrafica tizio = SmdHelper.getGP();
+        anagraficaDao.save(tizio);
+        
+        
+        Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
+
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
+
+        RivistaAbbonamento ec = new RivistaAbbonamento();
+        ec.setAbbonamento(abb);
+        ec.setPubblicazione(messaggio);
+        ec.setMeseFine(Mese.GENNAIO);
+        ec.setAnnoInizio(anno);
+        ec.setMeseFine(Mese.DICEMBRE);
+        ec.setAnnoFine(anno);
+        ec.setDestinatario(tizio);
+        List<SpedizioneWithItems> spedizioni 
+            = Smd.genera(abb, 
+                               ec,
+                               new ArrayList<>(),
+                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+        
+        assertTrue(ec.isAbbonamentoAnnuale());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(item -> items.add(item)));
+        assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
+        EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
+        for (SpedizioneItem item: items) {
+            mesi.add(item.getMesePubblicazione());
+            assertEquals(anno, item.getAnnoPubblicazione());
+            assertEquals(ec.getNumero(), item.getNumero());
+            assertEquals(ec, item.getRivistaAbbonamento());
+        }
+        assertEquals(mesi, messaggio.getMesiPubblicazione());
+        assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
+        abbonamentoDao.save(abb);
+        assertEquals(false, abb.isContrassegno());
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(1, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
+        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        abb.setContrassegno(true);
+        abbonamentoDao.save(abb);
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
+        assertEquals(1, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        
+        abb.setIncassato(abb.getImporto());
+        assertEquals(0, abb.getResiduo().doubleValue(),0);
+        abbonamentoDao.save(abb);
+        assertEquals(1, abbonamentoDao.findAll().size());
+        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
+        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        
+    }
+
     private RivistaAbbonamento checkAbbonamento(Anagrafica tizio,String codeline,Pubblicazione blocchetti, int numero, TipoAbbonamentoRivista tipoEC,InvioSpedizione invioSpedizioneEc, InvioSpedizione invioSpedizioneSped) {
 
     	assertEquals(1, abbonamentoDao.findAll().size());

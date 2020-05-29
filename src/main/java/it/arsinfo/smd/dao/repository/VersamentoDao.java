@@ -23,5 +23,4 @@ public interface VersamentoDao extends JpaRepository<Versamento, Long> {
 	
 	@Query("SELECT v FROM Versamento v WHERE v.importo > v.incassato")
 	List<Versamento> findWithResiduo();
-	
 }

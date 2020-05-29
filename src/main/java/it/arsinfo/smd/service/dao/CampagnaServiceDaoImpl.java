@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,6 +22,7 @@ import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
@@ -30,6 +32,7 @@ import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
@@ -41,6 +44,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Autowired
 	private CampagnaDao repository;
+
+	@Autowired
+	private UserInfoDao userDao;
 
 	@Autowired
 	private CampagnaItemDao campagnaItemDao;
@@ -198,21 +204,54 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
     	}
     	//Calcola pregresso e Incassa versamenti
-    	List<Abbonamento> abbonamentiConDebito = 
-			abbonamentoDao.findByAnno(Anno.getAnnoPrecedente(campagna.getAnno()))
+    	List<Abbonamento> abbonamenti = abbonamentoDao.findByCampagna(campagna);
+    	
+    	Map<Long,Abbonamento> committentiabbonamentoConDebitoSenzaContrassegno= 
+			abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(Anno.getAnnoPrecedente(campagna.getAnno()), false)
 			.stream()
-			.filter(abbonamento -> abbonamento.getResiduo().signum() != 0).collect(Collectors.toList());
+			.collect(Collectors.toMap(a -> a.getIntestatario().getId(), a -> a));
+    	Map<Long,Abbonamento> committentiabbonamentoConDebitoContrassegno= 
+			abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(Anno.getAnnoPrecedente(campagna.getAnno()), true)
+			.stream()
+			.collect(Collectors.toMap(a -> a.getIntestatario().getId(), a -> a));
 
-    	List<Versamento> versamentiConCredito = versamentoDao.findWithResiduo();
-        for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
-        	
-            if (abb.getTotale().signum() == 0) {
-                abb.setStatoAbbonamento(StatoAbbonamento.Valido);
+    	List<Versamento> committentiConResiduo = versamentoDao.findWithResiduo();
+
+    	abbonamenti.forEach( ca -> {
+    		Anagrafica intestatario = ca.getIntestatario();
+    		if (ca.isContrassegno() && committentiabbonamentoConDebitoContrassegno.containsKey(intestatario.getId())) {
+    			Abbonamento past = committentiabbonamentoConDebitoContrassegno.get(intestatario.getId());
+    			ca.setPregresso(past.getResiduo());
+    			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
+    			abbonamentoDao.save(ca);
+    			abbonamentoDao.save(past);
+    		} 
+    		if (!ca.isContrassegno() && committentiabbonamentoConDebitoSenzaContrassegno.containsKey(intestatario.getId())) {
+    			Abbonamento past = committentiabbonamentoConDebitoSenzaContrassegno.get(intestatario.getId());
+    			ca.setPregresso(past.getResiduo());
+    			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
+    			abbonamentoDao.save(ca);
+    			abbonamentoDao.save(past);    		
+    		}
+    		committentiConResiduo
+    			.stream()
+    			.filter(v -> v.getCommittente().getId() == intestatario.getId())
+    			.forEach(v -> {
+					try {
+						smdService.incassa(ca, v, userDao.findByUsernameContainingIgnoreCase("admin").iterator().next()
+								, "Incassato da Committente ad Invio Campagna");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+            if (ca.getTotale().signum() == 0) {
+                ca.setStatoAbbonamento(StatoAbbonamento.Valido);
             } else {
-                abb.setStatoAbbonamento(StatoAbbonamento.Proposto);
+                ca.setStatoAbbonamento(StatoAbbonamento.Proposto);
             }
-            abbonamentoDao.save(abb);
-        }
+            abbonamentoDao.save(ca);
+    	});
+        
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         repository.save(campagna);
         log.info("invia Campagna end {}", campagna);

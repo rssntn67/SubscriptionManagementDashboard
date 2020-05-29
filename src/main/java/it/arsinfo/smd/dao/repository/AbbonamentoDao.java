@@ -3,6 +3,7 @@ package it.arsinfo.smd.dao.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -25,5 +26,8 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
     List<Abbonamento> findByContrassegno(boolean contrassegno);
     List<Abbonamento> findByAnno(Anno anno);
 	Long deleteByCampagna(Campagna campagna);
+	
+	@Query("SELECT a FROM Abbonamento a WHERE a.importo+a.spese+a.pregresso+a.speseEstero+a.speseEstrattoConto-a.incassato > 0 AND a.anno = ?1 AND a.contrassegno= ?2")
+	List<Abbonamento> findWithResiduoAndAnnoAndContrassegno(Anno anno,boolean contrassegno);
 
 }
