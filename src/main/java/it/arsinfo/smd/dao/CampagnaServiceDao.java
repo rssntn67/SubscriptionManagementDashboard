@@ -21,7 +21,6 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 	List<Abbonamento> findEstrattoContoByCampagna(Campagna entity);
 	List<Abbonamento> findAnnullatiByCampagna(Campagna entity);
 
-	void genera(Campagna campagna) throws Exception;
 	void invia(Campagna campagna) throws Exception;
 	void estratto(Campagna campagna) throws Exception;	
 	void chiudi(Campagna campagna) throws Exception;

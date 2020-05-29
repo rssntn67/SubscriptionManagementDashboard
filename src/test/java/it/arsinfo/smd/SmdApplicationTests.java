@@ -1676,7 +1676,31 @@ public class SmdApplicationTests {
         assertEquals(0, versamentoDao.findAll().size());
                 
     }
-    
+
+    @Test 
+    public void testVersamentoWithRediduo() {
+        log.info("----------------->testVersamentoWithRediduo<----------------");
+        assertEquals(0, incassoDao.findAll().size());
+        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        incassoDao.save(incasso);
+        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        
+        assertEquals(1, incassoDao.findAll().size());
+        assertEquals(1, versamentoDao.findAll().size());
+        assertEquals(1, versamentoDao.findWithResiduo().size());
+        
+        Versamento versamento = versamentoDao.findWithResiduo().iterator().next();
+        versamento.setIncassato(versamento.getImporto());
+        assertEquals(0, versamento.getResiduo().doubleValue(),0);
+        versamentoDao.save(versamento);
+        assertEquals(0, versamentoDao.findWithResiduo().size());
+        
+        incassoDao.delete(incasso);
+        assertEquals(0, incassoDao.findAll().size());
+        assertEquals(0, versamentoDao.findAll().size());
+                
+    }
+
     @Test
     public void testOfferteCumulateCRUD() {
         log.info("----------------->testOfferteCumulateCRUD<----------------");

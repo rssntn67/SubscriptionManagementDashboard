@@ -21,6 +21,7 @@ import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
+import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -32,6 +33,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
 
 @Service
@@ -48,6 +50,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Autowired
 	private AnagraficaDao anagraficaDao;
+
+	@Autowired
+	private VersamentoDao versamentoDao;
 
 	@Autowired
 	private StoricoDao storicoDao;
@@ -83,9 +88,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		repository.save(entity);
 		for (CampagnaItem item : entity.getCampagnaItems()) {
 			campagnaItemDao.save(item);
-			log.info("save: {}", item);
 		}
-        log.info("genera Campagna start {}", entity);
         List<Abbonamento> 
             abbonamenti = 
               Smd.genera(entity, 
@@ -104,7 +107,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 smdService.genera(abb);
             }
         }
-        log.info("genera Campagna end");
 		log.info("save: Campagna end {}", entity);
 		return entity;
 	}
@@ -185,12 +187,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
                 .collect(Collectors.toList());
 	}
-
-    @Override
-    public void genera(Campagna campagna) throws Exception {
-    	save(campagna);
-    }
 	
+	//FIXME
+	@Transactional
 	public void invia(Campagna campagna) throws Exception {
         log.info("invia Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
@@ -198,7 +197,15 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
 
     	}
+    	//Calcola pregresso e Incassa versamenti
+    	List<Abbonamento> abbonamentiConDebito = 
+			abbonamentoDao.findByAnno(Anno.getAnnoPrecedente(campagna.getAnno()))
+			.stream()
+			.filter(abbonamento -> abbonamento.getResiduo().signum() != 0).collect(Collectors.toList());
+
+    	List<Versamento> versamentiConCredito = versamentoDao.findWithResiduo();
         for (Abbonamento abb: abbonamentoDao.findByCampagna(campagna)) {
+        	
             if (abb.getTotale().signum() == 0) {
                 abb.setStatoAbbonamento(StatoAbbonamento.Valido);
             } else {
