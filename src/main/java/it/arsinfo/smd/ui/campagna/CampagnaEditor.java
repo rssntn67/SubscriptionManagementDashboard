@@ -6,12 +6,10 @@ import java.util.stream.Collectors;
 import com.vaadin.data.Binder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
@@ -29,7 +27,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final ComboBox<StatoCampagna> statoCampagna = new ComboBox<StatoCampagna>("Stato",
             EnumSet.allOf(StatoCampagna.class));
     
-    private final CheckBox running = new CheckBox("running");
+    private final Label running = new Label("");
     private final CampagnaItemsEditor items;
     
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
@@ -68,41 +66,61 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
 
         buttonWGenera.addClickListener(click -> {
-			Notification.show("Generazione Campagna Avviata", Notification.Type.WARNING_MESSAGE);
+			Notification.show("Generazione Campagna Avviata", Notification.Type.TRAY_NOTIFICATION);
 			BgGenera genera = new BgGenera(repo);
 			genera.start();
-            onChange();
+        	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+            edit(get());
         });
 
         buttonWInvio.addClickListener(click -> {
-			Notification.show("Invio Campagna Avviato", Notification.Type.WARNING_MESSAGE);
+			Notification.show("Invio Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
 			BgInvia invia = new BgInvia(repo);
 			invia.start();
-            onChange();
+	       	try {
+					Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+            edit(get());
         });
 
         buttonWEstrattoConto.addClickListener(click -> {
-			Notification.show("Estratto Conto Campagna Avviato", Notification.Type.WARNING_MESSAGE);
+			Notification.show("Estratto Conto Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
 			BgEstrattoConto estratto = new BgEstrattoConto(repo);
 			estratto.start();
-			onChange();
+	       	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+            edit(get());
         });
 
         buttonWChiudi.addClickListener(click -> {
-			Notification.show("Chiudi Campagna Avviato", Notification.Type.WARNING_MESSAGE);
+			Notification.show("Chiudi Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
 			BgChiudi bgchiudi = new BgChiudi(repo);
 			bgchiudi.start();
-            onChange();
+	       	try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+            edit(get());
         });
 
         getActions().addComponents(buttonWGenera,buttonWInvio,buttonWEstrattoConto,buttonWChiudi);
-		HorizontalLayout riviste = new HorizontalLayout(anno,statoCampagna,running);
+		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+		
+		HorizontalLayout riviste = new HorizontalLayout();
 		riviste.addComponent(new Label("riviste in abbonamento"));
 		riviste.addComponents(items.getComponents());
 
         setComponents(
         		getActions(),
+        		running,
         		riviste,
+        		stato,
         	    new HorizontalLayout(buttonVGenerati,buttonVInviati,buttonVEstrattiConto,buttonVAnnullati),
         	    new VerticalLayout(grid.getComponents())
 		);
@@ -116,7 +134,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
         statoCampagna.setReadOnly(true);
-        running.setReadOnly(true);
         
         items.setChangeHandler(() -> {
             items.edit(repo.findPubblicazioniValide().
@@ -151,7 +168,11 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 		buttonWInvio.setEnabled(false);
 		buttonWEstrattoConto.setEnabled(false);
 		buttonWChiudi.setEnabled(false);
+		if (campagna.isRunning()) {
+			running.setValue("locked: running...");
+		}
 		if (!campagna.isRunning()) {
+			running.setValue("");
 	        if (!persisted) {
 	        	buttonWGenera.setEnabled(true);
 	        	items.onChange();
@@ -196,12 +217,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             try {
                 repo.genera(get());
             } catch (Exception e) {
-            	UI current = UI.getCurrent();
-            	if (current != null) {
-            		current.access(() ->
-                Notification.show("Non è possibile Invia campagna:"+e.getMessage(),
-                                  Notification.Type.ERROR_MESSAGE));
-            	}
             }    		
         }
     }
@@ -222,12 +237,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             try {
                 repo.invia(get());
             } catch (Exception e) {
-            	UI current = UI.getCurrent();
-            	if (current != null) {
-            		current.access(() ->
-                Notification.show("Non è possibile Invia campagna:"+e.getMessage(),
-                                  Notification.Type.ERROR_MESSAGE));
-            	}
             }    		
         }
     }
@@ -248,12 +257,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             try {
                 repo.estratto(get());
             } catch (Exception e) {
-            	UI current = UI.getCurrent();
-            	if (current != null) {
-            		current.access(() ->
-                Notification.show("Non è possibile inviare Estratto Conto campagna:"+e.getMessage(),
-                                  Notification.Type.ERROR_MESSAGE));
-            	}
             }    		
         }
     }
@@ -273,12 +276,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             try {
                 repo.chiudi(get());
             } catch (Exception e) {
-            	UI current = UI.getCurrent();
-            	if (current != null) {
-            		current.access(() ->
-                Notification.show("Non è possibile chiudere campagna:"+e.getMessage(),
-                                  Notification.Type.ERROR_MESSAGE));
-            	}
             }    		
         }
     }

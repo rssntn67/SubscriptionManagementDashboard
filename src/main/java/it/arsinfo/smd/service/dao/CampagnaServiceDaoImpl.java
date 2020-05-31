@@ -104,6 +104,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		try {
 			doGenera(entity);
 		} catch (Exception e) {
+			log.error("genera: {}",e.getMessage(),e);
 			unlock(entity);
 			throw e;
 		} 
@@ -151,6 +152,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 			doDelete(entity);
 			repository.deleteById(entity.getId());
 		} catch (Exception e) {
+			log.error("delete: {}",e.getMessage(),e);
 			unlock(entity);
 			throw e;
 		} 
@@ -237,6 +239,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		try {
 			doInvia(campagna);
 		} catch (Exception e) {
+			log.error("invia: {}",e.getMessage(),e);
 			unlock(campagna);
 			throw e;
 		} 
@@ -276,7 +279,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
     		}
     		committentiConResiduo
     			.stream()
-    			.filter(v -> v.getCommittente().getId() == intestatario.getId())
+    			.filter(v -> v.getCommittente() != null && v.getCommittente().getId() == intestatario.getId())
     			.forEach(v -> {
 					try {
 						smdService.incassa(ca, v, userDao.findByUsernameContainingIgnoreCase("admin").iterator().next()
@@ -307,6 +310,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		try {
 			doEstratto(campagna);
 		} catch (Exception e) {
+			log.error("estratto: {}",e.getMessage(),e);
 			unlock(campagna);
 			throw e;
 		} 
@@ -371,6 +375,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		try {
 			doChiudi(campagna);
 		} catch (Exception e) {
+			log.error("chiudi: {}",e.getMessage(),e);
 			unlock(campagna);
 			throw e;
 		} 
