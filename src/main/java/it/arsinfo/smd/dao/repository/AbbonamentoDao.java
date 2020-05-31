@@ -27,7 +27,7 @@ public interface AbbonamentoDao extends JpaRepository<Abbonamento, Long> {
     List<Abbonamento> findByAnno(Anno anno);
 	Long deleteByCampagna(Campagna campagna);
 	
-	@Query("SELECT a FROM Abbonamento a WHERE a.importo+a.spese+a.pregresso+a.speseEstero+a.speseEstrattoConto-a.incassato > 0 AND a.anno = ?1 AND a.contrassegno= ?2")
-	List<Abbonamento> findWithResiduoAndAnnoAndContrassegno(Anno anno,boolean contrassegno);
+	@Query("SELECT a FROM Abbonamento a WHERE a.importo+a.spese+a.pregresso+a.speseEstero+a.speseEstrattoConto-a.incassato > 0 AND a.anno = ?1 ")
+	List<Abbonamento> findWithResiduoAndAnno(Anno anno);
 
 }
