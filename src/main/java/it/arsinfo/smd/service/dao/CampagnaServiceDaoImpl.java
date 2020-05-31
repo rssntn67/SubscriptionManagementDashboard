@@ -257,6 +257,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         log.info("invia Campagna end {}", campagna);
 	}
 
+	@Transactional
 	public void estratto(Campagna campagna) throws Exception{
         log.info("estratto Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
@@ -308,6 +309,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         log.info("estratto Campagna end {}", campagna);
 	}
 	
+	@Transactional
 	public void chiudi(Campagna campagna) throws Exception{
         log.info("chiudi Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
@@ -326,8 +328,22 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             case ValidoInviatoEC:
             	smdService.riattivaStorico(abbonamento);
                 break;
-            default:
+            case Annullato:
             	smdService.sospendiStorico(abbonamento);
+                break;
+            case Sospeso:
+            	smdService.sospendiStorico(abbonamento);
+                break;
+            case SospesoInviatoEC:
+            	smdService.sospendiStorico(abbonamento);
+                break;
+            case Proposto:
+            	smdService.riattivaStorico(abbonamento);
+                break;
+            case Nuovo:
+            	smdService.riattivaStorico(abbonamento);
+                break;
+            default:
                 break;
             }
         }

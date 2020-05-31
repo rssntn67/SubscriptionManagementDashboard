@@ -1,6 +1,7 @@
 package it.arsinfo.smd.data;
 
 public enum StatoAbbonamento {
+    Duplicato,
     Nuovo,
     Proposto,
     Valido,

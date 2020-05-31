@@ -210,7 +210,8 @@ public class RivistaAbbonamento implements SmdEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((abbonamento == null) ? 0 : abbonamento.hashCode());
+		result = prime * result + ((abbonamento == null) ? 0 : 
+			(abbonamento.getId() != null) ? abbonamento.getId().hashCode() :abbonamento.hashCode());
 		result = prime * result + ((annoFine == null) ? 0 : annoFine.hashCode());
 		result = prime * result + ((annoInizio == null) ? 0 : annoInizio.hashCode());
 		result = prime * result + ((destinatario == null) ? 0 : destinatario.hashCode());
@@ -235,7 +236,21 @@ public class RivistaAbbonamento implements SmdEntity {
 		if (abbonamento == null) {
 			if (other.abbonamento != null)
 				return false;
-		} else if (!abbonamento.equals(other.abbonamento))
+		}
+		if (other.abbonamento == null) {
+			if ( abbonamento != null)
+				return false;
+		}
+		if (abbonamento.getId() != null && other.abbonamento.getId() == null) {
+			return false;
+		}
+		if (abbonamento.getId() == null && other.abbonamento.getId() != null) {
+			return false;
+		}
+		if (abbonamento.getId() != other.abbonamento.getId()) {
+			return false;
+		}
+		if (abbonamento.getId() == null && !abbonamento.equals(other.abbonamento))
 			return false;
 		if (annoFine != other.annoFine)
 			return false;

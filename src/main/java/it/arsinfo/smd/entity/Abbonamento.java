@@ -321,6 +321,9 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		if (id != null) {
+			return prime * result + id.hashCode();
+		}
 		result = prime * result + ((codeLine == null) ? 0 : codeLine.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
@@ -335,6 +338,9 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 		if (getClass() != obj.getClass())
 			return false;
 		Abbonamento other = (Abbonamento) obj;
+		if (id != null) {
+			return id.equals(other.getId());
+		}
 		if (codeLine == null) {
 			if (other.codeLine != null)
 				return false;
