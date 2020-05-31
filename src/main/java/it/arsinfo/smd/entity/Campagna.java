@@ -39,6 +39,8 @@ public class Campagna implements SmdEntity {
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
 
+    private boolean running = false;
+    
     public Campagna() {}
 
     public Anno getAnno() {
@@ -107,5 +109,13 @@ public class Campagna implements SmdEntity {
 	@Override
 	public String getHeader() {
         return String.format("'%s' %s", anno.getAnno(),statoCampagna);
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 }

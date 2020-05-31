@@ -71,9 +71,20 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
 
+	public void lock(Campagna entity) {
+		entity.setRunning(true);
+		repository.save(entity);
+		log.info("lock: Campagna locked {}", entity);
+	}
+
+	public void unlock(Campagna entity) {
+		entity.setRunning(false);
+		repository.save(entity);
+		log.info("unlock: Campagna unlocked {}", entity);		
+	}
+
 	@Override
-	@Transactional
-	public Campagna save(Campagna entity) throws Exception {
+	public void genera(Campagna entity) throws Exception {
 		if (entity.getId() != null) {
 			throw new UnsupportedOperationException("Impossibile Rigenerare Campagna");
 		}
@@ -85,13 +96,23 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		}
 		Campagna exists = repository.findByAnno(entity.getAnno());
 		if (exists != null) {
-			log.warn("Impossibile rigenerare campagna per {}: una campagna esiste", entity.getAnno().getAnnoAsString());
+			log.warn("genera: Impossibile rigenerare campagna per {}: una campagna esiste", entity.getAnno().getAnnoAsString());
 			throw new UnsupportedOperationException(
 					"Impossibile generare campagna per anno " + entity.getAnno().getAnno() + ". La campagna esiste");
 		}
-
-		log.info("save: Campagna start {}", entity);
-		repository.save(entity);
+		lock(entity);
+		try {
+			doGenera(entity);
+		} catch (Exception e) {
+			unlock(entity);
+			throw e;
+		} 
+		unlock(entity);
+	}
+	
+	@Transactional
+	private void doGenera(Campagna entity) throws Exception {
+		log.info("genera: Campagna start {}", entity);
 		for (CampagnaItem item : entity.getCampagnaItems()) {
 			campagnaItemDao.save(item);
 		}
@@ -113,24 +134,35 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 smdService.genera(abb);
             }
         }
-		log.info("save: Campagna end {}", entity);
-		return entity;
+		entity.setRunning(false);
+		repository.save(entity);
+		log.info("genera: Campagna end {}", entity);
 	}
 
 	@Override
-	@Transactional
 	public void delete(Campagna entity) throws Exception {
-		log.info("delete: Campagna start {}", entity);
 		if (entity.getStatoCampagna() != StatoCampagna.Generata) {
 			log.warn("delete: Impossibile delete campagna {}, lo stato campagna non 'Generata'", entity);
 			throw new UnsupportedOperationException("Impossibile eseguire delete campagna, "
 					+ entity.getAnno().getAnno() + ". La campagna non è nello stato 'Generata'");
 		}
+		lock(entity);
+		try {
+			doDelete(entity);
+			repository.deleteById(entity.getId());
+		} catch (Exception e) {
+			unlock(entity);
+			throw e;
+		} 
+	}
+	
+	@Transactional
+	private void doDelete(Campagna entity) throws Exception {
+		log.info("delete: Campagna start {}", entity);
 		for (Abbonamento abbonamento : abbonamentoDao.findByCampagna(entity)) {
 			smdService.rimuovi(abbonamento);
 		}
 		entity.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
-		repository.deleteById(entity.getId());
 		log.info("delete: Campagna end {}", entity);
 	}
 
@@ -194,16 +226,25 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 .collect(Collectors.toList());
 	}
 	
-	//FIXME
 	@Transactional
 	public void invia(Campagna campagna) throws Exception {
-        log.info("invia Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
         	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
 
     	}
-    	//Calcola pregresso e Incassa versamenti
+    	lock(campagna);
+		try {
+			doInvia(campagna);
+		} catch (Exception e) {
+			unlock(campagna);
+			throw e;
+		} 
+    	unlock(campagna);
+	}
+	
+	private void doInvia(Campagna campagna) {
+        log.info("invia Campagna start {}", campagna);
     	List<Abbonamento> abbonamenti = abbonamentoDao.findByCampagna(campagna);
     	
     	Map<Long,Abbonamento> committentiabbonamentoConDebitoSenzaContrassegno= 
@@ -250,21 +291,32 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 ca.setStatoAbbonamento(StatoAbbonamento.Proposto);
             }
             abbonamentoDao.save(ca);
-    	});
-        
+    	});        
         campagna.setStatoCampagna(StatoCampagna.Inviata);
         repository.save(campagna);
         log.info("invia Campagna end {}", campagna);
 	}
 
-	@Transactional
 	public void estratto(Campagna campagna) throws Exception{
-        log.info("estratto Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
         	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'Inviata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire estratto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
 
     	}
+    	lock(campagna);
+		try {
+			doEstratto(campagna);
+		} catch (Exception e) {
+			unlock(campagna);
+			throw e;
+		} 
+    	unlock(campagna);
+
+	}
+	
+	@Transactional
+	private void doEstratto(Campagna campagna) throws Exception {
+        log.info("estratto Campagna start {}", campagna);
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
         	Incassato inc = Smd.getStatoIncasso(abbonamento);
             switch (inc) {
@@ -309,14 +361,25 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         log.info("estratto Campagna end {}", campagna);
 	}
 	
-	@Transactional
 	public void chiudi(Campagna campagna) throws Exception{
-        log.info("chiudi Campagna start {}", campagna);
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
         	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
 
     	}
+    	lock(campagna);
+		try {
+			doChiudi(campagna);
+		} catch (Exception e) {
+			unlock(campagna);
+			throw e;
+		} 
+    	unlock(campagna);
+	}
+	
+	@Transactional
+	private void doChiudi(Campagna campagna) throws Exception {
+        log.info("chiudi Campagna start {}", campagna);
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             switch (abbonamento.getStatoAbbonamento()) {
             case Valido:
@@ -363,5 +426,10 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         }
         return findAll();
 
+	}
+
+	@Override
+	public Campagna save(Campagna entity) throws Exception {
+		throw new UnsupportedOperationException("Campagna non può essere salvata");
 	}
 }
