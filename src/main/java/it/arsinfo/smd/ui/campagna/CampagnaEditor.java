@@ -12,6 +12,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
@@ -70,46 +71,50 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         buttonWGenera.addClickListener(click -> {
 			Notification.show("Generazione Campagna Avviata", Notification.Type.TRAY_NOTIFICATION);
-			BgGenera genera = new BgGenera(repo);
+			BgGenera genera = new BgGenera(repo, UI.getCurrent());
 			genera.start();
         	try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
             edit(get());
+            buttonWGenera.setEnabled(false);
         });
 
         buttonWInvio.addClickListener(click -> {
 			Notification.show("Invio Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgInvia invia = new BgInvia(repo);
+			BgInvia invia = new BgInvia(repo, UI.getCurrent());
 			invia.start();
 	       	try {
 					Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
             edit(get());
+            buttonWInvio.setEnabled(false);
         });
 
         buttonWEstrattoConto.addClickListener(click -> {
 			Notification.show("Estratto Conto Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgEstrattoConto estratto = new BgEstrattoConto(repo);
+			BgEstrattoConto estratto = new BgEstrattoConto(repo, UI.getCurrent());
 			estratto.start();
 	       	try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
             edit(get());
+            buttonWEstrattoConto.setEnabled(false);
         });
 
         buttonWChiudi.addClickListener(click -> {
 			Notification.show("Chiudi Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgChiudi bgchiudi = new BgChiudi(repo);
+			BgChiudi bgchiudi = new BgChiudi(repo, UI.getCurrent());
 			bgchiudi.start();
 	       	try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 			}
             edit(get());
+            buttonWChiudi.setEnabled(false);
         });
 
         getActions().addComponents(buttonWGenera,buttonWInvio,buttonWEstrattoConto,buttonWChiudi);
@@ -179,17 +184,21 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 		buttonWInvio.setEnabled(false);
 		buttonWEstrattoConto.setEnabled(false);
 		buttonWChiudi.setEnabled(false);
+        getCancel().setVisible(false);
+        getDelete().setVisible(!campagna.isRunning() && persisted &&
+    		campagna.getStatoCampagna() == StatoCampagna.Generata 
+         && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
+        );
+        statoCampagna.setVisible(persisted);
 		if (campagna.isRunning()) {
 			running.setValue("locked: running...");
-		}
-		if (!campagna.isRunning()) {
+		} else {
 			running.setValue("");
 	        if (!persisted) {
 	        	buttonWGenera.setEnabled(true);
 	        	items.onChange();
 	        }  else {
-	        	items.edit(campagna.getCampagnaItems(),
-	                    true);
+	        	items.edit(campagna.getCampagnaItems(),true);
 	        	switch (get().getStatoCampagna()) {
 				case Generata:
 					buttonWInvio.setEnabled(true);
@@ -206,90 +215,100 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				}
 	        }
 		}
-        getCancel().setVisible(false);
-        getDelete().setVisible(!campagna.isRunning() && persisted &&
-    		campagna.getStatoCampagna() == StatoCampagna.Generata 
-         && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
-        );
-        statoCampagna.setVisible(persisted);
         anno.focus();
     }
-    
-    private final class BgGenera extends Thread {
-    	private final CampagnaServiceDao repo;
+
+    private abstract class Bg extends Thread {
+    	private final UI ui; 
     	
-    	public BgGenera(CampagnaServiceDao repo) {
+    	public Bg(UI ui) {
 			super();
-			this.repo = repo;
+			this.ui=ui;
+			System.err.println(ui.getClass().getCanonicalName());
 		}
 
+    	public abstract void exec(Campagna campagna) throws Exception;
 
 		@Override
         public void run()
         {
             try {
-                repo.genera(get());
+                exec(get());
             } catch (Exception e) {
-            }    		
+                if (ui != null) {
+                	ui.access(() -> Notification.show("Running Job Error", Notification.Type.ERROR_MESSAGE));
+                }
+            }
+            
+            if (ui != null) {
+            	ui.access(() -> Notification.show("Running Job Finito", Notification.Type.TRAY_NOTIFICATION));
+            }
+        }
+		
+    }
+    
+    private final class BgGenera extends Bg {
+    	private final CampagnaServiceDao repo;
+    	
+    	public BgGenera(CampagnaServiceDao repo, final UI ui) {
+			super(ui);
+			this.repo = repo;
+		}
+
+
+		@Override
+        public void exec(Campagna c) throws Exception
+        {
+            repo.genera(c);
         }
     }
 
     
-    private final class BgInvia extends Thread {
+    private final class BgInvia extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgInvia(CampagnaServiceDao repo) {
-			super();
+    	public BgInvia(CampagnaServiceDao repo, final UI ui) {
+			super(ui);
 			this.repo = repo;
 		}
 
 
 		@Override
-        public void run()
+        public void exec(Campagna c) throws Exception
         {
-            try {
-                repo.invia(get());
-            } catch (Exception e) {
-            }    		
+            repo.invia(c);
         }
     }
 
     
-    private final class BgEstrattoConto extends Thread {
+    private final class BgEstrattoConto extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgEstrattoConto(CampagnaServiceDao repo) {
-			super();
+    	public BgEstrattoConto(CampagnaServiceDao repo, final UI ui) {
+			super(ui);
 			this.repo = repo;
 		}
 
 
 		@Override
-        public void run()
+        public void exec(Campagna c) throws Exception
         {
-            try {
-                repo.estratto(get());
-            } catch (Exception e) {
-            }    		
+            repo.estratto(c);
         }
     }
 
-    private final class BgChiudi extends Thread {
+    private final class BgChiudi extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgChiudi(CampagnaServiceDao repo) {
-			super();
+    	public BgChiudi(CampagnaServiceDao repo, final UI ui) {
+			super(ui);
 			this.repo = repo;
 		}
 
-
 		@Override
-        public void run()
+        public void exec(Campagna c) throws Exception
         {
-            try {
-                repo.chiudi(get());
-            } catch (Exception e) {
-            }    		
+            repo.chiudi(get());
         }
     }
 }

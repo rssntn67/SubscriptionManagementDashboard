@@ -37,7 +37,7 @@ public class Campagna implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
-    private StatoCampagna statoCampagna=StatoCampagna.Generata;
+    private StatoCampagna statoCampagna=StatoCampagna.Nuova;
 
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();

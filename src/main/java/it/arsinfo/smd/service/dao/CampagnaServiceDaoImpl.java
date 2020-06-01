@@ -135,6 +135,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 smdService.genera(abb);
             }
         }
+        entity.setStatoCampagna(StatoCampagna.Generata);
 		repository.save(entity);
 		log.info("genera: Campagna end {}", entity);
 	}
