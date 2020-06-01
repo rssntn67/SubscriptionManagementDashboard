@@ -489,19 +489,18 @@ public class Smd {
             List<SpesaSpedizione> spese) throws Exception
     {
         abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        log.info("rimuovi: rimosso importo rivista: {}", abb);
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
     	Mese meseInizioInv=null;
        	Anno annoInizioInv=null;
         Mese meseFineInv=null;
        	Anno annoFineInv=null;
-    	int itemInviate=0;
     	int rivisteinviate=0;
         final List<SpedizioneItem> rimItems = new ArrayList<>();
     	for (SpedizioneWithItems spedwith: spedizioni) {
     		if (spedwith.getSpedizione().getStatoSpedizione() == StatoSpedizione.INVIATA) {
     			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
     				if (checkEquals(item.getRivistaAbbonamento(),original)) {
-    					itemInviate++;
     					rivisteinviate+=item.getNumero();
     					if (meseInizioInv==null) {
     						meseInizioInv=item.getMesePubblicazione();
@@ -527,8 +526,8 @@ public class Smd {
     			}
     		}
     	}
-    	log.info("rimuovi: {} spedizioni inviate", itemInviate);
-        if (itemInviate == 0) {
+    	log.info("rimuovi: {} riviste inviate", rivisteinviate);
+        if (rivisteinviate == 0) {
         	for (SpedizioneWithItems s: spedizioni) {
         		for (SpedizioneItem item: new ArrayList<>(s.getSpedizioneItems())) {
     				if (checkEquals(item.getRivistaAbbonamento(),original)) {
@@ -538,8 +537,6 @@ public class Smd {
         		}
         	}
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
-            log.info("rimuovi: {}",abb);
-            log.info("rimuovi: {}",original);
             original.setNumero(0);
             original.setNumeroTotaleRiviste(0);
             original.setImporto(BigDecimal.ZERO);
@@ -547,19 +544,16 @@ public class Smd {
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
             aggiorna.getRivisteToDelete().add(original);
+            log.info("rimuovi: {}",abb);
+            log.info("rimuovi: {}",original);
             return aggiorna;
         }
         
-    	log.info("rimuovi: spedizioni inviate: inizio {} {}, fine {} {}", meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
+    	log.info("rimuovi: riviste inviate:{} - inizio {} {}, fine {} {}",original.getPubblicazione().getNome(), meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
     	original.setMeseInizio(meseInizioInv);
     	original.setMeseFine(meseFineInv);
     	original.setAnnoInizio(annoInizioInv);
     	original.setAnnoFine(annoFineInv);
-    	calcoloImporto(original);
-    	abb.setImporto(abb.getImporto().add(original.getImporto()));
-
-        log.info("rimuovi: spedizione inviata: updated.numero<original.numero: importo original: {}", original.getImporto());        	
-
         original.setNumeroTotaleRiviste(rivisteinviate);
 
         for (SpedizioneWithItems sw:spedizioni) {
@@ -573,12 +567,14 @@ public class Smd {
         	}        	
         }
         calcolaPesoESpesePostali(abb, spedizioni, spese);
-        log.info("delete: {}",abb);
-        log.info("delete: {}",original);
+       	calcoloImporto(original);
+    	abb.setImporto(abb.getImporto().add(original.getImporto()));
         aggiorna.setAbbonamentoToSave(abb);
         aggiorna.setSpedizioniToSave(spedizioni);
         aggiorna.getRivisteToSave().add(original);
         aggiorna.setItemsToDelete(rimItems);
+        log.info("rimuovi: {}",abb);
+        log.info("rimuovi: {}",original);
 
     	return aggiorna;
 

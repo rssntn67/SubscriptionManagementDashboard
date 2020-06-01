@@ -54,7 +54,7 @@ import it.arsinfo.smd.service.Smd;
 @RunWith(SpringRunner.class)
 public class SmdUnitTests {
     
-    private static final Logger log = LoggerFactory.getLogger(Smd.class);
+    private static final Logger log = LoggerFactory.getLogger(SmdUnitTests.class);
 
     private static RivistaAbbonamento crea(Abbonamento abb,Pubblicazione p, TipoAbbonamentoRivista tipo, int numero) {
         Anno anno = Anno.getAnnoProssimo();
@@ -458,7 +458,7 @@ public class SmdUnitTests {
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioniwithitems.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
-        log.info(abb.toString());
+        log.info("generato: {}", abb);
         log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
         assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
         assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
@@ -532,7 +532,7 @@ public class SmdUnitTests {
         assertNotNull(abbonamento);
         assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, rivista.getNumeroTotaleRiviste().intValue());
         assertEquals(ss.doubleValue(), abbonamento.getSpese().doubleValue(),0);
-        assertEquals(ec1.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
+        assertEquals(rivista.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
         assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), rivista.getImporto().doubleValue(),0);
         
 

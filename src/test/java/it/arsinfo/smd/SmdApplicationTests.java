@@ -1003,20 +1003,17 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         assertEquals(false, abb.isContrassegno());
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
-        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        assertEquals(1, abbonamentoDao.findWithResiduoAndAnno(abb.getAnno()).size());                
         abb.setContrassegno(true);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
-        assertEquals(1, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        assertEquals(1, abbonamentoDao.findWithResiduoAndAnno(abb.getAnno()).size());                
         
         abb.setIncassato(abb.getImporto());
         assertEquals(0, abb.getResiduo().doubleValue(),0);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), false).size());                
-        assertEquals(0, abbonamentoDao.findWithResiduoAndAnnoAndContrassegno(abb.getAnno(), true).size());
+        assertEquals(0, abbonamentoDao.findWithResiduoAndAnno(abb.getAnno()).size());                
         
     }
 
