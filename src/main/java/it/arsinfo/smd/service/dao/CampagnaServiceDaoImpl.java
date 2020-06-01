@@ -250,7 +250,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
     	List<Abbonamento> abbonamenti = abbonamentoDao.findByCampagna(campagna);
     	
     	List<Abbonamento> oldabbs= abbonamentoDao.findWithResiduoAndAnno(Anno.getAnnoPrecedente(campagna.getAnno()));
+    	oldabbs.forEach( a->log.info("invia: residuo: {}",a));
 
+    	
     	Map<Long,Abbonamento> intestatariNoContrassegnoNoCampagnaMap= 
     			oldabbs
 			.stream().filter(a -> a.getCampagna() == null && a.isContrassegno() == false)
@@ -276,11 +278,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
     	abbonamenti.forEach( ca -> {
     		Anagrafica intestatario = ca.getIntestatario();
     		Abbonamento past = null;
-    		if (ca.isContrassegno() && intestatariNoContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
+    		if (!ca.isContrassegno() && intestatariNoContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
     			past = intestatariNoContrassegnoNoCampagnaMap.get(intestatario.getId());
     		} else if (ca.isContrassegno() && intestatariContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
     			past = intestatariContrassegnoNoCampagnaMap.get(intestatario.getId());
-    		} else if (ca.isContrassegno() && intestatariNoContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
+    		} else if (!ca.isContrassegno() && intestatariNoContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
     			past = intestatariNoContrassegnoCampagnaMap.get(intestatario.getId());
     		} else if (ca.isContrassegno() && intestatariContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
     			past = intestatariContrassegnoCampagnaMap.get(intestatario.getId());
