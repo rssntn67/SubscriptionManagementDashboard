@@ -525,14 +525,21 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void sospendiStorico(Abbonamento abbonamento) throws Exception {
+    public void aggiornaStatoStorico(Abbonamento abbonamento, int numero) throws Exception {
         rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
         .stream()
         .filter(ec -> ec.getStorico() != null)
         .forEach(ec -> {
             Storico storico = storicoDao.findById(ec.getStorico().getId()).get();
-            storico.setStatoStorico(StatoStorico.Sospeso);
-            storicoDao.save(storico);
+            if (storico.getNumero() == 0) {
+            	storico.setStatoStorico(StatoStorico.Annullato);            	
+            } else if (storico.getNumero() <= numero) {
+            	storico.setStatoStorico(StatoStorico.Sospeso);
+            } else {
+            	storico.setStatoStorico(StatoStorico.Valido);
+            }
+        	storicoDao.save(storico);
+        	log.info("aggiornaStatoStorico: {}", storico);
         });
     }
 
@@ -545,6 +552,7 @@ public class SmdServiceImpl implements SmdService {
             Storico storico = storicoDao.findById(ec.getStorico().getId()).get();
             storico.setStatoStorico(StatoStorico.Valido);
             storicoDao.save(storico);
+        	log.info("riattivaStorico: {}", storico);
         });
     }
 

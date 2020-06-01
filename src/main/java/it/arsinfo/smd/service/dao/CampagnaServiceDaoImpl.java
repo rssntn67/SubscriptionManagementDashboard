@@ -135,7 +135,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 smdService.genera(abb);
             }
         }
-		entity.setRunning(false);
 		repository.save(entity);
 		log.info("genera: Campagna end {}", entity);
 	}
@@ -276,47 +275,35 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
     	abbonamenti.forEach( ca -> {
     		Anagrafica intestatario = ca.getIntestatario();
+    		Abbonamento past = null;
     		if (ca.isContrassegno() && intestatariNoContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
-    			Abbonamento past = intestatariNoContrassegnoNoCampagnaMap.get(intestatario.getId());
+    			past = intestatariNoContrassegnoNoCampagnaMap.get(intestatario.getId());
+    		} else if (ca.isContrassegno() && intestatariContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
+    			past = intestatariContrassegnoNoCampagnaMap.get(intestatario.getId());
+    		} else if (ca.isContrassegno() && intestatariNoContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
+    			past = intestatariNoContrassegnoCampagnaMap.get(intestatario.getId());
+    		} else if (ca.isContrassegno() && intestatariContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
+    			past = intestatariContrassegnoCampagnaMap.get(intestatario.getId());
+    		}
+    		if (past != null) {
+    			log.info("invia: trovato Residuo: {}", past.getResiduo());
     			ca.setPregresso(past.getResiduo());
     			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
     			abbonamentoDao.save(ca);
     			abbonamentoDao.save(past);
+    			log.info("invia: rimosso: {}", past);
+    			log.info("invia: aggiunto: {}", ca);
     		}
-
-    		if (ca.isContrassegno() && intestatariContrassegnoNoCampagnaMap.containsKey(intestatario.getId())) {
-    			Abbonamento past = intestatariContrassegnoNoCampagnaMap.get(intestatario.getId());
-    			ca.setPregresso(past.getResiduo());
-    			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
-    			abbonamentoDao.save(ca);
-    			abbonamentoDao.save(past);
-    		}
-
-    		if (ca.isContrassegno() && intestatariNoContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
-    			Abbonamento past = intestatariNoContrassegnoCampagnaMap.get(intestatario.getId());
-    			ca.setPregresso(past.getResiduo());
-    			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
-    			abbonamentoDao.save(ca);
-    			abbonamentoDao.save(past);
-    		}
-
-    		if (ca.isContrassegno() && intestatariContrassegnoCampagnaMap.containsKey(intestatario.getId())) {
-    			Abbonamento past = intestatariContrassegnoCampagnaMap.get(intestatario.getId());
-    			ca.setPregresso(past.getResiduo());
-    			past.setPregresso(past.getPregresso().subtract(past.getResiduo()));
-    			abbonamentoDao.save(ca);
-    			abbonamentoDao.save(past);
-    		}
-
     		committenti
     			.stream()
     			.filter(v -> v.getCommittente() != null && v.getCommittente().getId() == intestatario.getId())
     			.forEach(v -> {
 					try {
+						log.info("invia: incassa {} da {}", v.getResiduo(), v.getCommittente().getCaption());
 						smdService.incassa(ca, v, userDao.findByUsernameContainingIgnoreCase("admin").iterator().next()
 								, "Incassato da Committente ad Invio Campagna");
 					} catch (Exception e) {
-						e.printStackTrace();
+						log.error("invia: incassa {} da {}", v.getResiduo(), v.getCommittente().getCaption(), e.getMessage(),e);
 					}
 				});
             if (ca.getTotale().signum() == 0) {
@@ -416,7 +403,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Transactional
 	private void doChiudi(Campagna campagna) throws Exception {
         log.info("chiudi Campagna start {}", campagna);
+        
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
+            log.info("chiudi: {}", abbonamento);
             switch (abbonamento.getStatoAbbonamento()) {
             case Valido:
             	smdService.riattivaStorico(abbonamento);
@@ -428,13 +417,13 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             	smdService.riattivaStorico(abbonamento);
                 break;
             case Annullato:
-            	smdService.sospendiStorico(abbonamento);
+            	smdService.aggiornaStatoStorico(abbonamento,campagna.getNumero());
                 break;
             case Sospeso:
-            	smdService.sospendiStorico(abbonamento);
+            	smdService.aggiornaStatoStorico(abbonamento,campagna.getNumero());
                 break;
             case SospesoInviatoEC:
-            	smdService.sospendiStorico(abbonamento);
+            	smdService.aggiornaStatoStorico(abbonamento,campagna.getNumero());
                 break;
             case Proposto:
             	smdService.riattivaStorico(abbonamento);
@@ -446,6 +435,14 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 break;
             }
         }
+        storicoDao.findByNumero(0).forEach(s -> {
+        	if (s.getStatoStorico() != StatoStorico.Annullato) {
+        		s.setStatoStorico(StatoStorico.Annullato);
+        		storicoDao.save(s);
+        		log.info("chiudi: nr.0/Annullato: {} ", s);
+        	}
+        });
+
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
         repository.save(campagna); 
         log.info("chiudi Campagna end {}", campagna);

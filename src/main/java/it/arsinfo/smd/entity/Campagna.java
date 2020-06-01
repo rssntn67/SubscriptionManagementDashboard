@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,15 +32,19 @@ public class Campagna implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private Anno anno = Anno.getAnnoProssimo();
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private StatoCampagna statoCampagna=StatoCampagna.Generata;
 
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
 
     private boolean running = false;
+    
+    private Integer numero = 10;
     
     public Campagna() {}
 
@@ -117,5 +122,13 @@ public class Campagna implements SmdEntity {
 
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+
+	public Integer getNumero() {
+		return numero;
+	}
+
+	public void setNumero(Integer numero) {
+		this.numero = numero;
 	}
 }

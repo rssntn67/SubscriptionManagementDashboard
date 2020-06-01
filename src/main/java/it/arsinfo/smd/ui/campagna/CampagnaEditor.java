@@ -4,12 +4,14 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
@@ -29,7 +31,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
-    
+    private final TextField numero = new TextField("Numero di Riviste Massimo da Sospendere");
+
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     
     private final Button buttonVGenerati = new Button("Abbonamenti Generati",VaadinIcons.ENVELOPES);
@@ -110,7 +113,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
 
         getActions().addComponents(buttonWGenera,buttonWInvio,buttonWEstrattoConto,buttonWChiudi);
-		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,numero);
 		
 		HorizontalLayout riviste = new HorizontalLayout();
 		riviste.addComponent(new Label("riviste in abbonamento"));
@@ -134,6 +137,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
         statoCampagna.setReadOnly(true);
+        numero.setVisible(false);
         
         items.setChangeHandler(() -> {
             items.edit(repo.findPubblicazioniValide().
@@ -152,6 +156,12 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             grid.setVisible(false);
         });
 
+        getBinder()
+        .forField(numero)
+        .withConverter(new StringToIntegerConverter("Deve essere un numero"))
+        .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
+        .bind(Campagna::getNumero, Campagna::setNumero);
+
         getBinder().bindInstanceFields(this);
     }
 
@@ -159,6 +169,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     public void focus(boolean persisted, Campagna campagna) {
 
         getSave().setVisible(false);
+        numero.setVisible(false);
     	buttonVAnnullati.setVisible(persisted);
     	buttonVEstrattiConto.setVisible(persisted);
     	buttonVGenerati.setVisible(persisted);
@@ -187,7 +198,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					buttonWEstrattoConto.setEnabled(true);
 					break;
 				case InviatoEC:
+					numero.setVisible(true);
 					buttonWChiudi.setEnabled(true);
+					break;
 				default:
 					break;
 				}

@@ -38,7 +38,7 @@ public interface SmdService {
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void sospendiSpedizioni(Abbonamento abbonamento) throws Exception;
     void riattivaSpedizioni(Abbonamento abbonamento) throws Exception;
-    void sospendiStorico(Abbonamento abbonamento) throws Exception;
+    void aggiornaStatoStorico(Abbonamento abbonamento, int numero) throws Exception;
     void riattivaStorico(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
