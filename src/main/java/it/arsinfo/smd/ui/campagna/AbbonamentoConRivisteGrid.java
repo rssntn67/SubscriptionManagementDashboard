@@ -38,6 +38,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
                 "pregresso",
                 "totale",
                 "incassato",
+                "riportoAnnoPrecedente",
                 "saldo",
                 "anno");
         setColumnCaption("captionBrief", "Intestatario");		
