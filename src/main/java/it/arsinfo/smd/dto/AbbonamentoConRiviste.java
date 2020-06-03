@@ -191,10 +191,14 @@ public class AbbonamentoConRiviste extends Indirizzo {
 	public String getIncassato() {
 		return fmt_IT.format(getIncassatoBG());
     }
+	public String getRiportoAnnoPrecedente() {
+		return fmt_IT.format(getPregressoBG().subtract(getIncassatoBG()));
+	}
     
 	public String getSaldo() {
 		return fmt_IT.format(getSaldoBG());
 	}
+	
 
  
     
