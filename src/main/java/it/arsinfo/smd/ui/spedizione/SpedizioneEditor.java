@@ -50,7 +50,7 @@ public class SpedizioneEditor
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinazione");
         destinatario.setItems(anagrafica);
-        destinatario.setItemCaptionGenerator(Anagrafica::getIntestazione);
+        destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
         destinatario.setReadOnly(true);
         
         annoSped.setEmptySelectionAllowed(false);
@@ -113,6 +113,7 @@ public class SpedizioneEditor
     @Override
     public void focus(boolean persisted, Spedizione obj) {
         getSave().setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA); 
+        statoSpedizione.setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA);
         getDelete().setEnabled(false);        
     }
     

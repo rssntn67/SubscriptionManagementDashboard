@@ -73,7 +73,7 @@ public class SpedizioneUI extends SmdUI {
                 return;
             }
             editor.edit(grid.getSelected());
-            itemgrid.populate(spedizioneItemDao.findBySpedizione(editor.get()));
+            itemgrid.populate(spedizioneItemDao.findBySpedizione(grid.getSelected()));
             setHeader(grid.getSelected().getHeader());
             hideMenu();
             search.setVisible(false);
