@@ -45,13 +45,13 @@ public class StoricoEditor
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
         intestatario.setItems(anagrafiche);
-        intestatario.setItemCaptionGenerator(Anagrafica::getIntestazione);
+        intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
 
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafiche);
-        destinatario.setItemCaptionGenerator(Anagrafica::getIntestazione);
+        destinatario.setItemCaptionGenerator(Anagrafica::getCaption);
 
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
