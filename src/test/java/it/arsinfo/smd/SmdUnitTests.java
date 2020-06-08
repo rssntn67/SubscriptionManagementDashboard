@@ -905,12 +905,6 @@ public class SmdUnitTests {
         ec2.setDestinatario(tizio);
         ec2.setNumero(10);
         assertTrue(!ec1.equals(ec2));
-        try {
-            Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
-            assertTrue(false);
-        } catch (UnsupportedOperationException e) {
-            log.info(e.getMessage());
-        }
         
         ec2.setPubblicazione(messaggio);
         ec2.setMeseInizio(Mese.MARZO);
@@ -918,8 +912,23 @@ public class SmdUnitTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
         assertTrue(!ec1.equals(ec2));
+
         try {
-            Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),null,3,ec1.getTipoAbbonamentoRivista());
+            assertTrue(false);
+        } catch (UnsupportedOperationException e) {
+            log.info(e.getMessage());
+        }
+
+        try {
+            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,0,ec1.getTipoAbbonamentoRivista());
+            assertTrue(false);
+        } catch (UnsupportedOperationException e) {
+            log.info(e.getMessage());
+        }
+
+        try {
+            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,3,null);
             assertTrue(false);
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
@@ -970,7 +979,7 @@ public class SmdUnitTests {
         ec2.setNumero(10);
         assertTrue(ec1.equals(ec2));
 
-        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,10,ec1.getTipoAbbonamentoRivista());
         
         assertEquals(0, aggiorna.getItemsToDelete().size());
         assertNotNull(aggiorna.getAbbonamentoToSave());
@@ -1043,7 +1052,7 @@ public class SmdUnitTests {
         ec2.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
         assertTrue(ec1.equals(ec2));
 
-        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione(),ec1);
+        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
         assertEquals(0, aggiorna.getSpedizioniToSave().size());        
         assertEquals(0, aggiorna.getItemsToDelete().size());
         assertEquals(1, aggiorna.getRivisteToSave().size());

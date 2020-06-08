@@ -40,6 +40,7 @@ import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioniereItem;
@@ -212,17 +213,18 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void aggiorna(RivistaAbbonamento rivistaAbbonamento) throws Exception {
+    public void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         RivistaAbbonamentoAggiorna aggiorna = 
         		Smd.aggiorna(
         				abbonamento,
-        				rivistaAbbonamento, 
         				spedizioni,
                         spesaSpedizioneDao.findAll(),
-                        rivistaAbbonamentoDao.findById(rivistaAbbonamento.getId()).get()
+                        rivistaAbbonamento,
+                        numero,
+                        tipo
                 );          
         aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());

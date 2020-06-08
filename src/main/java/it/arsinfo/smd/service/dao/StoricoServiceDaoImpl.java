@@ -207,9 +207,7 @@ public class StoricoServiceDaoImpl implements StoricoServiceDao {
         storico.addItem(getNotaOnUpdate(storico, campagna, "aggiorna",username));
         storico.setStatoStorico(StatoStorico.Valido);
         save(storico);
-        ec.setNumero(storico.getNumero());
-        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
-        smdService.aggiorna(ec);
+        smdService.aggiorna(ec,storico.getNumero(),storico.getTipoAbbonamentoRivista());
     }
 	
     private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{

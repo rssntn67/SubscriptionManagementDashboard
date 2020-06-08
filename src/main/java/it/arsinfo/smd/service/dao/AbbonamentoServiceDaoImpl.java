@@ -168,7 +168,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             t.addItem(item);
             smdService.genera(t);
         } else {
-        	smdService.aggiorna(item);
+        	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).get();
+        	smdService.aggiorna(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
         }
         return findById(t.getId());
 	}

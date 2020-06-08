@@ -1150,8 +1150,7 @@ public class SmdApplicationTests {
         abb.addItem(ec1);
         smdService.genera(abb);
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        rivista.setNumero(4);
-        smdService.aggiorna(rivista);
+        smdService.aggiorna(rivista,4,TipoAbbonamentoRivista.Ordinario);
         rivista = rivistaAbbonamentoDao.findById(rivista.getId()).get();
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(abb,rivista);
@@ -1652,14 +1651,14 @@ public class SmdApplicationTests {
         
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
-        ec1.setNumero(10);
         RivistaAbbonamentoAggiorna aggiorna = 
         		Smd.aggiorna(
         				abb,
-        				ec1, 
         		        spedizioni,
         		        SmdHelper.getSpeseSpedizione(),
-        				rivistaAbbonamentoDao.findById(ec1.getId()).get()
+        		        ec1,
+        		        10,
+        		        ec1.getTipoAbbonamentoRivista()
 				);       
         assertEquals(0, aggiorna.getItemsToDelete().size());
         abbonamentoDao.save(abb);
