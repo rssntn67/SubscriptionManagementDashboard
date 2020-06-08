@@ -15,6 +15,7 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteGenerati(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteInviati(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity);
+	List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity);
 	
 	List<Abbonamento> findInviatiByCampagna(Campagna entity);

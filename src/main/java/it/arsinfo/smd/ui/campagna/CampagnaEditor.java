@@ -36,10 +36,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     
-    private final Button buttonVGenerati = new Button("Abbonamenti Generati",VaadinIcons.ENVELOPES);
-    private final Button buttonVInviati = new Button("Abbonamenti Inviati",VaadinIcons.ENVELOPES);
-    private final Button buttonVEstrattiConto = new Button("Estratti Conto",VaadinIcons.ENVELOPES);
-    private final Button buttonVAnnullati = new Button("Abbonamenti Annullati",VaadinIcons.ENVELOPES);
+    private final Button buttonV = new Button("Visualizza Abbonamenti Generati",VaadinIcons.ARCHIVE);
+    private final Button buttonA = new Button("Abbonamenti Annullati",VaadinIcons.ARCHIVE);
 
 
     private final Button buttonWGenera = new Button("Genera",VaadinIcons.ENVELOPES);
@@ -53,20 +51,29 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         super(repo, new Binder<>(Campagna.class));
         items = new CampagnaItemsEditor(repo.findPubblicazioni());
         
-        buttonVGenerati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
+        buttonV.addClickListener(click -> {
+        	switch (get().getStatoCampagna()) {
+        		case Generata:
+            		grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
+        			break;
+        		case Inviata:
+                    grid.populate(repo.findAbbonamentoConRivisteInviati(get()));
+                    break;
+        		case InviatoEC:
+    	            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));
+    	            break;
+        		case Chiusa:
+    				buttonV.setCaption("Visualizza Abbonamenti con Debito");
+    	            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));        			
+    	            break;
+    			default:
+    				break;
+        	}
+        	
         });
-
-        buttonVInviati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteInviati(get()));
-        });
-
-        buttonVEstrattiConto.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));
-        });
-
-        buttonVAnnullati.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));
+        
+        buttonA.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));        	
         });
 
         buttonWGenera.addClickListener(click -> {
@@ -78,7 +85,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			} catch (InterruptedException e) {
 			}
             edit(get());
-            buttonWGenera.setEnabled(false);
         });
 
         buttonWInvio.addClickListener(click -> {
@@ -90,7 +96,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			} catch (InterruptedException e) {
 			}
             edit(get());
-            buttonWInvio.setEnabled(false);
         });
 
         buttonWEstrattoConto.addClickListener(click -> {
@@ -102,7 +107,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			} catch (InterruptedException e) {
 			}
             edit(get());
-            buttonWEstrattoConto.setEnabled(false);
         });
 
         buttonWChiudi.addClickListener(click -> {
@@ -114,7 +118,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			} catch (InterruptedException e) {
 			}
             edit(get());
-            buttonWChiudi.setEnabled(false);
         });
 
         getActions().addComponents(buttonWGenera,buttonWInvio,buttonWEstrattoConto,buttonWChiudi);
@@ -129,7 +132,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		running,
         		riviste,
         		stato,
-        	    new HorizontalLayout(buttonVGenerati,buttonVInviati,buttonVEstrattiConto,buttonVAnnullati),
+        	    new HorizontalLayout(buttonV,buttonA),
         	    new VerticalLayout(grid.getComponents())
 		);
         
@@ -175,10 +178,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         getSave().setVisible(false);
         numero.setVisible(false);
-    	buttonVAnnullati.setVisible(persisted);
-    	buttonVEstrattiConto.setVisible(persisted);
-    	buttonVGenerati.setVisible(persisted);
-    	buttonVInviati.setVisible(persisted);
+    	buttonA.setVisible(false);
+    	buttonV.setVisible(persisted);
         anno.setReadOnly(persisted);
         buttonWGenera.setEnabled(false);
 		buttonWInvio.setEnabled(false);
@@ -202,13 +203,20 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 	        	switch (get().getStatoCampagna()) {
 				case Generata:
 					buttonWInvio.setEnabled(true);
+					buttonV.setCaption("Visualizza Abbonamenti Generati");
 					break;
 				case Inviata:
 					buttonWEstrattoConto.setEnabled(true);
+					buttonV.setCaption("Visualizza Abbonamenti Inviati");
 					break;
 				case InviatoEC:
 					numero.setVisible(true);
 					buttonWChiudi.setEnabled(true);
+    				buttonV.setCaption("Visualizza Abbonamenti Inviato Estratto Conto");
+					break;
+				case Chiusa:
+					buttonA.setVisible(true);
+    				buttonV.setCaption("Visualizza Abbonamenti con Debito");
 					break;
 				default:
 					break;

@@ -203,6 +203,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 				.get(findEstrattoContoByCampagna(entity));
 	}
 
+	public List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity) {
+		return smdService
+				.get(findConDebitoByCampagna(entity));
+	}
+
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity) {
 		return smdService.get(findAnnullatiByCampagna(entity));
 	}
@@ -227,6 +232,15 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 .filter(a -> a.getStatoAbbonamento() == StatoAbbonamento.Annullato)
                 .collect(Collectors.toList());
 	}
+	
+	public List<Abbonamento> findConDebitoByCampagna(Campagna entity) {
+		return 
+				abbonamentoDao.findByCampagna(entity)
+                .stream()
+                .filter(a -> a.getResiduo().signum() > 0)
+                .collect(Collectors.toList());
+	}
+
 	
 	@Transactional
 	public void invia(Campagna campagna) throws Exception {
