@@ -13,12 +13,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.SingleSelect;
 
 public abstract class SmdGrid<T>
         extends SmdChangeHandler {
 
     private final Grid<T> grid;
-    private T selected;
+    private SingleSelect<T> selected;
     private final String gridName;
     Label itemNumber = new Label();
     private Integer size = 0;
@@ -51,11 +52,8 @@ public abstract class SmdGrid<T>
         this.gridName = gridName;
         this.grid.setWidth("100%");
 
-        this.grid.asSingleSelect().addValueChangeListener(e -> {
-            selected = e.getValue();
-            onChange();
-        });
-
+        selected = this.grid.asSingleSelect();
+        selected.addValueChangeListener(e -> onChange());
         
         setComponents(this.grid,new HorizontalLayout(this.itemNumber,downloadAsExcel,downloadAsCSV));
     }
@@ -89,7 +87,9 @@ public abstract class SmdGrid<T>
     }
 
     public T getSelected() {
-        return selected;
+    	if (selected.isEmpty())
+    		return null;
+        return selected.getValue();
     }
 
 
