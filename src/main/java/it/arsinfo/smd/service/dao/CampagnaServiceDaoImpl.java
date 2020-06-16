@@ -234,10 +234,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 	
 	public List<Abbonamento> findConDebitoByCampagna(Campagna entity) {
+		log.info("findConDebitoByCampagna: {} {}", entity, entity.getResiduo());
 		return 
 				abbonamentoDao.findByCampagna(entity)
                 .stream()
-                .filter(a -> a.getResiduo().signum() > 0)
+                .filter(a -> a.getResiduo().compareTo(entity.getResiduo()) > 0)
                 .collect(Collectors.toList());
 	}
 

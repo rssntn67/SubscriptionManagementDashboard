@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -33,6 +34,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
     private final TextField numero = new TextField("Numero di Riviste Massimo da Sospendere");
+    private final TextField residuo = new TextField("Importo Minimo Residuo da Visualizzare");
 
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     
@@ -64,7 +66,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     	            break;
         		case Chiusa:
     				buttonV.setCaption("Visualizza Abbonamenti con Debito");
-    	            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));        			
+    	            grid.populate(repo.findAbbonamentoConDebito(get()));        			
     	            break;
     			default:
     				break;
@@ -131,12 +133,14 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		getActions(),
         		running,
         		riviste,
-        		stato,
-        	    new HorizontalLayout(buttonV,buttonA),
+        		stato,           		
+        		residuo,
+        		new HorizontalLayout(buttonV,buttonA),
         	    new VerticalLayout(grid.getComponents())
 		);
         
         grid.setVisible(false);
+        residuo.setReadOnly(true);
         buttonWGenera.setEnabled(false);
         buttonWInvio.setEnabled(false);
         buttonWEstrattoConto.setEnabled(false);
@@ -170,6 +174,11 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
         .bind(Campagna::getNumero, Campagna::setNumero);
 
+        getBinder()
+        .forField(residuo)
+        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .bind("residuo");
+        
         getBinder().bindInstanceFields(this);
     }
 
@@ -178,6 +187,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         getSave().setVisible(false);
         numero.setVisible(false);
+        residuo.setReadOnly(true);
     	buttonA.setVisible(false);
     	buttonV.setVisible(persisted);
         anno.setReadOnly(persisted);
@@ -215,6 +225,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     				buttonV.setCaption("Visualizza Abbonamenti Inviato Estratto Conto");
 					break;
 				case Chiusa:
+			        residuo.setReadOnly(false);
 					buttonA.setVisible(true);
     				buttonV.setCaption("Visualizza Abbonamenti con Debito");
 					break;
