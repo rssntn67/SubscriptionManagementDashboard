@@ -1,5 +1,6 @@
 package it.arsinfo.smd.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,9 @@ public class Campagna implements SmdEntity {
     private boolean running = false;
     
     private Integer numero = 10;
+    
+    @Transient
+    private BigDecimal residuo = BigDecimal.ZERO;
     
     public Campagna() {}
 
@@ -130,5 +134,13 @@ public class Campagna implements SmdEntity {
 
 	public void setNumero(Integer numero) {
 		this.numero = numero;
+	}
+
+	public BigDecimal getResiduo() {
+		return residuo;
+	}
+
+	public void setResiduo(BigDecimal residuo) {
+		this.residuo = residuo;
 	}
 }
