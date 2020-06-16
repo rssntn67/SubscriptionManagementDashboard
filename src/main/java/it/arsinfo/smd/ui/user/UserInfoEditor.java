@@ -121,7 +121,11 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
          * 
          */
         private static final long serialVersionUID = 1L;
-        BeanValidator passwordBeanValidator = new BeanValidator(UserInfo.class, "passwordHash");
+        BeanValidator passwordBeanValidator 
+        = new BeanValidator(
+        		UserInfo.class, 
+        		"passwordHash"
+        		);
 
         @Override
         public ValidationResult apply(String value, ValueContext context) {
