@@ -15,7 +15,6 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoSpedizione;
 
 @Entity
 public class Spedizione implements SmdEntity {
@@ -32,9 +31,6 @@ public class Spedizione implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
-
-    @Enumerated(EnumType.STRING)
-    private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
     @Enumerated(EnumType.STRING)
     private Mese meseSpedizione=Mese.getMeseCorrente();
@@ -65,15 +61,14 @@ public class Spedizione implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s %s]", 
+        return String.format("Spedizione[id=%d, abb.%d %s %s, peso gr. %d Eur %.2f, dest. %s, %s]", 
                              id,
                              abbonamento.getId(),
                              meseSpedizione,
                              annoSpedizione,
                              pesoStimato,
                              spesePostali,
-                             destinatario, 
-                             statoSpedizione,
+                             destinatario,
                              invioSpedizione
                              );
     }
@@ -100,14 +95,6 @@ public class Spedizione implements SmdEntity {
 
     public void setInvioSpedizione(InvioSpedizione invioSpedizione) {
         this.invioSpedizione = invioSpedizione;
-    }
-
-    public StatoSpedizione getStatoSpedizione() {
-        return statoSpedizione;
-    }
-
-    public void setStatoSpedizione(StatoSpedizione statoSpedizione) {
-        this.statoSpedizione = statoSpedizione;
     }
 
     public Anagrafica getDestinatario() {

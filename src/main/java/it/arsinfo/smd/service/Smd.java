@@ -72,6 +72,48 @@ public class Smd {
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
 
+    public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
+    	boolean isOmaggio=false;
+    	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
+    	case Duplicato:
+    		isOmaggio=true;
+		case OmaggioCuriaDiocesiana:
+    		isOmaggio=true;
+		case OmaggioCuriaGeneralizia:
+    		isOmaggio=true;
+		case OmaggioDirettoreAdp:
+    		isOmaggio=true;
+		case OmaggioEditore:
+    		isOmaggio=true;
+		case OmaggioGesuiti:
+    		isOmaggio=true;
+			break;
+		case Ordinario:
+			break;
+		case Scontato:
+			break;
+		case Sostenitore:
+			break;
+		case Web:
+			break;
+		default:
+			break;
+    	}
+    	return isOmaggio;
+    }
+    public static boolean isAbbonamentoAnnuale(RivistaAbbonamento rivistaAbbonamento) {
+        if (rivistaAbbonamento.getAnnoInizio() != rivistaAbbonamento.getAnnoFine()) {
+            return false;
+        }
+        if (rivistaAbbonamento.getMeseInizio() != Mese.GENNAIO) {
+            return false;
+        }
+        if (rivistaAbbonamento.getMeseFine() != Mese.DICEMBRE) {
+            return false;
+        }
+        return true;
+    }
+
     
     public static final BigDecimal contrassegno=new BigDecimal(4.50);
     @Bean
@@ -182,20 +224,20 @@ public class Smd {
     }
 
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
-    	if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Valido && abbonamento.getTotale().signum() == 0) {
+    	if (abbonamento.getTotale().signum() == 0) {
     		return Incassato.Zero;
     	}
-        if (abbonamento.getImporto().signum() == 0 && abbonamento.getTotale().signum() == 0) {
-            return Incassato.Omaggio;
-        }
         if (abbonamento.getIncassato().signum() == 0) {
             return Incassato.No;
         }
         if (abbonamento.getResiduo().signum() == 0) {
             return Incassato.Si;
-        } 
-        if (abbonamento.getImporto().add(abbonamento.getSpeseEstero()).compareTo(abbonamento.getIncassato()) <= 0) {
-            return Incassato.SiConDebito;
+        }
+        if (abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) >= 0 ){
+            return Incassato.SiConDebito;        	
+        }
+        if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).add(abbonamento.getSpeseEstero()).compareTo(abbonamento.getIncassato()) <= 0) {
+            return Incassato.SiConDebito;        	
         }
         return Incassato.Parzialmente;
     }
@@ -280,13 +322,13 @@ public class Smd {
             int numero,
             TipoAbbonamentoRivista tipo
 		)    throws Exception {
-        if (abb.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
-            log.warn("aggiorna: failed {} {} : Aggiorna non consentita per Abbonamenti Annullati",abb,original);
-            throw new UnsupportedOperationException("Aggiorna non consentito per Abbonamenti Annullati");
-        }
         if (original == null ) {
             log.warn("aggiorna: failed {} : Aggiorna non consentita per Riviste null",abb);
             throw new UnsupportedOperationException("Aggiorna non consentito per Riviste null");
+        }
+        if (original.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
+            log.warn("aggiorna: failed {} {} : Aggiorna non consentita per Abbonamenti Annullati",abb,original);
+            throw new UnsupportedOperationException("Aggiorna non consentito per Abbonamenti Annullati");
         }
         if (tipo == null ) {
             log.warn("aggiorna: failed {} : Aggiorna non consentita per Tipo null",abb);
@@ -326,8 +368,8 @@ public class Smd {
         Mese meseFineInv=null;
        	Anno annoFineInv=null;
     	for (SpedizioneWithItems spedwith: spedizioni) {
-    		if (spedwith.getSpedizione().getStatoSpedizione() == StatoSpedizione.INVIATA) {
-    			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
+			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
+	    		if (item.getStatoSpedizione() == StatoSpedizione.INVIATA) {
     				if (checkEquals(item.getRivistaAbbonamento(),original)) {
     	    			inviate.add(spedwith);
     					if (meseInizioInv==null) {
@@ -442,8 +484,8 @@ public class Smd {
 
         final List<SpedizioneItem> rimItems = new ArrayList<>();
         for (SpedizioneWithItems sw:spedizioni) {
-        	if (sw.getSpedizione().getStatoSpedizione() != StatoSpedizione.INVIATA) {
-            	for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
+        	for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
+            	if (originitem.getStatoSpedizione() != StatoSpedizione.INVIATA) {
     				if (checkEquals(originitem.getRivistaAbbonamento(),original)) {
 	    				rimItems.add(originitem);
 	    				sw.deleteSpedizioneItem(originitem);
@@ -494,8 +536,8 @@ public class Smd {
     	int rivisteinviate=0;
         final List<SpedizioneItem> rimItems = new ArrayList<>();
     	for (SpedizioneWithItems spedwith: spedizioni) {
-    		if (spedwith.getSpedizione().getStatoSpedizione() == StatoSpedizione.INVIATA) {
-    			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
+			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
+	    		if (item.getStatoSpedizione() == StatoSpedizione.INVIATA) {
     				if (checkEquals(item.getRivistaAbbonamento(),original)) {
     					rivisteinviate+=item.getNumero();
     					if (meseInizioInv==null) {
@@ -553,8 +595,8 @@ public class Smd {
         original.setNumeroTotaleRiviste(rivisteinviate);
 
         for (SpedizioneWithItems sw:spedizioni) {
-        	if (sw.getSpedizione().getStatoSpedizione() != StatoSpedizione.INVIATA) {
-            	for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
+        	for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
+            	if (originitem.getStatoSpedizione() != StatoSpedizione.INVIATA) {
     				if (checkEquals(originitem.getRivistaAbbonamento(),original)) {
             			rimItems.add(originitem);
             			sw.deleteSpedizioneItem(originitem);
@@ -699,17 +741,15 @@ public class Smd {
                     		);
             
             sped.getSpedizione().setPesoStimato(pesoStimato);
+            sped.getSpedizione().setSpesePostali(calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione(),spesa));
             switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
             case Italia:
-                calcolaSpesePostali(sped.getSpedizione(), spesa);
                 abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
                 break;
             case EuropaBacinoMediterraneo:
-                calcolaSpesePostali(sped.getSpedizione(), spesa);
                 abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
                 break;
             case AmericaAfricaAsia:
-                calcolaSpesePostali(sped.getSpedizione(), spesa);
                 abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
                 break;
             default:
@@ -731,24 +771,26 @@ public class Smd {
         throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
     }
     
-    public static void calcolaSpesePostali(Spedizione sped, SpesaSpedizione spesa) throws UnsupportedOperationException {
-        switch (sped.getInvioSpedizione()) {
+    public static BigDecimal calcolaSpesePostali(InvioSpedizione sped, SpesaSpedizione spesa) throws UnsupportedOperationException {
+    	BigDecimal spesePostali = BigDecimal.ZERO;
+        switch (sped) {
         case Spedizioniere:
         	break;
         case AdpSedeNoSpese:
         	break;
         case AdpSede:
-            sped.setSpesePostali(spesa.getSpese());
+            spesePostali = spesa.getSpese();
         	break;
         case AdpSedeCorriere24hh:
-            sped.setSpesePostali(spesa.getCor24h());
+            spesePostali = spesa.getCor24h();
         	break;
         case AdpSedeCorriere3gg:
-            sped.setSpesePostali(spesa.getCor3gg());
+            spesePostali = spesa.getCor3gg();
         	break;
         default:
         	break;        	
         }
+        return spesePostali;
     }
     
     public static List<RivistaAbbonamento> 
@@ -757,7 +799,7 @@ public class Smd {
         if (abbonamento.getCampagna() != campagna) {
             throw new UnsupportedOperationException("Campagna ed abbonamento non matchano");
         }
-        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo || campagna.getStatoCampagna() != StatoCampagna.Generata) {
+        if (campagna.getStatoCampagna() != StatoCampagna.Generata) {
             throw new UnsupportedOperationException("Campagna ed abbonamento non nuovi");
         }
         final List<RivistaAbbonamento> ecs = new ArrayList<>();
@@ -829,7 +871,6 @@ public class Smd {
         abbonamento.setAnno(campagna.getAnno());
         abbonamento.setContrassegno(contrassegno);
         abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
-        abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
         return abbonamento;
     }
 
@@ -838,27 +879,27 @@ public class Smd {
         switch (ec.getTipoAbbonamentoRivista()) {
         case Ordinario:
             importo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
-            if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
+            if (!isAbbonamentoAnnuale(ec) || ec.getNumero() == 0) {
                 importo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
             }
             break;
 
         case Web:
-            if (!ec.isAbbonamentoAnnuale()) {
+            if (!isAbbonamentoAnnuale(ec)) {
                     throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Scontato:
-            if (!ec.isAbbonamentoAnnuale()) {
+            if (!isAbbonamentoAnnuale(ec)) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Sostenitore:
-            if (!ec.isAbbonamentoAnnuale()) {
+            if (!isAbbonamentoAnnuale(ec)) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
@@ -941,14 +982,16 @@ public class Smd {
         spedizioni
             .stream()
             .filter( sped -> 
-                   sped.getSpedizione().getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
-                && sped.getSpedizione().getAnnoSpedizione() == anno 
+                   sped.getSpedizione().getAnnoSpedizione() == anno 
                 && sped.getSpedizione().getMeseSpedizione() == mese) 
             .forEach( sped -> 
                   sped
                   .getSpedizioneItems()
                   .stream()
-                  .filter(item -> !item.isPosticipata() && item.getPubblicazione().hashCode() == pubblicazione.hashCode())
+                  .filter(item -> 
+                  	item.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
+                  	&& !item.isPosticipata() 
+                  	&& item.getPubblicazione().hashCode() == pubblicazione.hashCode())
                   .forEach(item -> 
                   {
                       switch (sped.getSpedizione().getInvioSpedizione()) {

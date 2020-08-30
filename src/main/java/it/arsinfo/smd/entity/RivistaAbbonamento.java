@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.service.Smd;
 
@@ -39,6 +40,9 @@ public class RivistaAbbonamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
+    @Enumerated(EnumType.STRING)
+    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
+
     private Mese meseInizio=Mese.GENNAIO;
     private Anno annoInizio=Anno.getAnnoCorrente();
     private Mese meseFine = Mese.DICEMBRE;
@@ -55,22 +59,6 @@ public class RivistaAbbonamento implements SmdEntity {
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
     public RivistaAbbonamento() {
-    }
-
-    public boolean isAbbonamentoAnnuale() {
-        if (annoInizio != annoFine) {
-            return false;
-        }
-        if (meseInizio != Mese.GENNAIO) {
-            return false;
-        }
-        if (meseFine != Mese.DICEMBRE) {
-            return false;
-        }
-        if (numeroTotaleRiviste != numero*pubblicazione.getMesiPubblicazione().size()) {
-            return false;
-        }
-        return true;
     }
     
     public Long getId() {
@@ -119,14 +107,14 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Transient
     public String getHeader() {
-        return String.format("' %d %s' %s]", 
-                numero,pubblicazione.getNome(), tipoAbbonamentoRivista);
+        return String.format("' %d %s' %s %s]", 
+                numero,pubblicazione.getNome(), tipoAbbonamentoRivista, statoAbbonamento);
     }
 
     @Override
     public String toString() {
-        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo);
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoAbbonamento);
     }
         
     public BigDecimal getImporto() {
@@ -297,6 +285,14 @@ public class RivistaAbbonamento implements SmdEntity {
 		r.setPubblicazione(pubblicazione);
 		r.setStorico(storico);
 		return r;
+	}
+
+	public StatoAbbonamento getStatoAbbonamento() {
+		return statoAbbonamento;
+	}
+
+	public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
+		this.statoAbbonamento = statoAbbonamento;
 	}
 
 }

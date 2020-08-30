@@ -26,7 +26,6 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.service.Smd;
 
 @Entity
@@ -59,9 +58,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private BigDecimal incassato=BigDecimal.ZERO;
 
     private String codeLine;
-
-    @Enumerated(EnumType.STRING)
-    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
@@ -115,9 +111,8 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, %s, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
                                    id, 
-                                   statoAbbonamento, 
                                    importo,
                                    spese,
                                    speseEstero,
@@ -187,14 +182,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     public BigDecimal getIncassato() {
         return incassato;
-    }
-
-    public StatoAbbonamento getStatoAbbonamento() {
-        return statoAbbonamento;
-    }
-
-    public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
-        this.statoAbbonamento = statoAbbonamento;
     }
     
     @Transient

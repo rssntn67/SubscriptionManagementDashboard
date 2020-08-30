@@ -63,7 +63,6 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
@@ -929,7 +928,7 @@ public class SmdApplicationTests {
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
         
-        assertTrue(ec.isAbbonamentoAnnuale());
+        assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(item -> items.add(item)));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
@@ -987,7 +986,7 @@ public class SmdApplicationTests {
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
         
-        assertTrue(ec.isAbbonamentoAnnuale());
+        assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(item -> items.add(item)));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
@@ -1535,7 +1534,7 @@ public class SmdApplicationTests {
                                            new ArrayList<>(), 
                                            SmdHelper.getSpeseSpedizione()
                                            );
-        assertTrue(ec1.isAbbonamentoAnnuale());
+        assertTrue(Smd.isAbbonamentoAnnuale(ec1));
         
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
@@ -1548,8 +1547,11 @@ public class SmdApplicationTests {
         .filter(sped -> Mese.getMeseCorrente() == sped.getSpedizione().getMeseSpedizione())
         .forEach(sped -> {
           assertEquals(sped.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
-          sped.getSpedizione().setStatoSpedizione(StatoSpedizione.INVIATA);
-          spedizioneDao.save(sped.getSpedizione());
+          spedizioneItemDao.findBySpedizione(sped.getSpedizione()).forEach( item -> {
+              item.setStatoSpedizione(StatoSpedizione.INVIATA);
+              spedizioneItemDao.save(item);
+        	  
+          });
           log.info("Setting Inviata {}", sped.getSpedizione());
         });
 
@@ -1560,7 +1562,7 @@ public class SmdApplicationTests {
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
         for (SpedizioneItem deletedItem:aggiorna.getItemsToDelete()) {
-            assertEquals(StatoSpedizione.PROGRAMMATA, deletedItem.getSpedizione().getStatoSpedizione());
+            assertEquals(StatoSpedizione.PROGRAMMATA, deletedItem.getStatoSpedizione());
             assertEquals(ec1.getId(), deletedItem.getRivistaAbbonamento().getId());
             log.info("deleted: " + deletedItem);
             spedizioneItemDao.deleteById(deletedItem.getId());            
@@ -1586,7 +1588,8 @@ public class SmdApplicationTests {
         for (SpedizioneWithItems inviata : spedizioni) {
         	assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
         	assertEquals(inviata.getSpedizione().getMeseSpedizione(), Mese.getMeseCorrente());
-        	assertEquals(StatoSpedizione.INVIATA, inviata.getSpedizione().getStatoSpedizione());
+        	spedizioneItemDao.findBySpedizione(inviata.getSpedizione()).forEach(item->
+        	assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione()));
         	log.info("Spedizione: {}", inviata.getSpedizione().getInvioSpedizione());
         	log.info("Spedizione: {} {} ", inviata.getSpedizione().getMeseSpedizione().getNomeBreve(), inviata.getSpedizione().getAnnoSpedizione().getAnnoAsString());
         	log.info("Spedizione: {} Item ", inviata.getSpedizioneItems().size());
@@ -1629,7 +1632,7 @@ public class SmdApplicationTests {
                      ec1,
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());        
-        assertTrue(ec1.isAbbonamentoAnnuale());
+        assertTrue(Smd.isAbbonamentoAnnuale(ec1));
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
@@ -1932,7 +1935,6 @@ public class SmdApplicationTests {
             incassato = incassato.add(Smd.incassa(incasso,v, abb));
             versamentoDao.save(v);
             incassoDao.save(incasso);
-            abb.setStatoAbbonamento(StatoAbbonamento.Valido);
             abbonamentoDao.save(abb);
             OperazioneIncasso operazione = new OperazioneIncasso();
             operazione.setAbbonamento(abb);
@@ -1953,13 +1955,11 @@ public class SmdApplicationTests {
         assertEquals(0, incasso.getResiduo().doubleValue(),0);
         assertEquals(incassato.doubleValue(), abb.getIncassato().doubleValue(),0);
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
-        assertEquals(StatoAbbonamento.Valido, abb.getStatoAbbonamento());
 
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
         assertNotNull(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
-        assertEquals(StatoAbbonamento.Valido, abbonamento.getStatoAbbonamento());
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));        
         assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
         assertEquals(0, versamento.getResiduo().doubleValue(),0);

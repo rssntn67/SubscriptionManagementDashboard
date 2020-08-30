@@ -32,7 +32,6 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -160,7 +159,7 @@ public class SmdUnitTests {
     
     private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, RivistaAbbonamento ec) {
         assertEquals(0.0,abb.getSpese().doubleValue(),0);
-        assertEquals(true, ec.isAbbonamentoAnnuale());
+        assertEquals(true, Smd.isAbbonamentoAnnuale(ec));
         assertEquals(abb, ec.getAbbonamento());
         switch (ec.getTipoAbbonamentoRivista()) {
         case OmaggioCuriaDiocesiana:
@@ -468,25 +467,27 @@ public class SmdUnitTests {
 
         for (SpedizioneWithItems spedw:spedizioniwithitems) {
             Spedizione sped = spedw.getSpedizione();
-            assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());            
             if (sped.getMeseSpedizione() == meseA  
             		&& sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(numeroRivisteSpedizionePosticipata, spedw.getSpedizioneItems().size());
                 for (SpedizioneItem item : spedw.getSpedizioneItems()) {
                     assertTrue(item.isPosticipata());
+                    assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
                 }
             } else if (sped.getMeseSpedizione() == meseA 
             		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
+                assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
                 assertTrue(!item.isPosticipata());
             } else if (sped.getMeseSpedizione() == meseB 	
             		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
+                assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
                 assertTrue(!item.isPosticipata());
             } else { 
                 assertTrue(false);
@@ -495,7 +496,8 @@ public class SmdUnitTests {
         for (SpedizioneWithItems ssp:spedizioniwithitems) {
             Spedizione sped= ssp.getSpedizione();
             if (sped.getMeseSpedizione() == meseA) {
-                sped.setStatoSpedizione(StatoSpedizione.INVIATA);
+            	ssp.getSpedizioneItems().forEach(item -> 
+                item.setStatoSpedizione(StatoSpedizione.INVIATA));
             }
         }
         
@@ -507,15 +509,21 @@ public class SmdUnitTests {
             Spedizione sped= ssp.getSpedizione();
             if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 ss = sped.getSpesePostali();
-                assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
+                for (SpedizioneItem item: ssp.getSpedizioneItems()) {
+                	assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
+                }
                 assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(numeroRivisteSpedizionePosticipata, ssp.getSpedizioneItems().size());            
             } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
-                assertEquals(StatoSpedizione.INVIATA, sped.getStatoSpedizione());
+                for (SpedizioneItem item: ssp.getSpedizioneItems()) {
+                	assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
+                }
                 assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                 assertEquals(1, ssp.getSpedizioneItems().size());            	
-        	}else if (sped.getMeseSpedizione() == meseB ) {            
-                assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
+        	} else if (sped.getMeseSpedizione() == meseB ) {            
+                for (SpedizioneItem item: ssp.getSpedizioneItems()) {
+                	assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
+                }
                 assertEquals(0, sped.getPesoStimato().intValue());
                 assertEquals(0, ssp.getSpedizioneItems().size());
             } else { 
@@ -599,7 +607,9 @@ public class SmdUnitTests {
         
         spedizioni.stream().forEach(spwi -> {
             Spedizione sped= spwi.getSpedizione();
-            assertEquals(StatoSpedizione.PROGRAMMATA, sped.getStatoSpedizione());
+            spwi.getSpedizioneItems()
+            .forEach(item -> 
+            assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione()));
             assertEquals(1, spwi.getSpedizioneItems().size());
             assertEquals(InvioSpedizione.Spedizioniere, sped.getInvioSpedizione());
             switch (sped.getMeseSpedizione()) {
@@ -836,7 +846,7 @@ public class SmdUnitTests {
         	speseSped = speseSped.add(sped.getSpedizione().getSpesePostali());
     	}
         assertEquals(p.getMesiPubblicazione().size(), items.size());
-        assertTrue(ec.isAbbonamentoAnnuale());
+        assertTrue(Smd.isAbbonamentoAnnuale(ec));
         
         assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
         assertEquals(speseSped.doubleValue(), abb.getSpeseEstero().doubleValue(),0);
@@ -1267,10 +1277,6 @@ public class SmdUnitTests {
         Abbonamento abb = new Abbonamento();
         assertEquals(Incassato.Zero, Smd.getStatoIncasso(abb));
         
-        abb.setStatoAbbonamento(StatoAbbonamento.Valido);
-        assertEquals(Incassato.Omaggio, Smd.getStatoIncasso(abb));
-       
-        abb.setStatoAbbonamento(StatoAbbonamento.Nuovo);
         abb.setImporto(new BigDecimal(10));
         assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
         

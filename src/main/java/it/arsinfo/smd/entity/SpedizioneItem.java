@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoSpedizione;
 
 @Entity
 public class SpedizioneItem implements SmdEntity {
@@ -36,6 +37,9 @@ public class SpedizioneItem implements SmdEntity {
     
     private boolean posticipata = false;
     
+    @Enumerated(EnumType.STRING)
+    private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
+
     Integer numero=1;
 
     public SpedizioneItem() {
@@ -90,7 +94,7 @@ public class SpedizioneItem implements SmdEntity {
         
     @Override
     public String toString() {
-        return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b, %s ]", 
+        return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b, %s %s]", 
                              id,
                              rivistaAbbonamento.getId(),
                              pubblicazione.getNome(),
@@ -98,7 +102,8 @@ public class SpedizioneItem implements SmdEntity {
                              annoPubblicazione,
                              numero, 
                              posticipata,
-                             spedizione
+                             spedizione,
+                             statoSpedizione
                              );
     }
 
@@ -121,20 +126,6 @@ public class SpedizioneItem implements SmdEntity {
     public void setPubblicazione(Pubblicazione pubblicazione) {
         this.pubblicazione = pubblicazione;
     }
-
-    @Transient
-    public boolean stessaPubblicazione(SpedizioneItem item) {
-        if (item.getMesePubblicazione() != mesePubblicazione) {
-            return false;
-        }
-        if (item.getAnnoPubblicazione() != annoPubblicazione) {
-            return false;
-        }
-        if (pubblicazione.getId() != null && item.getPubblicazione().getId() != null) {
-            return pubblicazione.getId() == item.getPubblicazione().getId();
-        }
-        return pubblicazione == item.getPubblicazione();
-    }
     
     @Transient
     public String getSpedCaption() {
@@ -150,6 +141,16 @@ public class SpedizioneItem implements SmdEntity {
 	@Override
 	public String getHeader() {
 		return "Elementi Spedizione";
+	}
+
+
+	public StatoSpedizione getStatoSpedizione() {
+		return statoSpedizione;
+	}
+
+
+	public void setStatoSpedizione(StatoSpedizione statoSpedizione) {
+		this.statoSpedizione = statoSpedizione;
 	}
     
  }

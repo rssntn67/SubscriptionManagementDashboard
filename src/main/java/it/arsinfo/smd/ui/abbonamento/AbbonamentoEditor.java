@@ -140,7 +140,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
 
-        getDelete().setEnabled(abbonamento.getCampagna() == null && abbonamento.getStatoAbbonamento() == StatoAbbonamento.Nuovo);
+        getDelete().setEnabled(abbonamento.getCampagna() == null && abbonamento.getIncassato().signum() == 0);
         
         codeLine.setVisible(persisted);
         intestatario.setReadOnly(persisted);

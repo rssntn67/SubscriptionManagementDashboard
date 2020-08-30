@@ -134,7 +134,14 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     @Override
     public List<Abbonamento> find() {
-    	return filterAll(dao.searchBy(campagna,customer,anno,pubblicazione,filterTipoAbbonamentoRivista.getValue()));
+    	return filterAll(
+    			dao.searchBy(
+    					campagna,
+    					customer,
+    					anno,
+    					pubblicazione,
+    					filterTipoAbbonamentoRivista.getValue(),
+    					filterStatoAbbonamento.getValue()));
     }
 
     private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
@@ -143,9 +150,6 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         }
         if (filterContrassegno.getValue() != null) {
             abbonamenti=abbonamenti.stream().filter(a -> a.isContrassegno() == filterContrassegno.getValue()).collect(Collectors.toList());      
-        }
-        if (filterStatoAbbonamento.getValue() != null) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.getStatoAbbonamento() == filterStatoAbbonamento.getValue()).collect(Collectors.toList());      
         }
         if (!StringUtils.isEmpty(searchCodeLine)) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  

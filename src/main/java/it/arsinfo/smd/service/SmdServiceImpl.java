@@ -31,6 +31,7 @@ import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
@@ -177,10 +178,17 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void rimuovi(Abbonamento abbonamento) {
-        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento in uno stato diverso da Nuovo.", abbonamento);
-            throw new UnsupportedOperationException("Non si può cancellare un abbonamento nello stato:"+abbonamento.getStatoAbbonamento());
-        }
+    	if (abbonamento.getIncassato().signum() > 0) {
+        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento incassato.", abbonamento);
+            throw new UnsupportedOperationException("Non si può cancellare un abbonamento con incasso: "+abbonamento.getIncassato());    		
+    	}
+    	List<RivistaAbbonamento> riviste = rivistaAbbonamentoDao.findByAbbonamento(abbonamento);
+    	for (RivistaAbbonamento rivista:riviste) {
+	        if (rivista.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
+	        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento con rivista {} in uno stato diverso da Nuovo.", abbonamento,rivista);
+	            throw new UnsupportedOperationException("Non si può cancellare abbonamento con rivista nello stato:"+rivista.getStatoAbbonamento());
+	        }
+    	}
         spedizioneDao
         .findByAbbonamento(abbonamento)
         .forEach(sped -> 
@@ -191,7 +199,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getId());
             }
         );
-        rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
+        riviste.forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
         abbonamentoDao.delete(abbonamento);
     }
 
@@ -316,27 +324,27 @@ public class SmdServiceImpl implements SmdService {
         });
 
         spedizioneDao
-        .findByMeseSpedizioneAndAnnoSpedizione(meseSpedizione,annoSpedizione)
-        .stream()
-        .filter(sped -> 
-        	sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere && 
-        	sped.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA)
-        .forEach(sped -> {
-            sped.setStatoSpedizione(StatoSpedizione.INVIATA);
-            spedizioneDao.save(sped);
-        });
+        .findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(meseSpedizione,annoSpedizione,InvioSpedizione.Spedizioniere)
+        .forEach(sped -> 
+        	{
+        		spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA)
+        		.forEach(item -> 
+        		{
+        			item.setStatoSpedizione(StatoSpedizione.INVIATA);
+        			spedizioneItemDao.save(item);
+        		});
+        	});
     }
 
     @Override
     public List<SpedizioniereItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped, StatoSpedizione statoSpedizione) {
         final List<SpedizioniereItem> items = new ArrayList<>();
     	spedizioneItemDao
-        	.findByPubblicazione(pubblicazione)
+        	.findByPubblicazioneAndStatoSpedizione(pubblicazione,statoSpedizione)
         	.stream()
         	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
         						&& spedItem.getSpedizione().getAnnoSpedizione()== annoSpedizione
         						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped
-        						&& spedItem.getSpedizione().getStatoSpedizione() == statoSpedizione
         						)
         	.forEach(spedItem -> {
         		items.add(genera(spedItem));
@@ -369,30 +377,32 @@ public class SmdServiceImpl implements SmdService {
         }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
-        	switch (abbonamento.getStatoIncasso()) {
+        boolean valido = false;
+    	switch (abbonamento.getStatoIncasso()) {
 			case Si:
-				riattivaSpedizioni(abbonamento);
-				abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+				valido = true;
 				break;
 			case SiConDebito:
-				riattivaSpedizioni(abbonamento);
-				abbonamento.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+				valido = true;
 			default:
 				break;
-			}
-        } else if (abbonamento.getStatoAbbonamento() == StatoAbbonamento.ValidoConResiduo) {
-        	switch (abbonamento.getStatoIncasso()) {
-			case Si:
-				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-				break;
-			case SiConDebito:
-				riattivaSpedizioni(abbonamento);
-				abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-			default:
-				break;
-			}
         }
+    	if (valido) {
+			riattivaSpedizioni(abbonamento);
+			rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
+			.stream()
+			.filter(riv -> !Smd.isOmaggio(riv))
+			.forEach(riv -> {
+				if (riv.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
+					riv.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
+				} else if (abbonamento.getStatoIncasso() == Incassato.Si) {
+					riv.setStatoAbbonamento(StatoAbbonamento.Valido);
+				} else if (abbonamento.getStatoIncasso() == Incassato.SiConDebito) {
+					riv.setStatoAbbonamento(StatoAbbonamento.ValidoConResiduo);
+				}
+				rivistaAbbonamentoDao.save(riv);
+			});
+    	}
         abbonamentoDao.save(abbonamento);        
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
@@ -510,19 +520,46 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
-        spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento, StatoSpedizione.PROGRAMMATA)
+        spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {
-            sped.setStatoSpedizione(StatoSpedizione.SOSPESA);
-            spedizioneDao.save(sped);
+        	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA)
+        	.forEach( item -> 
+        	{
+        		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
+        		switch (rivista.getStatoAbbonamento()) {
+				case Sospeso:
+		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
+					break;
+				case SospesoInviatoEC:
+		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
+					break;
+				default:
+					break;
+				}
+            	spedizioneItemDao.save(item);
+        	});
         });
     }
 
     @Override
     public void riattivaSpedizioni(Abbonamento abbonamento) throws Exception {
-        spedizioneDao.findByAbbonamentoAndStatoSpedizione(abbonamento,StatoSpedizione.SOSPESA)
+        spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {
-            sped.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-            spedizioneDao.save(sped);
+        	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.SOSPESA)
+        	.forEach( item -> 
+        	{
+        		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
+        		switch (rivista.getStatoAbbonamento()) {
+				case Sospeso:
+					break;
+				case SospesoInviatoEC:
+					break;
+				default:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+	            	spedizioneItemDao.save(item);
+					break;
+				}
+        	});
         });
     }
 
@@ -581,5 +618,11 @@ public class SmdServiceImpl implements SmdService {
         }
         return spedizioni;
     }
+
+	@Override
+	public void inviaDuplicato(Spedizione spedizione) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

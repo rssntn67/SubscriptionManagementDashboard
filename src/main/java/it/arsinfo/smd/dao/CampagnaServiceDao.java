@@ -24,6 +24,7 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 
 	void genera(Campagna campagna) throws Exception;
 	void invia(Campagna campagna) throws Exception;
+	void sospendi(Campagna campagna, Pubblicazione p) throws Exception;
 	void estratto(Campagna campagna) throws Exception;	
 	void chiudi(Campagna campagna) throws Exception;
 	List<Campagna> searchBy(Anno anno);

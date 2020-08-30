@@ -3,6 +3,7 @@ package it.arsinfo.smd.dao;
 import java.util.List;
 
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -19,6 +20,6 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 	List<Campagna> getCampagne();
 	void incassa(Abbonamento entity, String incassato, UserInfo user ) throws Exception;
 	List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento);
-	List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t);
+	List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t, StatoAbbonamento s);
 	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 }

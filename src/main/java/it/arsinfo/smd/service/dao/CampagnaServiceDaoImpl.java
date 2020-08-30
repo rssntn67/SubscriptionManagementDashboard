@@ -21,6 +21,7 @@ import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.CampagnaItemDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
@@ -53,6 +54,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Autowired
 	private AbbonamentoDao abbonamentoDao;
+
+	@Autowired
+	private RivistaAbbonamentoDao rivistaAbbonamentoDao;
 
 	@Autowired
 	private AnagraficaDao anagraficaDao;
@@ -324,11 +328,16 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 						log.error("invia: incassa {} da {}", v.getResiduo(), v.getCommittente().getCaption(), e.getMessage(),e);
 					}
 				});
-            if (ca.getTotale().signum() == 0) {
-                ca.setStatoAbbonamento(StatoAbbonamento.Valido);
-            } else {
-                ca.setStatoAbbonamento(StatoAbbonamento.Proposto);
-            }
+    		rivistaAbbonamentoDao.findByAbbonamento(ca).forEach(ra -> {
+    			if (ra.getNumeroTotaleRiviste() == 0) {
+    				ra.setStatoAbbonamento(StatoAbbonamento.Annullato);
+    			} else if (Smd.isOmaggio(ra)) {
+    				ra.setStatoAbbonamento(StatoAbbonamento.Valido);
+    			} else if  (ca.getResiduo().signum() == 0 ) {
+    				ra.setStatoAbbonamento(StatoAbbonamento.Proposto);
+    			}
+    			rivistaAbbonamentoDao.save(ra);
+    		});
             abbonamentoDao.save(ca);
     	});        
         campagna.setStatoCampagna(StatoCampagna.Inviata);
@@ -482,5 +491,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Override
 	public Campagna save(Campagna entity) throws Exception {
 		throw new UnsupportedOperationException("Campagna non può essere salvata");
+	}
+
+	@Override
+	public void sospendi(Campagna campagna, Pubblicazione p) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

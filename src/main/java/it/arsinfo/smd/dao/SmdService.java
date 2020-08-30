@@ -48,7 +48,8 @@ public interface SmdService {
     void generaStatisticheTipografia(Anno anno, Mese mese); 
     void generaStatisticheTipografia(Anno anno); 
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione);
-    
+
+    void inviaDuplicato(Spedizione spedizione);
 
     List<SpedizioniereItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione, StatoSpedizione statoSpedizione);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);

@@ -22,6 +22,7 @@ import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -251,29 +252,46 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
          return abbMap.values().stream().collect(Collectors.toList());
      }
 
-    private List<Abbonamento> filterBy(TipoAbbonamentoRivista tipo, Pubblicazione p,List<Abbonamento> abbonamenti) {
+    private List<Abbonamento> filterBy(TipoAbbonamentoRivista t, Pubblicazione p,StatoAbbonamento s, List<Abbonamento> abbonamenti) {
     	if (abbonamenti.size() == 0)
     		return abbonamenti;
-    	if (tipo == null && p == null)
+    	if (t == null && p == null && s == null)
     		return abbonamenti;
     	List<Long> approved;
-    	if (tipo == null)
+    	if (t == null && s == null)
             approved = itemRepository
             .findByPubblicazione(p)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (p == null && s == null)
+    		approved = itemRepository
+            .findByTipoAbbonamentoRivista(t)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (p == null && t == null)
+    		approved = itemRepository
+            .findByStatoAbbonamento(s)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (s == null)
+    		approved = itemRepository
+                .findByPubblicazioneAndTipoAbbonamentoRivista(p, t)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (t == null)
+    		approved = itemRepository
+                .findByPubblicazioneAndStatoAbbonamento(p, s)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (p == null)
     		approved = itemRepository
-            .findByTipoAbbonamentoRivista(tipo)
-            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+                .findByTipoAbbonamentoRivistaAndStatoAbbonamento(t, s)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else 
     		approved = itemRepository
-                .findByPubblicazioneAndTipoAbbonamentoRivista(p, tipo)
-                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+            .findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(p,t, s)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+
         return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
     }
 
 	@Override
-	public List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t) {
+	public List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t, StatoAbbonamento s) {
 		List<Abbonamento> abbonamenti;
         if (campagna == null && customer == null && anno == null) {
             abbonamenti = findAll();            
@@ -293,7 +311,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         	abbonamenti =  addByDestinatario(customer,repository.findByIntestatarioAndCampagnaAndAnno(customer, campagna, anno));
         }
         
-        return filterBy(t, p, abbonamenti);
+        return filterBy(t, p, s, abbonamenti);
 	}
 
 	@Override
