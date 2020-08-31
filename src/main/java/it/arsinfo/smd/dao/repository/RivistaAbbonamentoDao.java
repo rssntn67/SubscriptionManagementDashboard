@@ -16,15 +16,19 @@ import it.arsinfo.smd.entity.Storico;
 public interface RivistaAbbonamentoDao extends JpaRepository<RivistaAbbonamento, Long> {
 
 	List<RivistaAbbonamento> findByAbbonamento(Abbonamento abbonamento);
-        List<RivistaAbbonamento> findByDestinatario(Anagrafica destinatario);
-        List<RivistaAbbonamento> findByStorico(Storico storico);
-        List<RivistaAbbonamento> findByStoricoAndAnnoInizioAndAnnoFine(Storico storico, Anno inizio, Anno fine);
-        List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione);
-        List<RivistaAbbonamento> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
-        List<RivistaAbbonamento> findByStatoAbbonamento(StatoAbbonamento stato);
-        List<RivistaAbbonamento> findByPubblicazioneAndTipoAbbonamentoRivista(Pubblicazione pubblicazione, TipoAbbonamentoRivista t);
-        List<RivistaAbbonamento> findByPubblicazioneAndStatoAbbonamento(Pubblicazione pubblicazione, StatoAbbonamento s);
-        List<RivistaAbbonamento> findByTipoAbbonamentoRivistaAndStatoAbbonamento(TipoAbbonamentoRivista t, StatoAbbonamento s);
-        List<RivistaAbbonamento> findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(Pubblicazione pubblicazione, TipoAbbonamentoRivista t, StatoAbbonamento s);
-        void deleteByAbbonamento(Abbonamento abbonamento);
+	List<RivistaAbbonamento> findByAbbonamentoAndPubblicazione(Abbonamento abbonamento, Pubblicazione p);
+	List<RivistaAbbonamento> findByAbbonamentoAndTipoAbbonamentoRivista(Abbonamento abbonamento, TipoAbbonamentoRivista tipo);
+    List<RivistaAbbonamento> findByDestinatario(Anagrafica destinatario);
+    List<RivistaAbbonamento> findByStorico(Storico storico);
+    List<RivistaAbbonamento> findByStoricoAndAnnoInizioAndAnnoFine(Storico storico, Anno inizio, Anno fine);
+    List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione);
+    List<RivistaAbbonamento> findByTipoAbbonamentoRivista(TipoAbbonamentoRivista tipo);
+	List<RivistaAbbonamento> findByAbbonamentoAndStatoAbbonamento(Abbonamento abbonamento, StatoAbbonamento stato);
+    List<RivistaAbbonamento> findByStatoAbbonamento(StatoAbbonamento stato);
+    List<RivistaAbbonamento> findByStatoAbbonamentoOrStatoAbbonamento(StatoAbbonamento statoA, StatoAbbonamento statoB);
+    List<RivistaAbbonamento> findByPubblicazioneAndTipoAbbonamentoRivista(Pubblicazione pubblicazione, TipoAbbonamentoRivista t);
+    List<RivistaAbbonamento> findByPubblicazioneAndStatoAbbonamento(Pubblicazione pubblicazione, StatoAbbonamento s);
+    List<RivistaAbbonamento> findByTipoAbbonamentoRivistaAndStatoAbbonamento(TipoAbbonamentoRivista t, StatoAbbonamento s);
+    List<RivistaAbbonamento> findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(Pubblicazione pubblicazione, TipoAbbonamentoRivista t, StatoAbbonamento s);
+    void deleteByAbbonamento(Abbonamento abbonamento);
 }

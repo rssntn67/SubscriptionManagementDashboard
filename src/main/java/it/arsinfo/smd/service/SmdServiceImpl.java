@@ -27,7 +27,6 @@ import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
@@ -40,7 +39,6 @@ import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
@@ -56,7 +54,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.SmdUI;
@@ -67,9 +64,6 @@ public class SmdServiceImpl implements SmdService {
     @Autowired
     private SpesaSpedizioneDao spesaSpedizioneDao;
     
-    @Autowired
-    private StoricoDao storicoDao;
-
     @Autowired
     private AbbonamentoDao abbonamentoDao;
     
@@ -387,8 +381,8 @@ public class SmdServiceImpl implements SmdService {
 			default:
 				break;
         }
+        abbonamentoDao.save(abbonamento);        
     	if (valido) {
-			riattivaSpedizioni(abbonamento);
 			rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
 			.stream()
 			.filter(riv -> !Smd.isOmaggio(riv))
@@ -402,8 +396,8 @@ public class SmdServiceImpl implements SmdService {
 				}
 				rivistaAbbonamentoDao.save(riv);
 			});
+			aggiornaSpedizioni(abbonamento);
     	}
-        abbonamentoDao.save(abbonamento);        
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
         operIncasso.setVersamento(versamento);
@@ -519,7 +513,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void sospendiSpedizioni(Abbonamento abbonamento) throws Exception {
+    public void aggiornaSpedizioni(Abbonamento abbonamento) throws Exception {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {
         	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA)
@@ -538,61 +532,28 @@ public class SmdServiceImpl implements SmdService {
 				}
             	spedizioneItemDao.save(item);
         	});
-        });
-    }
-
-    @Override
-    public void riattivaSpedizioni(Abbonamento abbonamento) throws Exception {
-        spedizioneDao.findByAbbonamento(abbonamento)
-        .forEach(sped -> {
+        	
         	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.SOSPESA)
         	.forEach( item -> 
         	{
         		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
         		switch (rivista.getStatoAbbonamento()) {
-				case Sospeso:
+				case Valido:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
 					break;
-				case SospesoInviatoEC:
+				case ValidoConResiduo:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+					break;
+				case ValidoInviatoEC:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
 					break;
 				default:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-	            	spedizioneItemDao.save(item);
 					break;
 				}
+            	spedizioneItemDao.save(item);
         	});
         });
-    }
 
-    @Override
-    public void aggiornaStatoStorico(Abbonamento abbonamento, int numero) throws Exception {
-        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
-        .stream()
-        .filter(ec -> ec.getStorico() != null)
-        .forEach(ec -> {
-            Storico storico = storicoDao.findById(ec.getStorico().getId()).get();
-            if (storico.getNumero() == 0) {
-            	storico.setStatoStorico(StatoStorico.Annullato);            	
-            } else if (storico.getNumero() <= numero) {
-            	storico.setStatoStorico(StatoStorico.Sospeso);
-            } else {
-            	storico.setStatoStorico(StatoStorico.Valido);
-            }
-        	storicoDao.save(storico);
-        	log.info("aggiornaStatoStorico: {}", storico);
-        });
-    }
-
-    @Override
-    public void riattivaStorico(Abbonamento abbonamento) throws Exception {
-        rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
-        .stream()
-        .filter(ec -> ec.getStorico() != null)
-        .forEach(ec -> {
-            Storico storico = storicoDao.findById(ec.getStorico().getId()).get();
-            storico.setStatoStorico(StatoStorico.Valido);
-            storicoDao.save(storico);
-        	log.info("riattivaStorico: {}", storico);
-        });
     }
 
     @Override

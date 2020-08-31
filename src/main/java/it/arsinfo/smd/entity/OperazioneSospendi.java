@@ -16,14 +16,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
 @Table(uniqueConstraints={
-        @UniqueConstraint(columnNames = {"anno","pubblicazione_id"})
+        @UniqueConstraint(columnNames = {"campagna_id","pubblicazione_id"})
         })
-//create unique index operazione_sospendi_idx_key on operazioneSospenmdiPubblicazione(anno,pubblicazione_id);
 public class OperazioneSospendi implements SmdEntity {
 
     @Id
@@ -33,9 +31,8 @@ public class OperazioneSospendi implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
         
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Anno anno = Anno.getAnnoCorrente();
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Campagna campagna;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,11 +49,10 @@ public class OperazioneSospendi implements SmdEntity {
     public OperazioneSospendi() {
     }
 
-    public OperazioneSospendi(Pubblicazione pubblicazione, Anno anno, Mese mese) {
+    public OperazioneSospendi(Pubblicazione pubblicazione, Campagna campagna) {
         super();
         this.pubblicazione = pubblicazione;
-        this.anno = anno;
-        this.meseSpedizione = mese;
+        this.campagna = campagna;
     }
 
     public Long getId() {
@@ -71,12 +67,12 @@ public class OperazioneSospendi implements SmdEntity {
         this.pubblicazione = pubblicazione;
     }
 
-    public Anno getAnno() {
-        return anno;
+    public Campagna getCampagna() {
+        return campagna;
     }
 
-    public void setAnno(Anno anno) {
-        this.anno = anno;
+    public void setCampagna(Campagna c) {
+        this.campagna = c;
     }
 
     public Mese getMeseSpedizione() {
@@ -89,7 +85,7 @@ public class OperazioneSospendi implements SmdEntity {
 
 	@Override
 	public String toString() {
-		return "OperazioneSospendiPubblicazione [id=" + id + ", pubblicazione=" + pubblicazione.getNome() + ", anno=" + anno
+		return "OperazioneSospendiPubblicazione [id=" + id + ", pubblicazione=" + pubblicazione.getNome() + ", anno=" + campagna.getAnno()
 				+ ", meseSpedizione=" + meseSpedizione + ", operatore=" + operatore + ", data=" + data + "]";
 	}
 
@@ -107,7 +103,7 @@ public class OperazioneSospendi implements SmdEntity {
 
 	@Override
 	public String getHeader() {
-		return pubblicazione.getNome() + " " + anno
+		return pubblicazione.getNome() + " " + campagna.getAnno()
 				+ " " + meseSpedizione;
 	}
 

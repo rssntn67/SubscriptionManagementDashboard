@@ -303,25 +303,26 @@ public class SmdApplicationTests {
         log.info("----------------->testOperazioneSospendiCRUD<----------------");
         Pubblicazione estratti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti").iterator().next();
         assertNotNull(estratti);
-        OperazioneSospendi sospendiEstratti = new OperazioneSospendi(estratti, Anno.getAnnoCorrente(), Mese.getMeseCorrente());
+        Campagna campagna = new Campagna();
+        campagnaDao.save(campagna);
+        OperazioneSospendi sospendiEstratti = new OperazioneSospendi(estratti, campagna);
         operazioneSospendiDao.save(sospendiEstratti);
         assertEquals(1, operazioneSospendiDao.findAll().size());
                 
         operazioneSospendiDao.findAll().stream().forEach( a -> log.info(a.toString()));
         
-        OperazioneSospendi sospeso = operazioneSospendiDao.findUniqueByAnnoAndPubblicazione(Anno.getAnnoCorrente(), estratti);
+        OperazioneSospendi sospeso = operazioneSospendiDao.findUniqueByCampagnaAndPubblicazione(campagna, estratti);
         assertNotNull(sospeso);
         
-        OperazioneSospendi sospendiEstratti2 = new OperazioneSospendi(estratti, Anno.getAnnoCorrente(), Mese.APRILE);
+        OperazioneSospendi sospendiEstratti2 = new OperazioneSospendi(estratti, campagna);
+        sospendiEstratti2.setMeseSpedizione(Mese.APRILE);
         
         try {
         	operazioneSospendiDao.save(sospendiEstratti2);
         	assertTrue(false);
         } catch (Exception e) {
             log.info("Fail saving duplicate key");        	
-		}
-        
-        
+		}                
     }
 
 
