@@ -593,7 +593,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		try {
 	        OperazioneSospendi op = operazioneSospendiDao.findUniqueByCampagnaAndPubblicazione(campagna, p);
 	        if (op != null) {
-	        	throw new UnsupportedOperationException("Anno and Pubblicazione gia sospesi: " + campagna.getAnno() + ", " + p);
+	        	throw new UnsupportedOperationException("Anno and Pubblicazione sospesi: " + campagna.getAnno() + ", " + p.getNome());
 	        }
 			doSospendi(campagna,p);
 	        op = new OperazioneSospendi(p, campagna);

@@ -4,6 +4,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
@@ -18,6 +21,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.CampagnaServiceDao;
+import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
@@ -29,11 +33,12 @@ import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
-    private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
-                                                           EnumSet.allOf(Anno.class));
 
-    private final ComboBox<StatoCampagna> statoCampagna = new ComboBox<StatoCampagna>("Stato",
-            EnumSet.allOf(StatoCampagna.class));
+    private static final Logger log = LoggerFactory.getLogger(SmdService.class);
+	private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",EnumSet.allOf(Anno.class));
+
+    private final ComboBox<StatoCampagna> statoCampagna = 
+    		new ComboBox<StatoCampagna>("Stato",EnumSet.allOf(StatoCampagna.class));
     
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
@@ -61,6 +66,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         this.repo=repo;
         List<Pubblicazione> pubblicazioni = repo.findPubblicazioni();
         pubblicazione.setItems(pubblicazioni);
+        pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         items = new CampagnaItemsEditor(pubblicazioni);
         buttonV.addClickListener(click -> {
         	switch (get().getStatoCampagna()) {
@@ -89,7 +95,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         buttonWGenera.addClickListener(click -> {
 			Notification.show("Generazione Campagna Avviata", Notification.Type.TRAY_NOTIFICATION);
-			BgGenera genera = new BgGenera(repo,UI.getCurrent());
+			@SuppressWarnings("unchecked")
+			BgGenera genera = new BgGenera(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
 			genera.start();
         	try {
 				Thread.sleep(1000);
@@ -100,7 +107,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         buttonWInvio.addClickListener(click -> {
 			Notification.show("Invio Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgInvia invia = new BgInvia(repo,UI.getCurrent());
+			@SuppressWarnings("unchecked")
+			BgInvia invia = new BgInvia(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
 			invia.start();
 	       	try {
 					Thread.sleep(1000);
@@ -116,7 +124,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     			return;
         	}
 			Notification.show("Sospendi Invio Pubblicazione Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgSospendi sospendi = new BgSospendi(repo, p ,UI.getCurrent());
+			@SuppressWarnings("unchecked")
+			BgSospendi sospendi = new BgSospendi(repo, p ,(SmdEditorUI<Campagna>)UI.getCurrent());
 			sospendi.start();
 	       	try {
 					Thread.sleep(1000);
@@ -127,7 +136,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         buttonWEstrattoConto.addClickListener(click -> {
 			Notification.show("Estratto Conto Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgEstrattoConto estratto = new BgEstrattoConto(repo,UI.getCurrent());
+			@SuppressWarnings("unchecked")
+			BgEstrattoConto estratto = new BgEstrattoConto(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
 			estratto.start();
 	       	try {
 				Thread.sleep(1000);
@@ -138,7 +148,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         buttonWChiudi.addClickListener(click -> {
 			Notification.show("Chiudi Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
-			BgChiudi bgchiudi = new BgChiudi(repo,UI.getCurrent());
+			@SuppressWarnings("unchecked")
+			BgChiudi bgchiudi = new BgChiudi(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
 			bgchiudi.start();
 	       	try {
 				Thread.sleep(1000);
@@ -216,6 +227,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         anno.setReadOnly(persisted);
         buttonWGenera.setEnabled(false);
 		buttonWInvio.setEnabled(false);
+		pubblicazione.setEnabled(false);
 		buttonWSospendi.setEnabled(false);
 		buttonWEstrattoConto.setEnabled(false);
 		buttonWChiudi.setEnabled(false);
@@ -244,6 +256,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				case Inviata:
 					buttonWEstrattoConto.setEnabled(true);
 					buttonWSospendi.setEnabled(true);
+					pubblicazione.setEnabled(true);
 					buttonV.setCaption("Visualizza Abbonamenti Inviati");
 					break;
 				case InviatoEC:
@@ -264,17 +277,14 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         anno.focus();
     }
 
-	@SuppressWarnings("unchecked")
-	public UserInfo getOperatore() {
-		return ((SmdEditorUI<Campagna>)UI.getCurrent()).getLoggedInUser();
-	}
-
     private abstract class Bg extends Thread {
     	private final UI ui; 
+    	private final UserInfo operatore;
     	
-    	public Bg(UI ui) {
+    	public Bg(UI ui, UserInfo operatore) {
 			super();
 			this.ui=ui;
+			this.operatore=operatore;
 		}
 
     	public abstract void exec(Campagna campagna) throws Exception;
@@ -285,23 +295,29 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             try {
                 exec(get());
             } catch (Exception e) {
+            	log.error("Bg:run: {}", e.getMessage(),e);
                 if (ui != null) {
-                	ui.access(() -> Notification.show("Running Job Error", Notification.Type.ERROR_MESSAGE));
+                	ui.access(() -> Notification.show("Errore" + e.getMessage(), Notification.Type.ERROR_MESSAGE));
                 }
+                return;
             }
             
             if (ui != null) {
-            	ui.access(() -> Notification.show("Running Job Finito", Notification.Type.TRAY_NOTIFICATION));
+            	ui.access(() -> Notification.show("Esecuzione Completata", Notification.Type.TRAY_NOTIFICATION));
             }
         }
+		
+		public UserInfo getOperatore() {
+			return operatore;
+		}
 				
     }
     
     private final class BgGenera extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgGenera(CampagnaServiceDao repo, final UI ui) {
-			super(ui);
+    	public BgGenera(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
 
@@ -317,8 +333,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final class BgInvia extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgInvia(CampagnaServiceDao repo, final UI ui) {
-			super(ui);
+    	public BgInvia(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
 
@@ -334,8 +350,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     	private final CampagnaServiceDao repo;
     	private final Pubblicazione p;
     	
-    	public BgSospendi(CampagnaServiceDao repo, final Pubblicazione p, final UI ui) {
-			super(ui);
+    	public BgSospendi(CampagnaServiceDao repo, final Pubblicazione p, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 			this.p=p;
 		}
@@ -351,8 +367,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final class BgEstrattoConto extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgEstrattoConto(CampagnaServiceDao repo, final UI ui) {
-			super(ui);
+    	public BgEstrattoConto(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
 
@@ -367,8 +383,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final class BgChiudi extends Bg {
     	private final CampagnaServiceDao repo;
     	
-    	public BgChiudi(CampagnaServiceDao repo, final UI ui) {
-			super(ui);
+    	public BgChiudi(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
 
