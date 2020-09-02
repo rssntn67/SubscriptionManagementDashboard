@@ -14,10 +14,8 @@ public class SpedizioneGrid extends SmdGrid<Spedizione> {
         		   "annoSpedizione", 
         		   "pesoStimato",
                    "spesePostali",
-                   "invioSpedizione",
-                   "statoSpedizione"
+                   "invioSpedizione"
                    );
-        setColumnCaption("statoSpedizione","Stato");
         setColumnCaption("invioSpedizione","Invio");
     }
 }

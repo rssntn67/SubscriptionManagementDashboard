@@ -429,10 +429,10 @@ public class SmdLoadSampleData implements Runnable {
         storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, lodare, 1,true,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
         storici.add(SmdHelper.getStoricoBy(gabrielePizzo,gabrielePizzo, blocchetti, 10,true,TipoAbbonamentoRivista.Scontato,InvioSpedizione.Spedizioniere));
 
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
-        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSedeNoSpese));
+        storici.add(SmdHelper.getStoricoBy(matteoParo,matteoParo, lodare, 1, false,TipoAbbonamentoRivista.OmaggioGesuiti,InvioSpedizione.AdpSedeNoSpese));
 
-        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaGeneralizia,InvioSpedizione.AdpSede));
+        storici.add(SmdHelper.getStoricoBy(davidePalma,davidePalma, messaggio, 10,false,TipoAbbonamentoRivista.OmaggioCuriaGeneralizia,InvioSpedizione.AdpSedeNoSpese));
         
         storici.add(SmdHelper.getStoricoBy(micheleSantoro,micheleSantoro, blocchetti, 1, false,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));
         storici.add(SmdHelper.getStoricoBy(micheleSantoro, pasqualinaSantoro, blocchetti, 2,false,TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere));        
