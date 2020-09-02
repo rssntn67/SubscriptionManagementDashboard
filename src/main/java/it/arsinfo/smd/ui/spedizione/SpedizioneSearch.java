@@ -98,7 +98,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     @Override
     public List<Spedizione> find() {
-    	return filterAll(dao.searchBy(p, a));
+    	return filterAll(dao.searchBy(p, a,filterStatoSpedizione.getValue()));
     }
 
     private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
@@ -110,9 +110,6 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         }
         if (filterInvioSpedizione.getValue() != null) {
             spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == filterInvioSpedizione.getValue()).collect(Collectors.toList());      
-        }
-        if (filterStatoSpedizione.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getStatoSpedizione() == filterStatoSpedizione.getValue()).collect(Collectors.toList());      
         }
         for (Spedizione sped: spedizioni) {
             sped.setAbbonamento(abbMap.get(sped.getAbbonamento().getId()));

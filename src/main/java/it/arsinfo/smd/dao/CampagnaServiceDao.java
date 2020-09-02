@@ -6,6 +6,8 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.OperazioneCampagna;
+import it.arsinfo.smd.entity.OperazioneSospendi;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.UserInfo;
 
@@ -30,4 +32,6 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 	void estratto(Campagna campagna, UserInfo user) throws Exception;	
 	void chiudi(Campagna campagna, UserInfo user) throws Exception;
 	List<Campagna> searchBy(Anno anno);
+	List<OperazioneCampagna> getOperazioni(Campagna campagna);
+	List<OperazioneSospendi> getSospensioni(Campagna campagna);
 }

@@ -13,6 +13,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -37,6 +38,8 @@ public class RivistaAbbonamentoEditor
             EnumSet.allOf(Mese.class));
     private final ComboBox<Mese> meseFine = new ComboBox<Mese>("Mese Fine",
             EnumSet.allOf(Mese.class));
+    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
+            EnumSet.allOf(StatoAbbonamento.class));
 
     private final TextField numeroTotaleRiviste = new TextField("Numero Totale Riviste");
     private final TextField numero = new TextField("Quant.");
@@ -130,7 +133,10 @@ public class RivistaAbbonamentoEditor
 
         getBinder().forField(annoFine)
         .asRequired().bind(RivistaAbbonamento::getAnnoFine,RivistaAbbonamento::setAnnoFine);
-        
+
+        getBinder().forField(statoAbbonamento)
+        .asRequired().bind(RivistaAbbonamento::getStatoAbbonamento,RivistaAbbonamento::setStatoAbbonamento);
+
         importo.setReadOnly(true);
         numeroTotaleRiviste.setReadOnly(true);
         

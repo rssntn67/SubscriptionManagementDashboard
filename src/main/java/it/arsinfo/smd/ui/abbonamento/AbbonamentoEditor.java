@@ -13,7 +13,6 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -26,8 +25,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
-    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
-            EnumSet.allOf(StatoAbbonamento.class));
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",
             EnumSet.allOf(Anno.class));
@@ -53,7 +50,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
                 anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(contrassegno,statoAbbonamento,statoIncasso);
+        HorizontalLayout status = new HorizontalLayout(contrassegno,statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
@@ -91,7 +88,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
         getBinder().forField(statoIncasso).bind("statoIncasso");
 
 
@@ -148,9 +144,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         campagna.setVisible(persisted);
         anno.setReadOnly(persisted);
         statoIncasso.setVisible(persisted);
-        statoAbbonamento.setReadOnly(abbonamento.getCampagna() != null);
 
-        noV =!persisted || Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
+        noV =!persisted || Smd.getStatoIncasso(abbonamento) != Incassato.Zero;
 
         importo.setVisible(noV);
         spese.setVisible(noV);

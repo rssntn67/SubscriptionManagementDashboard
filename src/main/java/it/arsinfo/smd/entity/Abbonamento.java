@@ -111,12 +111,13 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f',CL:'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f','Inc.to:'%.2f',CL:'%s', Anno=%s",
                                    id, 
                                    importo,
                                    spese,
                                    speseEstero,
                                    pregresso,
+                                   incassato,
                                    codeLine,
                                    anno.getAnnoAsString());
     }

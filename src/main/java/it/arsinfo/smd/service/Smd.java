@@ -225,20 +225,26 @@ public class Smd {
 
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
     	if (abbonamento.getTotale().signum() == 0) {
+        	log.info("getStatoIncasso: {} {}", Incassato.Zero,abbonamento);
     		return Incassato.Zero;
     	}
         if (abbonamento.getIncassato().signum() == 0) {
+        	log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
             return Incassato.No;
         }
         if (abbonamento.getResiduo().signum() == 0) {
+        	log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
             return Incassato.Si;
         }
-        if (abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) >= 0 ){
+        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) >= 0 && abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) < 0 ){
+           	log.info("getStatoIncasso: {} maggiore di 70 ma debito inferiore al 20% {}", Incassato.SiConDebito,abbonamento);
+           	return Incassato.SiConDebito;        	
+        }
+        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) < 0 && abbonamento.getTotale().subtract(new BigDecimal("7.00")).compareTo(abbonamento.getIncassato()) < 0) {
+           	log.info("getStatoIncasso: {} minore di 70 ma debito inferiore a 7 {}", Incassato.SiConDebito,abbonamento);
             return Incassato.SiConDebito;        	
         }
-        if (abbonamento.getImporto().subtract(new BigDecimal("7.00")).add(abbonamento.getSpeseEstero()).compareTo(abbonamento.getIncassato()) <= 0) {
-            return Incassato.SiConDebito;        	
-        }
+    	log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
         return Incassato.Parzialmente;
     }
 

@@ -1166,13 +1166,17 @@ public class SmdUnitTests {
                      SmdHelper.getSpeseSpedizione());
         
         assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
+        assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
         
-        abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(12)));
+        abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(13)));
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+
+        abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(11)));
         assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
-        
+
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
 		assertEquals(blocchetti.getAbbonamento().doubleValue(), costoUno,0);
-		assertEquals(3*costoUno, abb.getResiduo().doubleValue(),0);
+		assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
 
     	
     }
@@ -1202,14 +1206,15 @@ public class SmdUnitTests {
         assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
         
         abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(12)));
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+
+        abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(10)));
         assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
-        
+
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
 		
 		assertEquals(messaggio.getAbbonamento().doubleValue(), costoUno,0);
-		assertEquals(2*costoUno, abb.getResiduo().doubleValue(),0);
-		assertTrue(2*costoUno == abb.getResiduo().doubleValue());
-
+		assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
     	
     }
 
@@ -1284,14 +1289,23 @@ public class SmdUnitTests {
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(7));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
-
-        abb.setSpese(new BigDecimal(3));
-        abb.setIncassato(new BigDecimal(11));
         assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
-        abb.setIncassato(new BigDecimal(9));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));        
+        abb.setSpese(new BigDecimal(3));
+        abb.setIncassato(new BigDecimal(10));
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+
+        abb.setIncassato(new BigDecimal(6));
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        
+        abb.setImporto(new BigDecimal(70));
+        abb.setIncassato(new BigDecimal(60));
+        abb.setSpese(BigDecimal.ZERO);
+        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        
+        abb.setIncassato(new BigDecimal(54));
+        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+
         
     }
     

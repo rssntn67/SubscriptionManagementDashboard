@@ -16,7 +16,6 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -30,8 +29,6 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
-    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
-            EnumSet.allOf(StatoAbbonamento.class));
 
     private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
             EnumSet.allOf(Anno.class));
@@ -65,7 +62,7 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
         HorizontalLayout anag = new HorizontalLayout(campagna,anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(statoAbbonamento,statoIncasso);
+        HorizontalLayout status = new HorizontalLayout(statoIncasso);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
@@ -92,7 +89,6 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
         codeLine.setReadOnly(true);
         intestatario.setReadOnly(true);
 
-        statoAbbonamento.setReadOnly(true);
         statoIncasso.setReadOnly(true);
         
         importo.setReadOnly(true);
@@ -124,7 +120,6 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(statoAbbonamento).bind("statoAbbonamento");
         getBinder().forField(statoIncasso).bind("statoIncasso");
 
 
@@ -186,7 +181,7 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
         codeLine.setVisible(persisted);
         campagna.setVisible(persisted);
 
-        noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Omaggio;
+        noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Zero;
         hasResiduo = abbonamento.getResiduo().signum() > 0; 
 
         importo.setVisible(noOmaggio);

@@ -643,4 +643,14 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         log.info("sospendi Campagna end {} {}", campagna,p);
 	}
 
+	@Override
+	public List<OperazioneCampagna> getOperazioni(Campagna campagna) {
+		return operazioneCampagnaDao.findByCampagna(campagna);
+	}
+
+	@Override
+	public List<OperazioneSospendi> getSospensioni(Campagna campagna) {
+		return operazioneSospendiDao.findByCampagna(campagna);
+	}
+
 }

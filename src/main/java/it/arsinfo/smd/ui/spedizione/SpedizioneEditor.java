@@ -20,7 +20,6 @@ import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
@@ -33,8 +32,6 @@ public class SpedizioneEditor
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");
     private final ComboBox<InvioSpedizione> invioSpedizione = 
     		new ComboBox<InvioSpedizione>("Sped.",EnumSet.allOf(InvioSpedizione.class));
-    private final ComboBox<StatoSpedizione> statoSpedizione = 
-    		new ComboBox<StatoSpedizione>("Stato Spedizione",EnumSet.allOf(StatoSpedizione.class));
     private final ComboBox<Anno> annoSped = 
     		new ComboBox<Anno>("Anno Sped",EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> meseSped = new ComboBox<Mese>("Mese Sped",EnumSet.allOf(Mese.class));
@@ -65,8 +62,6 @@ public class SpedizioneEditor
 
         invioSpedizione.setEmptySelectionAllowed(false);
         invioSpedizione.setReadOnly(true);
-
-        statoSpedizione.setEmptySelectionAllowed(false);
         
         spesePostali.setReadOnly(true);
         pesoStimato.setReadOnly(true);
@@ -74,7 +69,7 @@ public class SpedizioneEditor
         dest.addComponentsAndExpand(destinatario);
         setComponents(getActions(), 
         			dest,
-                      new HorizontalLayout(invioSpedizione,statoSpedizione),
+                      new HorizontalLayout(invioSpedizione),
                       new HorizontalLayout(meseSped,annoSped),
                       new HorizontalLayout(pesoStimato,spesePostali)
                       );
@@ -99,9 +94,6 @@ public class SpedizioneEditor
         getBinder().forField(invioSpedizione)
         .asRequired().bind(Spedizione::getInvioSpedizione,Spedizione::setInvioSpedizione);
 
-        getBinder().forField(statoSpedizione)
-        .asRequired().bind(Spedizione::getStatoSpedizione,Spedizione::setStatoSpedizione);
-
         getBinder().forField(meseSped)
         .asRequired().bind(Spedizione::getMeseSpedizione,Spedizione::setMeseSpedizione);
 
@@ -112,8 +104,7 @@ public class SpedizioneEditor
 
     @Override
     public void focus(boolean persisted, Spedizione obj) {
-        getSave().setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA); 
-        statoSpedizione.setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA);
+        getSave().setEnabled(false); 
         getDelete().setEnabled(false);        
     }
     

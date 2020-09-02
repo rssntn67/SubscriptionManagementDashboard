@@ -9,12 +9,12 @@ public class SpedizioneItemGrid extends SmdGrid<SpedizioneItem> {
 
     public SpedizioneItemGrid(String gridname) {
         super(new Grid<>(SpedizioneItem.class),gridname);
-        setColumns("spedCaption",
-                   "pubbCaption",
+        setColumns("pubbCaption",
                    "numero",
-        		   "posticipata");
-        setColumnCaption("spedCaption","Mese/Anno Spedizione");
+        		   "posticipata",
+        		   "statoSpedizione");
         setColumnCaption("pubbCaption","Pubblicazione");
+        setColumnCaption("statoSpedizione","Stato");
         setColumnCaption("numero","Quan.tà");
     }
 
