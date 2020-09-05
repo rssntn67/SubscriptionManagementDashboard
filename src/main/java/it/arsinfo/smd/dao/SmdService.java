@@ -42,8 +42,8 @@ public interface SmdService {
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
     void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
     
-    void generaStatisticheTipografia(Anno anno, Mese mese); 
-    void generaStatisticheTipografia(Anno anno); 
+    void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
+    void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione);

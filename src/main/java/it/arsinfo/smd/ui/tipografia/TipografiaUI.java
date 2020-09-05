@@ -10,6 +10,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.SmdService;
@@ -46,7 +47,7 @@ public class TipografiaUI extends SmdUI {
         List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
         
         SmdButton generaShow = new SmdButton("Genera Operazioni",VaadinIcons.ARCHIVES);
-        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES);
+        OperazioneGenera genera = new OperazioneGenera("Genera", VaadinIcons.ENVELOPES,pubblicazioni);
         OperazioneSearch search = new OperazioneSearch(dao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
         OperazioneEditor editor = new OperazioneEditor(dao.getRepository(), pubblicazioni);
@@ -63,10 +64,15 @@ public class TipografiaUI extends SmdUI {
             genera.setVisible(true);
         }); 
         genera.setChangeHandler(() -> {
+        	Pubblicazione p = genera.getPubblicazione();
+        	if (p==null) {
+        		Notification.show("Deve essere selezionata la pubblicazione", Notification.Type.WARNING_MESSAGE);
+        		return;
+        	}
             if (genera.isGenera()) {
-                smdService.generaStatisticheTipografia(Anno.getAnnoCorrente(), Mese.getMeseCorrente());
+                smdService.generaStatisticheTipografia(Anno.getAnnoCorrente(), Mese.getMeseCorrente(),p);
             } else if (genera.isGeneraA()) {
-               smdService.generaStatisticheTipografia(genera.getAnno());
+               smdService.generaStatisticheTipografia(genera.getAnno(),p);
             }
             generaShow.setVisible(true);
             genera.setVisible(false);

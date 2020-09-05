@@ -3,7 +3,10 @@ package it.arsinfo.smd.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,6 @@ import it.arsinfo.smd.dao.repository.OffertaDao;
 import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
@@ -81,9 +83,6 @@ public class SmdServiceImpl implements SmdService {
 
     @Autowired
     private OperazioneIncassoDao operazioneIncassoDao;
-
-    @Autowired
-    private PubblicazioneDao pubblicazioneDao;
 
     @Autowired
     private VersamentoDao versamentoDao;
@@ -278,32 +277,30 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void generaStatisticheTipografia(Anno anno, Mese mese) {
-    	log.info("generaStatisticheTipografia {}, {}", mese,anno);
-    	List<SpedizioneWithItems> speditems = findByMeseSpedizioneAndAnnoSpedizione(mese, anno);
-        pubblicazioneDao.findAll().forEach(p -> {
-            Operazione saved = operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese,p);
-            if (saved != null && saved.getStatoOperazione() != StatoOperazione.Programmata) {
-                return;
-            }
-            if (saved != null) {
-                operazioneDao.deleteById(saved.getId());
-            }
-            Operazione op = Smd.generaOperazione(p,
-            								speditems, 
+    public void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p) {
+    	log.info("generaStatisticheTipografia: {}, {}, {}", mese,anno,p.getNome());
+        Operazione saved = operazioneDao.findByAnnoAndMeseAndPubblicazione(anno, mese,p);
+        if (saved != null && saved.getStatoOperazione() != StatoOperazione.Programmata) {
+        	log.info("generaStatisticheTipografia: already done {}", saved);
+            return;
+        }
+        if (saved != null) {
+            operazioneDao.deleteById(saved.getId());
+        }
+        Operazione op = Smd.generaOperazione(p,
+        		findByMeseSpedizioneAndAnnoSpedizione(mese, anno,p), 
                                              mese, 
                                              anno);
-    	log.info("generaStatisticheTipografia {}", op);
-        if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
-            operazioneDao.save(op);                               
+		log.info("generaStatisticheTipografia {}", op);
+    	if (op.getStimatoSped() > 0 || op.getStimatoSede() >0) {
+                operazioneDao.save(op);                               
         }
-        });
         
     }
 
     @Override
-    public void generaStatisticheTipografia(Anno anno) {
-        EnumSet.allOf(Mese.class).forEach(mese -> generaStatisticheTipografia(anno, mese));
+    public void generaStatisticheTipografia(Anno anno, Pubblicazione p) {
+        EnumSet.allOf(Mese.class).forEach(mese -> generaStatisticheTipografia(anno, mese,p));
     }
 
     @Override
@@ -571,14 +568,17 @@ public class SmdServiceImpl implements SmdService {
         return spedizioni;
     }
 
-    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese mese, Anno anno) {
-        List<SpedizioneWithItems> spedizioni = new ArrayList<>();
-        for (Spedizione sped: spedizioneDao.findByMeseSpedizioneAndAnnoSpedizione(mese, anno)) {
-            SpedizioneWithItems swit = new SpedizioneWithItems(sped);
-            swit.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));
-            spedizioni.add(swit);
+    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese mese, Anno anno, Pubblicazione p) {
+        Map<Long,SpedizioneWithItems> spedizioni = new HashMap<>();
+        for (SpedizioneItem item: spedizioneItemDao.findByPubblicazione(p)) {
+        	Spedizione sped = item.getSpedizione();
+        	if (sped.getMeseSpedizione() == mese && sped.getAnnoSpedizione() == anno) {
+        		if (!spedizioni.containsKey(sped.getId())) 
+        			spedizioni.put(sped.getId(),new SpedizioneWithItems(sped));
+        		spedizioni.get(sped.getId()).addSpedizioneItem(item);
+        	}
         }
-        return spedizioni;
+        return spedizioni.values().stream().collect(Collectors.toList());
     }
 
 	@Override
