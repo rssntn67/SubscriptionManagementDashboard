@@ -55,7 +55,7 @@ public class SpedizioniereUI extends SmdUI {
             button.setEnabled(op.getStatoOperazione() == StatoOperazione.Inviata);
             button.addClickListener(click -> {
                 try {
-                    smdService.inviaSpedizionere(op.getMese(),op.getAnno());
+                    smdService.inviaSpedizionere(op.getMese(),op.getAnno(),op.getPubblicazione());
                 } catch (Exception e) {
                     Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
                     return;

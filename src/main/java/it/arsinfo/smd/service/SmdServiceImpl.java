@@ -307,27 +307,28 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione) {
-        operazioneDao
-        .findByAnnoAndMese(annoSpedizione, meseSpedizione)
-        .stream()
-        .filter(operazione -> operazione.getStatoOperazione() == StatoOperazione.Inviata)
-        .forEach( operazione -> {
-            operazione.setStatoOperazione(StatoOperazione.Spedita);
-            operazioneDao.save(operazione);
-        });
+    @Transactional
+    public void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception{
+        Operazione operazione = operazioneDao
+        .findByAnnoAndMeseAndPubblicazione(annoSpedizione, meseSpedizione,p);
+        if ( operazione == null || operazione.getStatoOperazione() != StatoOperazione.Inviata) {
+        	throw new UnsupportedOperationException("Operazione non valida");
+        }
+        operazione.setStatoOperazione(StatoOperazione.Spedita);
 
         spedizioneDao
         .findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(meseSpedizione,annoSpedizione,InvioSpedizione.Spedizioniere)
         .forEach(sped -> 
         	{
-        		spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA)
+        		spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndPubblicazione(sped, StatoSpedizione.PROGRAMMATA,p)
         		.forEach(item -> 
         		{
         			item.setStatoSpedizione(StatoSpedizione.INVIATA);
         			spedizioneItemDao.save(item);
         		});
         	});
+        operazioneDao.save(operazione);
+
     }
 
     @Override
