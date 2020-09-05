@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -33,6 +35,7 @@ public class OperazioneEditor
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> mese = new ComboBox<Mese>("Mese",
             EnumSet.allOf(Mese.class));
+	private final Button button = new Button("invia a tipografia",VaadinIcons.ENVELOPES);
     
     private int valStimatoSede=0;
     private int valStimatoSped=0;
@@ -44,6 +47,14 @@ public class OperazioneEditor
 
         super(operazioneDao, new Binder<>(Operazione.class) );
         
+		button.addClickListener(click -> {
+			get().setStatoOperazione(StatoOperazione.Inviata);
+			operazioneDao.save(get());
+			onChange();
+    	});
+		
+		getActions().addComponent(button);
+
         setComponents(getActions(), 
               new HorizontalLayout(mese, anno,statoOperazione),
               new HorizontalLayout(pubblicazione, mesePubblicazione, annoPubblicazione),
@@ -89,6 +100,9 @@ public class OperazioneEditor
         getSave().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
         getCancel().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
         getDelete().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
+		button.setEnabled(get().getStatoOperazione() == StatoOperazione.Programmata 
+                && get().getStimatoSede() <= get().getDefinitivoSede() 
+                && get().getStimatoSped() <= get().getDefinitivoSped());
         getBinder()
         .forField(definitivoSped)
         .withConverter(new StringToIntegerConverter(""))

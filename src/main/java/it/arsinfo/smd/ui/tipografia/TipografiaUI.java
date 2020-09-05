@@ -9,15 +9,10 @@ import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
@@ -62,23 +57,17 @@ public class TipografiaUI extends SmdUI {
             search.setVisible(false);
             grid.setVisible(false);
             genera.setVisible(true);
-        }); 
+        });
         genera.setChangeHandler(() -> {
-        	Pubblicazione p = genera.getPubblicazione();
-        	if (p==null) {
-        		Notification.show("Deve essere selezionata la pubblicazione", Notification.Type.WARNING_MESSAGE);
-        		return;
-        	}
-            if (genera.isGenera()) {
-                smdService.generaStatisticheTipografia(Anno.getAnnoCorrente(), Mese.getMeseCorrente(),p);
-            } else if (genera.isGeneraA()) {
-               smdService.generaStatisticheTipografia(genera.getAnno(),p);
-            }
+            smdService.generaStatisticheTipografia(
+            		genera.getAnno(),
+            		genera.getMese(),
+            		genera.getPubblicazione());
             generaShow.setVisible(true);
             genera.setVisible(false);
             search.setVisible(true);
             grid.populate(search.find());
-        }); 
+        });
         search.setChangeHandler(() -> grid.populate(search.find()));
         grid.setChangeHandler(()-> {
             if (grid.getSelected() == null) {
@@ -97,21 +86,6 @@ public class TipografiaUI extends SmdUI {
             grid.populate(search.find());;            
         });
         
-        grid.addComponentColumn(op -> {
-            Button button = new Button("invia a tipografia",VaadinIcons.ENVELOPES);
-            button.setEnabled(
-                  op.getStatoOperazione() == StatoOperazione.Programmata 
-              && op.getStimatoSede() <= op.getDefinitivoSede() 
-              && op.getStimatoSped() <= op.getDefinitivoSped()
-              );
-            button.addClickListener(click -> {
-                op.setStatoOperazione(StatoOperazione.Inviata);
-                dao.getRepository().save(op);
-                grid.populate(search.find());
-            });
-            return button;
-        });
-
         grid.populate(search.find());
 
      }

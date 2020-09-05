@@ -15,13 +15,15 @@ import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 public class OperazioneGenera extends SmdChangeHandler {
 
-    private boolean isGeneraA=false;
-    private boolean isGenera=false;
     private Pubblicazione pubblicazione=null;
     private Anno anno=Anno.getAnnoCorrente();
+    private Mese mese=Mese.getMeseCorrente();
+
     public OperazioneGenera(String caption, VaadinIcons icon, List<Pubblicazione> pubblicazioni) {
 
         HorizontalLayout buttons = new HorizontalLayout();
+        HorizontalLayout selections = new HorizontalLayout();
+        pubblicazione=pubblicazioni.get(0);
         ComboBox<Anno> annocb = new ComboBox<Anno>("Anno", EnumSet.allOf(Anno.class));
         annocb.setSelectedItem(anno);
         annocb.setEmptySelectionAllowed(false);
@@ -29,10 +31,21 @@ public class OperazioneGenera extends SmdChangeHandler {
         annocb.addSelectionListener(a -> {
             anno = a.getValue();            
         });
+        
+        ComboBox<Mese> mesecb = new ComboBox<Mese>("Mese", EnumSet.allOf(Mese.class));
+        mesecb.setSelectedItem(mese);
+        mesecb.setEmptySelectionAllowed(false);
+
+        mesecb.addSelectionListener(a -> {
+            mese = a.getValue();            
+        });
+
 
         ComboBox<Pubblicazione> pcb = new ComboBox<Pubblicazione>("Pubblicazione", pubblicazioni);
         pcb.setEmptySelectionAllowed(false);
+        pcb.setSelectedItem(pubblicazione);
         pcb.setItemCaptionGenerator(Pubblicazione::getNome);
+        pcb.setEmptySelectionAllowed(false);
 
         pcb.addSelectionListener(a -> {
             pubblicazione = a.getValue();            
@@ -41,43 +54,29 @@ public class OperazioneGenera extends SmdChangeHandler {
 
         Button indietro = new Button("indietro");
         indietro.addClickListener(click -> {
-            isGeneraA=false;
-            isGenera=false;
             onChange();   
         });
         
-        Button genera = new Button("Genera" + Mese.getMeseCorrente().getNomeBreve() + Anno.getAnnoCorrente().getAnnoAsString(),icon);
+        Button genera = new Button("Genera", icon);
         genera.addClickListener(click -> {
-            isGeneraA=false;
-            isGenera=true;
-            onChange();
-        });
-
-        Button generaA = new Button(caption,icon);
-        generaA.addClickListener(click -> {
-            isGeneraA=true;
-            isGenera=false;
             onChange();
         });
                 
-        buttons.addComponent(generaA);
         buttons.addComponent(genera);
         buttons.addComponent(indietro);
         
+        selections.addComponents(pcb,mesecb,annocb);
+        
 
-        setComponents(buttons,annocb,pcb);
+        setComponents(buttons,selections);
     }
    
-    public boolean isGenera() {
-        return isGenera;
-    }
-
-    public boolean isGeneraA() {
-        return isGeneraA;
-    }
-
     public Anno getAnno() {
         return anno;
+    }
+
+    public Mese getMese() {
+        return mese;
     }
 
 	public Pubblicazione getPubblicazione() {
