@@ -47,7 +47,7 @@ public interface SmdService {
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception;
     void spedisciAdpSede(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
 
-    void inviaDuplicato(Spedizione spedizione);
+    void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception;
 
     List<SpedizioneDto> listBy(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);

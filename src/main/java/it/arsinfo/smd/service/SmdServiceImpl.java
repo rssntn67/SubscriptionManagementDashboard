@@ -605,8 +605,31 @@ public class SmdServiceImpl implements SmdService {
     }
 
 	@Override
-	public void inviaDuplicato(Spedizione spedizione) {
-		// TODO Auto-generated method stub
+	public void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception {
+		Abbonamento abbonamento = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).get();
+		List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(spedizione);
+		for (SpedizioneItem item: items) {
+			
+			RivistaAbbonamento ra0= rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
+			if (ra0 == null) {
+				log.error("inviaDuplicato: rivista abbonamento not trovata per item {}", item);
+				throw new UnsupportedOperationException("Rivista Abbonamento non trovata");
+			}
+			RivistaAbbonamento ra = new RivistaAbbonamento();
+			ra.setAbbonamento(abbonamento);
+			ra.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.Duplicato);
+			ra.setAnnoInizio(item.getAnnoPubblicazione());
+			ra.setAnnoFine(item.getAnnoPubblicazione());
+			ra.setMeseInizio(item.getMesePubblicazione());
+			ra.setMeseFine(item.getMesePubblicazione());
+			ra.setPubblicazione(item.getPubblicazione());
+			ra.setDestinatario(ra0.getDestinatario());
+			ra.setInvioSpedizione(invio);
+			ra.setStatoAbbonamento(StatoAbbonamento.Proposto);
+			abbonamento.addItem(ra);
+		}
+
+		genera(abbonamento);
 		
 	}
 

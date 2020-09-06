@@ -11,6 +11,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -29,6 +30,10 @@ public class SpedizioneEditor
         extends SmdRepositoryDaoEditor<Spedizione> {
 
     private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
+    private Button dA = new Button("Reinvia No Spese", VaadinIcons.HANDS_UP);
+    private Button dB = new Button("Reinvia 24hh", VaadinIcons.HANDS_UP);
+    private Button dC = new Button("Reinvia 3gg", VaadinIcons.HANDS_UP);
+    private Button dD = new Button("Reinvia Sp.Po.", VaadinIcons.HANDS_UP);
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");
     private final ComboBox<InvioSpedizione> invioSpedizione = 
     		new ComboBox<InvioSpedizione>("Sped.",EnumSet.allOf(InvioSpedizione.class));
@@ -42,8 +47,12 @@ public class SpedizioneEditor
             SpedizioneDao spedizioneDao, List<Anagrafica> anagrafica) {
 
         super(spedizioneDao, new Binder<>(Spedizione.class) );
-        getActions().addComponent(stampa);
+        getActions().addComponents(stampa,dA,dB,dC,dD);
         stampa.addClickListener(e -> stampa());
+        dA.addClickListener(e -> duplica(InvioSpedizione.AdpSedeNoSpese));
+        dB.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere24hh));
+        dC.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere3gg));
+        dD.addClickListener(e -> duplica(InvioSpedizione.AdpSede));
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinazione");
         destinatario.setItems(anagrafica);
@@ -102,7 +111,16 @@ public class SpedizioneEditor
 
     }
 
-    @Override
+    private void duplica(InvioSpedizione invio) {
+    	try {
+    		getSmdService().inviaDuplicato(get(), invio);
+    		Notification.show("Spedizione Duplicata",Notification.Type.HUMANIZED_MESSAGE);
+    	} catch (Exception e) {
+    		Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
+		}
+	}
+
+	@Override
     public void focus(boolean persisted, Spedizione obj) {
         getSave().setEnabled(false); 
         getDelete().setEnabled(false);        
