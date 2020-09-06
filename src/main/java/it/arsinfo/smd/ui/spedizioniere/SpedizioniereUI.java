@@ -71,12 +71,12 @@ public class SpedizioniereUI extends SmdUI {
             button.addClickListener(click -> {
                 grid.setVisible(false);
                 spedGrid.populate(
-            		smdService.listItems(
+            		smdService.listBy(
             				op.getPubblicazione(),
             				op.getMese(),
             				op.getAnno(),
-            				InvioSpedizione.Spedizioniere,
-            				StatoSpedizione.INVIATA));                
+            				StatoSpedizione.INVIATA,
+            				InvioSpedizione.Spedizioniere));                
             });
             return button;
         });

@@ -20,6 +20,5 @@ public enum InvioSpedizione {
     public void setDescr(String descr) {
         this.descr = descr;
     }
-    
-    
+        
 }

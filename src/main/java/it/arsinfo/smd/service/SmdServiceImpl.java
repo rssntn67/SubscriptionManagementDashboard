@@ -44,7 +44,7 @@ import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
-import it.arsinfo.smd.dto.SpedizioniereItem;
+import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.DistintaVersamento;
@@ -327,16 +327,39 @@ public class SmdServiceImpl implements SmdService {
         operazioneDao.save(operazione);
 
     }
+    
+    @Override
+    @Transactional
+    public void spedisciAdpSede(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception{
+        Operazione operazione = operazioneDao
+        .findByAnnoAndMeseAndPubblicazione(annoSpedizione, meseSpedizione,p);
+        if ( operazione == null || operazione.getStatoOperazione() == StatoOperazione.Programmata) {
+        	throw new UnsupportedOperationException("Operazione non valida");
+        }
+
+        spedizioneDao
+        .findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(meseSpedizione,annoSpedizione,invio)
+        .forEach(sped -> 
+        	{
+        		spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndPubblicazione(sped, StatoSpedizione.PROGRAMMATA,p)
+        		.forEach(item -> 
+        		{
+        			item.setStatoSpedizione(StatoSpedizione.INVIATA);
+        			spedizioneItemDao.save(item);
+        		});
+        	});
+    }
+
 
     @Override
-    public List<SpedizioniereItem> listItems(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione inviosped, StatoSpedizione statoSpedizione) {
-        final List<SpedizioniereItem> items = new ArrayList<>();
+    public List<SpedizioneDto> listBy(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
+        final List<SpedizioneDto> items = new ArrayList<>();
     	spedizioneItemDao
         	.findByPubblicazioneAndStatoSpedizione(pubblicazione,statoSpedizione)
         	.stream()
         	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
         						&& spedItem.getSpedizione().getAnnoSpedizione()== annoSpedizione
-        						&& spedItem.getSpedizione().getInvioSpedizione() == inviosped
+        						&& spedItem.getSpedizione().getInvioSpedizione() == invio
         						)
         	.forEach(spedItem -> {
         		items.add(genera(spedItem));
@@ -345,8 +368,8 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public SpedizioniereItem genera(SpedizioneItem spedItem) {
-		return new SpedizioniereItem(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());	
+    public SpedizioneDto genera(SpedizioneItem spedItem) {
+		return new SpedizioneDto(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());	
     }
 
     @Override

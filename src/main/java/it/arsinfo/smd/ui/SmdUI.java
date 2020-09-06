@@ -62,6 +62,7 @@ public abstract class SmdUI extends UI {
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
     public final static String URL_SPEDIZIONERE = "/spedizioniere";
+    public final static String URL_ADPSEDE = "/adpsede";
     public final static String URL_ADMIN_USER = "/admin/user";
     public final static String URL_RESET_PASS = "/reset/pass";
 
@@ -88,6 +89,7 @@ public abstract class SmdUI extends UI {
     
     public final static String TITLE_TIPOGRAFIA = "Tipografo";
     public final static String TITLE_SPEDIZIONERE = "Spedizioniere";
+    public final static String TITLE_ADPSEDE = "Sede";
     public final static String TITLE_ADMIN_USER = "Amministrazione Utenti";
     public final static String TITLE_RESET_PASS = "Reset Password";
 
@@ -252,6 +254,15 @@ public abstract class SmdUI extends UI {
             }
         });
 
+        ordini.addItem(TITLE_ADPSEDE ,new MenuBar.Command() {
+            
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_ADPSEDE);
+            }
+        });
+
         menu.addItem("Logout: "+ loggedInUser.getUsername(),new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -322,6 +333,7 @@ public abstract class SmdUI extends UI {
         List<Link> links = new ArrayList<>();
         links.add(new Link(TITLE_TIPOGRAFIA, new ExternalResource(URL_TIPOGRAFIA)));
         links.add(new Link(TITLE_SPEDIZIONERE, new ExternalResource(URL_SPEDIZIONERE)));
+        links.add(new Link(TITLE_ADPSEDE, new ExternalResource(URL_ADPSEDE)));
         return links.toArray(new Link[links.size()]);
     }
 

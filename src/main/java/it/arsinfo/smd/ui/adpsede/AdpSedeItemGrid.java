@@ -1,13 +1,13 @@
-package it.arsinfo.smd.ui.spedizioniere;
+package it.arsinfo.smd.ui.adpsede;
 
 import com.vaadin.ui.Grid;
 
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class SpedizioniereItemGrid extends SmdGrid<SpedizioneDto> {
+public class AdpSedeItemGrid extends SmdGrid<SpedizioneDto> {
 
-    public SpedizioniereItemGrid(String gridname) {
+    public AdpSedeItemGrid(String gridname) {
         super(new Grid<>(SpedizioneDto.class),gridname);
         setColumns(
         		"spedCaption",

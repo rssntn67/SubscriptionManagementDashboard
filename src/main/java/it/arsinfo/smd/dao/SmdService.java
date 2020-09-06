@@ -13,7 +13,7 @@ import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.Indirizzo;
-import it.arsinfo.smd.dto.SpedizioniereItem;
+import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Offerta;
@@ -45,10 +45,11 @@ public interface SmdService {
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception;
+    void spedisciAdpSede(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione);
 
-    List<SpedizioniereItem> listItems(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invioSpedizione, StatoSpedizione statoSpedizione);
+    List<SpedizioneDto> listBy(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
         
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
@@ -57,7 +58,7 @@ public interface SmdService {
     void incassa(BigDecimal importo, OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
     
-    SpedizioniereItem genera(SpedizioneItem spedItem);
+    SpedizioneDto genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
 
 
