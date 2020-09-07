@@ -26,6 +26,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final ComboBox<InvioSpedizione> filterInvioSped = new ComboBox<InvioSpedizione>();
     private final ComboBox<StatoStorico> filterStatoStorico = new ComboBox<StatoStorico>();
     private final CheckBox filterContrassegno = new CheckBox("Contrassegno");
+    private final CheckBox filterNumero = new CheckBox("Numero > 0");
 
     private final StoricoServiceDao dao;
     public StoricoSearch(StoricoServiceDao dao,
@@ -39,7 +40,7 @@ public class StoricoSearch extends SmdSearch<Storico> {
 
         HorizontalLayout anagr = new HorizontalLayout(filterPubblicazione);
         anagr.addComponentsAndExpand(filterIntestatario,filterDestinatario);
-        HorizontalLayout stat = new HorizontalLayout(filterStatoStorico,filterInvioSped,filterContrassegno);
+        HorizontalLayout stat = new HorizontalLayout(filterNumero,filterStatoStorico,filterInvioSped,filterContrassegno);
         stat.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         setComponents(anagr,stat);
 
@@ -95,6 +96,8 @@ public class StoricoSearch extends SmdSearch<Storico> {
         filterStatoStorico.setItems(EnumSet.allOf(StatoStorico.class));
 
         filterContrassegno.addValueChangeListener(e -> onChange());
+        filterNumero.setValue(false);
+        filterNumero.addValueChangeListener(e -> onChange());
 
 
     }
@@ -114,8 +117,11 @@ public class StoricoSearch extends SmdSearch<Storico> {
         if (filterStatoStorico.getValue() != null) {
             storici=storici.stream().filter(s -> s.getStatoStorico() == filterStatoStorico.getValue()).collect(Collectors.toList());      
         }
-        if (filterContrassegno.getValue() != null) {
+        if (filterContrassegno.getValue()) {
             storici=storici.stream().filter(s -> s.isContrassegno() == filterContrassegno.getValue()).collect(Collectors.toList());              	
+        }
+        if (filterNumero.getValue()) {
+            storici=storici.stream().filter(s -> s.getNumero() > 0).collect(Collectors.toList());              	
         }
         return storici;
     }
