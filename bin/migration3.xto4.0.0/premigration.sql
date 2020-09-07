@@ -88,5 +88,5 @@ and anno_pubblicazione='ANNO2020'
 and si.pubblicazione_id = 5);
 
 alter table abbonamento drop column stato_abbonamento;
-alter table spedizione drop column stato_spedizione varchar(255);
+alter table spedizione drop column stato_spedizione;
 
