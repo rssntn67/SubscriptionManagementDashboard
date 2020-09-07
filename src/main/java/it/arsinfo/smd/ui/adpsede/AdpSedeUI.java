@@ -20,7 +20,10 @@ import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.tipografia.OperazioneGrid;
+import it.arsinfo.smd.ui.dto.SpedizioneDtoGrid;
+import it.arsinfo.smd.ui.operazione.OperazioneGrid;
+import it.arsinfo.smd.ui.operazione.OperazioneReadOnlyEditor;
+import it.arsinfo.smd.ui.operazione.OperazioneSearch;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.vaadin.SmdComboBox;
 
@@ -50,27 +53,25 @@ public class AdpSedeUI extends SmdUI {
         super.init(request,"Sede");
         List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
 
-        AdpSedeSearch search = new AdpSedeSearch(serviceDao, pubblicazioni);
+        OperazioneSearch search = new OperazioneSearch(serviceDao, pubblicazioni);
         SmdComboBox<InvioSpedizione> invioSpedizioneComboBox = new SmdComboBox<>("Seleziona", EnumSet.complementOf(EnumSet.of(InvioSpedizione.Spedizioniere)));
         invioSpedizioneComboBox.getComboBox().setValue(invio);
         invioSpedizioneComboBox.getComboBox().setEmptySelectionAllowed(false);
         invioSpedizioneComboBox.getComboBox().setSizeFull();
         
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
-        AdpSedeEditor editor = new AdpSedeEditor(serviceDao.getRepository(), pubblicazioni);
+        OperazioneReadOnlyEditor editor = new OperazioneReadOnlyEditor(serviceDao.getRepository(), pubblicazioni);
 
         SmdComboBox<StatoSpedizione> statoSpedizioneComboBox = new SmdComboBox<>("Seleziona", EnumSet.allOf(StatoSpedizione.class));
         statoSpedizioneComboBox.getComboBox().setValue(stato);
         statoSpedizioneComboBox.getComboBox().setEmptySelectionAllowed(false);
         statoSpedizioneComboBox.getComboBox().setSizeFull();
 
-        AdpSedeItemGrid spedGrid = new AdpSedeItemGrid("Spedizioni Adp Sede");
+        SpedizioneDtoGrid spedGrid = new SpedizioneDtoGrid("Spedizioni Adp Sede");
         
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKWARDS);
-        indietro.setVisible(false);
         
         SmdButton spedisci = new SmdButton("Spedisci",VaadinIcons.ENVELOPES);
-        spedisci.setVisible(false);
                 
         addSmdComponents(search,grid,indietro,editor,invioSpedizioneComboBox,statoSpedizioneComboBox,spedGrid,spedisci);
                     

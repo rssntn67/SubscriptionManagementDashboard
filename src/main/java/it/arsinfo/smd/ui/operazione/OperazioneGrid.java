@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.tipografia;
+package it.arsinfo.smd.ui.operazione;
 
 import java.util.List;
 
@@ -14,10 +14,15 @@ public class OperazioneGrid extends SmdGrid<Operazione> {
 
     public OperazioneGrid(String gridName) {
         super(new Grid<>(Operazione.class), gridName);
-        setColumns("caption","pubblCaption","statoOperazione",
-                   "stimatoSped","definitivoSped",
-                   "stimatoSede","definitivoSede",
-                   "totaleStimato","totaleDefinitivo");
+        setColumns("caption",
+        		   "pubblCaption",
+        		   "statoOperazione",
+                   "stimatoSped",
+                   "definitivoSped",
+                   "stimatoSede",
+                   "definitivoSede",
+                   "totaleStimato",
+                   "totaleDefinitivo");
         setColumnCaption("caption", "Ordine");
         setColumnCaption("pubblCaption", "Pubbl.");
         setColumnCaption("statoOperazione", "Stato");

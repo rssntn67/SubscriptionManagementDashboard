@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.spedizioniere;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
@@ -7,16 +9,21 @@ import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import it.arsinfo.smd.dao.OperazioneServiceDao;
 import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.OperazioneDao;
+import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.tipografia.OperazioneGrid;
+import it.arsinfo.smd.ui.dto.SpedizioneDtoGrid;
+import it.arsinfo.smd.ui.operazione.OperazioneGrid;
+import it.arsinfo.smd.ui.operazione.OperazioneReadOnlyEditor;
+import it.arsinfo.smd.ui.operazione.OperazioneSearch;
+import it.arsinfo.smd.ui.vaadin.SmdButton;
 
 @SpringUI(path = SmdUI.URL_SPEDIZIONERE)
 @Title("Ordini Spedizioniere ADP")
@@ -29,59 +36,86 @@ public class SpedizioniereUI extends SmdUI {
     private static final long serialVersionUID = -4970387092690412856L;
 
     @Autowired
-    private OperazioneDao operazioneDao;
+    private PubblicazioneDao pubblicazioneDao;
+    @Autowired
+    private OperazioneServiceDao dao;
 
     @Autowired
     private SmdService smdService;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Spedizioniere");
-        
+        List<Pubblicazione> pubblicazioni =pubblicazioneDao.findAll();
+        OperazioneSearch search = new OperazioneSearch(dao, pubblicazioni);
         OperazioneGrid grid = new OperazioneGrid("Operazioni");
-        SpedizioniereItemGrid spedGrid = new SpedizioniereItemGrid("Spedizioni");
-        addSmdComponents(spedGrid,grid);
-                
+        OperazioneReadOnlyEditor editor = new OperazioneReadOnlyEditor(dao.getRepository(), pubblicazioni);
+        SpedizioneDtoGrid spedGrid = new SpedizioneDtoGrid("Spedizioni");
+        SmdButton spedisci = new SmdButton("Invia a Spedizioniere", VaadinIcons.ENVELOPES);
+        SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKWARDS);
+        SmdButton visualiz = new SmdButton("Visualizza Spedizioni",VaadinIcons.ENVELOPES);
+        addSmdComponents(search,grid,indietro,editor,spedisci,visualiz,spedGrid);
+        
+        search.setChangeHandler(() -> grid.populate(search.find()));
+
+        grid.setChangeHandler(()-> {
+            if (grid.getSelected() == null) {
+            	return;
+            }
+        	indietro.setVisible(true);
+            editor.edit(grid.getSelected());
+            grid.setVisible(false);
+            search.setVisible(false);
+            spedisci.setVisible(grid.getSelected().getStatoOperazione() == StatoOperazione.Inviata);
+            visualiz.setVisible(grid.getSelected().getStatoOperazione() == StatoOperazione.Spedita);
+        });
+
+        editor.setVisible(false);
+        editor.setChangeHandler(()->{});
+
         spedGrid.setVisible(false);
         spedGrid.setChangeHandler(() ->{
-            spedGrid.setVisible(false);
-            grid.populate(operazioneDao.findAll());            
+        });
+
+    	indietro.setVisible(false);
+        indietro.setChangeHandler(() -> {
+        	editor.setVisible(false);
+        	spedisci.setVisible(false);
+        	visualiz.setVisible(false);
+        	spedGrid.setVisible(false);
+        	indietro.setVisible(false);
+        	search.setVisible(true);
+        	grid.populate(search.find());
         });
         
-        grid.setChangeHandler(()-> {
+        spedisci.setVisible(false);
+        spedisci.setChangeHandler(() -> {
+        	try {
+                smdService.inviaSpedizionere(editor.get().getMese(),editor.get().getAnno(),editor.get().getPubblicazione());
+            } catch (Exception e) {
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                return;
+            }
+        	editor.setVisible(false);
+        	spedisci.setVisible(false);
+        	visualiz.setVisible(false);
+        	spedGrid.setVisible(false);
+        	indietro.setVisible(false);
+        	search.setVisible(true);
+        	grid.populate(search.find());
         });
         
-        grid.addComponentColumn(op -> {
-            Button button = new Button("Invia a Spedizioniere",VaadinIcons.ENVELOPES);
-            button.setEnabled(op.getStatoOperazione() == StatoOperazione.Inviata);
-            button.addClickListener(click -> {
-                try {
-                    smdService.inviaSpedizionere(op.getMese(),op.getAnno(),op.getPubblicazione());
-                } catch (Exception e) {
-                    Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-                    return;
-                }
-                grid.populate(operazioneDao.findAll());
-            });
-            return button;
-        });
-        
-        grid.addComponentColumn(op -> {
-            Button button = new Button("Visualizza Spedizioni Inviate",VaadinIcons.ENVELOPES);
-            button.setEnabled(op.getStatoOperazione() == StatoOperazione.Spedita);
-            button.addClickListener(click -> {
-                grid.setVisible(false);
-                spedGrid.populate(
+        visualiz.setVisible(false);
+        visualiz.setChangeHandler(() -> {
+            spedGrid.populate(
             		smdService.listBy(
-            				op.getPubblicazione(),
-            				op.getMese(),
-            				op.getAnno(),
+            				editor.get().getPubblicazione(),
+            				editor.get().getMese(),
+            				editor.get().getAnno(),
             				StatoSpedizione.INVIATA,
             				InvioSpedizione.Spedizioniere));                
-            });
-            return button;
         });
         
-        grid.populate(operazioneDao.findAll());
+        grid.populate(dao.findAll());
 
      }
 

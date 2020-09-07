@@ -1,12 +1,10 @@
-package it.arsinfo.smd.ui.tipografia;
+package it.arsinfo.smd.ui.operazione;
 
 import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -19,7 +17,7 @@ import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
 
-public class OperazioneEditor
+public class OperazioneReadOnlyEditor
         extends SmdRepositoryDaoEditor<Operazione> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
@@ -35,27 +33,16 @@ public class OperazioneEditor
             EnumSet.allOf(Anno.class));
     private final ComboBox<Mese> mese = new ComboBox<Mese>("Mese",
             EnumSet.allOf(Mese.class));
-	private final Button button = new Button("invia a tipografia",VaadinIcons.ENVELOPES);
-    
-    private int valStimatoSede=0;
-    private int valStimatoSped=0;
-    
+        
     private final ComboBox<StatoOperazione> statoOperazione = new ComboBox<StatoOperazione>("Stato",EnumSet.allOf(StatoOperazione.class));
-    public OperazioneEditor(
+    public OperazioneReadOnlyEditor(
             OperazioneDao operazioneDao,
             List<Pubblicazione> pubblicazioni) {
 
         super(operazioneDao, new Binder<>(Operazione.class) );
         
-		button.addClickListener(click -> {
-			get().setStatoOperazione(StatoOperazione.Inviata);
-			operazioneDao.save(get());
-			onChange();
-    	});
-		
-		getActions().addComponent(button);
 
-        setComponents(getActions(), 
+        setComponents( 
               new HorizontalLayout(mese, anno,statoOperazione),
               new HorizontalLayout(pubblicazione, mesePubblicazione, annoPubblicazione),
               new HorizontalLayout(stimatoSped, stimatoSede,definitivoSped,definitivoSede));
@@ -88,44 +75,34 @@ public class OperazioneEditor
         
         stimatoSped.setReadOnly(true);
         stimatoSede.setReadOnly(true);
-        
+
+        definitivoSped.setReadOnly(true);
+        definitivoSede.setReadOnly(true);
     }
 
     @Override
     public void focus(boolean persisted, Operazione op) {
-        valStimatoSede=op.getStimatoSede();
-        valStimatoSped=op.getStimatoSped();
-        definitivoSped.setReadOnly(op.getStatoOperazione() != StatoOperazione.Programmata);
-        definitivoSede.setReadOnly(op.getStatoOperazione() != StatoOperazione.Programmata);
-        getSave().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
-        getCancel().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
-        getDelete().setEnabled(op.getStatoOperazione() == StatoOperazione.Programmata);
-		button.setEnabled(get().getStatoOperazione() == StatoOperazione.Programmata 
-                && get().getStimatoSede() <= get().getDefinitivoSede() 
-                && get().getStimatoSped() <= get().getDefinitivoSped());
         getBinder()
         .forField(definitivoSped)
         .withConverter(new StringToIntegerConverter(""))
-        .withValidator(num -> num >= valStimatoSped," >= " + valStimatoSped)
         .bind(Operazione::getDefinitivoSped, Operazione::setDefinitivoSped);
     
-    getBinder()
-    .forField(stimatoSped)
-    .withConverter(new StringToIntegerConverter(""))
-    .bind(Operazione::getStimatoSped, Operazione::setStimatoSped);
+	    getBinder()
+	    .forField(stimatoSped)
+	    .withConverter(new StringToIntegerConverter(""))
+	    .bind(Operazione::getStimatoSped, Operazione::setStimatoSped);
 
-    getBinder()
-    .forField(definitivoSede)
-    .withConverter(new StringToIntegerConverter(""))
-    .withValidator(num -> num >= valStimatoSede," >= " + valStimatoSede)
-    .bind(Operazione::getDefinitivoSede, Operazione::setDefinitivoSede);
+	    getBinder()
+	    .forField(definitivoSede)
+	    .withConverter(new StringToIntegerConverter(""))
+	    .bind(Operazione::getDefinitivoSede, Operazione::setDefinitivoSede);
 
-    getBinder()
-    .forField(stimatoSede)
-    .withConverter(new StringToIntegerConverter(""))
-    .bind(Operazione::getStimatoSede, Operazione::setStimatoSede);
+	    getBinder()
+	    .forField(stimatoSede)
+	    .withConverter(new StringToIntegerConverter(""))
+	    .bind(Operazione::getStimatoSede, Operazione::setStimatoSede);
 
-getBinder().bindInstanceFields(this);
+	    getBinder().bindInstanceFields(this);
 
         definitivoSped.focus();        
     }

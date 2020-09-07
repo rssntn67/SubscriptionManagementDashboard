@@ -15,6 +15,10 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdUI;
+import it.arsinfo.smd.ui.operazione.OperazioneEditor;
+import it.arsinfo.smd.ui.operazione.OperazioneGenera;
+import it.arsinfo.smd.ui.operazione.OperazioneGrid;
+import it.arsinfo.smd.ui.operazione.OperazioneSearch;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 
 @SpringUI(path = SmdUI.URL_TIPOGRAFIA)

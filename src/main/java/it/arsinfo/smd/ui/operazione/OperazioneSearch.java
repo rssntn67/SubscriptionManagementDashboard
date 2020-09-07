@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.tipografia;
+package it.arsinfo.smd.ui.operazione;
 
 import java.util.EnumSet;
 import java.util.List;
