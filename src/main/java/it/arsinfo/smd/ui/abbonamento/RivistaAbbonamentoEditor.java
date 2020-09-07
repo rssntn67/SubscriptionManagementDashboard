@@ -85,7 +85,7 @@ public class RivistaAbbonamentoEditor
         setComponents(
     					lay,
                       new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine),
-                      new HorizontalLayout(numero,importo,numeroTotaleRiviste)
+                      new HorizontalLayout(numero,importo,numeroTotaleRiviste, statoAbbonamento)
                       );
  
         getBinder()
