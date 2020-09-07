@@ -8,6 +8,8 @@ import it.arsinfo.smd.entity.SpedizioneItem;
 public class SpedizioneDto extends Indirizzo {
 	private final SpedizioneItem item;
 	
+	private String omaggio = "";
+
 	public SpedizioneDto(SpedizioneItem item, Anagrafica destinatario, Anagrafica co) {
 		super(destinatario, co);
 		Assert.notNull(item, "spedizioneItem non deve essere null");
@@ -32,5 +34,13 @@ public class SpedizioneDto extends Indirizzo {
     public String getPubbCaption() {
         return item.getPubbCaption();
     }
+
+	public String getOmaggio() {
+		return omaggio;
+	}
+
+	public void setOmaggio() {
+		this.omaggio = "Omaggio";
+	}
 
 }

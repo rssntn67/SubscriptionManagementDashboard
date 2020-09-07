@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -358,7 +360,8 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     public List<SpedizioneDto> listBy(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
-        final List<SpedizioneDto> items = new ArrayList<>();
+        final List<SpedizioneItem> items = new ArrayList<>();
+        final Set<Long> raids =  new HashSet<>();
     	spedizioneItemDao
         	.findByPubblicazioneAndStatoSpedizione(pubblicazione,statoSpedizione)
         	.stream()
@@ -367,9 +370,20 @@ public class SmdServiceImpl implements SmdService {
         						&& spedItem.getSpedizione().getInvioSpedizione() == invio
         						)
         	.forEach(spedItem -> {
-        		items.add(genera(spedItem));
+        		raids.add(spedItem.getRivistaAbbonamento().getId());
+        		items.add(spedItem);
 			});
-    	return items;
+    	List<Long> omaggi = 
+			rivistaAbbonamentoDao.findAllById(raids).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
+    	List<SpedizioneDto> dtos = new ArrayList<>();
+    	for (SpedizioneItem item: items) {
+    		SpedizioneDto dto = genera(item);
+    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
+    			dto.setOmaggio();
+    		}
+    		dtos.add(dto);
+    	}
+    	return dtos;
     }
 
     @Override

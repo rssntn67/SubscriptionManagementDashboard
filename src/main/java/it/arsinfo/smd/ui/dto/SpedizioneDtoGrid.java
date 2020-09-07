@@ -19,7 +19,8 @@ public class SpedizioneDtoGrid extends SmdGrid<SpedizioneDto> {
                 "citta",
                 "cap",
                 "provincia",
-        		"paese"
+        		"paese",
+        		"omaggio"
            );
         setColumnCaption("spedCaption","Spedizione");
         setColumnCaption("pubbCaption","Pubblicazione");
