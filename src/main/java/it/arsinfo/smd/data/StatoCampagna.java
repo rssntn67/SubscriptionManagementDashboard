@@ -4,6 +4,7 @@ public enum StatoCampagna {
     Nuova,
     Generata,
     Inviata,
+    InviatoSollecito,
     InviatoEC,
     Chiusa
 ;

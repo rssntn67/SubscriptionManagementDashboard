@@ -34,7 +34,6 @@ import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
 import it.arsinfo.smd.dao.repository.UserInfoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
@@ -418,6 +417,7 @@ public class SmdServiceImpl implements SmdService {
 				break;
 			case SiConDebito:
 				valido = true;
+				break;
 			default:
 				break;
         }
@@ -429,10 +429,8 @@ public class SmdServiceImpl implements SmdService {
 			.forEach(riv -> {
 				if (riv.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
 					riv.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
-				} else if (abbonamento.getStatoIncasso() == Incassato.Si) {
+				} else {
 					riv.setStatoAbbonamento(StatoAbbonamento.Valido);
-				} else if (abbonamento.getStatoIncasso() == Incassato.SiConDebito) {
-					riv.setStatoAbbonamento(StatoAbbonamento.ValidoConResiduo);
 				}
 				rivistaAbbonamentoDao.save(riv);
 			});
@@ -579,9 +577,6 @@ public class SmdServiceImpl implements SmdService {
         		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
         		switch (rivista.getStatoAbbonamento()) {
 				case Valido:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-					break;
-				case ValidoConResiduo:
 		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
 					break;
 				case ValidoInviatoEC:

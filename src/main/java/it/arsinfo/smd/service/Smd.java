@@ -77,14 +77,19 @@ public class Smd {
     	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
     	case Duplicato:
     		isOmaggio=true;
+    		break;
 		case OmaggioCuriaDiocesiana:
     		isOmaggio=true;
+    		break;
 		case OmaggioCuriaGeneralizia:
     		isOmaggio=true;
+    		break;
 		case OmaggioDirettoreAdp:
     		isOmaggio=true;
+    		break;
 		case OmaggioEditore:
     		isOmaggio=true;
+    		break;
 		case OmaggioGesuiti:
     		isOmaggio=true;
 			break;

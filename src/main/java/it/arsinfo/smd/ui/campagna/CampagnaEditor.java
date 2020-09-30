@@ -48,15 +48,22 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
     private final OperazioneSospendiGrid sospensioni =  new OperazioneSospendiGrid("Sospensioni");    
-    private final Button buttonV = new Button("Visualizza Abbonamenti Generati",VaadinIcons.ARCHIVE);
-    private final Button buttonA = new Button("Abbonamenti Annullati",VaadinIcons.ARCHIVE);
+   
+    private final Button buttonVGenera = new Button("Abbonamenti Generati",VaadinIcons.ARCHIVE);
+    private final Button buttonVInvio = new Button("Abbonamenti Proposti",VaadinIcons.ARCHIVE);
+    private final Button buttonVSollecita = new Button("Abbonamenti Sollecito",VaadinIcons.ARCHIVE);
+    private final Button buttonVEstrattoConto = new Button("Abbonamenti Estratto Conto",VaadinIcons.ARCHIVE);
+    private final Button buttonVDebito = new Button("Abbonamenti con Debito",VaadinIcons.ARCHIVE);
+    private final Button buttonVNulli = new Button("Abbonamenti Annullati",VaadinIcons.ARCHIVE);
 
     private final Button buttonWGenera = new Button("Genera",VaadinIcons.ENVELOPES);
     private final Button buttonWInvio = new Button("Invia",VaadinIcons.ENVELOPES);
+    private final Button buttonWSollecita = new Button("Sollecita",VaadinIcons.ENVELOPES);
     private final Button buttonWSospendi = new Button("Sospendi",VaadinIcons.ENVELOPES);
-    private final ComboBox<Pubblicazione> pubblicazione= new ComboBox<Pubblicazione>();
     private final Button buttonWEstrattoConto = new Button("Estratto Conto",VaadinIcons.ENVELOPES);
     private final Button buttonWChiudi = new Button("Chiudi",VaadinIcons.ENVELOPES);
+
+    private final ComboBox<Pubblicazione> pubblicazione= new ComboBox<Pubblicazione>();
 
     private final CampagnaServiceDao repo;
 
@@ -68,31 +75,25 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         items = new CampagnaItemsEditor(pubblicazioni);
-        buttonV.addClickListener(click -> {
-        	switch (get().getStatoCampagna()) {
-        		case Generata:
-            		grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
-        			break;
-        		case Inviata:
-                    grid.populate(repo.findAbbonamentoConRivisteInviati(get()));
-                    break;
-        		case InviatoEC:
-    	            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));
-    	            break;
-        		case Chiusa:
-    				buttonV.setCaption("Visualizza Abbonamenti con Debito");
-    	            grid.populate(repo.findAbbonamentoConDebito(get()));        			
-    	            break;
-    			default:
-    				break;
-        	}
-        	
+        buttonVGenera.addClickListener(click -> {
+    		grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
         });
-        
-        buttonA.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));        	
+        buttonVInvio.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConRivisteInviati(get()));
         });
-
+        buttonVSollecita.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConRivisteSollecito(get()));
+        });
+        buttonVEstrattoConto.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get()));
+        });
+        buttonVDebito.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConDebito(get()));        			
+        });
+        buttonVNulli.addClickListener(click -> {
+            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));        			
+        });
+       
         buttonWGenera.addClickListener(click -> {
 			Notification.show("Generazione Campagna Avviata", Notification.Type.TRAY_NOTIFICATION);
 			@SuppressWarnings("unchecked")
@@ -110,6 +111,18 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			@SuppressWarnings("unchecked")
 			BgInvia invia = new BgInvia(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
 			invia.start();
+	       	try {
+					Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+            edit(get());
+        });
+
+        buttonWSollecita.addClickListener(click -> {
+			Notification.show("Sollecito Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
+			@SuppressWarnings("unchecked")
+			BgSollecita sollecita = new BgSollecita(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
+			sollecita.start();
 	       	try {
 					Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -158,7 +171,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
             edit(get());
         });
 
-        getActions().addComponents(buttonWGenera,buttonWInvio,buttonWSospendi,pubblicazione,buttonWEstrattoConto,buttonWChiudi);
+        getActions().addComponents(buttonWGenera,buttonWInvio,buttonWSollecita,buttonWSospendi,pubblicazione,buttonWEstrattoConto,buttonWChiudi);
 		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,numero);
 		
 		HorizontalLayout riviste = new HorizontalLayout();
@@ -173,7 +186,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		residuo,
         		operazioni.getGrid(),
         		sospensioni.getGrid(),
-        		new HorizontalLayout(buttonV,buttonA),
+        		new HorizontalLayout(buttonVGenera,buttonVInvio,buttonVSollecita,buttonVEstrattoConto,buttonVDebito,buttonVNulli),
         	    new VerticalLayout(grid.getComponents())
 		);
         
@@ -222,22 +235,32 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         getSave().setVisible(false);
         numero.setVisible(false);
         residuo.setReadOnly(true);
-    	buttonA.setVisible(false);
-    	buttonV.setVisible(persisted);
-        anno.setReadOnly(persisted);
+    	buttonVGenera.setVisible(persisted);
+    	buttonVInvio.setVisible(persisted);
+    	buttonVInvio.setEnabled(false);
+    	buttonVSollecita.setVisible(persisted);
+    	buttonVEstrattoConto.setVisible(persisted);
+    	buttonVNulli.setVisible(false);
+    	buttonVDebito.setVisible(persisted);
+        
+    	anno.setReadOnly(persisted);
+        
         buttonWGenera.setEnabled(false);
 		buttonWInvio.setEnabled(false);
+		buttonWSollecita.setEnabled(false);
 		pubblicazione.setEnabled(false);
 		buttonWSospendi.setEnabled(false);
 		buttonWEstrattoConto.setEnabled(false);
 		buttonWChiudi.setEnabled(false);
-        getCancel().setVisible(false);
+        
+		getCancel().setVisible(false);
         getDelete().setVisible(!campagna.isRunning() && persisted &&
     		campagna.getStatoCampagna() == StatoCampagna.Generata 
          && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
         );
         statoCampagna.setVisible(persisted);
-		if (campagna.isRunning()) {
+
+        if (campagna.isRunning()) {
 			running.setValue("locked: running...");
 		} else {
 			running.setValue("");
@@ -251,23 +274,25 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 	        	switch (get().getStatoCampagna()) {
 				case Generata:
 					buttonWInvio.setEnabled(true);
-					buttonV.setCaption("Visualizza Abbonamenti Generati");
 					break;
 				case Inviata:
+					buttonVInvio.setEnabled(true);
+					buttonWSollecita.setEnabled(true);
+					break;
+				case InviatoSollecito:
+					buttonVSollecita.setEnabled(true);
 					buttonWEstrattoConto.setEnabled(true);
 					buttonWSospendi.setEnabled(true);
 					pubblicazione.setEnabled(true);
-					buttonV.setCaption("Visualizza Abbonamenti Inviati");
 					break;
 				case InviatoEC:
+					buttonVEstrattoConto.setEnabled(true);
 					numero.setVisible(true);
 					buttonWChiudi.setEnabled(true);
-    				buttonV.setCaption("Visualizza Abbonamenti Inviato Estratto Conto");
 					break;
 				case Chiusa:
 			        residuo.setReadOnly(false);
-					buttonA.setVisible(true);
-    				buttonV.setCaption("Visualizza Abbonamenti con Debito");
+					buttonVNulli.setVisible(true);
 					break;
 				default:
 					break;
@@ -343,6 +368,22 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         public void exec(Campagna c) throws Exception
         {
             repo.invia(c,getOperatore());
+        }
+    }
+
+    private final class BgSollecita extends Bg {
+    	private final CampagnaServiceDao repo;
+    	
+    	public BgSollecita(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
+			this.repo = repo;
+		}
+
+
+		@Override
+        public void exec(Campagna c) throws Exception
+        {
+            repo.sollecita(c,getOperatore());
         }
     }
 
