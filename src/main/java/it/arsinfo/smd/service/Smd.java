@@ -370,6 +370,7 @@ public class Smd {
             log.info("aggiorna: {}",original);
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.getRivisteToSave().add(original);
+            //FIXME remove expedition if web otherwise generate expedition migrating from web
         	return aggiorna;
         }
 
@@ -729,9 +730,11 @@ public class Smd {
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
         final Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
 
-        for (SpedizioneItem item : items) {
-            aggiungiItemSpedizione(abb, ec, spedMap, item);
-        }
+        if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
+	        for (SpedizioneItem item : items) {
+	            aggiungiItemSpedizione(abb, ec, spedMap, item);
+	        }
+    	}
         calcolaPesoESpesePostali(abb, spedMap.values(), spese);
         return spedMap.values().stream().collect(Collectors.toList());
     }
