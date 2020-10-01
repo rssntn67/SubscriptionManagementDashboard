@@ -216,69 +216,73 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	@Override
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteInviati(Campagna entity) {
-		return smdService.get(findInviatiByCampagna(entity));
+		return smdService.get(
+				abbonamentoDao.findByCampagna(entity)
+					.stream()
+					.filter(a -> 
+					a.getImporto().signum() > 0 
+					|| a.getSpese().signum() > 0 
+					|| a.getPregresso().signum() > 0 
+					|| a.getSpeseEstero().signum() > 0)
+					.collect(Collectors.toList()
+							)
+					);
+	}
+	
+	@Override
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna entity) {
+		List<Long>abboIds = rivistaAbbonamentoDao
+				.findByStatoAbbonamento(
+				StatoAbbonamento.Sollecitato)
+				.stream()
+				.map(r -> r.getAbbonamento().getId()).
+				collect(Collectors.toList());
+		return smdService
+				.get( abbonamentoDao.findByCampagna(entity)
+						.stream()
+						.filter(a -> abboIds.contains(a.getId()))
+						.collect(Collectors.toList())
+				);
 	}
 
 	@Override
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity) {
-		return smdService
-				.get(findEstrattoContoByCampagna(entity));
-	}
-
-	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity) {
-		return smdService
-				.get(findConDebitoByCampagna(entity));
-	}
-
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity) {
-		return smdService.get(findAnnullatiByCampagna(entity));
-	}
-	
-	@Override
-	public List<Abbonamento> findInviatiByCampagna(Campagna entity) {
-		return abbonamentoDao.findByCampagna(entity).stream().filter(a -> a.getImporto().signum() > 0 || a.getSpese().signum() > 0 || a.getPregresso().signum() > 0 || a.getSpeseEstero().signum() > 0)
-			.collect(Collectors.toList());
-	}
-	
-	@Override
-	public List<Abbonamento> findEstrattoContoByCampagna(Campagna entity) {
 		List<Long>abboIds = rivistaAbbonamentoDao
 				.findByStatoAbbonamentoOrStatoAbbonamento(
 				StatoAbbonamento.ValidoInviatoEC,StatoAbbonamento.SospesoInviatoEC)
 				.stream()
 				.map(r -> r.getAbbonamento().getId()).
 				collect(Collectors.toList());
-		return abbonamentoDao.findByCampagna(entity)
-				.stream()
-				.filter(a -> abboIds.contains(a.getId()))
-				.collect(Collectors.toList());
-
+		return smdService
+				.get( abbonamentoDao.findByCampagna(entity)
+						.stream()
+						.filter(a -> abboIds.contains(a.getId()))
+						.collect(Collectors.toList())
+				);
 	}
-	
+
 	@Override
-	public List<Abbonamento> findAnnullatiByCampagna(Campagna entity) {
+	public List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity) {
+		return smdService
+				.get(abbonamentoDao.findByCampagna(entity)
+		                .stream()
+		                .filter(a -> a.getResiduo().compareTo(entity.getResiduo()) > 0)
+		                .collect(Collectors.toList()));
+	}
+
+	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity) {
 		List<Long>abboIds = rivistaAbbonamentoDao
 				.findByStatoAbbonamento(
 				StatoAbbonamento.Annullato)
 				.stream()
 				.map(r -> r.getAbbonamento().getId()).
 				collect(Collectors.toList());
-				return abbonamentoDao.findByCampagna(entity)
-						.stream()
-						.filter(a -> abboIds.contains(a.getId()))
-						.collect(Collectors.toList());
+		return smdService.get(abbonamentoDao.findByCampagna(entity)
+				.stream()
+				.filter(a -> abboIds.contains(a.getId()))
+				.collect(Collectors.toList()));
 	}
-	
-	public List<Abbonamento> findConDebitoByCampagna(Campagna entity) {
-		log.info("findConDebitoByCampagna: {} {}", entity, entity.getResiduo());
-		return 
-				abbonamentoDao.findByCampagna(entity)
-                .stream()
-                .filter(a -> a.getResiduo().compareTo(entity.getResiduo()) > 0)
-                .collect(Collectors.toList());
-	}
-	
+				
 	@Override
 	public void invia(Campagna campagna, UserInfo user) throws Exception {
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
@@ -655,12 +659,5 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	public List<OperazioneSospendi> getSospensioni(Campagna campagna) {
 		return operazioneSospendiDao.findByCampagna(campagna);
 	}
-
-	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna campagna) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

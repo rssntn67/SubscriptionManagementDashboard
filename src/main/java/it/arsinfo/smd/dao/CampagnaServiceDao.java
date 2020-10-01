@@ -4,7 +4,6 @@ import java.util.List;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.OperazioneCampagna;
 import it.arsinfo.smd.entity.OperazioneSospendi;
@@ -23,10 +22,6 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 	List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity);
 	
-	List<Abbonamento> findInviatiByCampagna(Campagna entity);
-	List<Abbonamento> findEstrattoContoByCampagna(Campagna entity);
-	List<Abbonamento> findAnnullatiByCampagna(Campagna entity);
-
 	void genera(Campagna campagna, UserInfo user) throws Exception;
 	void invia(Campagna campagna, UserInfo user) throws Exception;
 	void sollecita(Campagna c, UserInfo operatore) throws Exception;

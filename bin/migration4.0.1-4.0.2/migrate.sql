@@ -1,0 +1,1 @@
+update rivista_abbonamento set stato_abbonamento = 'Valido' where stato_abbonamento='ValidoConResiduo';
