@@ -30,10 +30,10 @@ public class SpedizioneEditor
         extends SmdRepositoryDaoEditor<Spedizione> {
 
     private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
-    private Button dA = new Button("Reinvia No Spese", VaadinIcons.HANDS_UP);
-    private Button dB = new Button("Reinvia 24hh", VaadinIcons.HANDS_UP);
-    private Button dC = new Button("Reinvia 3gg", VaadinIcons.HANDS_UP);
-    private Button dD = new Button("Reinvia Sp.Po.", VaadinIcons.HANDS_UP);
+    private Button duplicaAdpNoSpese = new Button("Reinvia No Spese", VaadinIcons.HANDS_UP);
+    private Button duplicaAdpCorriere24h = new Button("Reinvia 24hh", VaadinIcons.HANDS_UP);
+    private Button duplicaAdpCorriere3gg = new Button("Reinvia 3gg", VaadinIcons.HANDS_UP);
+    private Button duplicaAdpSpesePostal = new Button("Reinvia Sp.Po.", VaadinIcons.HANDS_UP);
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");
     private final ComboBox<InvioSpedizione> invioSpedizione = 
     		new ComboBox<InvioSpedizione>("Sped.",EnumSet.allOf(InvioSpedizione.class));
@@ -47,12 +47,12 @@ public class SpedizioneEditor
             SpedizioneDao spedizioneDao, List<Anagrafica> anagrafica) {
 
         super(spedizioneDao, new Binder<>(Spedizione.class) );
-        getActions().addComponents(stampa,dA,dB,dC,dD);
+        getActions().addComponents(stampa,duplicaAdpNoSpese,duplicaAdpCorriere24h,duplicaAdpCorriere3gg,duplicaAdpSpesePostal);
         stampa.addClickListener(e -> stampa());
-        dA.addClickListener(e -> duplica(InvioSpedizione.AdpSedeNoSpese));
-        dB.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere24hh));
-        dC.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere3gg));
-        dD.addClickListener(e -> duplica(InvioSpedizione.AdpSede));
+        duplicaAdpNoSpese.addClickListener(e -> duplica(InvioSpedizione.AdpSedeNoSpese));
+        duplicaAdpCorriere24h.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere24hh));
+        duplicaAdpCorriere3gg.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere3gg));
+        duplicaAdpSpesePostal.addClickListener(e -> duplica(InvioSpedizione.AdpSede));
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinazione");
         destinatario.setItems(anagrafica);
@@ -78,9 +78,7 @@ public class SpedizioneEditor
         dest.addComponentsAndExpand(destinatario);
         setComponents(getActions(), 
         			dest,
-                      new HorizontalLayout(invioSpedizione),
-                      new HorizontalLayout(meseSped,annoSped),
-                      new HorizontalLayout(pesoStimato,spesePostali)
+                  new HorizontalLayout(invioSpedizione,meseSped,annoSped,pesoStimato,spesePostali)
                       );
  
         getBinder()

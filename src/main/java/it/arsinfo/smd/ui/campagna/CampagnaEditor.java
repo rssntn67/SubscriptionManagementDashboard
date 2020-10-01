@@ -33,7 +33,6 @@ import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
-
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 	private final ComboBox<Anno> anno = new ComboBox<Anno>("Anno",EnumSet.allOf(Anno.class));
 

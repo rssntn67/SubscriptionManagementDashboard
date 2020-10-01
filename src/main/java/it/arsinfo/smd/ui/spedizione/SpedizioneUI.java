@@ -58,10 +58,12 @@ public class SpedizioneUI extends SmdUI {
         SpedizioneSearch search = new SpedizioneSearch(dao,abbonamenti,anagrafica,pubblicazioni);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor editor = new SpedizioneEditor(dao.getRepository(), anagrafica);
+        SpedizioneItemEditor itemeditor = new SpedizioneItemEditor(spedizioneItemDao, pubblicazioni);
         editor.setSmdService(smdService);
         SpedizioneItemGrid itemgrid = new SpedizioneItemGrid("Items");
-        addSmdComponents(editor,itemgrid,search, grid);
+        addSmdComponents(editor,itemeditor,itemgrid,search, grid);
         editor.setVisible(false);
+        itemeditor.setVisible(false);
         itemgrid.setVisible(false);
         
         search.setChangeHandler(()-> {
@@ -77,6 +79,7 @@ public class SpedizioneUI extends SmdUI {
             setHeader(grid.getSelected().getHeader());
             hideMenu();
             search.setVisible(false);
+            grid.setVisible(false);
         });
 
         editor.setChangeHandler(() -> {
@@ -86,11 +89,26 @@ public class SpedizioneUI extends SmdUI {
             setHeader("Spedizioni");
             editor.setVisible(false);
             itemgrid.setVisible(false);
+            itemeditor.setVisible(false);
         });
 
         itemgrid.setChangeHandler(() -> {
-            
+        	if (itemgrid.getSelected() == null) {
+                return;
+            }
+        	itemeditor.edit(itemgrid.getSelected());
         });
+
+        itemeditor.setChangeHandler(() -> {
+            editor.edit(grid.getSelected());
+            itemgrid.populate(spedizioneItemDao.findBySpedizione(grid.getSelected()));
+            itemeditor.setVisible(false);
+            setHeader(grid.getSelected().getHeader());
+            hideMenu();
+            search.setVisible(false);
+            grid.setVisible(false);
+        });
+
         grid.populate(search.find());
 
     }

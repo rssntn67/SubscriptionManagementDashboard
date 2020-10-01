@@ -40,7 +40,7 @@ public class SpedizioneItem implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private StatoSpedizione statoSpedizione = StatoSpedizione.PROGRAMMATA;
 
-    Integer numero=1;
+    private Integer numero=1;
 
     public SpedizioneItem() {
     }
