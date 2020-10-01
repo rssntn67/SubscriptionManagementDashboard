@@ -43,7 +43,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
     private final TextField numero = new TextField("Numero di Riviste Massimo da Sospendere");
-    private final TextField residuo = new TextField("Importo Minimo Residuo da Visualizzare");
+    private final TextField residuo = new TextField("Importo Minimo Residuo per Debitori");
 
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
