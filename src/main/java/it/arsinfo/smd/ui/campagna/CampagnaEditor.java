@@ -231,9 +231,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     public void focus(boolean persisted, Campagna campagna) {
 
         getSave().setVisible(false);
-        numero.setVisible(false);
-        residuo.setReadOnly(true);
-    	buttonVGenera.setVisible(persisted);
+    	
+        buttonVGenera.setVisible(persisted);
     	buttonVInvio.setVisible(persisted);
     	buttonVInvio.setEnabled(false);
     	buttonVSollecita.setVisible(persisted);
@@ -287,13 +286,14 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					buttonWSospendi.setEnabled(true);
 					pubblicazione.setEnabled(true);
 					buttonWEstrattoConto.setEnabled(true);
+					break;
 				case InviatoEC:
 					buttonVEstrattoConto.setEnabled(true);
-					numero.setVisible(true);
 					buttonWChiudi.setEnabled(true);
 					break;
 				case Chiusa:
-			        residuo.setReadOnly(false);
+					numero.setReadOnly(true);
+					residuo.setReadOnly(true);
 					break;
 				default:
 					break;

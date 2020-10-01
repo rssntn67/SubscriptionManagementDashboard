@@ -675,7 +675,7 @@ public class SmdServiceImpl implements SmdService {
 			ra.setPubblicazione(item.getPubblicazione());
 			ra.setDestinatario(ra0.getDestinatario());
 			ra.setInvioSpedizione(invio);
-			ra.setStatoAbbonamento(StatoAbbonamento.Proposto);
+			ra.setStatoAbbonamento(StatoAbbonamento.Valido);
 			abbonamento.addItem(ra);
 		}
 
