@@ -75,6 +75,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         items = new CampagnaItemsEditor(pubblicazioni);
+        
+        operazioni.getGrid().setHeightByRows(5.0);
+        sospensioni.getGrid().setHeightByRows(4.0);
         buttonVGenera.addClickListener(click -> {
     		grid.populate(repo.findAbbonamentoConRivisteGenerati(get()));
         });
@@ -184,10 +187,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		riviste,
         		stato,           		
         		residuo,
-        		operazioni.getGrid(),
-        		sospensioni.getGrid(),
         		new HorizontalLayout(buttonVGenera,buttonVInvio,buttonVSollecita,buttonVEstrattoConto,buttonVDebito,buttonVNulli),
-        	    new VerticalLayout(grid.getComponents())
+        	    new VerticalLayout(grid.getComponents()),
+        		operazioni.getGrid(),
+        		sospensioni.getGrid()
 		);
         
         grid.setVisible(false);
@@ -239,8 +242,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     	buttonVInvio.setVisible(persisted);
     	buttonVInvio.setEnabled(false);
     	buttonVSollecita.setVisible(persisted);
+    	buttonVSollecita.setEnabled(false);
     	buttonVEstrattoConto.setVisible(persisted);
-    	buttonVNulli.setVisible(false);
+    	buttonVEstrattoConto.setEnabled(false);
+    	buttonVNulli.setVisible(persisted);
     	buttonVDebito.setVisible(persisted);
         
     	anno.setReadOnly(persisted);
