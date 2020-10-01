@@ -8,33 +8,41 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
+public class SmdButtonTwoComboBoxTextField<T,S> extends SmdChangeHandler {
 
     private final Button button;
     private final ComboBox<T> tComboBox;
     private final ComboBox<S> sComboBox;
-    private final TextField textField;
+    private final TextField textFieldB;
+    private final TextField textFieldA;
     private T t;
     private S s;
-    private String value;
+    private String valueA;
+    private String valueB;
 
-    public SmdButtonTwoComboBox(String placeholder, List<T> tItems, List<S> sItems,String bcaption,VaadinIcons bicon) {
+    public SmdButtonTwoComboBoxTextField(String p1, String p2, List<T> tItems, List<S> sItems,String bcaption,VaadinIcons bicon) {
 
-        textField = new TextField();
-        textField.setPlaceholder(placeholder);
-        textField.addValueChangeListener(e -> {
-            value = e.getValue();
+        textFieldA = new TextField();
+        textFieldA.setPlaceholder(p1);
+        textFieldA.addValueChangeListener(e -> {
+            valueA = e.getValue();
+        });
+
+        textFieldB = new TextField();
+        textFieldB.setPlaceholder(p2);
+        textFieldB.addValueChangeListener(e -> {
+            valueB = e.getValue();
         });
 
     	tComboBox = new ComboBox<>();
-        tComboBox.setPlaceholder(placeholder);
+        tComboBox.setPlaceholder(p2);
         tComboBox.setItems(tItems);
         tComboBox.addValueChangeListener(e -> {
             t = e.getValue();
         });
 
         sComboBox = new ComboBox<>();
-        sComboBox.setPlaceholder(placeholder);
+        sComboBox.setPlaceholder(p2);
         sComboBox.setItems(sItems);
         sComboBox.addValueChangeListener(e -> {
             s = e.getValue();
@@ -43,7 +51,7 @@ public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
         button = new Button(bcaption, bicon);
         button.addClickListener(e -> onChange());
 
-        setComponents(new HorizontalLayout(textField,tComboBox,sComboBox),button);
+        setComponents(new HorizontalLayout(textFieldA,textFieldB,tComboBox,sComboBox),button);
 
     }
     
@@ -67,12 +75,20 @@ public class SmdButtonTwoComboBox<T,S> extends SmdChangeHandler {
         return s;
     }
 
-    public TextField getTextField() {
-        return textField;
+    public TextField getTextFieldB() {
+        return textFieldB;
     }
-    
-    public String getValue() {
-        return value;
+
+    public TextField getTextFieldA() {
+        return textFieldA;
+    }
+
+    public String getValueA() {
+        return valueA;
+    }
+
+    public String getValueB() {
+        return valueB;
     }
 
 

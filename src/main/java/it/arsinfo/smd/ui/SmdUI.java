@@ -47,6 +47,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_STORICO = "/storico";
     public final static String URL_ABBONAMENTI = "/abbonamenti";
     public final static String URL_OFFERTE = "/offerte";
+    public final static String URL_DDT = "/ddt";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_NOTE = "/note";
@@ -58,6 +59,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_INCASSA_VERSAMENTI = "/versamenti";
     public final static String URL_INCASSA_ABBONAMENTI = "/incassa/abbonamenti";
     public final static String URL_INCASSA_OFFERTA = "/incassa/offerte";
+    public final static String URL_INCASSA_DDT = "/incassa/ddt";
     public final static String URL_VERSAMENTI_COMMITTENTI = "/versamenti/committenti";
     
     public final static String URL_TIPOGRAFIA = "/tipografo";
@@ -73,6 +75,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_SPESESPEDIZIONE = "Spese Spedizione";
     public final static String TITLE_ABBONAMENTI = "Abbonamenti";
     public final static String TITLE_OFFERTE = "Offerte";
+    public final static String TITLE_DDT = "DDT";
     public final static String TITLE_STORICO = "Storici";
     public final static String TITLE_SPEDIZIONI = "Spedizioni";
     public final static String TITLE_CAMPAGNA = "Campagne";
@@ -84,6 +87,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_VERSAMENTI_COMMITTENTI = "Committenti Versamenti";
     public final static String TITLE_INCASSA_ABBONAMENTI = "Incassa Abbonamenti";
     public final static String TITLE_INCASSA_OFFERTA = "Incassa Offerte";
+    public final static String TITLE_INCASSA_DDT = "Incassa DDT";
     public final static String TITLE_UPLOAD_POSTE = "Importa ccp";
     public final static String TITLE_INCASSA_CODELINE = "Incassa Codeline";
     
@@ -146,6 +150,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_OFFERTE);
+            }
+        } );
+        abbonamenti.addItem(TITLE_DDT,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_DDT);
             }
         } );
         abbonamenti.addItem(TITLE_SPEDIZIONI,new MenuBar.Command() {
@@ -225,6 +236,13 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_INCASSA_OFFERTA);
+            }
+        } );
+        incassi.addItem(TITLE_INCASSA_DDT,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_INCASSA_DDT);
             }
         } );
         incassi.addItem(TITLE_VERSAMENTI_COMMITTENTI,new MenuBar.Command() {

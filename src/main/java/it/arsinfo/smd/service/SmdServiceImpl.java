@@ -24,6 +24,8 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
+import it.arsinfo.smd.dao.repository.DocumentiTrasportoCumulatiDao;
+import it.arsinfo.smd.dao.repository.DocumentoTrasportoDao;
 import it.arsinfo.smd.dao.repository.OffertaDao;
 import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
@@ -51,6 +53,8 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
+import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
@@ -101,6 +105,12 @@ public class SmdServiceImpl implements SmdService {
 
     @Autowired
     private OfferteCumulateDao offerteDao;
+
+    @Autowired
+    private DocumentoTrasportoDao ddtDao;
+
+    @Autowired
+    private DocumentiTrasportoCumulatiDao ddtCumulatiDao;
 
     @Autowired
     private UserInfoDao userInfoDao;
@@ -460,6 +470,45 @@ public class SmdServiceImpl implements SmdService {
         log.info("incassa: {}", operIncasso);
     }
 
+	@Override
+	public void incassa(String ddtid, BigDecimal importo, DocumentiTrasportoCumulati ddtAnno, Versamento versamento,
+			UserInfo user, Anagrafica committente) {
+        log.info("incassa: {} {}, {}, {}",importo, user, ddtAnno,versamento);
+        if (importo == null) {
+            log.warn("incassa: Importo null, non incassabile {} {} {}", ddtAnno,versamento,user);
+            throw new UnsupportedOperationException("incassa: I mporto null, offerta non incassata");            
+        }
+        if (versamento.getResiduo().signum() == 0) {
+            log.warn("incassa: Versamento con residuo 0, non incassabile {} {} {} {}",importo, ddtAnno,versamento,user);
+            throw new UnsupportedOperationException("incassa: Versamento con residuo 0, offerta non incassata");            
+        }
+        if (versamento.getResiduo().compareTo(importo) < 0) {
+            log.warn("incassa: Versamento con residuo minore di importo, non incassabile {} {} {} {}", importo,ddtAnno,versamento,user);
+            throw new UnsupportedOperationException("incassa: Versamento con residuo minore di importo, offerta non incassata");            
+        }
+        
+        DistintaVersamento incasso = versamento.getDistintaVersamento();
+        BigDecimal incassato = Smd.incassa(incasso,versamento, ddtAnno,importo);    
+        if (versamento.getCommittente() == null) {
+        	versamento.setCommittente(committente);
+        }
+        versamentoDao.save(versamento);
+        incassoDao.save(incasso);
+        ddtCumulatiDao.save(ddtAnno);
+        DocumentoTrasporto ddt = new DocumentoTrasporto();
+        ddt.setDdt(ddtid);
+        ddt.setDocumentiTrasportoCumulati(ddtAnno);
+        ddt.setVersamento(versamento);
+        ddt.setStatoOperazioneIncasso(StatoOperazioneIncasso.Incasso);
+        ddt.setOperatore(user.getUsername());
+        ddt.setCommittente(committente);
+        ddt.setImporto(incassato);
+        ddtDao.save(ddt);
+            
+        log.info("incassa: {}", ddt);
+		
+	}
+
     @Override
     public void incassa(BigDecimal importo,OfferteCumulate offerte, Versamento versamento, UserInfo user, Anagrafica committente) throws Exception {
         log.info("incassa: {} {}, {}, {}",importo, user, offerte,versamento);
@@ -495,6 +544,45 @@ public class SmdServiceImpl implements SmdService {
             
         log.info("incassa: {}", offerta);
     }
+
+	@Override
+	public void storna(DocumentoTrasporto ddt, UserInfo user) {
+    	if (ddt.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
+            log.warn("storna: tipo Storno, non dissociabile {}", ddt);
+            throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
+    	}
+    	Versamento versamento = ddt.getVersamento();
+    	DocumentiTrasportoCumulati cumulati = ddt.getDocumentiTrasportoCumulati();
+        if (versamento.getIncassato().signum() == 0) {
+            log.warn("storna: Versamento con Incasso 0, non dissociabile {}", ddt);
+            throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
+        }
+        DistintaVersamento distinta = versamento.getDistintaVersamento();
+        Smd.storna(distinta, versamento, cumulati, ddt.getImporto());
+        ddt.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
+        ddtDao.save(ddt);
+
+        if (ddt.getCommittente().equals(versamento.getCommittente()) && versamento.getIncassato().signum() == 0) {
+        	versamento.setCommittente(null);
+        }
+        versamentoDao.save(versamento);
+        incassoDao.save(distinta);        
+        ddtCumulatiDao.save(cumulati); 
+        
+        DocumentoTrasporto operStorno = new DocumentoTrasporto();
+        operStorno.setDdt(ddt.getDdt());
+        operStorno.setDocumentiTrasportoCumulati(cumulati);
+        operStorno.setVersamento(versamento);
+        operStorno.setStatoOperazioneIncasso(StatoOperazioneIncasso.Storno);
+        operStorno.setCommittente(ddt.getCommittente());
+        operStorno.setOperatore(user.getUsername());
+        operStorno.setImporto(ddt.getImporto());
+        ddtDao.save(operStorno);
+        log.info("storna: {}",operStorno );
+		
+	}
+
+
     @Override
     public void storna(Offerta offerta, UserInfo user) throws Exception {
     	if (offerta.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {

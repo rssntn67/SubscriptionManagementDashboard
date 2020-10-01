@@ -54,6 +54,7 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
 import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
@@ -399,7 +400,6 @@ public class Smd {
             log.info("aggiorna: {}",original);
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.getRivisteToSave().add(original);
-            //FIXME remove expedition if web otherwise generate expedition migrating from web
         	return aggiorna;
         }
 
@@ -1050,6 +1050,30 @@ public class Smd {
         return op;        
     }
  
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, DocumentiTrasportoCumulati ddtAnno, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (ddtAnno == null ) {
+            log.error("incassa: Ddt Anno null");
+            throw new UnsupportedOperationException("incassa: Ddt Anno null");
+        }
+ 
+        BigDecimal incassato = importo;
+        if (importo.compareTo(versamento.getResiduo()) > 0) {
+        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        }        
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        ddtAnno.setImporto(ddtAnno.getImporto().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+
     public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
@@ -1097,6 +1121,32 @@ public class Smd {
         }
         versamento.setIncassato(versamento.getIncassato().subtract(importo));
         offerte.setImporto(offerte.getImporto().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+    public static void storna(DistintaVersamento incasso, Versamento versamento,DocumentiTrasportoCumulati ddts, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (ddts == null ) {
+            log.error("storna: DDT null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (ddts.getImporto().compareTo(importo) < 0) {
+            log.error("storna: incassato DDT minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale DDT minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        ddts.setImporto(ddts.getImporto().subtract(importo));
         incasso.setIncassato(incasso.getIncassato().subtract(importo));
     }
 

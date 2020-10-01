@@ -6,6 +6,7 @@ import java.util.List;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.UserInfo;
@@ -23,9 +24,14 @@ public interface VersamentoServiceDao extends SmdServiceDao<Versamento> {
 	void incassa(Abbonamento abbonamento, Versamento selected, UserInfo loggedInUser, String description) throws Exception;
 
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
-	void incassa(String importo,Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	void incassaOfferta(String importo,Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+	
+	void storna(DocumentoTrasporto offerta, UserInfo loggedInUser) throws Exception;
+	void incassaDdt(String ddt, String importo,Anno anno, Versamento versamento, UserInfo loggedInUser, Anagrafica committente) throws Exception;
+
 	Anagrafica findCommittente(Versamento selected);
 	List<Offerta> getOfferte(Versamento selected);
+	List<DocumentoTrasporto> getDocumentiTrasporto(Versamento selected);
 	List<Versamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 
 }

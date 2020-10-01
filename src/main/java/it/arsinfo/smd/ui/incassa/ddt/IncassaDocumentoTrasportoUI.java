@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.incassa.offerta;
+package it.arsinfo.smd.ui.incassa.ddt;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,15 +19,15 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.offerta.OfferteGrid;
+import it.arsinfo.smd.ui.ddt.DocumentiTrasportoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
-import it.arsinfo.smd.ui.vaadin.SmdButtonTwoComboBox;
+import it.arsinfo.smd.ui.vaadin.SmdButtonTwoComboBoxTextField;
 import it.arsinfo.smd.ui.versamento.VersamentoGrid;
 import it.arsinfo.smd.ui.versamento.VersamentoSearch;
 
-@SpringUI(path = SmdUI.URL_INCASSA_OFFERTA)
-@Title(SmdUI.TITLE_INCASSA_OFFERTA)
-public class IncassaOffertaUI extends SmdUI {
+@SpringUI(path = SmdUI.URL_INCASSA_DDT)
+@Title(SmdUI.TITLE_INCASSA_DDT)
+public class IncassaDocumentoTrasportoUI extends SmdUI {
 
     /**
      * 
@@ -42,36 +42,36 @@ public class IncassaOffertaUI extends SmdUI {
     
     @Override
     protected void init(VaadinRequest request) {
-        super.init(request, SmdUI.TITLE_INCASSA_OFFERTA);
+        super.init(request, SmdUI.TITLE_INCASSA_DDT);
         List<Anagrafica> anagrafica = abbonamentoDao.getAnagrafica();
         VersamentoSearch search = new VersamentoSearch(dao,abbonamentoDao.getAnagrafica());
         VersamentoGrid grid = new VersamentoGrid("Versamenti");
         grid.getGrid().setHeight("300px");
         
-        OfferteGrid offerteGrid = new OfferteGrid("Offerte Associate");
-        offerteGrid.getGrid().setHeight("300px");
+        DocumentiTrasportoGrid ddtGrid = new DocumentiTrasportoGrid("DDT Associati");
+        ddtGrid.getGrid().setHeight("300px");
         SmdButton indietro = new SmdButton("Indietro",VaadinIcons.BACKSPACE);
 
-        SmdButtonTwoComboBox<Anno,Anagrafica> incassaOfferta = 
-        		new SmdButtonTwoComboBox<>("Importo Anno e Committente", 
+        SmdButtonTwoComboBoxTextField<Anno,Anagrafica> incassa = 
+        		new SmdButtonTwoComboBoxTextField<>("ddt","Importo Anno e Committente", 
         				 Arrays.asList(Anno.values()),anagrafica,
-        				"Incassa Offerta", VaadinIcons.ABACUS);
-        incassaOfferta.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
-        incassaOfferta.getButton().setWidth("300px");
-        incassaOfferta.getSComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
-        incassaOfferta.getSComboBox().setEmptySelectionAllowed(false);
-        incassaOfferta.getSComboBox().setWidth("800px");;
-        incassaOfferta.getTComboBox().setItemCaptionGenerator(Anno::getAnnoAsString);
-        incassaOfferta.getTComboBox().setEmptySelectionAllowed(false);
-        incassaOfferta.getTComboBox().setValue(Anno.getAnnoCorrente());
-        incassaOfferta.setVisible(false);
+        				"Incassa DDT", VaadinIcons.ABACUS);
+        incassa.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
+        incassa.getButton().setWidth("300px");
+        incassa.getSComboBox().setItemCaptionGenerator(Anagrafica::getCaption);
+        incassa.getSComboBox().setEmptySelectionAllowed(false);
+        incassa.getSComboBox().setWidth("800px");;
+        incassa.getTComboBox().setItemCaptionGenerator(Anno::getAnnoAsString);
+        incassa.getTComboBox().setEmptySelectionAllowed(false);
+        incassa.getTComboBox().setValue(Anno.getAnnoCorrente());
+        incassa.setVisible(false);
                 
-        addSmdComponents(search,indietro,grid,incassaOfferta,offerteGrid);
+        addSmdComponents(search,indietro,grid,incassa,ddtGrid);
 
-        incassaOfferta.setVisible(false);
+        incassa.setVisible(false);
         indietro.setVisible(false);
-        incassaOfferta.setVisible(false);
-        offerteGrid.setVisible(false);
+        incassa.setVisible(false);
+        ddtGrid.setVisible(false);
 
         search.setChangeHandler(() -> grid.populate(search.find()));
 
@@ -79,13 +79,13 @@ public class IncassaOffertaUI extends SmdUI {
             if (grid.getSelected() != null) {
             	hideMenu();
             	search.setVisible(false);
-            	offerteGrid.populate(dao.getOfferte(grid.getSelected()));
-                incassaOfferta.getTComboBox().setValue(null);
+            	ddtGrid.populate(dao.getDocumentiTrasporto(grid.getSelected()));
+                incassa.getTComboBox().setValue(null);
                 if ( grid.getSelected().getResiduo().signum() > 0) {
-    				incassaOfferta.setVisible(true);
+    				incassa.setVisible(true);
                 }
                 if (grid.getSelected().getCommittente() != null) {
-                	incassaOfferta.getSComboBox().setValue(dao.findCommittente(grid.getSelected()));
+                	incassa.getSComboBox().setValue(dao.findCommittente(grid.getSelected()));
                 }
                 indietro.setVisible(true);
             } else {
@@ -93,10 +93,10 @@ public class IncassaOffertaUI extends SmdUI {
             }
         });
         
-        incassaOfferta.setChangeHandler(() -> {
+        incassa.setChangeHandler(() -> {
         	try {
-				dao.incassaOfferta(incassaOfferta.getValue(),incassaOfferta.getTValue(), grid.getSelected(), getLoggedInUser(), incassaOfferta.getSValue());
-                offerteGrid.populate(dao.getOfferte(grid.getSelected()));
+				dao.incassaDdt(incassa.getValueA(),incassa.getValueB(),incassa.getTValue(), grid.getSelected(), getLoggedInUser(), incassa.getSValue());
+            	ddtGrid.populate(dao.getDocumentiTrasporto(grid.getSelected()));
 			} catch (Exception e) {
                 Notification.show(e.getMessage(),
                         Notification.Type.ERROR_MESSAGE);
@@ -108,18 +108,18 @@ public class IncassaOffertaUI extends SmdUI {
         	showMenu();
         	search.setVisible(true);
             grid.populate(search.find());
-            incassaOfferta.setVisible(false);
+            incassa.setVisible(false);
             indietro.setVisible(false);
-            incassaOfferta.setVisible(false);
-            offerteGrid.setVisible(false);
+            incassa.setVisible(false);
+            ddtGrid.setVisible(false);
         });
 
-        offerteGrid.addComponentColumn(offerta -> {
+        ddtGrid.addComponentColumn(ddt -> {
             Button button = new Button("Storna");
             button.addClickListener(click -> {
                 try {
-                    dao.storna(offerta, getLoggedInUser());
-                    offerteGrid.populate(dao.getOfferte(grid.getSelected()));
+                    dao.storna(ddt, getLoggedInUser());
+                    ddtGrid.populate(dao.getDocumentiTrasporto(grid.getSelected()));
                 } catch (Exception e) {
                     Notification.show(e.getMessage(),
                                       Notification.Type.ERROR_MESSAGE);
@@ -127,7 +127,7 @@ public class IncassaOffertaUI extends SmdUI {
                 }
             });
             
-            if (offerta.getStatoOperazioneIncasso() != StatoOperazioneIncasso.Incasso) {
+            if (ddt.getStatoOperazioneIncasso() != StatoOperazioneIncasso.Incasso) {
                 button.setCaption("Non Attivo");
                 button.setEnabled(false);
             }

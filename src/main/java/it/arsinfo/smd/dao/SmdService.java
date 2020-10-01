@@ -16,6 +16,8 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
+import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
@@ -61,6 +63,11 @@ public interface SmdService {
     
     SpedizioneDto genera(SpedizioneItem spedItem);
     Indirizzo genera(Spedizione spedizione);
+
+	void storna(DocumentoTrasporto ddt, UserInfo loggedInUser);
+
+	void incassa(String ddt, BigDecimal bigDecimal, DocumentiTrasportoCumulati ddtAnno, Versamento selected,
+			UserInfo loggedInUser, Anagrafica committente);
 
 
 }

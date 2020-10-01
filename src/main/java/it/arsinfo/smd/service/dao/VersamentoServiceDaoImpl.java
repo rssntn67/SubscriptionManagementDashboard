@@ -17,6 +17,8 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.VersamentoServiceDao;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.dao.repository.DocumentiTrasportoCumulatiDao;
+import it.arsinfo.smd.dao.repository.DocumentoTrasportoDao;
 import it.arsinfo.smd.dao.repository.OffertaDao;
 import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
@@ -24,6 +26,8 @@ import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
+import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OfferteCumulate;
 import it.arsinfo.smd.entity.OperazioneIncasso;
@@ -50,6 +54,11 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
     private OffertaDao offertaDao;
     @Autowired
     private OfferteCumulateDao offerteCumulateDao;
+
+    @Autowired
+    private DocumentoTrasportoDao documentoTrasportoDao;
+    @Autowired
+    private DocumentiTrasportoCumulatiDao documentiTrasportoCumulatiDao;
 
     @Autowired
     private SmdService smdService;
@@ -246,13 +255,19 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
 	@Override
 	@Transactional
+	public void storna(DocumentoTrasporto ddt, UserInfo loggedInUser) throws Exception {
+		smdService.storna(ddt, loggedInUser);
+	}
+
+	@Override
+	@Transactional
 	public void storna(Offerta offerta, UserInfo loggedInUser) throws Exception {
 		smdService.storna(offerta, loggedInUser);
 	}
 
 	@Override
 	@Transactional
-	public void incassa(String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+	public void incassaOfferta(String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
 		if (importo == null) {
 			throw new UnsupportedOperationException("Selezionare Importo");
 		}
@@ -284,6 +299,39 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 	}
 
 	@Override
+	@Transactional
+	public void incassaDdt(String ddt,String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+		if (importo == null) {
+			throw new UnsupportedOperationException("Selezionare Importo");
+		}
+		try {
+			new BigDecimal(importo);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException("formato importo non corretto " + importo);
+		}
+		if (anno == null) {
+			throw new UnsupportedOperationException("Selezionare Anno");
+		}
+		if (selected == null) {
+			throw new UnsupportedOperationException("Selezionare Versamento");
+		}
+		if (loggedInUser == null) {
+			throw new UnsupportedOperationException("loggedInUser null!");
+		}
+		if (committente == null) {
+			throw new UnsupportedOperationException("Selezionare Committente");
+		}
+		
+		DocumentiTrasportoCumulati ddtAnno = documentiTrasportoCumulatiDao.findByAnno(anno);
+		if (ddtAnno == null) {
+			ddtAnno = new DocumentiTrasportoCumulati();
+			ddtAnno.setAnno(anno);
+			documentiTrasportoCumulatiDao.save(ddtAnno);
+		}
+		smdService.incassa(ddt,new BigDecimal(importo),ddtAnno,selected,loggedInUser, committente);				
+	}
+
+	@Override
 	public List<Offerta> getOfferte(Versamento selected) {
 		return offertaDao.findByVersamento(selected);
 	}
@@ -303,5 +351,10 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))
 				.collect(Collectors.toList());
 		return Smd.getWithAnagrafiche(versamenti, anagraficaDao.findAll());
+	}
+
+	@Override
+	public List<DocumentoTrasporto> getDocumentiTrasporto(Versamento selected) {
+		return documentoTrasportoDao.findByVersamento(selected);
 	}	
 }
