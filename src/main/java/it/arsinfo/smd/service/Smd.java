@@ -71,7 +71,44 @@ public class Smd {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
+    
+    public static StatoAbbonamento getStatoAbbonamento(Abbonamento abbonamento, RivistaAbbonamento rivista, StatoAbbonamento def) {
+		if (def == null) {
+			return rivista.getStatoAbbonamento();
+		}
+		if (isOmaggio(rivista)) {
+			return StatoAbbonamento.Valido;
+		}
 
+		StatoAbbonamento stato = def;
+    	switch (abbonamento.getStatoIncasso()) {
+			case Si:
+				stato=StatoAbbonamento.Valido;
+				break;
+			case SiConDebito:
+				stato=StatoAbbonamento.Valido;
+				break;
+			case No:
+				if (def == StatoAbbonamento.InviatoEC 
+				&& abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() < 0) {
+					stato=StatoAbbonamento.Sospeso;
+				}
+				break;
+			case Parzialmente:
+				if (def == StatoAbbonamento.InviatoEC 
+				&& abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() < 0) {
+					stato=StatoAbbonamento.Sospeso;
+				}
+				break;
+			default:
+				break;
+        }
+    	
+    	return stato;
+
+    }
+
+    
     public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
     	boolean isOmaggio=false;
     	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
@@ -332,10 +369,6 @@ public class Smd {
         if (original == null ) {
             log.warn("aggiorna: failed {} : Aggiorna non consentita per Riviste null",abb);
             throw new UnsupportedOperationException("Aggiorna non consentito per Riviste null");
-        }
-        if (original.getStatoAbbonamento() == StatoAbbonamento.Annullato) {
-            log.warn("aggiorna: failed {} {} : Aggiorna non consentita per Abbonamenti Annullati",abb,original);
-            throw new UnsupportedOperationException("Aggiorna non consentito per Abbonamenti Annullati");
         }
         if (tipo == null ) {
             log.warn("aggiorna: failed {} : Aggiorna non consentita per Tipo null",abb);

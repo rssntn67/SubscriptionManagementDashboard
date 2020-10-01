@@ -16,6 +16,7 @@ public interface SpedizioneItemDao extends JpaRepository<SpedizioneItem, Long> {
 
     List<SpedizioneItem> findBySpedizione(Spedizione spedizione);
     List<SpedizioneItem> findBySpedizioneAndStatoSpedizione(Spedizione spedizione, StatoSpedizione statoSpedizione);
+    List<SpedizioneItem> findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(Spedizione spedizione, StatoSpedizione statoSpedizione, RivistaAbbonamento ec);
     List<SpedizioneItem> findBySpedizioneAndStatoSpedizioneAndPubblicazione(Spedizione spedizione, StatoSpedizione statoSpedizione, Pubblicazione p);
     List<SpedizioneItem> findByAnnoPubblicazione(Anno anno);
     List<SpedizioneItem> findByPubblicazione(Pubblicazione p);

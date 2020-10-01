@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.OffertaDao;
 import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
@@ -48,6 +49,7 @@ import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OfferteCumulate;
@@ -69,7 +71,10 @@ public class SmdServiceImpl implements SmdService {
     
     @Autowired
     private AbbonamentoDao abbonamentoDao;
-    
+
+    @Autowired
+    private CampagnaDao campagnaDao;
+
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
     
@@ -410,32 +415,39 @@ public class SmdServiceImpl implements SmdService {
         }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        boolean valido = false;
-    	switch (abbonamento.getStatoIncasso()) {
-			case Si:
-				valido = true;
+        abbonamentoDao.save(abbonamento);
+        Campagna campagna =campagnaDao.findByAnno(abbonamento.getAnno());
+        StatoAbbonamento stato = StatoAbbonamento.Nuovo;
+        if (campagna != null) {
+        	switch (campagna.getStatoCampagna()) {
+			case Generata:
 				break;
-			case SiConDebito:
-				valido = true;
+
+			case Inviata:
+				stato = StatoAbbonamento.Proposto;
 				break;
+
+			case InviatoSollecito:
+				stato=StatoAbbonamento.Sollecitato;
+				break;
+
+			case InviatoEC:
+				stato=StatoAbbonamento.InviatoEC;
+				break;
+				
+			case Chiusa:
+				stato=null;
+				break;
+
 			default:
 				break;
+			}
         }
-        abbonamentoDao.save(abbonamento);        
-    	if (valido) {
-			rivistaAbbonamentoDao.findByAbbonamento(abbonamento)
-			.stream()
-			.filter(riv -> !Smd.isOmaggio(riv))
-			.forEach(riv -> {
-				if (riv.getStatoAbbonamento() == StatoAbbonamento.SospesoInviatoEC) {
-					riv.setStatoAbbonamento(StatoAbbonamento.ValidoInviatoEC);
-				} else {
-					riv.setStatoAbbonamento(StatoAbbonamento.Valido);
-				}
-				rivistaAbbonamentoDao.save(riv);
-			});
-			aggiornaSpedizioni(abbonamento);
-    	}
+        for (RivistaAbbonamento riv:	rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
+			riv.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, riv, stato));
+			rivistaAbbonamentoDao.save(riv);
+			programmaSpedizioni(abbonamento,riv);
+		}
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
         operIncasso.setVersamento(versamento);
@@ -551,36 +563,60 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void aggiornaSpedizioni(Abbonamento abbonamento) throws Exception {
+    public void sospendiSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {
-        	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA)
+        	
+        	spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
         	.forEach( item -> 
         	{
-        		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
         		switch (rivista.getStatoAbbonamento()) {
-				case Sospeso:
+        		case Proposto:
+        			break;
+        		case Nuovo:
+        			break;
+        		case Sollecitato:
+        			break;
+        		case Valido:
+        			break;
+        		case Sospeso:
 		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
 					break;
-				case SospesoInviatoEC:
+				case InviatoEC:
 		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
 					break;
 				default:
 					break;
 				}
             	spedizioneItemDao.save(item);
-        	});
-        	
-        	spedizioneItemDao.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.SOSPESA)
+        	});        	
+        });
+
+    }
+
+    @Override
+    public void programmaSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+        spedizioneDao.findByAbbonamento(abbonamento)
+        .forEach(sped -> {        	
+        	spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.SOSPESA,rivista)
         	.forEach( item -> 
         	{
-        		RivistaAbbonamento rivista = rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
         		switch (rivista.getStatoAbbonamento()) {
+        		case Nuovo:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+					break;
+        		case Proposto:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+					break;
+				case Sollecitato:
+		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+					break;
 				case Valido:
 		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
 					break;
-				case ValidoInviatoEC:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+				case Sospeso:
+					break;
+				case InviatoEC:
 					break;
 				default:
 					break;

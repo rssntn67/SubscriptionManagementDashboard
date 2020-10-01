@@ -20,7 +20,6 @@ public interface CampagnaServiceDao extends SmdServiceDao<Campagna> {
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna campagna);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity);
-	List<AbbonamentoConRiviste> findAbbonamentoConRivisteAnnullati(Campagna entity);
 	
 	void genera(Campagna campagna, UserInfo user) throws Exception;
 	void invia(Campagna campagna, UserInfo user) throws Exception;

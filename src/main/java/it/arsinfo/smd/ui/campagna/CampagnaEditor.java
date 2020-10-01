@@ -54,7 +54,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Button buttonVSollecita = new Button("Sollecito",VaadinIcons.ARCHIVE);
     private final Button buttonVEstrattoConto = new Button("Estratto Conto",VaadinIcons.ARCHIVE);
     private final Button buttonVDebito = new Button("Debitori",VaadinIcons.ARCHIVE);
-    private final Button buttonVNulli = new Button("Annullati",VaadinIcons.ARCHIVE);
 
     private final Button buttonWGenera = new Button("Genera",VaadinIcons.ENVELOPES);
     private final Button buttonWInvio = new Button("Invia",VaadinIcons.ENVELOPES);
@@ -92,9 +91,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
         buttonVDebito.addClickListener(click -> {
             grid.populate(repo.findAbbonamentoConDebito(get()));        			
-        });
-        buttonVNulli.addClickListener(click -> {
-            grid.populate(repo.findAbbonamentoConRivisteAnnullati(get()));        			
         });
        
         buttonWGenera.addClickListener(click -> {
@@ -186,7 +182,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		running,
         		riviste,
         		stato,           		
-        		new HorizontalLayout(buttonVGenera,buttonVInvio,buttonVSollecita,buttonVEstrattoConto,buttonVDebito,buttonVNulli),
+        		new HorizontalLayout(buttonVGenera,buttonVInvio,buttonVSollecita,buttonVEstrattoConto,buttonVDebito),
         	    new VerticalLayout(grid.getComponents()),
         		operazioni.getGrid(),
         		sospensioni.getGrid()
@@ -244,7 +240,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     	buttonVSollecita.setEnabled(false);
     	buttonVEstrattoConto.setVisible(persisted);
     	buttonVEstrattoConto.setEnabled(false);
-    	buttonVNulli.setVisible(persisted);
     	buttonVDebito.setVisible(persisted);
         
     	anno.setReadOnly(persisted);
@@ -285,10 +280,13 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					break;
 				case InviatoSollecito:
 					buttonVSollecita.setEnabled(true);
-					buttonWEstrattoConto.setEnabled(true);
 					buttonWSospendi.setEnabled(true);
 					pubblicazione.setEnabled(true);
 					break;
+				case InviatoSospeso:
+					buttonWSospendi.setEnabled(true);
+					pubblicazione.setEnabled(true);
+					buttonWEstrattoConto.setEnabled(true);
 				case InviatoEC:
 					buttonVEstrattoConto.setEnabled(true);
 					numero.setVisible(true);
@@ -296,7 +294,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					break;
 				case Chiusa:
 			        residuo.setReadOnly(false);
-					buttonVNulli.setVisible(true);
 					break;
 				default:
 					break;
