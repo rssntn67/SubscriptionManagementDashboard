@@ -19,12 +19,10 @@ import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
 public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
-    private boolean noOmaggio;
     private boolean hasResiduo;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
@@ -178,33 +176,21 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
     @Override
     public void focus(boolean persisted, Abbonamento abbonamento) {
         
-        codeLine.setVisible(persisted);
-        campagna.setVisible(persisted);
-
-        noOmaggio = Smd.getStatoIncasso(abbonamento) != Incassato.Zero;
         hasResiduo = abbonamento.getResiduo().signum() > 0; 
 
-        importo.setVisible(noOmaggio);
-        spese.setVisible(noOmaggio);
-        speseEstero.setVisible(noOmaggio);
-        speseEstrattoConto.setVisible(noOmaggio);
-        pregresso.setVisible(noOmaggio);
-        totale.setVisible(noOmaggio);
-        incassato.setVisible(noOmaggio);
-        residuo.setVisible(noOmaggio);
         
-        dataContabile.setVisible(noOmaggio && hasResiduo);
-        dataPagamento.setVisible(noOmaggio && hasResiduo); 
-        cassa.setVisible(noOmaggio && hasResiduo);
-        ccp.setVisible(noOmaggio && hasResiduo);
-        cuas.setVisible(noOmaggio && hasResiduo);
-        progressivo.setVisible(noOmaggio && hasResiduo);
+        dataContabile.setVisible(hasResiduo);
+        dataPagamento.setVisible(hasResiduo); 
+        cassa.setVisible(hasResiduo);
+        ccp.setVisible(hasResiduo);
+        cuas.setVisible(hasResiduo);
+        progressivo.setVisible(hasResiduo);
                 
         progressivo.focus();
 
     }
         
     public boolean incassare() {
-        return noOmaggio && hasResiduo;
+        return hasResiduo;
     }
 }

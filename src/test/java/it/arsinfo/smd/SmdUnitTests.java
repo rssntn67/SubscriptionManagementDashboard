@@ -1280,7 +1280,7 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
-        assertEquals(Incassato.Zero, Smd.getStatoIncasso(abb));
+        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
         
         abb.setImporto(new BigDecimal(10));
         assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
