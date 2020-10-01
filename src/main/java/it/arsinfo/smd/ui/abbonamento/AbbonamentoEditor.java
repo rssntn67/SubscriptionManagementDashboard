@@ -16,12 +16,9 @@ import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
-
-    private boolean noV;
 
     private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
     private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
@@ -145,18 +142,16 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         anno.setReadOnly(persisted);
         statoIncasso.setVisible(persisted);
 
-        noV =!persisted || Smd.getStatoIncasso(abbonamento) != Incassato.Zero;
-
-        importo.setVisible(noV);
-        spese.setVisible(noV);
-        speseEstero.setVisible(noV);
-        speseEstrattoConto.setVisible(noV);
-        pregresso.setVisible(noV);
-        totale.setVisible(noV);
-        incassato.setVisible(noV);
-        residuo.setVisible(noV);
+        importo.setVisible(persisted);
+        spese.setVisible(persisted);
+        speseEstero.setVisible(persisted);
+        speseEstrattoConto.setVisible(persisted);
+        pregresso.setVisible(persisted);
+        totale.setVisible(persisted);
+        incassato.setVisible(persisted);
+        residuo.setVisible(persisted);
         
-        contrassegno.setVisible(noV);
+        contrassegno.setVisible(persisted);
         contrassegno.setEnabled(!persisted);
                 
         intestatario.focus();

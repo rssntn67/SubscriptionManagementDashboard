@@ -369,9 +369,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             case Parzialmente:
 				abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
 				break;
-            case Zero:
-            	stato = StatoAbbonamento.Valido;
-                break;
             default:
                 break;
             }
@@ -446,9 +443,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 					stato=StatoAbbonamento.Sospeso;
 				}
 	            break;
-            case Zero:
-            	stato = StatoAbbonamento.Valido;
-                break;
             default:
                 break;
             }
@@ -626,9 +620,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                 break;
             case Parzialmente:
 	            break;
-            case Zero:
-            	stato = StatoAbbonamento.Valido;
-                break;
             default:
                 break;
             }
