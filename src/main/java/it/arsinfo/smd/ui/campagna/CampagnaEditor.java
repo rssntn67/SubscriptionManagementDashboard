@@ -49,12 +49,12 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
     private final OperazioneSospendiGrid sospensioni =  new OperazioneSospendiGrid("Sospensioni");    
    
-    private final Button buttonVGenera = new Button("Abbonamenti Generati",VaadinIcons.ARCHIVE);
-    private final Button buttonVInvio = new Button("Abbonamenti Proposti",VaadinIcons.ARCHIVE);
-    private final Button buttonVSollecita = new Button("Abbonamenti Sollecito",VaadinIcons.ARCHIVE);
-    private final Button buttonVEstrattoConto = new Button("Abbonamenti Estratto Conto",VaadinIcons.ARCHIVE);
-    private final Button buttonVDebito = new Button("Abbonamenti con Debito",VaadinIcons.ARCHIVE);
-    private final Button buttonVNulli = new Button("Abbonamenti Annullati",VaadinIcons.ARCHIVE);
+    private final Button buttonVGenera = new Button("Generati",VaadinIcons.ARCHIVE);
+    private final Button buttonVInvio = new Button("Proposti",VaadinIcons.ARCHIVE);
+    private final Button buttonVSollecita = new Button("Sollecito",VaadinIcons.ARCHIVE);
+    private final Button buttonVEstrattoConto = new Button("Estratto Conto",VaadinIcons.ARCHIVE);
+    private final Button buttonVDebito = new Button("Debitori",VaadinIcons.ARCHIVE);
+    private final Button buttonVNulli = new Button("Annullati",VaadinIcons.ARCHIVE);
 
     private final Button buttonWGenera = new Button("Genera",VaadinIcons.ENVELOPES);
     private final Button buttonWInvio = new Button("Invia",VaadinIcons.ENVELOPES);
@@ -175,7 +175,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
 
         getActions().addComponents(buttonWGenera,buttonWInvio,buttonWSollecita,buttonWSospendi,pubblicazione,buttonWEstrattoConto,buttonWChiudi);
-		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,numero);
+		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,numero,residuo);
 		
 		HorizontalLayout riviste = new HorizontalLayout();
 		riviste.addComponent(new Label("riviste in abbonamento"));
@@ -186,7 +186,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		running,
         		riviste,
         		stato,           		
-        		residuo,
         		new HorizontalLayout(buttonVGenera,buttonVInvio,buttonVSollecita,buttonVEstrattoConto,buttonVDebito,buttonVNulli),
         	    new VerticalLayout(grid.getComponents()),
         		operazioni.getGrid(),
