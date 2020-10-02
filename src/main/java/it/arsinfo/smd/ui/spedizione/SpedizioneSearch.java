@@ -2,9 +2,6 @@ package it.arsinfo.smd.ui.spedizione;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,7 +11,6 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -29,17 +25,13 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<Mese> filterMese = new ComboBox<Mese>();
     private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
-            
-    private final Map<Long,Abbonamento> abbMap;
     
     private final SpedizioneServiceDao dao;
     public SpedizioneSearch(SpedizioneServiceDao dao,
-            List<Abbonamento> abbonamenti,
             List<Anagrafica> anagrafica,
             List<Pubblicazione> pubblicazioni) {
         super(dao);
         this.dao=dao;
-        abbMap = abbonamenti.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
@@ -51,7 +43,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         setComponents(anag,tipo);
 
         filterPubblicazione.setEmptySelectionAllowed(true);
-        filterPubblicazione.setPlaceholder("Cerca per Pubblicazioni");
+        filterPubblicazione.setPlaceholder("Cerca per Pubblicazione");
         filterPubblicazione.setItems(pubblicazioni);
         filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         filterPubblicazione.addSelectionListener(e -> {
@@ -64,7 +56,7 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         });
 
         filterDestinatario.setEmptySelectionAllowed(true);
-        filterDestinatario.setPlaceholder("Cerca per Anagrafica");
+        filterDestinatario.setPlaceholder("Cerca per Destinatario");
         filterDestinatario.setItems(anagrafica);
         filterDestinatario.setItemCaptionGenerator(Anagrafica::getCaption);
         filterDestinatario.addSelectionListener(e -> {
@@ -77,21 +69,21 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         });
 
 
-        filterAnno.setPlaceholder("Seleziona Anno");
+        filterAnno.setPlaceholder("Cerca per Anno");
         filterAnno.setItems(EnumSet.allOf(Anno.class));
         filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
         filterAnno.addSelectionListener(e ->onChange());
 
-        filterMese.setPlaceholder("Seleziona Mese");
+        filterMese.setPlaceholder("Cerca per Mese");
         filterMese.setItems(EnumSet.allOf(Mese.class));
         filterMese.setItemCaptionGenerator(Mese::getNomeBreve);
         filterMese.addSelectionListener(e ->onChange());
 
-        filterInvioSpedizione.setPlaceholder("Seleziona Invio Sped");
+        filterInvioSpedizione.setPlaceholder("Cerca per Invio");
         filterInvioSpedizione.setItems(EnumSet.allOf(InvioSpedizione.class));
         filterInvioSpedizione.addSelectionListener(e ->onChange());
 
-        filterStatoSpedizione.setPlaceholder("Seleziona Stato");
+        filterStatoSpedizione.setPlaceholder("Cerca per Stato");
         filterStatoSpedizione.setItems(EnumSet.allOf(StatoSpedizione.class));
         filterStatoSpedizione.addSelectionListener(e ->onChange());        
 
@@ -99,23 +91,8 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
     @Override
     public List<Spedizione> find() {
-    	return filterAll(dao.searchBy(p, a,filterStatoSpedizione.getValue()));
-    }
-
-    private List<Spedizione> filterAll(List<Spedizione> spedizioni) {
-        if (filterAnno.getValue() != null) {
-            spedizioni = spedizioni.stream().filter( s -> s.getAnnoSpedizione() == filterAnno.getValue()).collect(Collectors.toList());
-        }
-        if (filterMese.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getMeseSpedizione() == filterMese.getValue()).collect(Collectors.toList());      
-        }
-        if (filterInvioSpedizione.getValue() != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == filterInvioSpedizione.getValue()).collect(Collectors.toList());      
-        }
-        for (Spedizione sped: spedizioni) {
-            sped.setAbbonamento(abbMap.get(sped.getAbbonamento().getId()));
-        }
-        return spedizioni;
+    	return dao.searchBy(
+    			p, a,filterStatoSpedizione.getValue(),filterAnno.getValue(),filterMese.getValue(),filterInvioSpedizione.getValue());
     }
 
 }

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.AbbonamentoDao;
+import it.arsinfo.smd.dao.repository.AnagraficaDao;
 import it.arsinfo.smd.dao.repository.CampagnaDao;
 import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
 import it.arsinfo.smd.dao.repository.DocumentiTrasportoCumulatiDao;
@@ -47,7 +48,6 @@ import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -75,6 +75,9 @@ public class SmdServiceImpl implements SmdService {
     
     @Autowired
     private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private AnagraficaDao anagraficaDao;
 
     @Autowired
     private CampagnaDao campagnaDao;
@@ -391,23 +394,21 @@ public class SmdServiceImpl implements SmdService {
 			rivistaAbbonamentoDao.findAllById(raids).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
-    		SpedizioneDto dto = genera(item);
+    		Anagrafica destinatario =  item.getSpedizione().getDestinatario();
+    		Anagrafica co = destinatario.getCo();
+    		SpedizioneDto dto = null;
+    		if (co == null) {
+    			dto = SpedizioneDto.getSpedizioneDto(item, item.getSpedizione().getDestinatario());
+    		} else {
+        		co = anagraficaDao.findById(co.getId()).get();
+        		dto=SpedizioneDto.getSpedizioneDto(item, destinatario, co);
+    		}
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
     			dto.setOmaggio();
     		}
     		dtos.add(dto);
     	}
     	return dtos;
-    }
-
-    @Override
-    public SpedizioneDto genera(SpedizioneItem spedItem) {
-		return new SpedizioneDto(spedItem, spedItem.getSpedizione().getDestinatario(), spedItem.getSpedizione().getDestinatario().getCo());	
-    }
-
-    @Override
-    public Indirizzo genera(Spedizione spedizione) {
-		return new Indirizzo(spedizione.getDestinatario(), spedizione.getDestinatario().getCo());	
     }
 
     @Override

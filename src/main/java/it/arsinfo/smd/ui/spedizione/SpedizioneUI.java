@@ -17,15 +17,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.SpedizioneServiceDao;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.dto.Indirizzo;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -47,29 +41,12 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    AnagraficaDao anagraficaDao;
-
-    @Autowired
     SpedizioneServiceDao dao;
-    
-    @Autowired
-    SpedizioneItemDao spedizioneItemDao;
-    
-    @Autowired
-    AbbonamentoDao abbonamentoDao;
-    
-    @Autowired
-    PubblicazioneDao pubblicazioneDao; 
-    
-    @Autowired
-    SmdService smdService;
-    
-
+            
     @Override
     protected void init(VaadinRequest request) {
-        List<Anagrafica> anagrafica = anagraficaDao.findAll();
-        List<Abbonamento> abbonamenti = abbonamentoDao.findAll();
-        List<Pubblicazione> pubblicazioni = pubblicazioneDao.findAll();
+        List<Anagrafica> anagrafica = dao.findAnagrafica();
+        List<Pubblicazione> pubblicazioni = dao.findPubblicazioni();
         
         SmdAdd<Spedizione> add = new SmdAdd<Spedizione>("") {
 
@@ -79,7 +56,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 			}
 		};
 
-		SpedizioneSearch search = new SpedizioneSearch(dao,abbonamenti,anagrafica,pubblicazioni);
+		SpedizioneSearch search = new SpedizioneSearch(dao,anagrafica,pubblicazioni);
         SpedizioneGrid grid = new SpedizioneGrid("Spedizioni");
         SpedizioneEditor maineditor = new SpedizioneEditor(dao, anagrafica);
         SpedizioneItemEditor itemeditor = new SpedizioneItemEditor(pubblicazioni);
@@ -126,7 +103,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
     
     private void duplica(Spedizione sped, InvioSpedizione invio) {
     	try {
-    		smdService.inviaDuplicato(sped, invio);
+    		dao.inviaDuplicato(sped, invio);
     		Notification.show("Spedizione Duplicata",Notification.Type.HUMANIZED_MESSAGE);
     	} catch (Exception e) {
     		Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
@@ -134,7 +111,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 	}
     
     private void stampa(Spedizione sped) {
-    	Indirizzo indirizzo = smdService.genera(sped);
+    	Indirizzo indirizzo = dao.stampa(sped);
     	Window subWindow = new Window();
     	VerticalLayout subContent = new VerticalLayout();
     	subContent.addComponent(new Label(indirizzo.getIntestazione()));

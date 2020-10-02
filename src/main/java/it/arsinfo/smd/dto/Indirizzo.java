@@ -8,18 +8,35 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public class Indirizzo {
 
+	public static Indirizzo getIndirizzo(Anagrafica primo) {
+		return new Indirizzo(primo);
+	}
+	
+	public static Indirizzo getIndirizzo(Anagrafica primo, Anagrafica secondo) {
+		return new Indirizzo(primo, secondo);
+	}
+	public static Indirizzo getIndirizzo(Anagrafica primo, Anagrafica secondo, Anagrafica terzo) {
+		return new Indirizzo(primo, secondo,terzo);
+	}
     private final Anagrafica primo;
     private final Anagrafica secondo;
     private final Anagrafica terzo;
-        
-    public Indirizzo(Anagrafica primo, Anagrafica secondo) {
+
+    protected Indirizzo(Anagrafica primo) {
+    	Assert.notNull(primo,"primo must be not null");
+    	this.primo=primo;
+    	this.secondo=null;
+    	this.terzo=null;
+    }
+
+    protected Indirizzo(Anagrafica primo, Anagrafica secondo) {
     	Assert.notNull(primo,"primo must be not null");
     	this.primo=primo;
     	this.secondo=secondo;
     	this.terzo=null;
     }
 
-    public Indirizzo(Anagrafica primo, Anagrafica secondo, Anagrafica terzo) {
+    protected Indirizzo(Anagrafica primo, Anagrafica secondo, Anagrafica terzo) {
     	Assert.notNull(primo,"primo must be not null");
     	Assert.notNull(secondo,"secondo must be not null");
     	this.primo=primo;

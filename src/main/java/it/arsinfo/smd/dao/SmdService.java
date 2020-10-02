@@ -12,7 +12,6 @@ import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -24,7 +23,6 @@ import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
 
@@ -61,11 +59,7 @@ public interface SmdService {
     void incassa(BigDecimal importo, OfferteCumulate offerte, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception;
 	void storna(Offerta offerta, UserInfo loggedInUser) throws Exception;
     
-    SpedizioneDto genera(SpedizioneItem spedItem);
-    Indirizzo genera(Spedizione spedizione);
-
 	void storna(DocumentoTrasporto ddt, UserInfo loggedInUser);
-
 	void incassa(String ddt, BigDecimal bigDecimal, DocumentiTrasportoCumulati ddtAnno, Versamento selected,
 			UserInfo loggedInUser, Anagrafica committente);
 
