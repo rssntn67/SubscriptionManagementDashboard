@@ -31,6 +31,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
     @Override
     public void populate(List<Abbonamento> items) {
         super.populate(items);
+        gridfooter.getCell("intestazione").setHtml("<b>Totali (EUR): </b>");
         gridfooter.getCell("spese").setHtml("<b>"+getSpese(items).toString()+"</b>");
         gridfooter.getCell("speseEstero").setHtml("<b>"+getSpeseEstero(items).toString()+"</b>");
         gridfooter.getCell("speseEstrattoConto").setHtml("<b>"+getSpeseEstrattoConto(items).toString()+"</b>");
