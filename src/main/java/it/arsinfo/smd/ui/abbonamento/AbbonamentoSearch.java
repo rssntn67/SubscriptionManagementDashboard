@@ -2,9 +2,6 @@ package it.arsinfo.smd.ui.abbonamento;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.util.StringUtils;
 
 import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.CheckBox;
@@ -14,7 +11,7 @@ import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -26,11 +23,16 @@ import it.arsinfo.smd.ui.vaadin.SmdSearch;
 public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
 
     private String searchCodeLine;
-    private Anagrafica customer;
+    private Anagrafica intestatario;
+    private Anagrafica beneficiario;
     private Anno anno;
     private Campagna campagna;
-    private final ComboBox<Ccp> filterCcp = new ComboBox<Ccp>();
-    private final CheckBox filterContrassegno = new CheckBox("Contrassegno");
+    private final ComboBox<Incassato> filterIncassato= new ComboBox<Incassato>();
+    private final CheckBox checkContrassegno = new CheckBox("Contrassegno");
+    private final CheckBox checkResiduo = new CheckBox("Residuo > 0");
+    private final CheckBox checkNotResiduo = new CheckBox("Residuo < 0");
+    private final CheckBox checkResiduoZero = new CheckBox("Residuo = 0");
+    // this are used on RivistaAbbonamento
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
@@ -42,23 +44,86 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         super(dao);
 
         this.dao=dao;
-        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<Anagrafica>();
+        ComboBox<Anagrafica> filterIntestatario = new ComboBox<Anagrafica>();
+        ComboBox<Anagrafica> filterBeneficiario = new ComboBox<Anagrafica>();
+        
         ComboBox<Anno> filterAnno = new ComboBox<Anno>();
         ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
-        
         TextField filterCodeLine = new TextField();
 
-        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterStatoAbbonamento,filterContrassegno);
-        anag.addComponentsAndExpand(filterAnagrafica);
-        HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCodeLine,filterCampagna,filterCcp);
-        tipo.addComponentsAndExpand(filterTipoAbbonamentoRivista);
+        HorizontalLayout anag = new HorizontalLayout(filterCodeLine);
+        anag.addComponentsAndExpand(filterIntestatario,filterBeneficiario);
+        HorizontalLayout riv = new HorizontalLayout(filterPubblicazione);
+        riv.addComponentsAndExpand(filterStatoAbbonamento,filterTipoAbbonamentoRivista);
+        HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCampagna,filterIncassato,checkContrassegno,checkNotResiduo,checkResiduoZero,checkResiduo);
         
-        setComponents(anag,tipo);
-        filterCodeLine.setPlaceholder("Inserisci Code Line");
+        setComponents(anag,riv,tipo);
+        
+        filterCodeLine.setPlaceholder("Cerca Code Line");
         filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
         filterCodeLine.addValueChangeListener(e -> {
             searchCodeLine = e.getValue();
+            onChange();
+        });
+
+        filterIntestatario.setEmptySelectionAllowed(true);
+        filterIntestatario.setPlaceholder("Cerca per Intestatario");
+        filterIntestatario.setItems(anagrafica);
+        filterIntestatario.setItemCaptionGenerator(Anagrafica::getCaption);
+        filterIntestatario.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                intestatario = null;
+            } else {
+                intestatario = e.getSelectedItem().get();
+            }
+            onChange();
+        });
+
+        filterBeneficiario.setEmptySelectionAllowed(true);
+        filterBeneficiario.setPlaceholder("Cerca per Beneficiario");
+        filterBeneficiario.setItems(anagrafica);
+        filterBeneficiario.setItemCaptionGenerator(Anagrafica::getCaption);
+        filterBeneficiario.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                beneficiario = null;
+            } else {
+                beneficiario = e.getSelectedItem().get();
+            }
+            onChange();
+        });
+
+        filterPubblicazione.setEmptySelectionAllowed(true);
+        filterPubblicazione.setPlaceholder("Cerca Abb. per Riviste");
+        filterPubblicazione.setItems(pubblicazioni);
+        filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
+        filterPubblicazione.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                pubblicazione = null;
+            } else {
+                pubblicazione = e.getSelectedItem().get();
+            }
+            onChange();
+        });
+        
+        filterStatoAbbonamento.setPlaceholder("Cerca Abb. Stato Riviste");
+        filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
+        filterStatoAbbonamento.addSelectionListener(e ->onChange());
+
+        filterTipoAbbonamentoRivista.setPlaceholder("Cerca Abb per TipoAbbonamento Riviste");
+        filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
+        filterTipoAbbonamentoRivista.addSelectionListener(e ->onChange());
+
+        filterAnno.setEmptySelectionAllowed(true);
+        filterAnno.setPlaceholder("Cerca per Anno");
+        filterAnno.setItems(EnumSet.allOf(Anno.class));
+        filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
+        filterAnno.addSelectionListener(e -> {
+            if (e.getValue() == null) {
+                anno = null;
+            } else {
+                anno=e.getSelectedItem().get();
+            }
             onChange();
         });
 
@@ -75,85 +140,34 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             onChange();
         });
 
-        filterPubblicazione.setEmptySelectionAllowed(true);
-        filterPubblicazione.setPlaceholder("Cerca per Pubblicazioni");
-        filterPubblicazione.setItems(pubblicazioni);
-        filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
-        filterPubblicazione.addSelectionListener(e -> {
-            if (e.getValue() == null) {
-                pubblicazione = null;
-            } else {
-                pubblicazione = e.getSelectedItem().get();
-            }
-            onChange();
-        });
-
-        filterAnno.setEmptySelectionAllowed(true);
-        filterAnno.setPlaceholder("Cerca per Anno");
-        filterAnno.setItems(EnumSet.allOf(Anno.class));
-        filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
-        filterAnno.addSelectionListener(e -> {
-            if (e.getValue() == null) {
-                anno = null;
-            } else {
-                anno=e.getSelectedItem().get();
-            }
-            onChange();
-        });
-
-        filterAnagrafica.setEmptySelectionAllowed(true);
-        filterAnagrafica.setPlaceholder("Cerca per Anagrafica");
-        filterAnagrafica.setItems(anagrafica);
-        filterAnagrafica.setItemCaptionGenerator(Anagrafica::getCaption);
-        filterAnagrafica.addSelectionListener(e -> {
-            if (e.getValue() == null) {
-                customer = null;
-            } else {
-                customer = e.getSelectedItem().get();
-            }
-            onChange();
-        });
+        filterIncassato.setEmptySelectionAllowed(true);
+        filterIncassato.setPlaceholder("Cerca per Incassato");
+        filterIncassato.setItems(EnumSet.allOf(Incassato.class));
+        filterIncassato.addSelectionListener(e -> onChange());
         
-        filterContrassegno.addValueChangeListener(e -> onChange());
-
-        filterStatoAbbonamento.setPlaceholder("Cerca per Stato");
-        filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
-        filterStatoAbbonamento.addSelectionListener(e ->onChange());
-
-        filterCcp.setPlaceholder("Cerca per Cc");
-        filterCcp.setItems(EnumSet.allOf(Ccp.class));
-        filterCcp.setItemCaptionGenerator(Ccp::getCcp);
-        filterCcp.addSelectionListener(e ->onChange());
-        
-        filterTipoAbbonamentoRivista.setPlaceholder("Cerca per Tipo");
-        filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
-        filterTipoAbbonamentoRivista.addSelectionListener(e ->onChange());
-
-
+        checkContrassegno.addValueChangeListener(e -> onChange());
+        checkResiduo.addValueChangeListener(e -> onChange());
+        checkResiduoZero.addValueChangeListener(e -> onChange());
+        checkNotResiduo.addValueChangeListener(e -> onChange());
     }
 
     @Override
     public List<Abbonamento> find() {
-    	return filterAll(
-    			dao.searchBy(
+    	return dao.searchBy(
     					campagna,
-    					customer,
+    					intestatario,
+    					beneficiario,
     					anno,
     					pubblicazione,
     					filterTipoAbbonamentoRivista.getValue(),
-    					filterStatoAbbonamento.getValue()));
+    					filterStatoAbbonamento.getValue(),
+    					filterIncassato.getValue(),
+    					searchCodeLine,
+    					checkContrassegno.getValue(),
+    					checkResiduo.getValue(),
+    					checkNotResiduo.getValue(),
+    					checkResiduoZero.getValue()
+    			);
     }
 
-    private List<Abbonamento> filterAll(List<Abbonamento> abbonamenti) {
-        if (filterCcp.getValue() != null) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.getCcp() == filterCcp.getValue()).collect(Collectors.toList());      
-        }
-        if (filterContrassegno.getValue() != null) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.isContrassegno() == filterContrassegno.getValue()).collect(Collectors.toList());      
-        }
-        if (!StringUtils.isEmpty(searchCodeLine)) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
-        }
-        return abbonamenti;
-    }
 }

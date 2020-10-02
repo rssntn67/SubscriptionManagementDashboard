@@ -3,13 +3,12 @@ package it.arsinfo.smd.service.dao;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
@@ -22,6 +21,7 @@ import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -238,80 +238,130 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 		return itemRepository.findAll();
 	}
 
-    private List<Abbonamento> addByDestinatario(Anagrafica destinatario, List<Abbonamento> found) {
-        final Map<Long,Abbonamento> abbMap = 
-        		found.stream().collect(Collectors.toMap(Abbonamento::getId, Function.identity()));
-         
-         itemRepository.findByDestinatario(destinatario)
-             .stream()
-             .filter(ec -> !abbMap.containsKey(ec.getAbbonamento().getId()))
-             .forEach( ec -> {
-                 Abbonamento  abb = findById(ec.getAbbonamento().getId());
-                 abbMap.put(abb.getId(), abb);
-             });        
-         return abbMap.values().stream().collect(Collectors.toList());
-     }
-
-    private List<Abbonamento> filterBy(TipoAbbonamentoRivista t, Pubblicazione p,StatoAbbonamento s, List<Abbonamento> abbonamenti) {
+    private List<Abbonamento> filterBy(Anagrafica dst, TipoAbbonamentoRivista tipo, Pubblicazione p,StatoAbbonamento stato, List<Abbonamento> abbonamenti) {
     	if (abbonamenti.size() == 0)
     		return abbonamenti;
-    	if (t == null && p == null && s == null)
+    	if (dst == null && tipo == null && p == null && stato == null)
     		return abbonamenti;
     	List<Long> approved;
-    	if (t == null && s == null)
+    	if (dst == null && tipo == null && stato == null)
             approved = itemRepository
             .findByPubblicazione(p)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-    	else if (p == null && s == null)
+    	else if (dst == null && p == null && stato == null)
     		approved = itemRepository
-            .findByTipoAbbonamentoRivista(t)
+            .findByTipoAbbonamentoRivista(tipo)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-    	else if (p == null && t == null)
+    	else if (dst == null && p == null && tipo == null)
     		approved = itemRepository
-            .findByStatoAbbonamento(s)
+            .findByStatoAbbonamento(stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-    	else if (s == null)
+    	else if (stato == null && p == null && tipo == null)
     		approved = itemRepository
-                .findByPubblicazioneAndTipoAbbonamentoRivista(p, t)
-                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-    	else if (t == null)
+            .findByDestinatario(dst)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (dst == null && stato == null)
     		approved = itemRepository
-                .findByPubblicazioneAndStatoAbbonamento(p, s)
+                .findByPubblicazioneAndTipoAbbonamentoRivista(p, tipo)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-    	else if (p == null)
+    	else if (p == null && stato == null)
     		approved = itemRepository
-                .findByTipoAbbonamentoRivistaAndStatoAbbonamento(t, s)
+                .findByDestinatarioAndTipoAbbonamentoRivista(dst, tipo)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (tipo == null && stato == null)
+    		approved = itemRepository
+                .findByDestinatarioAndPubblicazione(dst, p)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (p == null && tipo == null)
+    		approved = itemRepository
+                .findByDestinatarioAndStatoAbbonamento(dst, stato)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (dst == null && tipo == null)
+    		approved = itemRepository
+                .findByPubblicazioneAndStatoAbbonamento(p, stato)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (dst == null && p == null)
+    		approved = itemRepository
+                .findByTipoAbbonamentoRivistaAndStatoAbbonamento(tipo, stato)
+                .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (dst == null )
+    		approved = itemRepository
+            .findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(p,tipo, stato)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (p == null )
+    		approved = itemRepository
+            .findByDestinatarioAndTipoAbbonamentoRivistaAndStatoAbbonamento(dst,tipo, stato)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (tipo == null )
+    		approved = itemRepository
+            .findByDestinatarioAndPubblicazioneAndStatoAbbonamento(dst,p, stato)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
+    	else if (stato == null )
+    		approved = itemRepository
+            .findByDestinatarioAndPubblicazioneAndTipoAbbonamentoRivista(dst,p, tipo)
+            .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else 
     		approved = itemRepository
-            .findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(p,t, s)
+            .findByDestinatarioAndPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(dst,p,tipo, stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
-
         return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
     }
 
 	@Override
-	public List<Abbonamento> searchBy(Campagna campagna, Anagrafica customer, Anno anno, Pubblicazione p, TipoAbbonamentoRivista t, StatoAbbonamento s) {
+	public List<Abbonamento> searchBy(
+			Campagna campagna, 
+			Anagrafica intestatario, 
+			Anagrafica beneficiario, 
+			Anno anno, 
+			Pubblicazione p, 
+			TipoAbbonamentoRivista t, 
+			StatoAbbonamento s, 
+			Incassato inc,
+			String searchCodeLine,
+			boolean checkContrassegno,
+			boolean checkResiduo,
+			boolean checkNotResiduo,
+			boolean checkResiduoZero
+			) 
+	{
 		List<Abbonamento> abbonamenti;
-        if (campagna == null && customer == null && anno == null) {
+        if (campagna == null && intestatario == null && anno == null) {
             abbonamenti = findAll();            
         } else if (campagna == null && anno == null) {
-        	abbonamenti = addByDestinatario(customer, repository.findByIntestatario(customer));
-        } else if (customer == null && anno == null) {
+        	abbonamenti = repository.findByIntestatario(intestatario);
+        } else if (intestatario == null && anno == null) {
         	abbonamenti = repository.findByCampagna(campagna);
-        } else if (customer == null && campagna == null) {
+        } else if (intestatario == null && campagna == null) {
         	abbonamenti = repository.findByAnno(anno);
         } else if (anno == null) {
-        	abbonamenti = addByDestinatario(customer,repository.findByIntestatarioAndCampagna(customer, campagna));
+        	abbonamenti = repository.findByIntestatarioAndCampagna(intestatario, campagna);
         } else  if (campagna == null) {
-           abbonamenti = addByDestinatario(customer,repository.findByIntestatarioAndAnno(customer, anno));
-        } else if (customer == null) {
+           abbonamenti = repository.findByIntestatarioAndAnno(intestatario, anno);
+        } else if (intestatario == null) {
         	abbonamenti = repository.findByCampagnaAndAnno(campagna,anno);
         } else {
-        	abbonamenti =  addByDestinatario(customer,repository.findByIntestatarioAndCampagnaAndAnno(customer, campagna, anno));
+        	abbonamenti = repository.findByIntestatarioAndCampagnaAndAnno(intestatario, campagna, anno);
         }
-        
-        return filterBy(t, p, s, abbonamenti);
+        if (inc != null) {
+        	abbonamenti = abbonamenti.stream().filter(a -> inc == Smd.getStatoIncasso(a)).collect(Collectors.toList());
+        }
+        if (!StringUtils.isEmpty(searchCodeLine)) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
+        }
+        if (checkContrassegno) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.isContrassegno() == checkContrassegno).collect(Collectors.toList());      
+        }
+        if (checkResiduo) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() >0).collect(Collectors.toList());      
+        }        
+        if (checkNotResiduo) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() <0).collect(Collectors.toList());      
+        }        
+        if (checkResiduoZero) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() == 0).collect(Collectors.toList());      
+        }        
+
+        return filterBy(beneficiario,t, p, s, abbonamenti);
 	}
 
 	@Override
