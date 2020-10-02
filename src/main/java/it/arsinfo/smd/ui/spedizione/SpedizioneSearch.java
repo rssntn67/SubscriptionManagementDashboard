@@ -43,10 +43,11 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();
         ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
 
-        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione,filterAnno,filterMese);
+        HorizontalLayout anag = new HorizontalLayout(filterPubblicazione);
         anag.addComponentsAndExpand(filterDestinatario);
 
-        HorizontalLayout tipo = new HorizontalLayout(filterStatoSpedizione,filterInvioSpedizione);
+        HorizontalLayout tipo = new HorizontalLayout(filterStatoSpedizione,filterAnno,filterMese);
+        tipo.addComponentsAndExpand(filterInvioSpedizione);
         setComponents(anag,tipo);
 
         filterPubblicazione.setEmptySelectionAllowed(true);

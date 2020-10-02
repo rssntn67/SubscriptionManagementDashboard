@@ -74,15 +74,55 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 
 	}
     
+    public SmdEntityItemEditor(SmdServiceItemDao<T,I> dao,SmdButton itemSave,SmdGrid<I> itemGrid,
+			SmdItemEditor<I> itemEditor, SmdEntityEditor<T> editor) {
+		this.dao=dao;
+		this.itemSave=itemSave;
+		this.itemGrid = itemGrid;
+		this.itemEditor = itemEditor;
+		this.editor = editor;
+		this.itemAdd=null;
+		this.itemDel=null;
+
+		disableItems();
+        editor.setChangeHandler(() -> {
+        	disableItems();
+        	this.onChange();
+        });
+        
+        itemSave.setChangeHandler(() -> {
+        	try {
+				edit(dao.saveItem(editor.get(), itemEditor.get()));
+			} catch (Exception e) {
+				Notification.show(e.getMessage(),
+                        Notification.Type.ERROR_MESSAGE);
+	            log.error("itemSave: {}", e.getMessage(),e);
+			}        	
+        });
+                        
+        itemGrid.setChangeHandler(() -> {
+            if (itemGrid.getSelected() == null) {
+            	disableItems();
+        	    return;
+            }
+            itemEditor.edit(itemGrid.getSelected());
+            enableItems();
+        });
+
+	}
+
+    
 	public void edit(T t) {
 		editor.edit(t);
 		if (t.getId() != null) {
 			editor.get().setItems(dao.getItems(t));	
 		}
 		itemGrid.populate(editor.get().getItems());
-		itemAdd.set(editor.get());
+		if (itemAdd != null)
+			itemAdd.set(editor.get());
     	itemEditor.setVisible(false);
-        itemDel.disable();
+    	if (itemDel != null)
+    		itemDel.disable();
         itemSave.disable();
         editor.getSave().setEnabled(true);
         editor.getDelete().setEnabled(true);
@@ -114,7 +154,8 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 	}
 	
 	private void enableItems() {
-        itemDel.enable();
+		if (itemDel != null)
+			itemDel.enable();
         itemSave.enable();
         editor.getSave().setEnabled(false);
         editor.getDelete().setEnabled(false);
@@ -124,7 +165,8 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 	
 	private void disableItems() {
         itemEditor.setVisible(false);
-        itemDel.disable();
+		if (itemDel != null)
+			itemDel.disable();
         itemSave.disable();
         editor.getSave().setEnabled(true);
         editor.getDelete().setEnabled(true);		

@@ -78,7 +78,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private String progressivo;
 
     @Transient
-    private List<RivistaAbbonamento> estrattiConto = new ArrayList<RivistaAbbonamento>();
+    private List<RivistaAbbonamento> items = new ArrayList<RivistaAbbonamento>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -354,19 +354,19 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 	}
 
 	public List<RivistaAbbonamento> getItems() {
-		return estrattiConto;
+		return items;
 	}
 
 	public void setItems(List<RivistaAbbonamento> estrattiConto) {
-		this.estrattiConto = estrattiConto;
+		this.items = estrattiConto;
 	}
 	
 	public boolean addItem(RivistaAbbonamento ec) {
-		return estrattiConto.add(ec);
+		return items.add(ec);
 	}
     
 	public boolean removeItem(RivistaAbbonamento ec) {
-		return estrattiConto.remove(ec);
+		return items.remove(ec);
 	}
 
 	public boolean isContrassegno() {

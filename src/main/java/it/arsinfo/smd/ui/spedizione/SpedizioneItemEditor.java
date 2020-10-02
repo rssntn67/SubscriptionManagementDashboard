@@ -10,16 +10,15 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
 public class SpedizioneItemEditor
-        extends SmdRepositoryDaoEditor<SpedizioneItem> {
+        extends SmdItemEditor<SpedizioneItem> {
 
 	private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     private final ComboBox<StatoSpedizione> statoSpedizione = 
@@ -31,10 +30,8 @@ public class SpedizioneItemEditor
 
     private final CheckBox posticipata = new CheckBox("Posticipata");
     private final TextField numero = new TextField("Quantità");
-    public SpedizioneItemEditor(
-            SpedizioneItemDao spedizioneItemDao, List<Pubblicazione> pubblicazioni) {
-
-        super(spedizioneItemDao, new Binder<>(SpedizioneItem.class) );
+    public SpedizioneItemEditor(List<Pubblicazione> pubblicazioni) {
+        super(new Binder<>(SpedizioneItem.class) );
 
         pubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         pubblicazione.setReadOnly(true);
@@ -80,7 +77,6 @@ public class SpedizioneItemEditor
 
 	@Override
     public void focus(boolean persisted, SpedizioneItem obj) {
-        getSave().setEnabled(obj.getStatoSpedizione() != StatoSpedizione.INVIATA); 
-        getDelete().setEnabled(false);        
+		statoSpedizione.setVisible(persisted);
     }    
 }

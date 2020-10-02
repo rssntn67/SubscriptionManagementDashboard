@@ -6,34 +6,21 @@ import java.util.List;
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
+import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class SpedizioneEditor
-        extends SmdRepositoryDaoEditor<Spedizione> {
+        extends SmdEntityEditor<Spedizione> {
 
-    private Button stampa = new Button("Stampa Indirizzo", VaadinIcons.PRINT);
-    private Button duplicaAdpNoSpese = new Button("Reinvia No Spese", VaadinIcons.HANDS_UP);
-    private Button duplicaAdpCorriere24h = new Button("Reinvia 24hh", VaadinIcons.HANDS_UP);
-    private Button duplicaAdpCorriere3gg = new Button("Reinvia 3gg", VaadinIcons.HANDS_UP);
-    private Button duplicaAdpSpesePostal = new Button("Reinvia Sp.Po.", VaadinIcons.HANDS_UP);
     private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinazione");
     private final ComboBox<InvioSpedizione> invioSpedizione = 
     		new ComboBox<InvioSpedizione>("Sped.",EnumSet.allOf(InvioSpedizione.class));
@@ -44,15 +31,9 @@ public class SpedizioneEditor
     private final TextField spesePostali = new TextField("Spese Postali");
 
     public SpedizioneEditor(
-            SpedizioneDao spedizioneDao, List<Anagrafica> anagrafica) {
+            SpedizioneServiceDao spedizioneDao, List<Anagrafica> anagrafica) {
 
         super(spedizioneDao, new Binder<>(Spedizione.class) );
-        getActions().addComponents(stampa,duplicaAdpNoSpese,duplicaAdpCorriere24h,duplicaAdpCorriere3gg,duplicaAdpSpesePostal);
-        stampa.addClickListener(e -> stampa());
-        duplicaAdpNoSpese.addClickListener(e -> duplica(InvioSpedizione.AdpSedeNoSpese));
-        duplicaAdpCorriere24h.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere24hh));
-        duplicaAdpCorriere3gg.addClickListener(e -> duplica(InvioSpedizione.AdpSedeCorriere3gg));
-        duplicaAdpSpesePostal.addClickListener(e -> duplica(InvioSpedizione.AdpSede));
         destinatario.setEmptySelectionAllowed(false);
         destinatario.setPlaceholder("Destinazione");
         destinatario.setItems(anagrafica);
@@ -109,40 +90,12 @@ public class SpedizioneEditor
 
     }
 
-    private void duplica(InvioSpedizione invio) {
-    	try {
-    		getSmdService().inviaDuplicato(get(), invio);
-    		Notification.show("Spedizione Duplicata",Notification.Type.HUMANIZED_MESSAGE);
-    	} catch (Exception e) {
-    		Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
-		}
-	}
 
 	@Override
-    public void focus(boolean persisted, Spedizione obj) {
-        getSave().setEnabled(false); 
-        getDelete().setEnabled(false);        
+	public void focus(boolean persisted, Spedizione obj) {
+        getSave().setVisible(false);
+        getDelete().setVisible(false);
+        getCancel().setVisible(false);
     }
     
-    public void stampa() {
-    	Indirizzo indirizzo = getSmdService().genera(get());
-    	Window subWindow = new Window();
-    	VerticalLayout subContent = new VerticalLayout();
-    	subContent.addComponent(new Label(indirizzo.getIntestazione()));
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
-    		subContent.addComponent(new Label(indirizzo.getSottoIntestazione()));
-    	}
-    	subContent.addComponent(new Label(indirizzo.getIndirizzo()));
-    	subContent.addComponent(
-			new Label(
-				indirizzo.getCap() + " " + indirizzo.getCitta() + " ("+indirizzo.getProvincia().name()+")"
-			)
-		);
-    	subContent.addComponent(new Label(indirizzo.getPaese().getNome()));
-
-    	subWindow.setContent(subContent);
-    	subWindow.center();
-    	UI.getCurrent().addWindow(subWindow);
-    }
-
 }

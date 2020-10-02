@@ -1,6 +1,8 @@
 package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -17,7 +19,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 
 @Entity
-public class Spedizione implements SmdEntity {
+public class Spedizione implements SmdEntityItems<SpedizioneItem> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,6 +43,9 @@ public class Spedizione implements SmdEntity {
     private Integer pesoStimato=0;
     
     private BigDecimal spesePostali = BigDecimal.ZERO;
+
+    @Transient
+    private List<SpedizioneItem> items = new ArrayList<SpedizioneItem>();
 
     public Spedizione() {
     }
@@ -179,4 +184,25 @@ public class Spedizione implements SmdEntity {
     public String getDestinazione() {
         return Anagrafica.generaIntestazione(destinatario);
     }
+
+	@Override
+	public boolean addItem(SpedizioneItem item) {
+		
+		return items.add(item);
+	}
+
+	@Override
+	public boolean removeItem(SpedizioneItem item) {
+		return items.remove(item);
+	}
+
+	@Override
+	public List<SpedizioneItem> getItems() {
+		return items;
+	}
+
+	@Override
+	public void setItems(List<SpedizioneItem> items) {
+		this.items=items;
+	}
 }
