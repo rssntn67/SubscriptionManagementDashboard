@@ -148,7 +148,7 @@ public class AdpSedeUI extends SmdUI {
     	spedisci.setVisible(false);
         spedisci.setChangeHandler(() -> {
         	try {
-                smdService.spedisciAdpSede(grid.getSelected().getMese(),grid.getSelected().getAnno(),grid.getSelected().getPubblicazione(),invio);
+                smdService.inviaSpedizioni(grid.getSelected().getMese(),grid.getSelected().getAnno(),grid.getSelected().getPubblicazione(),invio);
             	statoSpedizioneComboBox.getComboBox().setValue(StatoSpedizione.INVIATA);
             } catch (Exception e) {
                 Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);

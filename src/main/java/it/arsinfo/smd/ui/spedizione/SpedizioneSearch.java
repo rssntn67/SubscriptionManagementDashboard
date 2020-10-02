@@ -18,8 +18,8 @@ import it.arsinfo.smd.ui.vaadin.SmdSearch;
 
 public class SpedizioneSearch extends SmdSearch<Spedizione> {
 
-    private Anagrafica a;
-    private Pubblicazione p;
+    private Anagrafica destinatario;
+    private Pubblicazione pubblicazione;
 
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>();
     private final ComboBox<Mese> filterMese = new ComboBox<Mese>();
@@ -48,9 +48,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         filterPubblicazione.setItemCaptionGenerator(Pubblicazione::getNome);
         filterPubblicazione.addSelectionListener(e -> {
             if (e.getValue() == null) {
-                p = null;
+                pubblicazione = null;
             } else {
-                p = e.getSelectedItem().get();
+                pubblicazione = e.getSelectedItem().get();
             }
             onChange();
         });
@@ -61,9 +61,9 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
         filterDestinatario.setItemCaptionGenerator(Anagrafica::getCaption);
         filterDestinatario.addSelectionListener(e -> {
             if (e.getValue() == null) {
-                a = null;
+                destinatario = null;
             } else {
-                a = e.getSelectedItem().get();
+                destinatario = e.getSelectedItem().get();
             }
             onChange();
         });
@@ -92,7 +92,12 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     @Override
     public List<Spedizione> find() {
     	return dao.searchBy(
-    			p, a,filterStatoSpedizione.getValue(),filterAnno.getValue(),filterMese.getValue(),filterInvioSpedizione.getValue());
+    			destinatario,
+    			filterAnno.getValue(),
+    			filterMese.getValue(),
+    			filterInvioSpedizione.getValue(),
+    			pubblicazione, 
+    			filterStatoSpedizione.getValue());
     }
 
 }

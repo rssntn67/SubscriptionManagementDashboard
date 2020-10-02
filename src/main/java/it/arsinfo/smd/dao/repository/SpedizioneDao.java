@@ -13,13 +13,27 @@ import it.arsinfo.smd.entity.Spedizione;
 
 public interface SpedizioneDao extends JpaRepository<Spedizione, Long> {
     List<Spedizione> findByAbbonamento(Abbonamento abbonamento);
+    
+    List<Spedizione> findByDestinatario(Anagrafica destinatario);
     List<Spedizione> findByMeseSpedizione(Mese mese);
     List<Spedizione> findByAnnoSpedizione(Anno anno);
-    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizione(Mese mese,Anno anno);
-    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(Mese mese,Anno anno, InvioSpedizione invioSpedizione);
-    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizioneNot	(Mese mese,Anno anno, InvioSpedizione invioSpedizione);
     List<Spedizione> findByInvioSpedizione(InvioSpedizione invioSpedizione);
-    List<Spedizione> findByDestinatario(Anagrafica destinatario);
+    
+    List<Spedizione> findByDestinatarioAndMeseSpedizione(Anagrafica destinatario, Mese mese);
+    List<Spedizione> findByDestinatarioAndAnnoSpedizione(Anagrafica destinatario, Anno anno);
+    List<Spedizione> findByDestinatarioAndInvioSpedizione(Anagrafica destinatario, InvioSpedizione invio);
+    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizione(Mese mese,Anno anno);
+    List<Spedizione> findByMeseSpedizioneAndInvioSpedizione(Mese mese,InvioSpedizione invio);
+    List<Spedizione> findByAnnoSpedizioneAndInvioSpedizione(Anno mese,InvioSpedizione invio);
+    
+    List<Spedizione> findByDestinatarioAndMeseSpedizioneAndAnnoSpedizione(Anagrafica destinatario, Mese mese, Anno anno);
+    List<Spedizione> findByDestinatarioAndMeseSpedizioneAndInvioSpedizione(Anagrafica destinatario, Mese mese, InvioSpedizione invio);
+    List<Spedizione> findByDestinatarioAndAnnoSpedizioneAndInvioSpedizione(Anagrafica destinatario,Anno anno, InvioSpedizione invio);
+    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(Mese mese,Anno anno, InvioSpedizione invio);
+    
+    List<Spedizione> findByDestinatarioAndMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(Anagrafica destinatario,
+			Mese mese, Anno anno, InvioSpedizione invio);
+    List<Spedizione> findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizioneNot	(Mese mese,Anno anno, InvioSpedizione invio);
     void deleteByAbbonamento(Abbonamento abbonamento);
-
+	
 }

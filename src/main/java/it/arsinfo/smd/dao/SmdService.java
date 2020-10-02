@@ -46,7 +46,7 @@ public interface SmdService {
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
     void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception;
-    void spedisciAdpSede(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
+    void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception;
 

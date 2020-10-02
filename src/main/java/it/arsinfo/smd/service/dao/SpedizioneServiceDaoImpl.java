@@ -1,6 +1,5 @@
 package it.arsinfo.smd.service.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,69 +66,78 @@ public class SpedizioneServiceDaoImpl implements SpedizioneServiceDao {
 	
 	@Override
 	public List<Spedizione> searchBy(
-			Pubblicazione pubblicazione, 
 			Anagrafica destinatario,
-			StatoSpedizione stato, 
 			Anno anno, 
 			Mese mese,
-			InvioSpedizione invio) {
+			InvioSpedizione invio,
+			Pubblicazione pubblicazione, 
+			StatoSpedizione stato
+			) {
+        List<Spedizione> spedizioni;
 
-		if (destinatario == null && pubblicazione == null && stato == null) {
-            return findAll();            
-        } 
-        if (destinatario == null && stato == null) {
-            return itemRepository
-            		.findByPubblicazione(pubblicazione)
-            		.stream()
-            		.map(si -> si.getSpedizione())
-            		.collect(Collectors.toList());
-        }
-        if (pubblicazione == null && stato == null ) {
-        	return repository
-        			.findByDestinatario(destinatario);
-        } 
-        if (destinatario == null && pubblicazione == null) {
-            return itemRepository
-            		.findByStatoSpedizione(stato)
-            		.stream()
-            		.map(si -> si.getSpedizione()).collect(Collectors.toList());
-        }
-        if (stato == null) {
-         return itemRepository
-        		 .findByPubblicazione(pubblicazione)
-         		 .stream()
-         		 .map(si -> si.getSpedizione())
-         		 .filter( sp -> sp.getDestinatario().equals(destinatario))
-         		 .collect(Collectors.toList());
-        }
-        if (pubblicazione == null) {
-            return itemRepository.findByStatoSpedizione(stato)
-            		.stream()
-            		.map(si -> si.getSpedizione())
-            		.filter( sp -> sp.getDestinatario().equals(destinatario))
-            		.collect(Collectors.toList());
-        }
-        if (destinatario == null) {
-        	return itemRepository
-        			.findByPubblicazioneAndStatoSpedizione(pubblicazione, stato)
-        			.stream()
-            		.map(si -> si.getSpedizione())
-            		.collect(Collectors.toList());
-        }
-        List<Spedizione> spedizioni = new ArrayList<Spedizione>();
-        if (anno != null) {
-            spedizioni = spedizioni.stream().filter( s -> s.getAnnoSpedizione() == anno).collect(Collectors.toList());
-        }
-        if (mese != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getMeseSpedizione() == mese).collect(Collectors.toList());      
-        }
-        if (invio != null) {
-            spedizioni=spedizioni.stream().filter(s -> s.getInvioSpedizione() == invio).collect(Collectors.toList());      
-        }
-        return itemRepository.findByPubblicazioneAndStatoSpedizione(pubblicazione, stato).stream()
-        		.map(si -> si.getSpedizione())
-        		.filter( sp -> sp.getDestinatario().equals(destinatario))
-        		.collect(Collectors.toList());
+		if (destinatario == null && anno == null && mese == null && invio == null)
+            spedizioni = findAll();
+        else if (anno == null && mese == null && invio == null) 
+        	spedizioni = repository.findByDestinatario(destinatario);
+        else if (destinatario == null && mese == null && invio == null) 
+        	spedizioni = repository.findByAnnoSpedizione(anno);
+        else if (destinatario == null && anno == null && invio == null) 
+        	spedizioni = repository.findByMeseSpedizione(mese);
+        else if (destinatario == null && mese == null && anno == null) 
+        	spedizioni = repository.findByInvioSpedizione(invio);
+        else if (mese == null && anno == null)
+        	spedizioni = repository.findByDestinatarioAndInvioSpedizione(destinatario, invio);
+        else if (mese == null && invio == null)
+        	spedizioni = repository.findByDestinatarioAndAnnoSpedizione(destinatario, anno);
+        else if (anno == null && invio == null)
+        	spedizioni = repository.findByDestinatarioAndMeseSpedizione(destinatario, mese);
+        else if (destinatario == null && anno == null)
+        	spedizioni = repository.findByMeseSpedizioneAndInvioSpedizione(mese, invio);
+        else if (destinatario == null && invio == null)
+        	spedizioni = repository.findByMeseSpedizioneAndAnnoSpedizione(mese, anno);
+        else if (destinatario == null && mese == null)
+        	spedizioni = repository.findByAnnoSpedizioneAndInvioSpedizione(anno,invio);
+        else if (mese == null)
+        	spedizioni = repository.findByDestinatarioAndAnnoSpedizioneAndInvioSpedizione(destinatario,anno,invio);
+        else if (anno == null)
+        	spedizioni = repository.findByDestinatarioAndMeseSpedizioneAndInvioSpedizione(destinatario,mese,invio);
+        else if (invio == null)
+        	spedizioni = repository.findByDestinatarioAndMeseSpedizioneAndAnnoSpedizione(destinatario,mese,anno);
+        else if (destinatario == null)
+        	spedizioni = repository.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(mese,anno,invio);
+        else
+        	spedizioni = repository.findByDestinatarioAndMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(destinatario,mese, anno, invio);
+        return filterBy(pubblicazione, stato, spedizioni);
+
+	}
+	
+	private List<Spedizione> filterBy(Pubblicazione pubblicazione, StatoSpedizione stato, List<Spedizione> spedizioni) {
+		if (spedizioni.size() == 0) {
+			return spedizioni;
+		}
+		if (pubblicazione == null && stato == null)
+			return spedizioni;
+		List<Long> approved;
+		if (pubblicazione == null) {
+			approved = itemRepository
+					.findByStatoSpedizione(stato)
+					.stream()
+					.map(item -> item.getSpedizione().getId())
+					.collect(Collectors.toList());
+		} else if (stato == null) {
+			approved = itemRepository
+					.findByPubblicazione(pubblicazione)
+					.stream()
+					.map(item -> item.getSpedizione().getId())
+					.collect(Collectors.toList());
+		} else {
+			approved = itemRepository
+					.findByPubblicazioneAndStatoSpedizione(pubblicazione, stato)
+					.stream()
+					.map(item -> item.getSpedizione().getId())
+					.collect(Collectors.toList());		
+		}
+        return spedizioni.stream().filter(sped -> approved.contains(sped.getId())).collect(Collectors.toList());
 
 	}
 

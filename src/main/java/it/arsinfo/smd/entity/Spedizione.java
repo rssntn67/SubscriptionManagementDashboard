@@ -161,11 +161,6 @@ public class Spedizione implements SmdEntityItems<SpedizioneItem> {
         if (getClass() != obj.getClass())
             return false;
         Spedizione other = (Spedizione) obj;
-        if (abbonamento == null) {
-            if (other.abbonamento != null)
-                return false;
-        } else if (!abbonamento.equals(other.abbonamento))
-            return false;
         if (annoSpedizione != other.annoSpedizione)
             return false;
         if (destinatario == null) {
@@ -177,7 +172,30 @@ public class Spedizione implements SmdEntityItems<SpedizioneItem> {
             return false;
         if (meseSpedizione != other.meseSpedizione)
             return false;
+        if (abbonamento == null && other.abbonamento == null)
+            return false;
+        if (abbonamento == null && other.abbonamento != null)
+                return false;
+        if (abbonamento != null && other.abbonamento == null)
+            return false;
+        if (abbonamento.getId() != null && other.abbonamento.getId() == null)
+        	return false;
+        if (abbonamento.getId() == null && other.abbonamento.getId() != null)
+        	return false;
+        if (abbonamento.getId() != null && other.abbonamento.getId() != null)
+        	return abbonamento.getId().equals(other.abbonamento.getId());
+        if (abbonamento.getCodeLine() != null && other.abbonamento.getCodeLine() == null)
+        	return false;
+        if (abbonamento.getCodeLine() == null && other.abbonamento.getCodeLine() != null)
+        	return false;
+        if (abbonamento.getCodeLine() != null && other.abbonamento.getCodeLine() != null)
+        	return abbonamento.getCodeLine().equals(other.abbonamento.getCodeLine());
         return true;
+    }
+
+    @Transient
+    public String getSpedCaption() {
+        return meseSpedizione.getNomeBreve()+annoSpedizione.getAnnoAsString();
     }
 
     @Transient

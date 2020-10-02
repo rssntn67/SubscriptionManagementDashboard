@@ -21,7 +21,7 @@ public class SpedizioneItem implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
     private Spedizione spedizione;
 
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
@@ -94,15 +94,14 @@ public class SpedizioneItem implements SmdEntity {
         
     @Override
     public String toString() {
-        return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b, %s %s]", 
+        return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b,%s]", 
                              id,
                              rivistaAbbonamento.getId(),
-                             pubblicazione.getNome(),
+                             pubblicazione.getNome(),		
                              mesePubblicazione,
                              annoPubblicazione,
                              numero, 
                              posticipata,
-                             spedizione,
                              statoSpedizione
                              );
     }
@@ -127,11 +126,6 @@ public class SpedizioneItem implements SmdEntity {
         this.pubblicazione = pubblicazione;
     }
     
-    @Transient
-    public String getSpedCaption() {
-        return spedizione.getMeseSpedizione().getNomeBreve()+spedizione.getAnnoSpedizione().getAnnoAsString();
-
-    }
     @Transient
     public String getPubbCaption() {
         return pubblicazione.getNome()+":"+mesePubblicazione.getNomeBreve()+annoPubblicazione.getAnnoAsString();

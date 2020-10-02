@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -332,19 +333,7 @@ public class SmdServiceImpl implements SmdService {
         	log.error("inviaSpedizionere: {} {} {}: Operazione non valida",meseSpedizione,annoSpedizione,p.getNome());
         	throw new UnsupportedOperationException("Operazione non valida");
         }
-        
-        spedizioneItemDao.findByPubblicazioneAndStatoSpedizione(p, StatoSpedizione.PROGRAMMATA)
-        .stream()
-        .filter(item -> item.getSpedizione().getMeseSpedizione() == meseSpedizione
-        			 && item.getSpedizione().getAnnoSpedizione() == annoSpedizione
-        			 && item.getSpedizione().getInvioSpedizione() == InvioSpedizione.Spedizioniere
-        )
-        .forEach(item -> 
-        	{
-    			item.setStatoSpedizione(StatoSpedizione.INVIATA);
-    			spedizioneItemDao.save(item);
-    		}
-    	);
+        inviaSpedizioni(meseSpedizione, annoSpedizione, p, InvioSpedizione.Spedizioniere);
         operazione.setStatoOperazione(StatoOperazione.Spedita);
         operazioneDao.save(operazione);
     	log.info("inviaSpedizionere: {} {} {} - end",meseSpedizione,annoSpedizione,p.getNome());
@@ -353,19 +342,18 @@ public class SmdServiceImpl implements SmdService {
     
     @Override
     @Transactional
-    public void spedisciAdpSede(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception{
-        Operazione operazione = operazioneDao
-        .findByAnnoAndMeseAndPubblicazione(annoSpedizione, meseSpedizione,p);
-        if ( operazione == null || operazione.getStatoOperazione() == StatoOperazione.Programmata) {
-        	throw new UnsupportedOperationException("Operazione non valida");
-        }
-
+    public void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception {
+        final List<Long> spedizioniIds = 
+    		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
+    				meseSpedizione, 
+    				annoSpedizione, 
+    				invio)
+    		.stream()
+    		.map(s -> s.getId()).collect(Collectors.toList());
+        
         spedizioneItemDao.findByPubblicazioneAndStatoSpedizione(p, StatoSpedizione.PROGRAMMATA)
         .stream()
-        .filter(item -> item.getSpedizione().getMeseSpedizione() == meseSpedizione
-        			 && item.getSpedizione().getAnnoSpedizione() == annoSpedizione
-        			 && item.getSpedizione().getInvioSpedizione() == invio
-        )
+        .filter(item -> spedizioniIds.contains(item.getSpedizione().getId()))
         .forEach(item -> 
         	{
     			item.setStatoSpedizione(StatoSpedizione.INVIATA);
@@ -373,19 +361,24 @@ public class SmdServiceImpl implements SmdService {
     		}
     	);
     }
-
-
+    
     @Override
     public List<SpedizioneDto> listBy(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
         final List<SpedizioneItem> items = new ArrayList<>();
         final Set<Long> raids =  new HashSet<>();
-    	spedizioneItemDao
+        final Map<Long,Spedizione> approved = 
+        		spedizioneDao
+        		.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
+        				meseSpedizione, 
+        				annoSpedizione, 
+        				invio)
+        		.stream()
+        		.collect(Collectors.toMap(Spedizione::getId, Function.identity()));
+    	
+        spedizioneItemDao
         	.findByPubblicazioneAndStatoSpedizione(pubblicazione,statoSpedizione)
         	.stream()
-        	.filter(spedItem -> spedItem.getSpedizione().getMeseSpedizione() == meseSpedizione 
-        						&& spedItem.getSpedizione().getAnnoSpedizione()== annoSpedizione
-        						&& spedItem.getSpedizione().getInvioSpedizione() == invio
-        						)
+        	.filter(spedItem -> approved.keySet().contains(spedItem.getSpedizione().getId()))
         	.forEach(spedItem -> {
         		raids.add(spedItem.getRivistaAbbonamento().getId());
         		items.add(spedItem);
@@ -394,14 +387,15 @@ public class SmdServiceImpl implements SmdService {
 			rivistaAbbonamentoDao.findAllById(raids).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
-    		Anagrafica destinatario =  item.getSpedizione().getDestinatario();
+    		Spedizione sped = approved.get(item.getSpedizione().getId());
+    		Anagrafica destinatario =  sped.getDestinatario();
     		Anagrafica co = destinatario.getCo();
     		SpedizioneDto dto = null;
     		if (co == null) {
-    			dto = SpedizioneDto.getSpedizioneDto(item, item.getSpedizione().getDestinatario());
+    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
     		} else {
         		co = anagraficaDao.findById(co.getId()).get();
-        		dto=SpedizioneDto.getSpedizioneDto(item, destinatario, co);
+        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
     		}
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
     			dto.setOmaggio();
@@ -730,11 +724,19 @@ public class SmdServiceImpl implements SmdService {
         return spedizioni;
     }
 
-    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese mese, Anno anno, Pubblicazione p) {
+    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) {
         Map<Long,SpedizioneWithItems> spedizioni = new HashMap<>();
+        final Map<Long,Spedizione> approved = 
+        		spedizioneDao
+        		.findByMeseSpedizioneAndAnnoSpedizione(
+        				meseSpedizione, 
+        				annoSpedizione)
+        		.stream()
+        		.collect(Collectors.toMap(Spedizione::getId, Function.identity()));
+
         for (SpedizioneItem item: spedizioneItemDao.findByPubblicazione(p)) {
-        	Spedizione sped = item.getSpedizione();
-        	if (sped.getMeseSpedizione() == mese && sped.getAnnoSpedizione() == anno) {
+        	if (approved.containsKey(item.getSpedizione().getId())) {
+            	Spedizione sped = approved.get(item.getSpedizione().getId());
         		if (!spedizioni.containsKey(sped.getId())) 
         			spedizioni.put(sped.getId(),new SpedizioneWithItems(sped));
         		spedizioni.get(sped.getId()).addSpedizioneItem(item);

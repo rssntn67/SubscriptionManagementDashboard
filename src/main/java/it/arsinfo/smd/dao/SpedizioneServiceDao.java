@@ -16,12 +16,12 @@ import it.arsinfo.smd.entity.SpedizioneItem;
 public interface SpedizioneServiceDao extends SmdServiceItemDao<Spedizione,SpedizioneItem> {
 	
 	List<Spedizione> searchBy(
-			Pubblicazione p, 
 			Anagrafica a, 
-			StatoSpedizione stato, 
 			Anno annoSped, 
 			Mese mesesped,
-			InvioSpedizione invio			
+			InvioSpedizione invio,			
+			Pubblicazione p, 
+			StatoSpedizione stato 
 			);	
     SpedizioneDao getRepository();
 	List<Pubblicazione> findPubblicazioni();
