@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Component;
@@ -23,6 +24,7 @@ import it.arsinfo.smd.ui.security.SecurityUtils;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 @Push
+@Theme("mytheme")
 public abstract class SmdUI extends UI {
 
     @Autowired
