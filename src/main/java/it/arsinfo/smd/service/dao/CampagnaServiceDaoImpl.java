@@ -387,7 +387,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 					ra.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, ra, StatoAbbonamento.Sospeso));
 					rivistaAbbonamentoDao.save(ra);
 					if (ra.getStatoAbbonamento() == StatoAbbonamento.Sospeso) {
-						smdService.sospendiSpedizioni(abbonamento,ra);
+						smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
 					}
             });
         });
@@ -434,9 +434,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
     			}
     			if (ra.getStatoAbbonamento() == StatoAbbonamento.InviatoEC 
     					|| ra.getStatoAbbonamento() == StatoAbbonamento.Sospeso) {
-    				smdService.sospendiSpedizioni(abbonamento, ra);
+    				smdService.sospendiSpedizioniProgrammate(abbonamento, ra);
     			} else {
-    				smdService.programmaSpedizioni(abbonamento, ra);
+    				smdService.programmaSpedizioniSospese(abbonamento, ra);
     			}
             });
         });

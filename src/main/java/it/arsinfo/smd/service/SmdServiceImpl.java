@@ -325,18 +325,16 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception{
-    	log.info("inviaSpedizionere: {} {} {} - start", meseSpedizione,annoSpedizione,p.getNome());
-        Operazione operazione = operazioneDao
-        .findByAnnoAndMeseAndPubblicazione(annoSpedizione, meseSpedizione,p);
+    public void inviaSpedizionere(Operazione operazione) throws Exception{
+    	log.info("inviaSpedizionere: {} - start", operazione);
         if ( operazione == null || operazione.getStatoOperazione() != StatoOperazione.Inviata) {
-        	log.error("inviaSpedizionere: {} {} {}: Operazione non valida",meseSpedizione,annoSpedizione,p.getNome());
+        	log.error("inviaSpedizionere: {} : Operazione non valida",operazione);
         	throw new UnsupportedOperationException("Operazione non valida");
         }
-        inviaSpedizioni(meseSpedizione, annoSpedizione, p, InvioSpedizione.Spedizioniere);
+        inviaSpedizioni(operazione.getMese(), operazione.getAnno(), operazione.getPubblicazione(), InvioSpedizione.Spedizioniere);
         operazione.setStatoOperazione(StatoOperazione.Spedita);
         operazioneDao.save(operazione);
-    	log.info("inviaSpedizionere: {} {} {} - end",meseSpedizione,annoSpedizione,p.getNome());
+    	log.info("inviaSpedizionere: {} - end",operazione);
 
     }
     
@@ -451,7 +449,7 @@ public class SmdServiceImpl implements SmdService {
         for (RivistaAbbonamento riv:	rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
 			riv.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, riv, stato));
 			rivistaAbbonamentoDao.save(riv);
-			programmaSpedizioni(abbonamento,riv);
+			programmaSpedizioniSospese(abbonamento,riv);
 		}
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
@@ -646,11 +644,11 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void sospendiSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {
-        	
-        	spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
+        	spedizioneItemDao
+        	.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
         	.forEach( item -> 
         	{
         		switch (rivista.getStatoAbbonamento()) {
@@ -678,12 +676,21 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void programmaSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> {        	
-        	spedizioneItemDao.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.SOSPESA,rivista)
+			spedizioneItemDao
+			.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(
+					sped, StatoSpedizione.SOSPESA,rivista)
         	.forEach( item -> 
         	{
+        		if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere ) {
+            		Operazione operazione = 
+            				operazioneDao.findByAnnoAndMeseAndPubblicazione(sped.getAnnoSpedizione(), sped.getMeseSpedizione(),item.getPubblicazione());
+            		if (operazione != null && operazione.getStatoOperazione() == StatoOperazione.Spedita) {
+            			return;
+            		}
+        		}
         		switch (rivista.getStatoAbbonamento()) {
         		case Nuovo:
 		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);

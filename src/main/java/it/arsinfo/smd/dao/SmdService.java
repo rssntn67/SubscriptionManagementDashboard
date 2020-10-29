@@ -19,6 +19,7 @@ import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
 import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.entity.OfferteCumulate;
+import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
@@ -37,15 +38,15 @@ public interface SmdService {
 
     void genera(Abbonamento abbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
-    void programmaSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista);
-    void sospendiSpedizioni(Abbonamento abbonamento, RivistaAbbonamento rivista);
+    void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista);
+    void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista);
     
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
     void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
     
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
-    void inviaSpedizionere(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) throws Exception;
+    void inviaSpedizionere(Operazione operazione) throws Exception;
     void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception;

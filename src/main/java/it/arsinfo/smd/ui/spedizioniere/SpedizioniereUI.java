@@ -90,7 +90,7 @@ public class SpedizioniereUI extends SmdUI {
         spedisci.setVisible(false);
         spedisci.setChangeHandler(() -> {
         	try {
-                smdService.inviaSpedizionere(editor.get().getMese(),editor.get().getAnno(),editor.get().getPubblicazione());
+                smdService.inviaSpedizionere(editor.get());
             } catch (Exception e) {
                 Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
                 return;
