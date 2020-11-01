@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.service.Smd;
 
@@ -41,7 +41,7 @@ public class RivistaAbbonamento implements SmdEntity {
     private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
 
     @Enumerated(EnumType.STRING)
-    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
+    private StatoRivista statoRivista = StatoRivista.Attiva;
 
     private Mese meseInizio=Mese.GENNAIO;
     private Anno annoInizio=Anno.getAnnoCorrente();
@@ -108,13 +108,13 @@ public class RivistaAbbonamento implements SmdEntity {
     @Transient
     public String getHeader() {
         return String.format("' %d %s' %s %s]", 
-                numero,pubblicazione.getNome(), tipoAbbonamentoRivista, statoAbbonamento);
+                numero,pubblicazione.getNome(), tipoAbbonamentoRivista, statoRivista);
     }
 
     @Override
     public String toString() {
         return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoAbbonamento);
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista);
     }
         
     public BigDecimal getImporto() {
@@ -287,12 +287,12 @@ public class RivistaAbbonamento implements SmdEntity {
 		return r;
 	}
 
-	public StatoAbbonamento getStatoAbbonamento() {
-		return statoAbbonamento;
+	public StatoRivista getStatoRivista() {
+		return statoRivista;
 	}
 
-	public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
-		this.statoAbbonamento = statoAbbonamento;
+	public void setStatoRivista(StatoRivista statoRivista) {
+		this.statoRivista = statoRivista;
 	}
 
 }

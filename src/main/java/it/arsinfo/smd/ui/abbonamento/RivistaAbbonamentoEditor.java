@@ -13,11 +13,11 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
 public class RivistaAbbonamentoEditor
@@ -38,8 +38,8 @@ public class RivistaAbbonamentoEditor
             EnumSet.allOf(Mese.class));
     private final ComboBox<Mese> meseFine = new ComboBox<Mese>("Mese Fine",
             EnumSet.allOf(Mese.class));
-    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
-            EnumSet.allOf(StatoAbbonamento.class));
+    private final ComboBox<StatoRivista> statoRivista = new ComboBox<StatoRivista>("Stato",
+            EnumSet.allOf(StatoRivista.class));
 
     private final TextField numeroTotaleRiviste = new TextField("Numero Totale Riviste");
     private final TextField numero = new TextField("Quant.");
@@ -85,7 +85,7 @@ public class RivistaAbbonamentoEditor
         setComponents(
     					lay,
                       new HorizontalLayout(meseInizio,annoInizio,meseFine,annoFine),
-                      new HorizontalLayout(numero,importo,numeroTotaleRiviste, statoAbbonamento)
+                      new HorizontalLayout(numero,importo,numeroTotaleRiviste, statoRivista)
                       );
  
         getBinder()
@@ -134,8 +134,8 @@ public class RivistaAbbonamentoEditor
         getBinder().forField(annoFine)
         .asRequired().bind(RivistaAbbonamento::getAnnoFine,RivistaAbbonamento::setAnnoFine);
 
-        getBinder().forField(statoAbbonamento)
-        .asRequired().bind(RivistaAbbonamento::getStatoAbbonamento,RivistaAbbonamento::setStatoAbbonamento);
+        getBinder().forField(statoRivista)
+        .asRequired().bind(RivistaAbbonamento::getStatoRivista,RivistaAbbonamento::setStatoRivista);
 
         importo.setReadOnly(true);
         numeroTotaleRiviste.setReadOnly(true);

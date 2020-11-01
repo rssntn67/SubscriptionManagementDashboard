@@ -20,6 +20,7 @@ public interface StoricoDao extends JpaRepository<Storico, Long> {
 	List<Storico> findByPubblicazione(Pubblicazione pubblicazione);
 
 	List<Storico> findByIntestatarioAndContrassegno(Anagrafica intestatario, boolean contrassegno);
+	List<Storico> findByIntestatarioAndContrassegnoAndStatoStorico(Anagrafica intestatario, boolean contrassegno, StatoStorico stato);
 
 	List<Storico> findByIntestatarioAndDestinatario(Anagrafica intestatario, Anagrafica destinatario);
 

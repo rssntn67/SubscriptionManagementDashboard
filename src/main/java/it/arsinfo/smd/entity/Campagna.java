@@ -38,13 +38,14 @@ public class Campagna implements SmdEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
-    private StatoCampagna statoCampagna=StatoCampagna.Nuova;
+    private StatoCampagna statoCampagna=StatoCampagna.Generata;
 
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
 
     private boolean running = false;
     
+    // numero minimo di riviste per non sospendere lo storico
     private Integer numero = 10;
     
     @Transient

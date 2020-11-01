@@ -13,6 +13,7 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -35,9 +36,13 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     private final TextField residuo = new TextField("Residuo");
     private final TextField incassato = new TextField("Incassato");
     private final CheckBox contrassegno = new CheckBox("Contrassegno");
+    private final CheckBox sollecitato = new CheckBox("Sollecitato");
+    private final CheckBox inviatoEC = new CheckBox("InviatoEC");
     private final TextField codeLine = new TextField("Code Line");
 
     private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
+    private final ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<StatoAbbonamento>("Stato",
+            EnumSet.allOf(StatoAbbonamento.class));
         
     public AbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
@@ -47,7 +52,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
                 anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
-        HorizontalLayout status = new HorizontalLayout(contrassegno,statoIncasso);
+        HorizontalLayout status = 
+        		new HorizontalLayout(contrassegno,sollecitato,inviatoEC,statoIncasso,statoAbbonamento);
         
         HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
@@ -67,6 +73,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
         anno.setEmptySelectionAllowed(false);
 
+        sollecitato.setReadOnly(true);
+        inviatoEC.setReadOnly(true);
         
         importo.setReadOnly(true);
         totale.setReadOnly(true);
@@ -86,6 +94,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
         getBinder().forField(statoIncasso).bind("statoIncasso");
+        getBinder().forField(statoAbbonamento)
+        .asRequired().bind(Abbonamento::getStatoAbbonamento,Abbonamento::setStatoAbbonamento);
 
 
         getBinder()
@@ -127,6 +137,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
             .bind("residuo");
                
         getBinder().forField(contrassegno).bind("contrassegno");
+        getBinder().forField(sollecitato).bind("sollecitato");
+        getBinder().forField(inviatoEC).bind("inviatoEC");
         
     }
 

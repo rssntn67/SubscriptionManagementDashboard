@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import it.arsinfo.smd.dao.repository.StoricoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
@@ -76,7 +78,35 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	private SmdService smdService;
 
 	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
+	
+    @Value("${limite.invio.estratto}")
+    private static String limiteInvioEstratto;
 
+    @Value("${limite.invio.sollecito}")
+    private static String limiteInvioSollecito;
+
+    public static BigDecimal getLimiteInvioEstratto() {
+    	if (limiteInvioEstratto != null) {
+    		try {
+    			return new BigDecimal(limiteInvioEstratto);
+    		} catch (Exception e) {
+    			log.error("getLimiteInvioEstratto: {}", e.getMessage());
+			}
+    	}
+		return new BigDecimal("7.00");
+    }
+    
+    public static BigDecimal getLimiteInvioSollecito() {
+    	if (limiteInvioSollecito != null) {
+    		try {
+    			return new BigDecimal(limiteInvioSollecito);
+    		} catch (Exception e) {
+    			log.error("getLimiteInvioSollecito: {}", e.getMessage());
+			}
+    	}
+		return new BigDecimal("7.00");
+    	
+    }
 	public void lock(Campagna entity) {
 		entity.setRunning(true);
 		repository.save(entity);
@@ -140,18 +170,16 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
                   storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0));
                                                            
         for (Abbonamento abb:abbonamenti) {
-            storicoDao.findByIntestatarioAndContrassegno(
-                  abb.getIntestatario(),abb.isContrassegno())
+            storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(
+                  abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
                 .forEach(storico -> {
                    Smd.genera(abb, storico);
-                   storico.setStatoStorico(StatoStorico.Valido);
                    storicoDao.save(storico);
             });
             if (abb.getItems().size() >= 1) {
                 smdService.genera(abb);
             }
         }
-        entity.setStatoCampagna(StatoCampagna.Generata);
 		repository.save(entity);
 		log.info("genera: Campagna end {}", entity);
 	}
@@ -230,34 +258,13 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	
 	@Override
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna entity) {
-		List<Long>abboIds = rivistaAbbonamentoDao
-				.findByStatoAbbonamento(
-				StatoAbbonamento.Sollecitato)
-				.stream()
-				.map(r -> r.getAbbonamento().getId()).
-				collect(Collectors.toList());
-		return smdService
-				.get( abbonamentoDao.findByCampagna(entity)
-						.stream()
-						.filter(a -> abboIds.contains(a.getId()))
-						.collect(Collectors.toList())
+		return smdService.get( abbonamentoDao.findByCampagnaAndSollecitato(entity, true)
 				);
 	}
 
 	@Override
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity) {
-		List<Long>abboIds = rivistaAbbonamentoDao
-				.findByStatoAbbonamento(
-				StatoAbbonamento.InviatoEC)
-				.stream()
-				.map(r -> r.getAbbonamento().getId()).
-				collect(Collectors.toList());
-		return smdService
-				.get( abbonamentoDao.findByCampagna(entity)
-						.stream()
-						.filter(a -> abboIds.contains(a.getId()))
-						.collect(Collectors.toList())
-				);
+		return smdService.get( abbonamentoDao.findByCampagnaAndInviatoEC(entity, true));
 	}
 
 	@Override
@@ -295,16 +302,18 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Transactional
 	private void doInvia(Campagna campagna) {
         log.info("invia Campagna start {}", campagna);
+        campagna.setStatoCampagna(StatoCampagna.Inviata);
+        repository.save(campagna);
     	abbonamentoDao
 		.findByCampagna(campagna)
 		.forEach( abbonamento -> {
-			rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ra -> {
-					ra.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, ra, StatoAbbonamento.Proposto));
-				rivistaAbbonamentoDao.save(ra);
-			});
-    	});        
-        campagna.setStatoCampagna(StatoCampagna.Inviata);
-        repository.save(campagna);
+        	if (smdService.getNotValid(abbonamento, campagna).isEmpty()) {
+        		abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);        		
+        	} else {
+        		abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
+        	}
+			abbonamentoDao.save(abbonamento);
+    	});   
         log.info("invia Campagna end {}", campagna);
 	}
 
@@ -322,7 +331,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 			op.setStato(StatoCampagna.InviatoSollecito);
 			op.setOperatore(user.getUsername());
 			operazioneCampagnaDao.save(op);
-
 		} catch (Exception e) {
 			log.error("estratto: {}",e.getMessage(),e);
 			unlock(campagna);
@@ -334,18 +342,22 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Transactional
 	private void doSollecito(Campagna campagna) throws Exception {
         log.info("sollecito Campagna start {}", campagna);
-        abbonamentoDao.findByCampagna(campagna).forEach(abbonamento -> {
-        	rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ra -> {
-            	ra.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento,ra,StatoAbbonamento.Sollecitato));
-    			rivistaAbbonamentoDao.save(ra);
-    			if (ra.getStatoAbbonamento() == StatoAbbonamento.Sollecitato) {
-    				abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
-    				abbonamentoDao.save(abbonamento);
-    			}
-            });
-        });
         campagna.setStatoCampagna(StatoCampagna.InviatoSollecito);
         repository.save(campagna);  
+        abbonamentoDao
+    	.findByCampagna(campagna)
+    	.forEach(abbonamento -> {
+    		if ( smdService.getNotValid(abbonamento, campagna).isEmpty()) {
+        		abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);        		
+        	} else {
+        		abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
+        	}
+    		if (sendSollecito(abbonamento)) {
+    			abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+    			abbonamento.setSollecitato(true);
+    		}
+			abbonamentoDao.save(abbonamento);    		
+        });
         log.info("sollecito Campagna end {}", campagna);
 	}
 
@@ -378,22 +390,39 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	
 	@Transactional
 	private void doSospendi(Campagna campagna, Pubblicazione p) throws Exception {
+        campagna.setStatoCampagna(StatoCampagna.InviatoSospeso);
+        repository.save(campagna);  
         abbonamentoDao.
         findByCampagna(campagna).
         forEach(abbonamento -> {
-            rivistaAbbonamentoDao.
-            findByAbbonamentoAndPubblicazione(abbonamento, p).
-            forEach(ra -> {
-					ra.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, ra, StatoAbbonamento.Sospeso));
+            boolean almenounarivistasospesa=false;
+            boolean almenounarivistaattiva=false;
+        	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+            findByAbbonamentoAndPubblicazione(abbonamento, p)) {
+            	StatoRivista stato = Smd.getStatoRivista(abbonamento, ra, campagna);
+            	if (stato != StatoRivista.Attiva) {
+            		almenounarivistasospesa=true;
+					ra.setStatoRivista(StatoRivista.Sospesa);
 					rivistaAbbonamentoDao.save(ra);
-					if (ra.getStatoAbbonamento() == StatoAbbonamento.Sospeso) {
-						smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
-					}
-            });
+					smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
+            	} else {
+            		almenounarivistaattiva=true;
+            	}
+            }
+        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));
+        	abbonamentoDao.save(abbonamento);
         });
-        campagna.setStatoCampagna(StatoCampagna.InviatoSospeso);
-        repository.save(campagna);  
 
+	}
+	
+	public static boolean sendEC(Abbonamento abb) {
+		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
+				abb.getResiduo().subtract(getLimiteInvioEstratto()).signum() >= 0;
+	}
+
+	public static boolean sendSollecito(Abbonamento abb) {
+		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
+				abb.getResiduo().subtract(getLimiteInvioSollecito()).signum() >= 0;
 	}
 
 	@Override
@@ -424,24 +453,30 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Transactional
 	private void doEstratto(Campagna campagna) throws Exception {
         log.info("estratto Campagna start {}", campagna);
-        abbonamentoDao.findByCampagna(campagna).forEach(abbonamento -> {
-        	rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ra -> {
-            	ra.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento,ra,StatoAbbonamento.InviatoEC));
-    			rivistaAbbonamentoDao.save(ra);
-    			if (ra.getStatoAbbonamento() == StatoAbbonamento.InviatoEC) {
-    				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(new BigDecimal("2.00")));
-    				abbonamentoDao.save(abbonamento);
-    			}
-    			if (ra.getStatoAbbonamento() == StatoAbbonamento.InviatoEC 
-    					|| ra.getStatoAbbonamento() == StatoAbbonamento.Sospeso) {
-    				smdService.sospendiSpedizioniProgrammate(abbonamento, ra);
-    			} else {
-    				smdService.programmaSpedizioniSospese(abbonamento, ra);
-    			}
-            });
-        });
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         repository.save(campagna);  
+        abbonamentoDao.findByCampagna(campagna).forEach(abbonamento -> {
+            boolean almenounarivistasospesa=false;
+            boolean almenounarivistaattiva=false;
+        	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
+            	StatoRivista stato = Smd.getStatoRivista(abbonamento, ra, campagna);
+            	if (stato != StatoRivista.Attiva) {
+            		almenounarivistasospesa=true;
+					ra.setStatoRivista(StatoRivista.Sospesa);
+					rivistaAbbonamentoDao.save(ra);
+					smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
+            	} else {
+            		almenounarivistaattiva=true;
+            	}
+            }
+			if (sendEC(abbonamento) ) {
+				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(new BigDecimal("2.00")));
+				abbonamento.setInviatoEC(true);
+			}
+        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));
+        	abbonamentoDao.save(abbonamento);
+
+        });
         log.info("estratto Campagna end {}", campagna);
 	}
 	
@@ -471,7 +506,14 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Transactional
 	private void doChiudi(Campagna campagna) throws Exception {
         log.info("chiudi Campagna start {}", campagna);
-        Map<Long,Storico> storici = storicoDao.findAll().stream().collect(Collectors.toMap(Storico::getId, Function.identity()));
+        storicoDao.findByNumero(0).forEach(s -> {
+        	if (s.getStatoStorico() != StatoStorico.Annullato) {
+        		s.setStatoStorico(StatoStorico.Annullato);
+        		storicoDao.save(s);
+        		log.info("chiudi: nr.0/Annullato: {} ", s);
+        	}
+        });
+        Map<Long,Storico> storici = storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0).stream().collect(Collectors.toMap(Storico::getId, Function.identity()));
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
             for (RivistaAbbonamento rivista: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
             	if (rivista.getStorico() == null ) {
@@ -480,34 +522,27 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             	Storico storico = storici.get(rivista.getStorico().getId());
             	if (storico == null) {
             		continue;
-            	}
-            	switch (rivista.getStatoAbbonamento()) {
-		            case Valido:
+            	}            	
+            	switch (rivista.getStatoRivista()) {
+		            case Attiva:
+		            	storico.setStatoStorico(StatoStorico.Valido);
 		            	break;
-		            case Sospeso:
-		            	aggiornaStatoStorico(storico,campagna.getNumero());
-		                break;
-		            case InviatoEC:
-		            	aggiornaStatoStorico(storico,campagna.getNumero());
-		                break;
-		            case Proposto:
-		            	riattivaStorico(storico);
-		                break;
-		            case Nuovo:
-		            	riattivaStorico(storico);
+		            case Sospesa:
+		            	if (storico.getNumero() <= campagna.getNumero()) {
+		                	storico.setStatoStorico(StatoStorico.Sospeso);
+		                } else {
+		                	storico.setStatoStorico(StatoStorico.Valido);
+		                }
+		            	storicoDao.save(storico);
+		            	log.info("chiudi: {}", storico);
 		                break;
 		            default:
-		                break;
+		            	break;
             	}
+                storicoDao.save(storico);
+
             }
         }
-        storicoDao.findByNumero(0).forEach(s -> {
-        	if (s.getStatoStorico() != StatoStorico.Annullato) {
-        		s.setStatoStorico(StatoStorico.Annullato);
-        		storicoDao.save(s);
-        		log.info("chiudi: nr.0/Annullato: {} ", s);
-        	}
-        });
 
         campagna.setStatoCampagna(StatoCampagna.Chiusa);
         repository.save(campagna); 
@@ -532,23 +567,6 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		throw new UnsupportedOperationException("Campagna non può essere salvata");
 	}
 
-    public void aggiornaStatoStorico(Storico storico, int numero) throws Exception {
-        if (storico.getNumero() == 0) {
-        	storico.setStatoStorico(StatoStorico.Annullato);            	
-        } else if (storico.getNumero() <= numero) {
-        	storico.setStatoStorico(StatoStorico.Sospeso);
-        } else {
-        	storico.setStatoStorico(StatoStorico.Valido);
-        }
-    	storicoDao.save(storico);
-    	log.info("aggiornaStatoStorico: {}", storico);
-    }
-
-    public void riattivaStorico(Storico storico) throws Exception {
-        storico.setStatoStorico(StatoStorico.Valido);
-        storicoDao.save(storico);
-    }
-	
 	@Override
 	public List<OperazioneCampagna> getOperazioni(Campagna campagna) {
 		return operazioneCampagnaDao.findByCampagna(campagna);
@@ -558,5 +576,4 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	public List<OperazioneSospendi> getSospensioni(Campagna campagna) {
 		return operazioneSospendiDao.findByCampagna(campagna);
 	}
-
 }

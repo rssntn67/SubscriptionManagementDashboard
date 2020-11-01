@@ -15,6 +15,7 @@ import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
 import it.arsinfo.smd.entity.DocumentoTrasporto;
 import it.arsinfo.smd.entity.Offerta;
@@ -37,12 +38,15 @@ public interface SmdService {
     List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
 
     void genera(Abbonamento abbonamento) throws Exception;
+    void aggiorna(Abbonamento abbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
+    
+    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivista) throws Exception;
+    
     void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista);
     void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista);
     
-    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception;
-    void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
+    void aggiorna(RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
     
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
@@ -63,6 +67,8 @@ public interface SmdService {
 	void storna(DocumentoTrasporto ddt, UserInfo loggedInUser);
 	void incassa(String ddt, BigDecimal bigDecimal, DocumentiTrasportoCumulati ddtAnno, Versamento selected,
 			UserInfo loggedInUser, Anagrafica committente);
+
+	List<RivistaAbbonamento> getNotValid(Abbonamento abbonamento, Campagna campagna);
 
 
 }

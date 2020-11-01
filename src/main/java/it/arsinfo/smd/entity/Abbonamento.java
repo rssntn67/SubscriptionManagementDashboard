@@ -26,6 +26,7 @@ import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
+import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.service.Smd;
 
 @Entity
@@ -47,6 +48,9 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     @Enumerated(EnumType.STRING)
     private Anno anno = Anno.getAnnoCorrente();
 
+    @Enumerated(EnumType.STRING)
+    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
+
     @ManyToOne
     private Campagna campagna;
     
@@ -63,6 +67,12 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private Date data = new Date();
     @Column(nullable=false)
     private boolean contrassegno = false;
+
+    @Column(nullable=false)
+    private boolean sollecitato = false;
+
+    @Column(nullable=false)
+    private boolean inviatoEC = false;
 
     @Transient
     @Enumerated(EnumType.STRING)
@@ -111,7 +121,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Override
     public String toString() {
-        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f','Inc.to:'%.2f',CL:'%s', Anno=%s",
+        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f','Inc.to:'%.2f',CL:'%s', Anno=%s, St.=%s",
                                    id, 
                                    importo,
                                    spese,
@@ -119,8 +129,17 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
                                    pregresso,
                                    incassato,
                                    codeLine,
-                                   anno.getAnnoAsString());
+                                   anno.getAnnoAsString(),
+                                   statoAbbonamento);
     }
+
+	public StatoAbbonamento getStatoAbbonamento() {
+		return statoAbbonamento;
+	}
+
+	public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
+		this.statoAbbonamento = statoAbbonamento;
+	}
     
     public Anno getAnno() {
         return anno;
@@ -377,5 +396,22 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 		this.contrassegno = contrassegno;
 	}
 
+	public boolean isSollecitato() {
+		return sollecitato;
+	}
+
+	public void setSollecitato(boolean sollecitato) {
+		this.sollecitato = sollecitato;
+	}
+
+	public boolean isInviatoEC() {
+		return inviatoEC;
+	}
+
+	public void setInviatoEC(boolean inviatoEC) {
+		this.inviatoEC = inviatoEC;
+	}
+
+	
 
 }

@@ -13,6 +13,7 @@ import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -29,11 +30,14 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Campagna campagna;
     private final ComboBox<Incassato> filterIncassato= new ComboBox<Incassato>();
     private final CheckBox checkContrassegno = new CheckBox("Contrassegno");
+    private final CheckBox checkSollecitato = new CheckBox("Sollecitato");
+    private final CheckBox checkInviatoEC = new CheckBox("InviatoEC");
     private final CheckBox checkResiduo = new CheckBox("Residuo > 0");
     private final CheckBox checkNotResiduo = new CheckBox("Residuo < 0");
     private final CheckBox checkResiduoZero = new CheckBox("Residuo = 0");
-    // this are used on RivistaAbbonamento
     private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
+    private final ComboBox<StatoRivista> filterStatoRivista= new ComboBox<StatoRivista>();
+    // this are used on RivistaAbbonamento
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
     
@@ -56,9 +60,11 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         anag.addComponentsAndExpand(filterIntestatario,filterBeneficiario);
         HorizontalLayout riv = new HorizontalLayout(filterPubblicazione);
         riv.addComponentsAndExpand(filterStatoAbbonamento,filterTipoAbbonamentoRivista);
-        HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCampagna,filterIncassato,checkContrassegno,checkNotResiduo,checkResiduoZero,checkResiduo);
-        
-        setComponents(anag,riv,tipo);
+        HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCampagna,filterIncassato);
+        HorizontalLayout check = new HorizontalLayout(
+        							checkSollecitato,checkInviatoEC,checkContrassegno,
+        							checkNotResiduo,checkResiduoZero,checkResiduo);
+        setComponents(anag,riv,tipo,check);
         
         filterCodeLine.setPlaceholder("Cerca Code Line");
         filterCodeLine.setValueChangeMode(ValueChangeMode.LAZY);
@@ -106,9 +112,13 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             onChange();
         });
         
-        filterStatoAbbonamento.setPlaceholder("Cerca Abb. Stato Riviste");
+        filterStatoAbbonamento.setPlaceholder("Cerca per Stato");
         filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
         filterStatoAbbonamento.addSelectionListener(e ->onChange());
+
+        filterStatoRivista.setPlaceholder("Cerca Abb. Stato Riviste");
+        filterStatoRivista.setItems(EnumSet.allOf(StatoRivista.class));
+        filterStatoRivista.addSelectionListener(e ->onChange());
 
         filterTipoAbbonamentoRivista.setPlaceholder("Cerca Abb per TipoAbbonamento Riviste");
         filterTipoAbbonamentoRivista.setItems(EnumSet.allOf(TipoAbbonamentoRivista.class));
@@ -146,6 +156,8 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         filterIncassato.addSelectionListener(e -> onChange());
         
         checkContrassegno.addValueChangeListener(e -> onChange());
+        checkSollecitato.addValueChangeListener(e -> onChange());
+        checkInviatoEC.addValueChangeListener(e -> onChange());
         checkResiduo.addValueChangeListener(e -> onChange());
         checkResiduoZero.addValueChangeListener(e -> onChange());
         checkNotResiduo.addValueChangeListener(e -> onChange());
@@ -161,12 +173,15 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     					pubblicazione,
     					filterTipoAbbonamentoRivista.getValue(),
     					filterStatoAbbonamento.getValue(),
+    					filterStatoRivista.getValue(),
     					filterIncassato.getValue(),
     					searchCodeLine,
     					checkContrassegno.getValue(),
     					checkResiduo.getValue(),
     					checkNotResiduo.getValue(),
-    					checkResiduoZero.getValue()
+    					checkResiduoZero.getValue(),
+    					checkSollecitato.getValue(),
+    					checkInviatoEC.getValue()
     			);
     }
 

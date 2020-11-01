@@ -41,7 +41,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
-    private final TextField numero = new TextField("Numero di Riviste Massimo da Sospendere");
+    private final TextField numero = new TextField("Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna");
     private final TextField residuo = new TextField("Importo Minimo Residuo per Debitori");
 
     private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
@@ -193,7 +193,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         anno.setItemCaptionGenerator(Anno::getAnnoAsString);
 
         statoCampagna.setReadOnly(true);
-        numero.setVisible(false);
         
         items.setChangeHandler(() -> {
             items.edit(repo.findPubblicazioniValide().
@@ -241,7 +240,8 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     	buttonVDebito.setVisible(persisted);
         
     	anno.setReadOnly(persisted);
-        
+        numero.setVisible(false);
+
         buttonWGenera.setEnabled(false);
 		buttonWInvio.setEnabled(false);
 		buttonWSollecita.setEnabled(false);
@@ -289,6 +289,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				case InviatoEC:
 					buttonVEstrattoConto.setEnabled(true);
 					buttonWChiudi.setEnabled(true);
+					numero.setVisible(true);
 					break;
 				case Chiusa:
 					numero.setReadOnly(true);

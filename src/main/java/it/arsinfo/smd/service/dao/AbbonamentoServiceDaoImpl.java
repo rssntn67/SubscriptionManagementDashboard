@@ -23,6 +23,7 @@ import it.arsinfo.smd.dao.repository.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -85,9 +86,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         }
         if (entity.getId() == null ) {
             smdService.genera(entity);
-        } else {
-        	repository.save(entity);
         }
+    	smdService.aggiorna(entity);
 		return entity;
 	}
 
@@ -152,7 +152,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 	}
 
 	@Override
-	@Transactional
 	public Abbonamento saveItem(Abbonamento t, RivistaAbbonamento item) throws Exception {
         if (item.getDestinatario() == null) {
         	throw new UnsupportedOperationException("Selezionare il Destinatario");
@@ -238,7 +237,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 		return itemRepository.findAll();
 	}
 
-    private List<Abbonamento> filterBy(Anagrafica dst, TipoAbbonamentoRivista tipo, Pubblicazione p,StatoAbbonamento stato, List<Abbonamento> abbonamenti) {
+    private List<Abbonamento> filterBy(Anagrafica dst, TipoAbbonamentoRivista tipo, Pubblicazione p,StatoRivista stato, List<Abbonamento> abbonamenti) {
     	if (abbonamenti.size() == 0)
     		return abbonamenti;
     	if (dst == null && tipo == null && p == null && stato == null)
@@ -254,7 +253,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (dst == null && p == null && tipo == null)
     		approved = itemRepository
-            .findByStatoAbbonamento(stato)
+            .findByStatoRivista(stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (stato == null && p == null && tipo == null)
     		approved = itemRepository
@@ -274,27 +273,27 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (p == null && tipo == null)
     		approved = itemRepository
-                .findByDestinatarioAndStatoAbbonamento(dst, stato)
+                .findByDestinatarioAndStatoRivista(dst, stato)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (dst == null && tipo == null)
     		approved = itemRepository
-                .findByPubblicazioneAndStatoAbbonamento(p, stato)
+                .findByPubblicazioneAndStatoRivista(p, stato)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (dst == null && p == null)
     		approved = itemRepository
-                .findByTipoAbbonamentoRivistaAndStatoAbbonamento(tipo, stato)
+                .findByTipoAbbonamentoRivistaAndStatoRivista(tipo, stato)
                 .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (dst == null )
     		approved = itemRepository
-            .findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(p,tipo, stato)
+            .findByPubblicazioneAndTipoAbbonamentoRivistaAndStatoRivista(p,tipo, stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (p == null )
     		approved = itemRepository
-            .findByDestinatarioAndTipoAbbonamentoRivistaAndStatoAbbonamento(dst,tipo, stato)
+            .findByDestinatarioAndTipoAbbonamentoRivistaAndStatoRivista(dst,tipo, stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (tipo == null )
     		approved = itemRepository
-            .findByDestinatarioAndPubblicazioneAndStatoAbbonamento(dst,p, stato)
+            .findByDestinatarioAndPubblicazioneAndStatoRivista(dst,p, stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else if (stato == null )
     		approved = itemRepository
@@ -302,7 +301,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
     	else 
     		approved = itemRepository
-            .findByDestinatarioAndPubblicazioneAndTipoAbbonamentoRivistaAndStatoAbbonamento(dst,p,tipo, stato)
+            .findByDestinatarioAndPubblicazioneAndTipoAbbonamentoRivistaAndStatoRivista(dst,p,tipo, stato)
             .stream().map( ec -> ec.getAbbonamento().getId()).collect(Collectors.toList());
         return abbonamenti.stream().filter(abb -> approved.contains(abb.getId())).collect(Collectors.toList());
     }
@@ -316,12 +315,15 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 			Pubblicazione p, 
 			TipoAbbonamentoRivista t, 
 			StatoAbbonamento s, 
+			StatoRivista sr, 
 			Incassato inc,
 			String searchCodeLine,
 			boolean checkContrassegno,
 			boolean checkResiduo,
 			boolean checkNotResiduo,
-			boolean checkResiduoZero
+			boolean checkResiduoZero,
+			boolean checkSollecitato,
+			boolean checkInviatoEC
 			) 
 	{
 		List<Abbonamento> abbonamenti;
@@ -342,6 +344,9 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         } else {
         	abbonamenti = repository.findByIntestatarioAndCampagnaAndAnno(intestatario, campagna, anno);
         }
+        if (s != null) {
+        	abbonamenti = abbonamenti.stream().filter(a -> s == a.getStatoAbbonamento() ).collect(Collectors.toList());        	
+        }
         if (inc != null) {
         	abbonamenti = abbonamenti.stream().filter(a -> inc == Smd.getStatoIncasso(a)).collect(Collectors.toList());
         }
@@ -359,9 +364,15 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         }        
         if (checkResiduoZero) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() == 0).collect(Collectors.toList());      
-        }        
+        }
+        if (checkSollecitato) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.isSollecitato() == checkSollecitato).collect(Collectors.toList());              	
+        }
+        if (checkInviatoEC) {
+            abbonamenti=abbonamenti.stream().filter(a -> a.isInviatoEC() == checkInviatoEC).collect(Collectors.toList());              	
+        }
 
-        return filterBy(beneficiario,t, p, s, abbonamenti);
+        return filterBy(beneficiario,t, p, sr, abbonamenti);
 	}
 
 	@Override

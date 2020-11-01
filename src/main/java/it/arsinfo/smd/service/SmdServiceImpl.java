@@ -32,6 +32,7 @@ import it.arsinfo.smd.dao.repository.OffertaDao;
 import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
 import it.arsinfo.smd.dao.repository.OperazioneDao;
 import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
+import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.SpedizioneDao;
 import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
@@ -44,8 +45,10 @@ import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
@@ -119,6 +122,9 @@ public class SmdServiceImpl implements SmdService {
     @Autowired
     private UserInfoDao userInfoDao;
 
+    @Autowired
+    private OperazioneSospendiDao operazioneSospendiDao;
+    
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 
     @Override
@@ -195,13 +201,10 @@ public class SmdServiceImpl implements SmdService {
         	log.warn("rimuovi: {} , Non si può cancellare un abbonamento incassato.", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento con incasso: "+abbonamento.getIncassato());    		
     	}
-    	List<RivistaAbbonamento> riviste = rivistaAbbonamentoDao.findByAbbonamento(abbonamento);
-    	for (RivistaAbbonamento rivista:riviste) {
-	        if (rivista.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-	        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento con rivista {} in uno stato diverso da Nuovo.", abbonamento,rivista);
-	            throw new UnsupportedOperationException("Non si può cancellare abbonamento con rivista nello stato:"+rivista.getStatoAbbonamento());
-	        }
-    	}
+        if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
+        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento {} con stato in uno stato diverso da Nuovo.", abbonamento);
+            throw new UnsupportedOperationException("Non si può cancellare abbonamento con rivista nello stato: "+abbonamento.getStatoAbbonamento());
+        }
         spedizioneDao
         .findByAbbonamento(abbonamento)
         .forEach(sped -> 
@@ -212,7 +215,7 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getId());
             }
         );
-        riviste.forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
+        rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
         abbonamentoDao.delete(abbonamento);
     }
 
@@ -261,8 +264,9 @@ public class SmdServiceImpl implements SmdService {
         }
         aggiorna.getRivisteToSave().forEach(r -> rivistaAbbonamentoDao.save(r));
         
-        if (aggiorna.getAbbonamentoToSave() != null)
-        	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());
+        if (aggiorna.getAbbonamentoToSave() != null) {
+        	aggiorna(aggiorna.getAbbonamentoToSave());
+        }
     }
 
     @Override
@@ -418,39 +422,8 @@ public class SmdServiceImpl implements SmdService {
         }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        abbonamentoDao.save(abbonamento);
-        Campagna campagna =campagnaDao.findByAnno(abbonamento.getAnno());
-        StatoAbbonamento stato = StatoAbbonamento.Nuovo;
-        if (campagna != null) {
-        	switch (campagna.getStatoCampagna()) {
-			case Generata:
-				break;
+        aggiorna(abbonamento);
 
-			case Inviata:
-				stato = StatoAbbonamento.Proposto;
-				break;
-
-			case InviatoSollecito:
-				stato=StatoAbbonamento.Sollecitato;
-				break;
-
-			case InviatoEC:
-				stato=StatoAbbonamento.InviatoEC;
-				break;
-				
-			case Chiusa:
-				stato=null;
-				break;
-
-			default:
-				break;
-			}
-        }
-        for (RivistaAbbonamento riv:	rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
-			riv.setStatoAbbonamento(Smd.getStatoAbbonamento(abbonamento, riv, stato));
-			rivistaAbbonamentoDao.save(riv);
-			programmaSpedizioniSospese(abbonamento,riv);
-		}
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
         operIncasso.setVersamento(versamento);
@@ -651,25 +624,16 @@ public class SmdServiceImpl implements SmdService {
         	.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
         	.forEach( item -> 
         	{
-        		switch (rivista.getStatoAbbonamento()) {
-        		case Proposto:
+        		switch (rivista.getStatoRivista()) {
+        		case Attiva:
         			break;
-        		case Nuovo:
-        			break;
-        		case Sollecitato:
-        			break;
-        		case Valido:
-        			break;
-        		case Sospeso:
+        		case Sospesa:
 		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
-					break;
-				case InviatoEC:
-		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
+	            	spedizioneItemDao.save(item);
 					break;
 				default:
 					break;
 				}
-            	spedizioneItemDao.save(item);
         	});        	
         });
 
@@ -691,30 +655,18 @@ public class SmdServiceImpl implements SmdService {
             			return;
             		}
         		}
-        		switch (rivista.getStatoAbbonamento()) {
-        		case Nuovo:
+        		switch (rivista.getStatoRivista()) {
+				case Attiva:
 		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+        			spedizioneItemDao.save(item);
 					break;
-        		case Proposto:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-					break;
-				case Sollecitato:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-					break;
-				case Valido:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-					break;
-				case Sospeso:
-					break;
-				case InviatoEC:
+				case Sospesa:
 					break;
 				default:
 					break;
 				}
-            	spedizioneItemDao.save(item);
         	});
         });
-
     }
 
     @Override
@@ -773,7 +725,6 @@ public class SmdServiceImpl implements SmdService {
 			ra.setPubblicazione(item.getPubblicazione());
 			ra.setDestinatario(ra0.getDestinatario());
 			ra.setInvioSpedizione(invio);
-			ra.setStatoAbbonamento(StatoAbbonamento.Valido);
 			abbonamento.addItem(ra);
 		}
 
@@ -781,4 +732,109 @@ public class SmdServiceImpl implements SmdService {
 		
 	}
 
+	@Override
+	public void aggiorna(Abbonamento abbonamento) throws Exception {
+		Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
+		if (campagna == null) {
+    		abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
+		} else {
+	        switch (campagna.getStatoCampagna()) {
+	        	case Generata:
+	        		abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);
+	        		break;
+	        	
+	        	case Inviata:
+	        		if (getNotValid(abbonamento, campagna).isEmpty()) {
+	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+	        		} else {
+	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
+	        		}
+	        		break;
+	        	
+	        	case InviatoSollecito:
+	        		if (getNotValid(abbonamento, campagna).isEmpty()) {
+	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
+	        		} else {
+	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
+	        		}
+	        		break;
+	        	
+	        	case InviatoSospeso:
+	        		abbonamento.setStatoAbbonamento(aggiornaCampagnaInviatoSospeso(abbonamento,campagna));
+	        		break;
+	        	
+	        	case InviatoEC:	
+	        		abbonamento.setStatoAbbonamento(aggiornaCampagnaInviatoEC(abbonamento,campagna));
+	        		break;
+	        	
+	        	case Chiusa:
+	        		break;
+	        	
+	    		default:
+	    			break;
+	        }
+		}
+        abbonamentoDao.save(abbonamento);
+	}
+
+	private StatoAbbonamento aggiornaCampagnaInviatoEC(Abbonamento abbonamento, Campagna campagna) {
+    	boolean almenounarivistasospesa=false;
+    	boolean almenounarivistaattiva=false;
+    	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+    			findByAbbonamento(abbonamento)) {
+    		StatoRivista stato = Smd.getStatoRivista(abbonamento, ra, campagna);
+        	if (stato != StatoRivista.Attiva) {
+        		almenounarivistasospesa=true;
+				ra.setStatoRivista(StatoRivista.Sospesa);
+				rivistaAbbonamentoDao.save(ra);
+				sospendiSpedizioniProgrammate(abbonamento,ra);
+        	} else {
+        		almenounarivistaattiva=true;
+				ra.setStatoRivista(StatoRivista.Attiva);
+				rivistaAbbonamentoDao.save(ra);
+				programmaSpedizioniSospese(abbonamento,ra);
+        	}
+        }
+    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso);
+	}
+
+	private StatoAbbonamento aggiornaCampagnaInviatoSospeso(Abbonamento abbonamento, Campagna campagna) {
+        List<Long> rivisteSospese = 
+        		operazioneSospendiDao
+        		.findByCampagna(campagna)
+        		.stream()
+        		.map(opsos -> opsos.getPubblicazione().getId())
+        		.collect(Collectors.toList());
+    	boolean almenounarivistasospesa=false;
+    	boolean almenounarivistaattiva=false;
+    	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+    			findByAbbonamento(abbonamento)) {
+    		StatoRivista stato = Smd.getStatoRivista(abbonamento, ra, campagna);
+        	boolean sospesa = rivisteSospese.contains(ra.getPubblicazione().getId());
+        	if (stato != StatoRivista.Attiva && sospesa) {
+        		almenounarivistasospesa=true;
+				ra.setStatoRivista(StatoRivista.Sospesa);
+				rivistaAbbonamentoDao.save(ra);
+				sospendiSpedizioniProgrammate(abbonamento,ra);
+        	} else {
+        		almenounarivistaattiva=true;
+				ra.setStatoRivista(StatoRivista.Attiva);
+				rivistaAbbonamentoDao.save(ra);
+				programmaSpedizioniSospese(abbonamento,ra);
+        	}
+        }
+    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso);		
+	}
+	
+	@Override
+	public List<RivistaAbbonamento> getNotValid(Abbonamento abbonamento,Campagna campagna) {
+		return rivistaAbbonamentoDao
+				.findByAbbonamento(abbonamento)
+				.stream()
+				.filter(ra ->  
+					Smd.getStatoAbbonamento(abbonamento, ra, campagna,false) != StatoAbbonamento.Valido)
+				.collect(Collectors.toList());
+	}
+
+	
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -29,12 +30,15 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 			Pubblicazione p, 
 			TipoAbbonamentoRivista t, 
 			StatoAbbonamento s, 
+			StatoRivista sr, 
 			Incassato inc,
 			String codeLine,
 			boolean checkContrassegno,
 			boolean checkResiduo,
 			boolean checkNotResiduo,
-			boolean checkResiduoZero
+			boolean checkResiduoZero,
+			boolean checkSollecitato,
+			boolean checkInviatoEC
 			);
 	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 }

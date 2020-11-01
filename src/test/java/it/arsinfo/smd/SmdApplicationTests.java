@@ -1519,6 +1519,7 @@ public class SmdApplicationTests {
         
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
 
+
         RivistaAbbonamento ec1 = new RivistaAbbonamento();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(lodare);
@@ -1535,8 +1536,29 @@ public class SmdApplicationTests {
                                            new ArrayList<>(), 
                                            SmdHelper.getSpeseSpedizione()
                                            );
+        spedizioni.forEach(s -> log.info("{}",s.getSpedizione()));
         assertTrue(Smd.isAbbonamentoAnnuale(ec1));
-        
+        // gen -> 1 sped post gen feb - 10 sped normale    -> 11 tot  -> tot riviste inv 3
+        // feb -> 1 sped post ....... -  9 sped normale    -> 10 tot  -> tot riviste inv 4
+        // mar -> 1 sped post ....... -  8 normale         ->  9 tot  -> tot riviste inv 5
+        // apr -> 1 sped post ...     -  7 normale          -> 8 tot  -> tot riviste inv 6
+        // mag -> 1 sped post ...     -  6 normale          -> 7 tot  -> tot riviste inv 7
+        // giu -> 1 sped post ...     -  5 normale          -> 6 tot  -> tot riviste inv 8
+        // lug -> 1 sped post ...     -  4 normale          -> 5 tot  -> tot riviste inv 9
+        // ago -> 1 sped post ...     -  3 normale          -> 4 tot  -> tot riviste inv 10
+        // set -> 1 sped post ...     -  2 normale          -> 3 tot  -> tot riviste inv 11
+        // ott -> 1 sped post ...     -  1 normale          -> 2 tot  -> tot riviste inv 12
+        // nov -> 1 sped post ...     -  0 normale          -> 1 tot  -> tot riviste inv 12
+        // dic -> 1 sped post ...     -  0 normale          -> 1 tot  -> tot riviste inv 12
+        assertEquals(lodare.getMesiPubblicazione().size(), 12);
+        assertEquals(2, lodare.getAnticipoSpedizione());
+    	log.info("mese corrente: {} pos: {}", Mese.getMeseCorrente(), Mese.getMeseCorrente().getPosizione());
+        if (12-Mese.getMeseCorrente().getPosizione()-lodare.getAnticipoSpedizione() < 0) {
+        	//1 Spedizione posticipata
+        	assertEquals(1, spedizioni.size());
+        } else {
+        	assertEquals(lodare.getMesiPubblicazione().size()-lodare.getAnticipoSpedizione()-Mese.getMeseCorrente().getPosizione()+2, spedizioni.size());
+        }
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
         spedizioni.stream().forEach(sped -> {
@@ -1572,20 +1594,29 @@ public class SmdApplicationTests {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
-        }        
+        }     
         assertEquals(0, aggiorna.getRivisteToDelete().size());
         assertEquals(1, aggiorna.getRivisteToSave().size());
         RivistaAbbonamento rivista=aggiorna.getRivisteToSave().iterator().next();
         assertEquals(1, rivista.getNumero().intValue());
         assertEquals(Mese.GENNAIO, rivista.getMeseInizio());
-        assertEquals(Mese.getByPosizione(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()), rivista.getMeseFine());
+        if (Mese.getByPosizione(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()) == null) {
+        	assertEquals(Mese.DICEMBRE, rivista.getMeseFine());
+        } else {
+        	assertEquals(Mese.getByPosizione(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()), rivista.getMeseFine());
+        }
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoInizio());
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoFine());
-        assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione(), rivista.getNumeroTotaleRiviste().intValue());
         rivistaAbbonamentoDao.save(aggiorna.getRivisteToSave().iterator().next());
         
         spedizioni=smdService.findByAbbonamento(abb);
-        assertEquals(2, spedizioni.size());
+        if (12-Mese.getMeseCorrente().getPosizione()-lodare.getAnticipoSpedizione() < 0) {
+        	assertEquals(1, spedizioni.size());
+        	assertEquals(12, rivista.getNumeroTotaleRiviste().intValue());
+        } else {
+            assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione(), rivista.getNumeroTotaleRiviste().intValue());
+            assertEquals(2, spedizioni.size());
+        }
         for (SpedizioneWithItems inviata : spedizioni) {
         	assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
         	assertEquals(inviata.getSpedizione().getMeseSpedizione(), Mese.getMeseCorrente());
@@ -1595,7 +1626,11 @@ public class SmdApplicationTests {
         	log.info("Spedizione: {} {} ", inviata.getSpedizione().getMeseSpedizione().getNomeBreve(), inviata.getSpedizione().getAnnoSpedizione().getAnnoAsString());
         	log.info("Spedizione: {} Item ", inviata.getSpedizioneItems().size());
         	if (inviata.getSpedizione().getInvioSpedizione() == InvioSpedizione.AdpSede) {
-        		assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()-1,inviata.getSpedizioneItems().size());
+                if (12-Mese.getMeseCorrente().getPosizione()-lodare.getAnticipoSpedizione() < 0) {
+                	assertEquals(12, inviata.getSpedizioneItems().size());
+                } else {
+            		assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()-1,inviata.getSpedizioneItems().size());
+                }
         	} else {
         		assertEquals(1,inviata.getSpedizioneItems().size());
         	}

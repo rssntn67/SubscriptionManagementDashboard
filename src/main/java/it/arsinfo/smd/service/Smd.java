@@ -48,6 +48,7 @@ import it.arsinfo.smd.data.Sostitutivo;
 import it.arsinfo.smd.data.SpedizioneWithItems;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -72,35 +73,107 @@ public class Smd {
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
     private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
-    
-    public static StatoAbbonamento getStatoAbbonamento(Abbonamento abbonamento, RivistaAbbonamento rivista, StatoAbbonamento def) {
-		if (def == null) {
-			return rivista.getStatoAbbonamento();
-		}
-		if (isOmaggio(rivista)) {
+
+    public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
+    	if (statoCampagna == StatoCampagna.Generata ) {
+    		return StatoAbbonamento.Nuovo;
+    	}
+    	
+    	if (statoCampagna == StatoCampagna.Inviata || statoCampagna == StatoCampagna.InviatoSollecito) {
+    		StatoAbbonamento stato = StatoAbbonamento.Proposto;
+    		switch (incassato) {
+			case Si:
+				stato = StatoAbbonamento.Valido;
+				break;
+			case SiConDebito:
+				stato = StatoAbbonamento.Valido;
+				break;
+
+			default:
+				break;
+			}
+    		return stato;
+    	}
+
+    	if (almenounarivistaattiva && !almenounarivistasospesa) {
+    		StatoAbbonamento stato = StatoAbbonamento.Proposto;
+    		switch (incassato) {
+			case Si:
+				stato = StatoAbbonamento.Valido;
+				break;
+			case SiConDebito:
+				stato = StatoAbbonamento.Valido;
+				break;
+
+			default:
+				break;
+			}
+    		return stato;
+    	} 
+    	if (almenounarivistaattiva && almenounarivistasospesa){ 
+    		return StatoAbbonamento.ParzialmenteSospeso;        		
+    	}
+    	
+    	return StatoAbbonamento.Sospeso;
+
+    }
+    public static StatoAbbonamento getStatoAbbonamento(Abbonamento abbonamento, RivistaAbbonamento rivista, Campagna campagna, boolean rivistasospesa) {
+    	
+    	if (Smd.isOmaggio(rivista)) {
 			return StatoAbbonamento.Valido;
 		}
 
-		StatoAbbonamento stato = def;
+        StatoAbbonamento stato = StatoAbbonamento.Nuovo;
+        
+        if (campagna != null) {
+        	switch (campagna.getStatoCampagna()) {
+			case Generata:
+				break;
+
+			case Inviata:
+				stato = StatoAbbonamento.Proposto;
+				break;
+
+			case InviatoSollecito:
+				stato=StatoAbbonamento.Proposto;
+				break;
+
+			case InviatoSospeso:
+				if (rivistasospesa) {
+					stato = StatoAbbonamento.Sospeso;
+				} else {
+					stato = StatoAbbonamento.Proposto;
+				}
+				break;
+
+			case InviatoEC:
+				stato=StatoAbbonamento.Sospeso;
+				break;
+				
+			case Chiusa:
+				stato=StatoAbbonamento.Sospeso;
+				break;
+
+			default:
+				break;
+			}
+        }
+
     	switch (abbonamento.getStatoIncasso()) {
 			case Si:
-				stato=StatoAbbonamento.Valido;
+				stato = StatoAbbonamento.Valido;
 				break;
+			
 			case SiConDebito:
-				stato=StatoAbbonamento.Valido;
+				stato = StatoAbbonamento.Valido;
 				break;
+
 			case No:
-				if (def == StatoAbbonamento.InviatoEC 
-				&& abbonamento.getImporto().subtract(new BigDecimal("7.00")).signum() < 0) {
-					stato=StatoAbbonamento.Sospeso;
-				}
 				break;
+			
 			case Parzialmente:
-				if (def == StatoAbbonamento.InviatoEC 
-				&& abbonamento.getResiduo().subtract(new BigDecimal("7.00")).signum() < 0) {
-					stato=StatoAbbonamento.Sospeso;
-				}
 				break;
+			
 			default:
 				break;
         }
@@ -109,7 +182,36 @@ public class Smd {
 
     }
 
-    
+    public static StatoRivista getStatoRivista(Abbonamento abbonamento, RivistaAbbonamento rivista, Campagna campagna) {
+    	
+    	if (Smd.isOmaggio(rivista)) {
+			return StatoRivista.Attiva;
+		}
+
+        StatoRivista stato = StatoRivista.Sospesa;
+    	switch (abbonamento.getStatoIncasso()) {
+			case Si:
+				stato = StatoRivista.Attiva;
+				break;
+			
+			case SiConDebito:
+				stato = StatoRivista.Attiva;
+				break;
+
+			case No:
+				break;
+			
+			case Parzialmente:
+				break;
+			
+			default:
+				break;
+        }
+    	
+    	return stato;
+
+    }
+
     public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
     	boolean isOmaggio=false;
     	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
