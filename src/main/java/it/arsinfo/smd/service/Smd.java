@@ -79,36 +79,16 @@ public class Smd {
     		return StatoAbbonamento.Nuovo;
     	}
     	
+    	if (incassato == Incassato.Si || incassato == Incassato.SiConDebito) {
+    		return StatoAbbonamento.Valido;
+    	}
+    	
     	if (statoCampagna == StatoCampagna.Inviata || statoCampagna == StatoCampagna.InviatoSollecito) {
-    		StatoAbbonamento stato = StatoAbbonamento.Proposto;
-    		switch (incassato) {
-			case Si:
-				stato = StatoAbbonamento.Valido;
-				break;
-			case SiConDebito:
-				stato = StatoAbbonamento.Valido;
-				break;
-
-			default:
-				break;
-			}
-    		return stato;
+    		return StatoAbbonamento.Proposto;
     	}
 
     	if (almenounarivistaattiva && !almenounarivistasospesa) {
-    		StatoAbbonamento stato = StatoAbbonamento.Proposto;
-    		switch (incassato) {
-			case Si:
-				stato = StatoAbbonamento.Valido;
-				break;
-			case SiConDebito:
-				stato = StatoAbbonamento.Valido;
-				break;
-
-			default:
-				break;
-			}
-    		return stato;
+    		return StatoAbbonamento.Proposto;
     	} 
     	if (almenounarivistaattiva && almenounarivistasospesa){ 
     		return StatoAbbonamento.ParzialmenteSospeso;        		

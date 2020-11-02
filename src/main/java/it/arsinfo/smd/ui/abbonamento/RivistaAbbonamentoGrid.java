@@ -10,7 +10,7 @@ public class RivistaAbbonamentoGrid extends SmdGrid<RivistaAbbonamento> {
     public RivistaAbbonamentoGrid(String gridname) {
         super(new Grid<>(RivistaAbbonamento.class),gridname);
         setColumns("numeroTotaleRiviste","numero","pubblicazione.nome","beneficiario","importo",
-                   "meseInizio","annoInizio","meseFine","annoFine","tipoAbbonamentoRivista","statoAbbonamento");
+                   "meseInizio","annoInizio","meseFine","annoFine","tipoAbbonamentoRivista","statoRivista");
         setColumnCaption("pubblicazione.nome","Pubblicazione");
         setColumnCaption("numero","Quan.tà");
 

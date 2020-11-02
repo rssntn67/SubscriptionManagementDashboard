@@ -24,6 +24,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         		"totale",
         		"incassato",
         		"residuo",
+        		"statoAbbonamento",
         		"anno");
         gridfooter = getGrid().prependFooterRow();
 	}
