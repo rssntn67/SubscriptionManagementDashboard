@@ -27,5 +27,5 @@ public interface SpedizioneServiceDao extends SmdServiceItemDao<Spedizione,Spedi
 	List<Pubblicazione> findPubblicazioni();
 	List<Anagrafica> findAnagrafica();
 	void inviaDuplicato(Spedizione sped, InvioSpedizione invio) throws Exception;
-	Indirizzo stampa(Spedizione sped);
+	Indirizzo getIndirizzo(Spedizione sped);
 }

@@ -7,10 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -18,6 +25,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.repository.UserInfoDao;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
@@ -70,6 +78,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_ADMIN_USER = "/admin/user";
     public final static String URL_RESET_PASS = "/reset/pass";
 
+    public final static String URL_STAMPA_INDIRIZZO_SPEDIZIONE = "/stampasped";
     public static final String TITLE_HOME = "Home";
     public final static String TITLE_ANAGRAFICA = "Anagrafica";
     public final static String TITLE_PUBBLICAZIONI = "Pubblicazioni";
@@ -106,6 +115,10 @@ public abstract class SmdUI extends UI {
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
+        BrowserWindowOpener popupOpener = new BrowserWindowOpener("/printtest");
+        Button stampa = new Button("Stampa", VaadinIcons.PRINT);
+        popupOpener.extend(stampa);
+        layout.addComponent(stampa);
         setContent(layout);
         
         menu.addItem(TITLE_HOME,new MenuBar.Command() {
@@ -308,7 +321,7 @@ public abstract class SmdUI extends UI {
                 }
             } );
         }
-
+        
     }
 
     protected void setExpandRatio(Component component, float ratio) {
@@ -392,4 +405,49 @@ public abstract class SmdUI extends UI {
         this.loggedInUser = loggedInUser;
     }
 
+    public static Layout stampa(Indirizzo indirizzo) {
+		StringBuffer html = new StringBuffer("<p>");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
+		
+		html.append(indirizzo.getIntestazione());
+    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
+    		html.append("<br/>\n");
+    		html.append(indirizzo.getSottoIntestazione());
+    	}
+		html.append("<br/>\n");
+		html.append(indirizzo.getIndirizzo());
+		html.append("<br/>\n");
+		html.append(indirizzo.getCap());
+		html.append(" ");
+		html.append(indirizzo.getCitta()); ;
+		html.append("(");
+		html.append(indirizzo.getProvincia().name());
+		html.append(")");
+		html.append("<br/>\n");
+		html.append(indirizzo.getPaese().getNome());
+		html.append("</p>\n");
+		GridLayout lay = new GridLayout(3,1);
+		lay.setWidth(220,Sizeable.Unit.MM);
+		lay.setHeight(110,Sizeable.Unit.MM);
+		VerticalLayout left = new VerticalLayout(new Label(""));
+		left.setMargin(true);
+		left.setSpacing(true);
+		VerticalLayout right = new VerticalLayout(new Label(""));
+		right.setMargin(true);
+		right.setSpacing(true);
+		VerticalLayout center = new VerticalLayout();
+		center.addComponent(new Label(html.toString(), ContentMode.HTML));
+		center.setMargin(true);
+		center.setSpacing(true);
+
+		lay.addComponent(left, 0, 0);
+		lay.addComponent(center, 1, 0);
+		lay.addComponent(right, 2, 0);
+
+		return lay;
+    }
 }

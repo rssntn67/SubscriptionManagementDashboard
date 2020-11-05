@@ -43,23 +43,31 @@ public class Indirizzo {
     	this.secondo=secondo;
     	this.terzo=terzo;
     }
+    
+    public static String getIntestazione(Anagrafica tizio) {
+    	if (tizio.getNome() == null)
+            return String.format("%s %s", tizio.getTitolo().getIntestazione(), tizio.getDenominazione());
+        return String.format("%s %s %s", tizio.getTitolo().getIntestazione(),tizio.getNome(), tizio.getDenominazione());    	
+    }
+
+    public static String getIntestazioneCo(Anagrafica caio) {
+    	if (caio.getNome() == null)
+            return String.format("c/o %s %s", caio.getTitolo().getIntestazione(), caio.getDenominazione());
+        return String.format("c/o %s %s %s", caio.getTitolo().getIntestazione(),caio.getNome(), caio.getDenominazione());    	
+    }
 
     public String getIntestazione() {
-        return String.format("%s %s", primo.getTitolo().getIntestazione(), primo.getDenominazione());
+    	return getIntestazione(primo);
     }
 
     public String getSottoIntestazione() {
         if (secondo == null) {
-    		return primo.getNome();
+    		return null;
         } 
         if (terzo != null) {
-        	return String.format("c/o %s %s %s", 
-        		terzo.getTitolo().getIntestazione(),
-        		terzo.getDenominazione(),terzo.getNome());
+        	return getIntestazioneCo(terzo);
         }
-    	return String.format("c/o %s %s %s", 
-        		secondo.getTitolo().getIntestazione(),
-        		secondo.getDenominazione(),secondo.getNome());
+    	return getIntestazioneCo(terzo);
     }
     
     public String getIndirizzo() {

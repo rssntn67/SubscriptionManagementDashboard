@@ -78,7 +78,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         duplicaAdpSpesePostal.addClickListener(e -> duplica(maineditor.get(),InvioSpedizione.AdpSede));
         maineditor.getActions().addComponent(duplicaAdpSpesePostal);
         
-        BrowserWindowOpener popupOpener = new BrowserWindowOpener("print");
+        BrowserWindowOpener popupOpener = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
         Button stampa = new Button("Stampa", VaadinIcons.PRINT);
         popupOpener.extend(stampa);
         maineditor.getActions().addComponent(stampa);

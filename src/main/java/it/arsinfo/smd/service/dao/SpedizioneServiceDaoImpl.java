@@ -187,7 +187,7 @@ public class SpedizioneServiceDaoImpl implements SpedizioneServiceDao {
 	}
 
 	@Override
-	public Indirizzo stampa(Spedizione sped) {
+	public Indirizzo getIndirizzo(Spedizione sped) {
 		Anagrafica co = sped.getDestinatario().getCo();
 		if (co == null)
 			return Indirizzo.getIndirizzo(sped.getDestinatario());
