@@ -7,19 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.dao.SpedizioneServiceDao;
 import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
@@ -41,8 +37,8 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    SpedizioneServiceDao dao;
-            
+    private SpedizioneServiceDao dao;
+                
     @Override
     protected void init(VaadinRequest request) {
         List<Anagrafica> anagrafica = dao.findAnagrafica();
@@ -82,8 +78,9 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         duplicaAdpSpesePostal.addClickListener(e -> duplica(maineditor.get(),InvioSpedizione.AdpSede));
         maineditor.getActions().addComponent(duplicaAdpSpesePostal);
         
+        BrowserWindowOpener popupOpener = new BrowserWindowOpener("print");
         Button stampa = new Button("Stampa", VaadinIcons.PRINT);
-        stampa.addClickListener(e -> stampa(maineditor.get()));
+        popupOpener.extend(stampa);
         maineditor.getActions().addComponent(stampa);
         
         SmdEntityItemEditor<SpedizioneItem,Spedizione> editor = 
@@ -94,6 +91,20 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         editor.addComponents(itemgrid.getComponents());
 
         super.init(request,add,search,editor,grid, "Spedizioni");
+
+        grid.setChangeHandler(() -> {
+            if (grid.getSelected() == null) {
+                return;
+            }
+            setHeader("Spedizioni"+":Edit:"+grid.getSelected().getHeader());
+            if (grid.getSelected().getId() != null)
+            	popupOpener.setParameter("id", grid.getSelected().getId().toString());
+            hideMenu();
+            add.setVisible(false);
+            search.setVisible(false);
+            grid.setVisible(false);
+            editor.edit(grid.getSelected());
+        });
 
         addSmdComponents(editor,search, grid);
 
@@ -110,26 +121,4 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 		}
 	}
     
-    private void stampa(Spedizione sped) {
-    	Indirizzo indirizzo = dao.stampa(sped);
-    	Window subWindow = new Window();
-    	VerticalLayout subContent = new VerticalLayout();
-    	subContent.addComponent(new Label(indirizzo.getIntestazione()));
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
-    		subContent.addComponent(new Label(indirizzo.getSottoIntestazione()));
-    	}
-    	subContent.addComponent(new Label(indirizzo.getIndirizzo()));
-    	subContent.addComponent(
-			new Label(
-				indirizzo.getCap() + " " + indirizzo.getCitta() + " ("+indirizzo.getProvincia().name()+")"
-			)
-		);
-    	subContent.addComponent(new Label(indirizzo.getPaese().getNome()));
-
-    	subWindow.setContent(subContent);
-    	subWindow.center();
-    	UI.getCurrent().addWindow(subWindow);
-    }
-
-
 }

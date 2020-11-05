@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo</groupId>
 	<artifactId>smd</artifactId>
-	<version>4.1.1-SNAPSHOT</version>
+	<version>4.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>smd</name>
@@ -70,7 +70,7 @@
         <profile>
             <id>prod</id>
             <properties>
-				<maven.test.skip>true</maven.test.skip>
+		<maven.test.skip>true</maven.test.skip>
                 <activatedProperties>prod</activatedProperties>
             </properties>
         </profile>
