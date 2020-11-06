@@ -444,7 +444,7 @@ public abstract class SmdUI extends UI {
 		topright.setMargin(false);
 		topright.setSpacing(false);
 		topright.setWidth(90,Sizeable.Unit.MM);
-		topright.setHeight(50,Sizeable.Unit.MM);
+		topright.setHeight(65,Sizeable.Unit.MM);
 		right.addComponent(topright);
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		right.addComponent(label);
