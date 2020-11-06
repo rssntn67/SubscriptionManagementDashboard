@@ -16,6 +16,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
@@ -412,6 +413,9 @@ public abstract class SmdUI extends UI {
 		html.append("<br/>\n");
 		html.append("<br/>\n");
 		html.append("<br/>\n");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
+		html.append("<br/>\n");
 		
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
@@ -430,23 +434,19 @@ public abstract class SmdUI extends UI {
 		html.append("<br/>\n");
 		html.append(indirizzo.getPaese().getNome());
 		html.append("</p>\n");
-		GridLayout lay = new GridLayout(3,1);
+		HorizontalLayout lay = new HorizontalLayout();
 		lay.setWidth(220,Sizeable.Unit.MM);
 		lay.setHeight(110,Sizeable.Unit.MM);
-		VerticalLayout left = new VerticalLayout(new Label(""));
-		left.setMargin(true);
-		left.setSpacing(true);
-		VerticalLayout right = new VerticalLayout(new Label(""));
+		VerticalLayout left = new VerticalLayout();
+		left.setHeight(100,Sizeable.Unit.MM);
+		left.setWidth(130,Sizeable.Unit.MM);
+		VerticalLayout right = new VerticalLayout();
 		right.setMargin(true);
 		right.setSpacing(true);
-		VerticalLayout center = new VerticalLayout();
-		center.addComponent(new Label(html.toString(), ContentMode.HTML));
-		center.setMargin(true);
-		center.setSpacing(true);
+		right.addComponent(new Label(html.toString(), ContentMode.HTML));
 
-		lay.addComponent(left, 0, 0);
-		lay.addComponent(center, 1, 0);
-		lay.addComponent(right, 2, 0);
+		lay.addComponent(left);
+		lay.addComponent(right);
 
 		return lay;
     }
