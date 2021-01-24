@@ -240,6 +240,7 @@ public class SmdServiceImpl implements SmdService {
     public void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
+        log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         RivistaAbbonamentoAggiorna aggiorna = 
         		Smd.aggiorna(
@@ -249,24 +250,41 @@ public class SmdServiceImpl implements SmdService {
                         rivistaAbbonamento,
                         numero,
                         tipo
-                );          
+                );
+        
+        log.info("aggiorna: {} saving riviste ", rivistaAbbonamento);
+        aggiorna.getRivisteToSave().forEach(r -> {
+        	rivistaAbbonamentoDao.save(r);
+        	});
+        log.info("aggiorna: {} saved riviste ", rivistaAbbonamento);
+        
+        log.info("aggiorna: {} saving abbonamento ", rivistaAbbonamento);
+        if (aggiorna.getAbbonamentoToSave() != null) {
+        	aggiorna(aggiorna.getAbbonamentoToSave());
+        }
+        log.info("aggiorna: {} saved abbonamento ", rivistaAbbonamento);
+
+        log.info("aggiorna: {} saving spedizioni ", rivistaAbbonamento);
         aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+        	log.info("aggiorna: {}, save {}", rivistaAbbonamento, sped.getSpedizione());
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
+        log.info("aggiorna: {} saved spedizioni ", rivistaAbbonamento);
         
-        aggiorna.getItemsToDelete().forEach(rimitem -> spedizioneItemDao.deleteById(rimitem.getId()));
+        log.info("aggiorna: {} deleting spedizioni ", rivistaAbbonamento);
+        aggiorna.getItemsToDelete().forEach(rimitem -> {
+        	log.info("aggiorna: {}, del {}", rivistaAbbonamento, rimitem);
+        	spedizioneItemDao.deleteById(rimitem.getId());
+        	});
+        log.info("aggiorna: {} deleted spedizioni ", rivistaAbbonamento);
         
         for (SpedizioneWithItems sped:aggiorna.getSpedizioniToSave()) {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
-        aggiorna.getRivisteToSave().forEach(r -> rivistaAbbonamentoDao.save(r));
         
-        if (aggiorna.getAbbonamentoToSave() != null) {
-        	aggiorna(aggiorna.getAbbonamentoToSave());
-        }
     }
 
     @Override
