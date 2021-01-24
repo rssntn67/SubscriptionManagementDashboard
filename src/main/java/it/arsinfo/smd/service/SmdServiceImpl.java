@@ -252,35 +252,30 @@ public class SmdServiceImpl implements SmdService {
                         tipo
                 );
         
-        log.info("aggiorna: {} saving riviste ", rivistaAbbonamento);
         aggiorna.getRivisteToSave().forEach(r -> {
+            log.info("aggiorna: {} save ", r);
         	rivistaAbbonamentoDao.save(r);
         	});
-        log.info("aggiorna: {} saved riviste ", rivistaAbbonamento);
         
-        log.info("aggiorna: {} saving abbonamento ", rivistaAbbonamento);
         if (aggiorna.getAbbonamentoToSave() != null) {
+            log.info("aggiorna: {} save ", aggiorna.getAbbonamentoToSave());
         	aggiorna(aggiorna.getAbbonamentoToSave());
         }
-        log.info("aggiorna: {} saved abbonamento ", rivistaAbbonamento);
 
-        log.info("aggiorna: {} saving spedizioni ", rivistaAbbonamento);
         aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
         	log.info("aggiorna: {}, save {}", rivistaAbbonamento, sped.getSpedizione());
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
         });
-        log.info("aggiorna: {} saved spedizioni ", rivistaAbbonamento);
         
-        log.info("aggiorna: {} deleting spedizioni ", rivistaAbbonamento);
         aggiorna.getItemsToDelete().forEach(rimitem -> {
         	log.info("aggiorna: {}, del {}", rivistaAbbonamento, rimitem);
         	spedizioneItemDao.deleteById(rimitem.getId());
         	});
-        log.info("aggiorna: {} deleted spedizioni ", rivistaAbbonamento);
         
         for (SpedizioneWithItems sped:aggiorna.getSpedizioniToSave()) {
             if (sped.getSpedizioneItems().isEmpty()) {
+            	log.info("aggiorna: {}, del {}",rivistaAbbonamento, sped);
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
