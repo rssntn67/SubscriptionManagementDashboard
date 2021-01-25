@@ -530,7 +530,13 @@ public class Smd {
     		}
     	}
 
+    	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
+    	Anno annoSped=annoUltimaSped;
+    	if (meseSped==Mese.GENNAIO) {
+    		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
+    	}
     	
+    	log.info("aggiorna: ultima rivista {} {}",meseFineInv,annoFineInv);
     	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseUltimaSped,annoUltimaSped, inviate.size());
         if (inviate.size() == 0) {
         	int numeroTotaleRiviste = 0;
@@ -563,11 +569,6 @@ public class Smd {
         	RivistaAbbonamento r = original.clone();
         	r.setNumero(numero-original.getNumero());
         	r.setTipoAbbonamentoRivista(tipo);
-        	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
-        	Anno annoSped=annoUltimaSped;
-        	if (meseSped==Mese.GENNAIO) {
-        		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
-        	}
         	spedizioni=genera(abb,r, spedizioni, spese,meseSped,annoSped);
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
             aggiorna.setAbbonamentoToSave(abb);
