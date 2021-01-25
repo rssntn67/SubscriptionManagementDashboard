@@ -55,8 +55,7 @@ public class OperazioneSearch extends SmdSearch<Operazione> {
         filterMese.setItemCaptionGenerator(Mese::getNomeBreve);
         filterMese.addSelectionListener(e -> {
             onChange();
-        });
-        
+        });        
     }
     
     @Override

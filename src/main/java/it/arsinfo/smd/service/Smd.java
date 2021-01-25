@@ -528,12 +528,6 @@ public class Smd {
     			}
     		}
     	}
-
-    	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
-    	Anno annoSped=annoUltimaSped;
-    	if (meseSped==Mese.GENNAIO) {
-    		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
-    	}
     	
     	log.info("aggiorna: ultima rivista {} {}",meseFineInv,annoFineInv);
     	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseUltimaSped,annoUltimaSped, inviate.size());
@@ -559,7 +553,13 @@ public class Smd {
             log.info("aggiorna: nessuna spedizione inviata: {}, {}",abb,original);
             return aggiorna;
         }
-        
+
+    	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
+    	Anno annoSped=annoUltimaSped;
+    	if (meseSped==Mese.GENNAIO) {
+    		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
+    	}
+
     	if (numero > original.getNumero()) {
         	original.setTipoAbbonamentoRivista(tipo);
         	calcoloImporto(original);

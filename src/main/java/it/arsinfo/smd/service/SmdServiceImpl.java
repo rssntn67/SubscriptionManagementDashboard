@@ -374,6 +374,17 @@ public class SmdServiceImpl implements SmdService {
     			spedizioneItemDao.save(item);
     		}
     	);
+        
+        spedizioneItemDao.findByPubblicazioneAndStatoSpedizione(p, StatoSpedizione.SOSPESA)
+        .stream()
+        .filter(item -> spedizioniIds.contains(item.getSpedizione().getId()))
+        .forEach(item -> 
+        	{
+    			item.setStatoSpedizione(StatoSpedizione.ANNULLATA);
+    			spedizioneItemDao.save(item);
+    		}
+    	);
+
     }
     
     @Override

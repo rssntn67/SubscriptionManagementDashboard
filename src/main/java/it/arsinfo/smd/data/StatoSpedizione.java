@@ -3,7 +3,8 @@ package it.arsinfo.smd.data;
 public enum StatoSpedizione {
     PROGRAMMATA("Programmata"),
     INVIATA("Inviata"),
-    SOSPESA("Sospesa");
+    SOSPESA("Sospesa"),
+    ANNULLATA("Annullata");
     
     String descr;
     
