@@ -113,8 +113,9 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista);
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f %s, %s %s -> %s %s]", 
+                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista, 
+                             meseInizio,annoInizio,meseFine,annoFine);
     }
         
     public BigDecimal getImporto() {

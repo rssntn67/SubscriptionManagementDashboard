@@ -181,7 +181,7 @@ public class SmdLoadSampleData implements Runnable {
                            abb, 
                            ec,
                            spedizioni, 
-                           SmdHelper.getSpeseSpedizione()
+                           SmdHelper.getSpeseSpedizione(), Mese.getMeseCorrente(),Anno.getAnnoCorrente()
                        
                   );
             abbonamentoDao.save(abb);

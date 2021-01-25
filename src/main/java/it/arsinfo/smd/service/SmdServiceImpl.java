@@ -223,7 +223,7 @@ public class SmdServiceImpl implements SmdService {
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
-            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
+            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         }
         abbonamentoDao.save(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
@@ -241,11 +241,10 @@ public class SmdServiceImpl implements SmdService {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
-        List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         RivistaAbbonamentoAggiorna aggiorna = 
         		Smd.aggiorna(
         				abbonamento,
-        				spedizioni,
+        				findByAbbonamento(abbonamento),
                         spesaSpedizioneDao.findAll(),
                         rivistaAbbonamento,
                         numero,

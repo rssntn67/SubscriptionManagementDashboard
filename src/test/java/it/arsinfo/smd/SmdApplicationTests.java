@@ -927,7 +927,7 @@ public class SmdApplicationTests {
             = Smd.genera(abb, 
                                ec,
                                new ArrayList<>(),
-                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         
         assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
@@ -985,7 +985,7 @@ public class SmdApplicationTests {
             = Smd.genera(abb, 
                                ec,
                                new ArrayList<>(),
-                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         
         assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
@@ -1315,7 +1315,7 @@ public class SmdApplicationTests {
         spedizioni = Smd.genera(abb,
                                           ec3,
                                           spedizioni,
-                                          SmdHelper.getSpeseSpedizione());
+                                          SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec3);
         spedizioni.stream().forEach(sped -> {
@@ -1376,20 +1376,20 @@ public class SmdApplicationTests {
                      abb,
                      ec1,
                      new ArrayList<SpedizioneWithItems>(),
-                     SmdHelper.getSpeseSpedizione());
+                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         spedizioni = 
                 Smd.genera(
                      abb,
                      ec2,
                     spedizioni,
-                     SmdHelper.getSpeseSpedizione());        
+                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());        
 
         spedizioni = 
                 Smd.genera(
                      abb,
                      ec3,
                     spedizioni,
-                     SmdHelper.getSpeseSpedizione());        
+                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());        
 
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
@@ -1534,7 +1534,7 @@ public class SmdApplicationTests {
                                            abb,
                                            ec1,
                                            new ArrayList<>(), 
-                                           SmdHelper.getSpeseSpedizione()
+                                           SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente()
                                            );
         spedizioni.forEach(s -> log.info("{}",s.getSpedizione()));
         assertTrue(Smd.isAbbonamentoAnnuale(ec1));
@@ -1667,7 +1667,7 @@ public class SmdApplicationTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());        
+                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());        
         assertTrue(Smd.isAbbonamentoAnnuale(ec1));
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
@@ -1951,7 +1951,7 @@ public class SmdApplicationTests {
         ec.setAnnoFine(Anno.getAnnoProssimo());
         ec.setDestinatario(davidePalma);
 
-        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
+        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         

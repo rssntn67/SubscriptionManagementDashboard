@@ -550,7 +550,7 @@ public class Smd {
         	RivistaAbbonamento r = original.clone();
         	r.setNumero(numero-original.getNumero());
         	r.setTipoAbbonamentoRivista(tipo);
-        	genera(abb,r, spedizioni, spese);
+        	spedizioni=genera(abb,r, spedizioni, spese,meseFineInv,annoFineInv);
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
@@ -720,21 +720,14 @@ public class Smd {
         aggiorna.setSpedizioniToSave(spedizioni);
         aggiorna.getRivisteToSave().add(original);
         aggiorna.setItemsToDelete(rimItems);
-        log.info("rimuovi: {}",abb);
-        log.info("rimuovi: {}",original);
+        log.info("rimuovi:  from {} ec -> {}",abb,original);
 
     	return aggiorna;
 
     }
 
     public static List<SpedizioneItem> generaSpedizioneItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
-        log.debug("generaECItems: tipo: "+ ec.getTipoAbbonamentoRivista());
-        log.debug("generaECItems: pubbli.: "+ ec.getPubblicazione().getNome());
-        log.debug("generaECItems: meseInizio: "+ ec.getMeseInizio().getNomeBreve());
-        log.debug("generaECItems: annoInizio: "+ ec.getAnnoInizio().getAnnoAsString());
-        log.debug("generaECItems: meseFine: "+ ec.getMeseFine().getNomeBreve());
-        log.debug("generaECItems: annoFine: "+ ec.getAnnoFine().getAnnoAsString());
-        log.debug("generaECItems: quantità: "+ ec.getNumero());
+        log.info("generaSpedizioneItems: {}", ec);
         List<SpedizioneItem> items = new ArrayList<>();
         Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
         for (Anno anno: mappaPubblicazioni.keySet()) {
@@ -746,11 +739,13 @@ public class Smd {
                 item.setNumero(ec.getNumero());
                 item.setPubblicazione(ec.getPubblicazione());
                 items.add(item);
+                log.info("generaSpedizioneItems: {} ", item);
             });
         }
       if (items.isEmpty()) {
           throw new UnsupportedOperationException("Nessuna spedizione per rivista in Abbonamento");
       }
+      log.info("generaSpedizioneItems: generati {} items", items.size());
       return items; 
     }
 
@@ -761,10 +756,9 @@ public class Smd {
     	return sped.hashCode();
     }
 
-    public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item) {
+    public static Map<Integer,SpedizioneWithItems> aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
         Anagrafica destinatario = ec.getDestinatario();
         InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        log.info("aggiungiItemSpedizione: {} ",item);
         InvioSpedizione isped = invioSpedizione;
         Mese mesePubblicazione = item.getMesePubblicazione();
         Anno annoPubblicazione = item.getAnnoPubblicazione();
@@ -785,9 +779,9 @@ public class Smd {
         }
         log.info("aggiungiItemSpedizione: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
-        if (spedAnno.getAnno() < Anno.getAnnoCorrente().getAnno()
-                || (spedAnno == Anno.getAnnoCorrente()
-                        && spedMese.getPosizione() < Mese.getMeseCorrente().getPosizione())) {
+        if (spedAnno.getAnno() < annoPost.getAnno()
+                || (spedAnno == annoPost
+                        && spedMese.getPosizione() < mesePost.getPosizione())) {
             spedMese = Mese.getMeseCorrente();
             spedAnno = Anno.getAnnoCorrente();
             isped = InvioSpedizione.AdpSede;
@@ -812,24 +806,26 @@ public class Smd {
         SpedizioneWithItems sped = spedMap.get(hash);
         item.setPosticipata(posticipata);
         item.setSpedizione(sped.getSpedizione());
-        sped.addSpedizioneItem(item);        
+        sped.addSpedizioneItem(item); 
+        log.info("aggiungiItemSpedizione: aggiunto {}, a spedizione {}, size {}",item,spedizione,spedMap.size());
+        return spedMap;
     }
     
     public static List<SpedizioneWithItems> genera(Abbonamento abb,
             RivistaAbbonamento ec, 
             List<SpedizioneWithItems> spedizioni, 
-            List<SpesaSpedizione> spese) throws UnsupportedOperationException {
+            List<SpesaSpedizione> spese, Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
 
         ec.setAbbonamento(abb);
         List<SpedizioneItem> items = generaSpedizioneItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         calcoloImporto(ec);
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        final Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
+        Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
 
         if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
 	        for (SpedizioneItem item : items) {
-	            aggiungiItemSpedizione(abb, ec, spedMap, item);
+	            spedMap=aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
 	        }
     	}
         calcolaPesoESpesePostali(abb, spedMap.values(), spese);
