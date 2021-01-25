@@ -410,25 +410,68 @@ public class SmdServiceImpl implements SmdService {
 			});
     	List<Long> omaggi = 
 			rivistaAbbonamentoDao.findAllById(raids).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
-    	List<SpedizioneDto> dtos = new ArrayList<>();
+    	Map<Long,List<SpedizioneItem>> itemSpedMap = new HashMap<>();
     	for (SpedizioneItem item: items) {
-    		Spedizione sped = approved.get(item.getSpedizione().getId());
+    		if (!itemSpedMap.containsKey(item.getSpedizione().getId())) {
+    			itemSpedMap.put(item.getSpedizione().getId(), new ArrayList<>());
+    		}
+    		itemSpedMap.get(item.getSpedizione().getId()).add(item);
+    	}
+    	
+    	List<SpedizioneDto> dtos = new ArrayList<>();
+    	for (Long spedId: itemSpedMap.keySet()) {
+    		Spedizione sped = approved.get(spedId);
     		Anagrafica destinatario =  sped.getDestinatario();
     		Anagrafica co = destinatario.getCo();
     		SpedizioneDto dto = null;
-    		if (co == null) {
-    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
-    		} else {
-        		co = anagraficaDao.findById(co.getId()).get();
-        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
-    		}
-    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
-    			dto.setOmaggio();
-    		}
+    		for (SpedizioneItem item: getConsolidatedSpedizioneItem(itemSpedMap.get(spedId), omaggi) ) {
+	    		if (co == null) {
+	    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
+	    		} else {
+	        		co = anagraficaDao.findById(co.getId()).get();
+	        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
+	    		}
+	    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
+	    			dto.setOmaggio();
+	    		}
+    		}	
     		dtos.add(dto);
     	}
     	return dtos;
     }
+
+	private static List<SpedizioneItem> getConsolidatedSpedizioneItem(List<SpedizioneItem> items, List<Long> omaggi) {
+		if (items.size() <=1)
+			return items;
+		List<SpedizioneItem> nitems = new ArrayList<SpedizioneItem>();
+		for ( SpedizioneItem item: items ) {
+			log.info("getConsolidatedSpedizioneItem: {}", item);
+			SpedizioneItem nitem = new SpedizioneItem();
+			nitem.setAnnoPubblicazione(item.getAnnoPubblicazione());
+			nitem.setMesePubblicazione(item.getMesePubblicazione());
+			nitem.setPubblicazione(item.getPubblicazione());
+			nitem.setNumero(item.getNumero());
+			nitem.setRivistaAbbonamento(item.getRivistaAbbonamento());
+			nitem.setSpedizione(item.getSpedizione());
+			boolean save = true;
+			for (SpedizioneItem savedItem : nitems) {
+				if (omaggi.contains(nitem.getRivistaAbbonamento().getId()) == omaggi.contains(savedItem.getRivistaAbbonamento().getId())
+						&& nitem.getMesePubblicazione() == savedItem.getMesePubblicazione()
+						&& nitem.getAnnoPubblicazione() == savedItem.getAnnoPubblicazione() 
+					) {
+					save = false;
+					savedItem.setNumero(nitem.getNumero()+savedItem.getNumero());
+					log.info("getConsolidatedSpedizioneItem: increase {}", savedItem);
+					break;
+				}
+			}
+			if (save) {
+				log.info("getConsolidatedSpedizioneItem: add {}", item);
+				nitems.add(nitem);
+			}
+		}
+		return nitems;
+	}
 
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {

@@ -7,7 +7,7 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 
 public class SpedizioneDto extends Indirizzo {
-
+	
 	public static SpedizioneDto getSpedizioneDto(Spedizione sped,SpedizioneItem item, Anagrafica destinatario) {
 		return new SpedizioneDto(sped,item, destinatario);
 	}
