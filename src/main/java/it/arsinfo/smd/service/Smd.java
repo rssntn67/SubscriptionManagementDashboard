@@ -461,7 +461,6 @@ public class Smd {
             log.error("aggiorna: failed {} : Aggiorna non consentita per Numero minore di zero",abb);
             throw new UnsupportedOperationException("Aggiorna non consentito per Numero minore di zero");
         }
-        log.info("aggiorna: {} {} {} {}", abb, original,numero,tipo);
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
         
         if (numero == original.getNumero() && tipo == original.getTipoAbbonamentoRivista()) {
