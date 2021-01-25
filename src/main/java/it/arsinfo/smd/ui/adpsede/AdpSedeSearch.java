@@ -32,11 +32,9 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         ComboBox<Mese> filterMese = new ComboBox<>("Mese",EnumSet.allOf(Mese.class));
         ComboBox<InvioSpedizione> invioSpedizioneComboBox = new ComboBox<>("Invio", EnumSet.complementOf(EnumSet.of(InvioSpedizione.Spedizioniere)));
         ComboBox<StatoSpedizione> statoSpedizioneComboBox = new ComboBox<>("Stato", EnumSet.allOf(StatoSpedizione.class));
-        ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>();
+        ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>("Pubblicazione");
 
-        setComponents(new HorizontalLayout(filterAnno,filterMese,filterP),
-        		new HorizontalLayout(invioSpedizioneComboBox),
-        		new HorizontalLayout(statoSpedizioneComboBox));
+        setComponents(new HorizontalLayout(filterAnno,filterMese,filterP,invioSpedizioneComboBox,statoSpedizioneComboBox));
 
         filterP.setEmptySelectionAllowed(true);
         filterP.setPlaceholder("Seleziona Pubblicazione");
@@ -48,6 +46,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
             } else {
                 p=e.getSelectedItem().get();
             }
+        	onChange();
     	});
 
         filterAnno.setEmptySelectionAllowed(false);
