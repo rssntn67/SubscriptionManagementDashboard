@@ -518,7 +518,7 @@ public class Smd {
     		}
     	}
 
-    	log.info("aggiorna: {}  spedizioni inviate->{}",original, inviate.size());
+    	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseFineInv,annoFineInv, inviate.size());
         if (inviate.size() == 0) {
         	int numeroTotaleRiviste = 0;
         	for (SpedizioneWithItems s: spedizioni) {
@@ -814,8 +814,20 @@ public class Smd {
     public static List<SpedizioneWithItems> genera(Abbonamento abb,
             RivistaAbbonamento ec, 
             List<SpedizioneWithItems> spedizioni, 
+            List<SpesaSpedizione> spese) throws UnsupportedOperationException {
+    	return genera(abb,
+                 ec, 
+                 spedizioni, 
+                 spese, Mese.getMeseCorrente(), Anno.getAnnoCorrente());
+    }
+    
+    
+    public static List<SpedizioneWithItems> genera(Abbonamento abb,
+            RivistaAbbonamento ec, 
+            List<SpedizioneWithItems> spedizioni, 
             List<SpesaSpedizione> spese, Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
 
+    	
         ec.setAbbonamento(abb);
         List<SpedizioneItem> items = generaSpedizioneItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());

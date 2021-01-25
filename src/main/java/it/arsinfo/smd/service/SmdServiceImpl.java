@@ -223,7 +223,7 @@ public class SmdServiceImpl implements SmdService {
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
-            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {

@@ -71,7 +71,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(abb.getIntestatario());
-        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
 
         return ec;
     }
@@ -223,7 +223,7 @@ public class SmdUnitTests {
                 Smd.genera(
                          abb, 
                          ec,
-                         new ArrayList<SpedizioneWithItems>(),spese,Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                         new ArrayList<SpedizioneWithItems>(),spese);
         
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
@@ -273,7 +273,7 @@ public class SmdUnitTests {
                 Smd.genera(abb, 
                                      ec,
                                      new ArrayList<SpedizioneWithItems>(),
-                                     spese,Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                                     spese);
         
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
@@ -453,7 +453,7 @@ public class SmdUnitTests {
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
 
         List<SpedizioneWithItems> spedizioniwithitems = 
-                Smd.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                Smd.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioniwithitems.stream().forEach(sped -> sped.getSpedizioneItems().stream().forEach(item -> items.add(item)));
         
@@ -588,21 +588,21 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<SpedizioneWithItems>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());        
+                     SmdHelper.getSpeseSpedizione());        
         
         spedizioni = 
                 Smd.genera(
                      abb, 
                      ec2,
                      spedizioni,
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
        
        spedizioni = 
                Smd.genera(
                     abb, 
                     ec3,
                     spedizioni,
-                    SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                    SmdHelper.getSpeseSpedizione());
 
         
         spedizioni.stream().forEach(spwi -> {
@@ -830,7 +830,7 @@ public class SmdUnitTests {
                 Smd.genera(abb, 
                                      ec,
                                      new ArrayList<>(), 
-                                     spese,Mese.getMeseCorrente(),Anno.getAnnoCorrente()
+                                     spese
                                      );
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni
@@ -892,7 +892,7 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> {
             log.info(sped.toString());
@@ -971,7 +971,7 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> {
             sped.getSpedizioneItems().stream().forEach(item -> {
@@ -1038,7 +1038,7 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.stream().forEach(sped -> {
             sped.getSpedizioneItems().stream().forEach(item -> {
@@ -1132,7 +1132,7 @@ public class SmdUnitTests {
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
             RivistaAbbonamento ec = Smd.genera(abb, storico);
-            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         }                
         assertEquals(25, spedizioni.size());
         spedizioni.stream().forEach(sped -> {
@@ -1163,7 +1163,7 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
         
         assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
         assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
@@ -1201,7 +1201,7 @@ public class SmdUnitTests {
                      abb, 
                      ec1,
                      new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+                     SmdHelper.getSpeseSpedizione());
         
         assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
         
@@ -1261,7 +1261,7 @@ public class SmdUnitTests {
             assertEquals(0, abb.getImporto().doubleValue(),0);
             assertEquals(0,abb.getSpese().doubleValue(),0);
         	log.info("testGeneraCampagnaAR: Rivista abbonamento {}", ec);
-            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione(),Mese.getMeseCorrente(),Anno.getAnnoCorrente());
+            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         	log.info("testGeneraCampagnaAR: spedizioni {}", spedizioni.size());
         }      
         assertEquals(26, spedizioni.size());
