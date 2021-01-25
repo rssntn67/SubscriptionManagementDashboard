@@ -488,6 +488,8 @@ public class Smd {
        	Anno annoInizioInv=null;
         Mese meseFineInv=null;
        	Anno annoFineInv=null;
+        Mese meseUltimaSped=null;
+       	Anno annoUltimaSped=null;
     	for (SpedizioneWithItems spedwith: spedizioni) {
 			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
 	    		if (item.getStatoSpedizione() == StatoSpedizione.INVIATA) {
@@ -500,7 +502,7 @@ public class Smd {
     						meseInizioInv=item.getMesePubblicazione();
     						annoInizioInv=item.getAnnoPubblicazione();    						
     					} else if (annoInizioInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-    							meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
+    						meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
     						meseInizioInv=item.getMesePubblicazione();
     					}
     					if (meseFineInv==null) {
@@ -513,12 +515,23 @@ public class Smd {
     							meseFineInv.getPosizione() < item.getMesePubblicazione().getPosizione()) {
     						meseFineInv=item.getMesePubblicazione();
     					}
+       					if (meseUltimaSped==null) {
+    						meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
+    						annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
+    					} else if (annoUltimaSped.getAnno() < spedwith.getSpedizione().getAnnoSpedizione().getAnno()) {
+    						meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
+    						annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
+    					} else if (annoUltimaSped.getAnno() == spedwith.getSpedizione().getAnnoSpedizione().getAnno() &&
+    						meseUltimaSped.getPosizione() > spedwith.getSpedizione().getMeseSpedizione().getPosizione()) {
+    						meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
+    					}
     				}
     			}
     		}
     	}
 
-    	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseFineInv,annoFineInv, inviate.size());
+    	
+    	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseUltimaSped,annoUltimaSped, inviate.size());
         if (inviate.size() == 0) {
         	int numeroTotaleRiviste = 0;
         	for (SpedizioneWithItems s: spedizioni) {
@@ -550,7 +563,12 @@ public class Smd {
         	RivistaAbbonamento r = original.clone();
         	r.setNumero(numero-original.getNumero());
         	r.setTipoAbbonamentoRivista(tipo);
-        	spedizioni=genera(abb,r, spedizioni, spese,meseFineInv,annoFineInv);
+        	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
+        	Anno annoSped=annoUltimaSped;
+        	if (meseSped==Mese.GENNAIO) {
+        		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
+        	}
+        	spedizioni=genera(abb,r, spedizioni, spese,meseSped,annoSped);
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
