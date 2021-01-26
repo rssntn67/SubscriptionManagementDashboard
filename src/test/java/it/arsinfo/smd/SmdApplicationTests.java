@@ -1150,7 +1150,7 @@ public class SmdApplicationTests {
         abb.addItem(ec1);
         smdService.genera(abb);
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        smdService.aggiorna(rivista,4,TipoAbbonamentoRivista.Ordinario);
+        smdService.aggiornaRivistaAbbonamento(rivista,4,TipoAbbonamentoRivista.Ordinario);
         rivista = rivistaAbbonamentoDao.findById(rivista.getId()).get();
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(abb,rivista);

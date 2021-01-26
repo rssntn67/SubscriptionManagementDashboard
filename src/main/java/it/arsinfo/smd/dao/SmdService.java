@@ -38,7 +38,7 @@ public interface SmdService {
     List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
 
     void genera(Abbonamento abbonamento) throws Exception;
-    void aggiorna(Abbonamento abbonamento) throws Exception;
+    void aggiornaStato(Abbonamento abbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
     
     void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivista) throws Exception;
@@ -46,7 +46,7 @@ public interface SmdService {
     void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista);
     void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista);
     
-    void aggiorna(RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
+    void aggiornaRivistaAbbonamento(RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;    
     
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 

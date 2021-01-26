@@ -461,12 +461,9 @@ public class Smd {
             log.error("aggiorna: failed {} : Aggiorna non consentita per Numero minore di zero",abb);
             throw new UnsupportedOperationException("Aggiorna non consentito per Numero minore di zero");
         }
+
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
         
-        if (numero == original.getNumero() && tipo == original.getTipoAbbonamentoRivista()) {
-            log.info("aggiorna: updated equals to persisted: {}", abb);        	
-        	return aggiorna;
-        }
 
     	abb.setImporto(abb.getImporto().subtract(original.getImporto()));
         log.info("aggiorna: sottratto importo rivista {} da abbonamento {}", original.getImporto(),abb);
@@ -482,7 +479,10 @@ public class Smd {
         	return aggiorna;
         }
 
-    	List<SpedizioneWithItems> inviate = new ArrayList<>();
+    	List<SpedizioneWithItems> spedinviate = new ArrayList<>();
+    	List<SpedizioneItem> annullate = new ArrayList<>();
+    	List<SpedizioneItem> usabili = new ArrayList<>();
+    	List<SpedizioneItem> inviate = new ArrayList<>();
     	Mese meseInizioInv=null;
        	Anno annoInizioInv=null;
         Mese meseFineInv=null;
@@ -491,9 +491,12 @@ public class Smd {
        	Anno annoUltimaSped=null;
     	for (SpedizioneWithItems spedwith: spedizioni) {
 			for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
-	    		if (item.getStatoSpedizione() == StatoSpedizione.INVIATA) {
-    				if (checkEquals(item.getRivistaAbbonamento(),original)) {
-    	    			inviate.add(spedwith);
+				if (checkEquals(item.getRivistaAbbonamento(),original)) {
+					switch (item.getStatoSpedizione()) {
+					case INVIATA:
+    	    			spedinviate.add(spedwith);
+    	    			inviate.add(item);
+    	    			
     					if (meseInizioInv==null) {
     						meseInizioInv=item.getMesePubblicazione();
     						annoInizioInv=item.getAnnoPubblicazione();
@@ -521,22 +524,40 @@ public class Smd {
     						meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
     						annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
     					} else if (annoUltimaSped.getAnno() == spedwith.getSpedizione().getAnnoSpedizione().getAnno() &&
-    						meseUltimaSped.getPosizione() > spedwith.getSpedizione().getMeseSpedizione().getPosizione()) {
+    						meseUltimaSped.getPosizione() < spedwith.getSpedizione().getMeseSpedizione().getPosizione()) {
     						meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
     					}
-    				}
+						break;
+						
+					case PROGRAMMATA:
+						usabili.add(item);
+						break;
+						
+					case SOSPESA:
+						usabili.add(item);
+						break;
+						
+					case ANNULLATA:
+						annullate.add(item);
+						break;
+						
+					default:
+						break;
+					}
+					
     			}
     		}
     	}
     	
     	log.info("aggiorna: ultima rivista {} {}",meseFineInv,annoFineInv);
-    	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseUltimaSped,annoUltimaSped, inviate.size());
-        if (inviate.size() == 0) {
+    	log.info("aggiorna: spedizione ultima {} {} inviate->{}",meseUltimaSped,annoUltimaSped, spedinviate.size());
+        
+    	if (spedinviate.size() == 0 && annullate.size() == 0) {
         	int numeroTotaleRiviste = 0;
         	for (SpedizioneWithItems s: spedizioni) {
         		for (SpedizioneItem item: s.getSpedizioneItems()) {
     				if (checkEquals(item.getRivistaAbbonamento(),original)) {
-        				item.setNumero(numero);
+						item.setNumero(numero);
                 		numeroTotaleRiviste+=numero;
         			}
         		}
@@ -547,34 +568,55 @@ public class Smd {
         	calcoloImporto(original);
         	abb.setImporto(abb.getImporto().add(original.getImporto()));
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
-            aggiorna.setAbbonamentoToSave(abb);
+
+        	aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
             aggiorna.getRivisteToSave().add(original);
-            log.info("aggiorna: nessuna spedizione inviata: {}, {}",abb,original);
+            log.info("aggiorna: nessuna spedizione inviata o annullata: {}, {}",abb,original);
             return aggiorna;
         }
 
-    	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
-    	Anno annoSped=annoUltimaSped;
-    	if (meseSped==Mese.GENNAIO) {
-    		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
-    	}
-
     	if (numero > original.getNumero()) {
+        	Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
+        	Anno annoSped=annoUltimaSped;
+        	if (meseSped==Mese.GENNAIO) {
+        		annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
+        	}
+        	int numeroTotaleRiviste = 0;
         	original.setTipoAbbonamentoRivista(tipo);
-        	calcoloImporto(original);
+        	original.setNumero(numero);
         	abb.setImporto(abb.getImporto().add(original.getImporto()));
-        	
-        	RivistaAbbonamento r = original.clone();
-        	r.setNumero(numero-original.getNumero());
-        	r.setTipoAbbonamentoRivista(tipo);
-        	spedizioni=genera(abb,r, spedizioni, spese,meseSped,annoSped);
+        	for (SpedizioneWithItems nuovaspedwithitem: genera(abb,original, new ArrayList<>(), spese,meseSped,annoSped)) {
+        		for (SpedizioneItem nuovoItem: nuovaspedwithitem.getSpedizioneItems()) {
+        			numeroTotaleRiviste+=numero;
+        			for (SpedizioneItem item: usabili) {
+        				if (item.getMesePubblicazione() == nuovoItem.getMesePubblicazione() && item.getAnnoPubblicazione() == nuovoItem.getAnnoPubblicazione()) {
+        					nuovoItem.setNumero(nuovoItem.getNumero()-item.getNumero());
+        				}
+        			}
+        			for (SpedizioneItem item: inviate) {
+        				if (item.getMesePubblicazione() == nuovoItem.getMesePubblicazione() && item.getAnnoPubblicazione() == nuovoItem.getAnnoPubblicazione()) {
+        					nuovoItem.setNumero(nuovoItem.getNumero()-item.getNumero());
+        				}
+        			}
+        			if (nuovoItem.getNumero() == 0) {
+        				nuovaspedwithitem.deleteSpedizioneItem(nuovoItem);
+        			}
+        		}
+        		if (!nuovaspedwithitem.getSpedizioneItems().isEmpty()) {
+        			spedizioni.add(nuovaspedwithitem);
+        		}
+        		
+        	}
+
+        	original.setNumeroTotaleRiviste(numeroTotaleRiviste);
+        	calcoloImporto(original);
+
         	calcolaPesoESpesePostali(abb, spedizioni, spese);
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
             aggiorna.getRivisteToSave().add(original);
-            aggiorna.getRivisteToSave().add(r);
-            log.info("aggiorna: spedizioni inviata ed incremento {} {} {} ",abb,r,original);
+            log.info("aggiorna: spedizioni inviata ed incremento {} {} {} ",abb,original);
             return aggiorna;
     	}
     	log.info("aggiorna: {}, spedizioni inviate e decremento: prima {} {}, ultima {} {}", original,meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
@@ -591,7 +633,7 @@ public class Smd {
 
     	int itemsoriginal=0;
     	int itemsupdated=0;
-        for (SpedizioneWithItems spedwith: inviate) {
+        for (SpedizioneWithItems spedwith: spedinviate) {
         	for (SpedizioneItem originitem: spedwith.getSpedizioneItems()) {
 				if (checkEquals(originitem.getRivistaAbbonamento(),original)) {
         			originitem.setNumero(original.getNumero());

@@ -87,7 +87,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         if (entity.getId() == null ) {
             smdService.genera(entity);
         }
-    	smdService.aggiorna(entity);
+    	smdService.aggiornaStato(entity);
 		return entity;
 	}
 
@@ -169,7 +169,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             smdService.genera(t);
         } else {
         	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).get();
-        	smdService.aggiorna(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
+        	smdService.aggiornaRivistaAbbonamento(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
         }
         return findById(t.getId());
 	}
