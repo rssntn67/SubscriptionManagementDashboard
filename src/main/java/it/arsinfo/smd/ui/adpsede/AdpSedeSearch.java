@@ -23,6 +23,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
     private Pubblicazione p;
     private Anno anno = Anno.getAnnoCorrente();
     private Mese mese = Mese.getMeseCorrente();
+    ComboBox<StatoSpedizione> statoSpedizioneComboBox = new ComboBox<>("Stato", EnumSet.allOf(StatoSpedizione.class));
 
     private final SmdService service;
     public AdpSedeSearch(SmdService service, List<Pubblicazione> pubblicazioni) {
@@ -31,7 +32,6 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         ComboBox<Anno> filterAnno = new ComboBox<>("Anno",EnumSet.allOf(Anno.class));
         ComboBox<Mese> filterMese = new ComboBox<>("Mese",EnumSet.allOf(Mese.class));
         ComboBox<InvioSpedizione> invioSpedizioneComboBox = new ComboBox<>("Invio", EnumSet.complementOf(EnumSet.of(InvioSpedizione.Spedizioniere)));
-        ComboBox<StatoSpedizione> statoSpedizioneComboBox = new ComboBox<>("Stato", EnumSet.allOf(StatoSpedizione.class));
         ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>("Pubblicazione");
 
         setComponents(new HorizontalLayout(filterAnno,filterMese,filterP,invioSpedizioneComboBox,statoSpedizioneComboBox));
@@ -104,6 +104,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
 
     public void setStato(StatoSpedizione stato) {
     	this.stato=stato;
+    	this.statoSpedizioneComboBox.setValue(stato);
     }
     
     public Anno getAnno() {
