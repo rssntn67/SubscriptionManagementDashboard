@@ -6,7 +6,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.SpedizioneServiceDao;
@@ -14,7 +13,7 @@ import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path=SmdUI.URL_STAMPA_INDIRIZZO_SPEDIZIONE)
-public class StampaIndirizzoSpedizioneUI extends UI {
+public class StampaIndirizzoSpedizioneUI extends StampaIndirizzoUI {
 
     @Autowired
     SpedizioneServiceDao dao;
@@ -25,6 +24,7 @@ public class StampaIndirizzoSpedizioneUI extends UI {
 
 	@Override
     protected void init(VaadinRequest request) {
+		   super.init(request);
 	       setContent(stampa(request.getParameter("id")));
 	       
 	       JavaScript.getCurrent().execute(
@@ -48,7 +48,7 @@ public class StampaIndirizzoSpedizioneUI extends UI {
     	if (sped == null) {
     		return subContent;
     	}
-    	return SmdUI.stampa(dao.getIndirizzo(sped));
+    	return stampaC(dao.getIndirizzo(sped));
     }
-
+    
 }

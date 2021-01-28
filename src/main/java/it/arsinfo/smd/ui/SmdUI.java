@@ -1,4 +1,4 @@
-    package it.arsinfo.smd.ui;
+package it.arsinfo.smd.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,17 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -25,7 +18,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.dao.repository.UserInfoDao;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
@@ -115,12 +107,8 @@ public abstract class SmdUI extends UI {
         header.setValue(head);
         layout.addComponent(menu);
         layout.addComponent(header);
-        BrowserWindowOpener popupOpener = new BrowserWindowOpener("/printtest");
-        Button stampa = new Button("Stampa", VaadinIcons.PRINT);
-        popupOpener.extend(stampa);
-        layout.addComponent(stampa);
         setContent(layout);
-        
+                
         menu.addItem(TITLE_HOME,new MenuBar.Command() {
             private static final long serialVersionUID = 1L;
             
@@ -405,51 +393,4 @@ public abstract class SmdUI extends UI {
         this.loggedInUser = loggedInUser;
     }
 
-    public static Layout stampa(Indirizzo indirizzo) {
-		StringBuffer html = new StringBuffer("<p>");
-		html.append(indirizzo.getIntestazione());
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
-    		html.append("<br/>\n");
-    		html.append(indirizzo.getSottoIntestazione());
-    	}
-		html.append("<br/>\n");
-		html.append(indirizzo.getIndirizzo());
-		html.append("<br/>\n");
-		html.append(indirizzo.getCap());
-		html.append(" ");
-		html.append(indirizzo.getCitta()); ;
-		html.append("(");
-		html.append(indirizzo.getProvincia().name());
-		html.append(")");
-		html.append("<br/>\n");
-		html.append(indirizzo.getPaese().getNome());
-		html.append("</p>\n");
-		HorizontalLayout lay = new HorizontalLayout();
-		lay.setWidth(220,Sizeable.Unit.MM);
-		lay.setHeight(110,Sizeable.Unit.MM);
-		lay.setSpacing(false);
-		lay.setMargin(false);
-		VerticalLayout left = new VerticalLayout();
-		left.setMargin(false);
-		left.setSpacing(false);
-		VerticalLayout right = new VerticalLayout();
-		right.setMargin(false);
-		right.setSpacing(false);
-		lay.addComponent(left);
-		lay.addComponent(right);
-		lay.setExpandRatio(left, 105*1.0f);
-		lay.setExpandRatio(right,100*1.0f);
-		
-		VerticalLayout topright = new VerticalLayout();
-		topright.setMargin(false);
-		topright.setSpacing(false);
-		topright.setWidth(90,Sizeable.Unit.MM);
-		topright.setHeight(65,Sizeable.Unit.MM);
-		right.addComponent(topright);
-		Label label = new Label(html.toString(), ContentMode.HTML);
-		right.addComponent(label);
-
-
-		return lay;
-    }
 }
