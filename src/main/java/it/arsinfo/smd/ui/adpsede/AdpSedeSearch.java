@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.adpsede;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -13,41 +12,25 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.dto.SpedizioneDto;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdBaseSearch;
 
 public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
 
     private InvioSpedizione invio=InvioSpedizione.AdpSede;
     private StatoSpedizione stato=StatoSpedizione.PROGRAMMATA;
-    private Pubblicazione p;
     private Anno anno = Anno.getAnnoCorrente();
     private Mese mese = Mese.getMeseCorrente();
     ComboBox<StatoSpedizione> statoSpedizioneComboBox = new ComboBox<>("Stato", EnumSet.allOf(StatoSpedizione.class));
 
     private final SmdService service;
-    public AdpSedeSearch(SmdService service, List<Pubblicazione> pubblicazioni) {
+    public AdpSedeSearch(SmdService service) {
         this.service = service;
 
         ComboBox<Anno> filterAnno = new ComboBox<>("Anno",EnumSet.allOf(Anno.class));
         ComboBox<Mese> filterMese = new ComboBox<>("Mese",EnumSet.allOf(Mese.class));
         ComboBox<InvioSpedizione> invioSpedizioneComboBox = new ComboBox<>("Invio", EnumSet.complementOf(EnumSet.of(InvioSpedizione.Spedizioniere)));
-        ComboBox<Pubblicazione> filterP = new ComboBox<Pubblicazione>("Pubblicazione");
 
-        setComponents(new HorizontalLayout(filterAnno,filterMese,filterP,invioSpedizioneComboBox,statoSpedizioneComboBox));
-
-        filterP.setEmptySelectionAllowed(true);
-        filterP.setPlaceholder("Seleziona Pubblicazione");
-        filterP.setItems(pubblicazioni);
-        filterP.setItemCaptionGenerator(Pubblicazione::getNome);
-        filterP.addSelectionListener(e -> {
-        	if (e.getValue() == null) {
-                p = null;
-            } else {
-                p=e.getSelectedItem().get();
-            }
-        	onChange();
-    	});
+        setComponents(new HorizontalLayout(filterAnno,filterMese,invioSpedizioneComboBox,statoSpedizioneComboBox));
 
         filterAnno.setEmptySelectionAllowed(false);
         filterAnno.setPlaceholder("Anno");
@@ -88,10 +71,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
     
     @Override
     public List<SpedizioneDto> find() {
-    	if (p == null) {
-    		return new ArrayList<>();
-    	}
-        return service.listBy(p,mese,anno,stato,invio);
+        return service.listBy(mese,anno,stato,invio);
     }
 
     public InvioSpedizione getInvio() {
@@ -115,8 +95,4 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
     	return mese;
     }
     
-    public Pubblicazione getPubblicazione() {
-    	return p;
-    }
-
 }

@@ -362,6 +362,29 @@ public class SmdServiceImpl implements SmdService {
     
     @Override
     @Transactional
+    public void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception {
+        final List<Long> spedizioniIds = 
+    		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
+    				meseSpedizione, 
+    				annoSpedizione, 
+    				invio)
+    		.stream()
+    		.map(s -> s.getId()).collect(Collectors.toList());
+        
+        spedizioneItemDao.findByStatoSpedizione(StatoSpedizione.PROGRAMMATA)
+        .stream()
+        .filter(item -> spedizioniIds.contains(item.getSpedizione().getId()))
+        .forEach(item -> 
+        	{
+    			item.setStatoSpedizione(StatoSpedizione.INVIATA);
+    			spedizioneItemDao.save(item);
+    		}
+    	);
+            	
+    }
+
+    @Override
+    @Transactional
     public void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception {
         final List<Long> spedizioniIds = 
     		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
@@ -435,6 +458,50 @@ public class SmdServiceImpl implements SmdService {
     	}
     	return dtos;
     }
+    
+    @Override
+    public List<SpedizioneDto> listBy(Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
+        final List<SpedizioneItem> items = new ArrayList<>();
+        final Set<Long> rivistaAbbonamentoIdSet =  new HashSet<>();
+        final Map<Long,Spedizione> approved = 
+        		spedizioneDao
+        		.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
+        				meseSpedizione, 
+        				annoSpedizione, 
+        				invio)
+        		.stream()
+        		.collect(Collectors.toMap(Spedizione::getId, Function.identity()));
+    	
+        spedizioneItemDao
+        	.findByStatoSpedizione(statoSpedizione)
+        	.stream()
+        	.filter(spedItem -> approved.keySet().contains(spedItem.getSpedizione().getId()))
+        	.forEach(spedItem -> {
+        		rivistaAbbonamentoIdSet.add(spedItem.getRivistaAbbonamento().getId());
+        		items.add(spedItem);
+			});
+    	List<Long> omaggi = 
+			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
+    	List<SpedizioneDto> dtos = new ArrayList<>();
+    	for (SpedizioneItem item: items) {
+    		Spedizione sped = approved.get(item.getSpedizione().getId());
+    		Anagrafica destinatario =  sped.getDestinatario();
+    		Anagrafica co = destinatario.getCo();
+    		SpedizioneDto dto = null;
+    		if (co == null) {
+    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
+    		} else {
+        		co = anagraficaDao.findById(co.getId()).get();
+        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
+    		}
+    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
+    			dto.setOmaggio();
+    		}
+    		dtos.add(dto);
+    	}
+    	return dtos;
+    }
+
 
     @Override
     public void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception {

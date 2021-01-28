@@ -51,11 +51,13 @@ public interface SmdService {
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void generaStatisticheTipografia(Anno anno, Pubblicazione p); 
     void inviaSpedizionere(Operazione operazione) throws Exception;
+    void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception;
     void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception;
 
     List<SpedizioneDto> listBy(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
+    List<SpedizioneDto> listBy(Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
     List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
         
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
