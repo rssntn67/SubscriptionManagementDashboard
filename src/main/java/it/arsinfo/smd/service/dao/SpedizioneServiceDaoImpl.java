@@ -194,5 +194,16 @@ public class SpedizioneServiceDaoImpl implements SpedizioneServiceDao {
 		co = anagraficaDao.findById(co.getId()).get();
 			return Indirizzo.getIndirizzo(sped.getDestinatario(),co);
 	}
-		
+
+	@Override
+	public void spedisci(Spedizione sped) {
+		itemRepository.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.PROGRAMMATA).forEach(item -> {
+			item.setStatoSpedizione(StatoSpedizione.INVIATA);
+			itemRepository.save(item);
+		});
+		itemRepository.findBySpedizioneAndStatoSpedizione(sped, StatoSpedizione.SOSPESA).forEach(item -> {
+			item.setStatoSpedizione(StatoSpedizione.ANNULLATA);
+			itemRepository.save(item);
+		});
+	}		
 }

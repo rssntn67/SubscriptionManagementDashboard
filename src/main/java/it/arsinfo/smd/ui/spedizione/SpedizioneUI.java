@@ -82,10 +82,23 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         Button stampa = new Button("Stampa", VaadinIcons.PRINT);
         popupOpener.extend(stampa);
         maineditor.getActions().addComponent(stampa);
-        
+
         SmdEntityItemEditor<SpedizioneItem,Spedizione> editor = 
         		new SmdEntityItemEditor<SpedizioneItem, Spedizione>(dao,itemSave,itemgrid,itemeditor,maineditor) {
 				};
+
+        Button spedisci = new Button("Spedisci", VaadinIcons.AIRPLANE);
+        spedisci.addClickListener(e -> {
+        	spedisci(maineditor.get());
+        	Spedizione sped = dao.findById(maineditor.get().getId());
+            editor.edit(sped);
+            spedisci.setEnabled(grid.getSelected().getInvioSpedizione() != InvioSpedizione.Spedizioniere);        	
+        	});
+        
+        maineditor.getActions().addComponent(spedisci);
+        spedisci.setEnabled(false);
+
+        
         editor.addComponents(itemeditor.getComponents());
         editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemgrid.getComponents());
@@ -104,6 +117,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(grid.getSelected());
+            spedisci.setEnabled(grid.getSelected().getInvioSpedizione() != InvioSpedizione.Spedizioniere);
         });
 
         addSmdComponents(editor,search, grid);
@@ -121,4 +135,13 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 		}
 	}
     
+    private void spedisci(Spedizione sped) {
+    	try {
+    		dao.spedisci(sped);
+    		Notification.show("Spedizione inviata",Notification.Type.HUMANIZED_MESSAGE);
+    	} catch (Exception e) {
+    		Notification.show(e.getMessage(),Notification.Type.ERROR_MESSAGE);
+		}
+	}
+
 }
