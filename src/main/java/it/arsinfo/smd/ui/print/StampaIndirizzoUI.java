@@ -23,6 +23,7 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaC(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div><p>");
+    	html.append("<div class=\"gap-30\"></div>\n");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -53,8 +54,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		right.setSpacing(false);
 		lay.addComponent(left);
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 80*1.0f);
-		lay.setExpandRatio(right,100*1.0f);
+		lay.setExpandRatio(left, 100*1.0f);
+		lay.setExpandRatio(right,80*1.0f);
 		
 		VerticalLayout topright = new VerticalLayout();
 		topright.setMargin(false);
@@ -71,6 +72,7 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaA(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div><p>");
+    	html.append("<div class=\"gap-20\"></div>\n");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -119,6 +121,8 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaB(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div id=\"busta_2\"><p>");
+    	html.append("<div class=\"gap-30\"></div>\n");
+		html.append("<br/>\n");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -137,8 +141,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		html.append(indirizzo.getPaese().getNome());
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
-		lay.setWidth(220,Sizeable.Unit.MM);
-		lay.setHeight(110,Sizeable.Unit.MM);
+		lay.setWidth(110,Sizeable.Unit.MM);
+		lay.setHeight(220,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
 		VerticalLayout left = new VerticalLayout();
@@ -174,7 +178,19 @@ public abstract class StampaIndirizzoUI extends UI{
         		"  -o-transform: rotate(90deg);\n" + 
         		"  -ms-transform: rotate(90deg);\n" + 
         		"  transform: rotate(90deg);\n" + 
-        		"}");		
+        		"}");	
+        getPage().getStyles().add(".gap-10 { \n" + 
+        		"				width:100%; \n" + 
+        		"				height:10px; \n" + 
+        		"			} \n" + 
+        		"			.gap-20 { \n" + 
+        		"				width:100%; \n" + 
+        		"				height:20px; \n" + 
+        		"			} \n" + 
+        		"			.gap-30 { \n" + 
+        		"				width:100%; \n" + 
+        		"				height:30px; \n" + 
+        		"			} ");
 	}
 
 	protected static Indirizzo getTestIndirizzo() {
