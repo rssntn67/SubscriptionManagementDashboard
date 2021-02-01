@@ -385,6 +385,29 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
+    public void annullaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception {
+        final List<Long> spedizioniIds = 
+    		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
+    				meseSpedizione, 
+    				annoSpedizione, 
+    				invio)
+    		.stream()
+    		.map(s -> s.getId()).collect(Collectors.toList());
+        
+        spedizioneItemDao.findByStatoSpedizione(StatoSpedizione.SOSPESA)
+        .stream()
+        .filter(item -> spedizioniIds.contains(item.getSpedizione().getId()))
+        .forEach(item -> 
+        	{
+    			item.setStatoSpedizione(StatoSpedizione.ANNULLATA);
+    			spedizioneItemDao.save(item);
+    		}
+    	);
+            	
+    }
+
+    @Override
+    @Transactional
     public void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception {
         final List<Long> spedizioniIds = 
     		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(

@@ -53,6 +53,7 @@ public interface SmdService {
     void inviaSpedizionere(Operazione operazione) throws Exception;
     void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception;
     void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception;
+	void annullaAdpSede(Mese mese, Anno anno, InvioSpedizione invio) throws Exception;
 
     void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception;
 
@@ -71,6 +72,7 @@ public interface SmdService {
 			UserInfo loggedInUser, Anagrafica committente);
 
 	List<RivistaAbbonamento> getNotValid(Abbonamento abbonamento, Campagna campagna);
+
 
 
 }

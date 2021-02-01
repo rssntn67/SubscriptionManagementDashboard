@@ -7,6 +7,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.dao.SmdService;
@@ -38,32 +39,50 @@ public class AdpSedeUI extends SmdUI {
         SpedizioneDtoGrid grid = new SpedizioneDtoGrid("Spedizioni Adp Sede");
                 
         SmdButton spedisci = new SmdButton("Spedisci",VaadinIcons.ENVELOPES);
-                
-        addSmdComponents(search,grid,spedisci);
-                    
+        SmdButton annulla = new SmdButton("Annulla",VaadinIcons.UMBRELLA);
+        HorizontalLayout buttons = new HorizontalLayout();
+        buttons.addComponents(spedisci.getComponents());
+        buttons.addComponents(annulla.getComponents());
+        addSmdComponents(search,grid);
+        addComponents(buttons);
         search.setChangeHandler(() -> {
         	grid.populate(search.find());
-            spedisci.setVisible(true);
             spedisci.getButton().setEnabled(search.getStato() == StatoSpedizione.PROGRAMMATA && grid.getSize()>0);
+            annulla.getButton().setEnabled(search.getStato() == StatoSpedizione.SOSPESA && grid.getSize()>0);
         });
         
         grid.setChangeHandler(()-> {
         });
                 
-    	spedisci.setVisible(false);
         spedisci.setChangeHandler(() -> {
         	try {
                 service.inviaAdpSede(search.getMese(),search.getAnno(),search.getInvio());
             	search.setStato((StatoSpedizione.INVIATA));
             	grid.populate(search.find());
             	spedisci.getButton().setEnabled(false);
+            	annulla.getButton().setEnabled(false);
             } catch (Exception e) {
                 Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
                 return;
             }
         });
-               
+
+        annulla.setChangeHandler(() -> {
+        	try {
+                service.annullaAdpSede(search.getMese(),search.getAnno(),search.getInvio());
+            	search.setStato((StatoSpedizione.ANNULLATA));
+            	grid.populate(search.find());
+            	annulla.getButton().setEnabled(false);
+            	spedisci.getButton().setEnabled(false);
+            } catch (Exception e) {
+                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                return;
+            }
+        });
+
         grid.populate(search.find());
+        spedisci.getButton().setEnabled(search.getStato() == StatoSpedizione.PROGRAMMATA && grid.getSize()>0);
+        annulla.getButton().setEnabled(search.getStato() == StatoSpedizione.SOSPESA && grid.getSize()>0);
 
      }
 
