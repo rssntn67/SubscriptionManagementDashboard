@@ -24,9 +24,7 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaA(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div><p>");
-    	html.append("<div class=\"gap-30\"></div>\n");
-    	html.append("<div class=\"gap-30\"></div>\n");
-    	html.append("<div class=\"gap-30\"></div>\n");
+    	html.append("<div class=\"gap-a\"></div>\n");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -69,7 +67,6 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaB(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
-    	html.append("<div class=\"gap-10\"></div>\n");
     	html.append("<div id=\"busta_2\"><p>");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
@@ -87,7 +84,7 @@ public abstract class StampaIndirizzoUI extends UI{
 		html.append(")");
 		html.append("<br/>\n");
 		html.append(indirizzo.getPaese().getNome());
-    	html.append("<div class=\"hgap-30\"></div>\n");
+    	html.append("<div class=\"gap-b\"></div>\n");
 		html.append("</p></div>\n");
 		VerticalLayout lay = new VerticalLayout();
 		lay.setWidth(110,Sizeable.Unit.MM);
@@ -113,8 +110,7 @@ public abstract class StampaIndirizzoUI extends UI{
 
 	public static Layout stampaC(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div><p>");
-    	html.append("<div class=\"gap-30\"></div>\n");
-    	html.append("<div class=\"gap-30\"></div>\n");
+    	html.append("<div class=\"gap-c\"></div>\n");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -145,8 +141,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		right.setSpacing(false);
 		lay.addComponent(left);
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 220*12.0f);
-		lay.setExpandRatio(right,220*10.0f);
+		lay.setExpandRatio(left, 220*10.0f);
+		lay.setExpandRatio(right,220*12.0f);
 		
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		right.addComponent(label);
@@ -164,29 +160,17 @@ public abstract class StampaIndirizzoUI extends UI{
         		"  -ms-transform: rotate(90deg);\n" + 
         		"  transform: rotate(90deg);\n" + 
         		"}");	
-        getPage().getStyles().add(".gap-10 { \n" + 
+        getPage().getStyles().add(".gap-a { \n" + 
         		"				width:100%; \n" + 
-        		"				height:10mm; \n" + 
+        		"				height:110mm; \n" + 
         		"			} \n" + 
-        		"			.gap-20 { \n" + 
+        		"			.gap-b { \n" + 
+        		"				width:60mm; \n" + 
+        		"				height:60mm; \n" + 
+        		"			} \n" + 
+        		"			.gap-c { \n" + 
         		"				width:100%; \n" + 
-        		"				height:20mm; \n" + 
-        		"			} \n" + 
-        		"			.gap-30 { \n" + 
-        		"				width:100%; \n" + 
-        		"				height:30mm; \n" + 
-        		"			} ");
-        getPage().getStyles().add(".hgap-10 { \n" + 
-        		"				height:10mm; \n" + 
-        		"				width:10mm; \n" + 
-        		"			} \n" + 
-        		"			.hgap-20 { \n" + 
-        		"				height:20mm; \n" + 
-        		"				width:20mm; \n" + 
-        		"			} \n" + 
-        		"			.hgap-30 { \n" + 
-        		"				height:30mm; \n" + 
-        		"				width:30mm; \n" + 
+        		"				height:60mm; \n" + 
         		"			} ");
 	}
 
