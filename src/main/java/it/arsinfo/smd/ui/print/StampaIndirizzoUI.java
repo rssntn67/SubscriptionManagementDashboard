@@ -141,8 +141,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		right.setSpacing(false);
 		lay.addComponent(left);
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 220*10.0f);
-		lay.setExpandRatio(right,220*12.0f);
+		lay.setExpandRatio(left, 220*12.0f);
+		lay.setExpandRatio(right,220*10.0f);
 		
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		right.addComponent(label);
@@ -165,12 +165,12 @@ public abstract class StampaIndirizzoUI extends UI{
         		"				height:110mm; \n" + 
         		"			} \n" + 
         		"			.gap-b { \n" + 
-        		"				width:60mm; \n" + 
-        		"				height:60mm; \n" + 
+        		"				width:85mm; \n" + 
+        		"				height:85mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
         		"				width:100%; \n" + 
-        		"				height:60mm; \n" + 
+        		"				height:80mm; \n" + 
         		"			} ");
 	}
 
