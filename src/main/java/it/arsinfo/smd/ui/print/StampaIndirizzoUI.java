@@ -21,10 +21,8 @@ public abstract class StampaIndirizzoUI extends UI{
 	 */
 	private static final long serialVersionUID = 1L;
 
-
-	public static Layout stampaA(Indirizzo indirizzo) {
-    	StringBuffer html = new StringBuffer("<div><p>");
-    	html.append("<div class=\"gap-a\"></div>\n");
+	private static String getHtml(Indirizzo indirizzo) {
+		StringBuffer html = new StringBuffer();
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
@@ -36,11 +34,19 @@ public abstract class StampaIndirizzoUI extends UI{
 		html.append(indirizzo.getCap());
 		html.append(" ");
 		html.append(indirizzo.getCitta()); ;
+		html.append(" ");
 		html.append("(");
 		html.append(indirizzo.getProvincia().name());
 		html.append(")");
 		html.append("<br/>\n");
 		html.append(indirizzo.getPaese().getNome());
+		return html.toString();
+	}
+
+	public static Layout stampaA(Indirizzo indirizzo) {
+    	StringBuffer html = new StringBuffer("<div><p>");
+    	html.append("<div class=\"gap-a\"></div>\n");
+    	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
 		lay.setWidth(260,Sizeable.Unit.MM);
@@ -68,22 +74,7 @@ public abstract class StampaIndirizzoUI extends UI{
 	public static Layout stampaB(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
     	html.append("<div id=\"busta_2\"><p>");
-		html.append(indirizzo.getIntestazione());
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
-    		html.append("<br/>\n");
-    		html.append(indirizzo.getSottoIntestazione());
-    	}
-		html.append("<br/>\n");
-		html.append(indirizzo.getIndirizzo());
-		html.append("<br/>\n");
-		html.append(indirizzo.getCap());
-		html.append(" ");
-		html.append(indirizzo.getCitta()); ;
-		html.append("(");
-		html.append(indirizzo.getProvincia().name());
-		html.append(")");
-		html.append("<br/>\n");
-		html.append(indirizzo.getPaese().getNome());
+    	html.append(getHtml(indirizzo));
     	html.append("<div class=\"gap-b\"></div>\n");
 		html.append("</p></div>\n");
 		VerticalLayout lay = new VerticalLayout();
@@ -99,8 +90,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		bottom.setSpacing(false);
 		lay.addComponent(top);
 		lay.addComponent(bottom);
-		lay.setExpandRatio(top, 165*6.f);
-		lay.setExpandRatio(bottom,165*10.50f);
+		lay.setExpandRatio(top, 165*4.f);
+		lay.setExpandRatio(bottom,165*12.50f);
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		bottom.addComponent(label);
 
@@ -111,26 +102,11 @@ public abstract class StampaIndirizzoUI extends UI{
 	public static Layout stampaC(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer("<div><p>");
     	html.append("<div class=\"gap-c\"></div>\n");
-		html.append(indirizzo.getIntestazione());
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
-    		html.append("<br/>\n");
-    		html.append(indirizzo.getSottoIntestazione());
-    	}
-		html.append("<br/>\n");
-		html.append(indirizzo.getIndirizzo());
-		html.append("<br/>\n");
-		html.append(indirizzo.getCap());
-		html.append(" ");
-		html.append(indirizzo.getCitta()); ;
-		html.append("(");
-		html.append(indirizzo.getProvincia().name());
-		html.append(")");
-		html.append("<br/>\n");
-		html.append(indirizzo.getPaese().getNome());
+    	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
-		lay.setWidth(220,Sizeable.Unit.MM);
-		lay.setHeight(110,Sizeable.Unit.MM);
+		lay.setWidth(260,Sizeable.Unit.MM);
+		lay.setHeight(180,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
 		VerticalLayout left = new VerticalLayout();
@@ -141,8 +117,8 @@ public abstract class StampaIndirizzoUI extends UI{
 		right.setSpacing(false);
 		lay.addComponent(left);
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 220*12.0f);
-		lay.setExpandRatio(right,220*10.0f);
+		lay.setExpandRatio(left, 260*16.0f);
+		lay.setExpandRatio(right,260*10.0f);
 		
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		right.addComponent(label);
@@ -170,7 +146,7 @@ public abstract class StampaIndirizzoUI extends UI{
         		"			} \n" + 
         		"			.gap-c { \n" + 
         		"				width:100%; \n" + 
-        		"				height:80mm; \n" + 
+        		"				height:110mm; \n" + 
         		"			} ");
 	}
 
