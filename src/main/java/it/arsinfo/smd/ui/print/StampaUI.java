@@ -4,6 +4,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
@@ -14,7 +15,7 @@ import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 
-public abstract class StampaIndirizzoUI extends UI{
+public abstract class StampaUI extends UI{
 	
     /**
 	 * 
@@ -148,6 +149,13 @@ public abstract class StampaIndirizzoUI extends UI{
         		"				width:100%; \n" + 
         		"				height:110mm; \n" + 
         		"			} ");
+        
+	}
+	
+	protected void print() {
+	       JavaScript.getCurrent().execute(
+	               "setTimeout(function() {" +
+	               "  print(); self.close();}, 0);");
 	}
 
 	protected static Indirizzo getTestIndirizzo() {
@@ -159,11 +167,10 @@ public abstract class StampaIndirizzoUI extends UI{
     	antonio.setCap("81100");
     	antonio.setCitta("Caserta");
     	antonio.setProvincia(Provincia.CE);
-    	return getIndirizzo(antonio);
+		return Indirizzo.getIndirizzo(antonio);
 
 	}
 
-	protected static Indirizzo getIndirizzo(Anagrafica tizio) {
-		return Indirizzo.getIndirizzo(tizio);
-	}
+    public abstract Layout stampa(Indirizzo indirizzo);
+
 }

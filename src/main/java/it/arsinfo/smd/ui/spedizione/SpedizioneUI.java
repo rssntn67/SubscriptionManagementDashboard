@@ -78,10 +78,20 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         duplicaAdpSpesePostal.addClickListener(e -> duplica(maineditor.get(),InvioSpedizione.AdpSede));
         maineditor.getActions().addComponent(duplicaAdpSpesePostal);
         
-        BrowserWindowOpener popupOpener = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
-        Button stampa = new Button("Stampa", VaadinIcons.PRINT);
-        popupOpener.extend(stampa);
-        maineditor.getActions().addComponent(stampa);
+        BrowserWindowOpener popupOpenerA = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"A");
+        Button stampaA = new Button("Busta", VaadinIcons.PRINT);
+        popupOpenerA.extend(stampaA);
+        maineditor.getActions().addComponent(stampaA);
+
+        BrowserWindowOpener popupOpenerB = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"B");
+        Button stampaB = new Button("Cartoncino", VaadinIcons.PRINT);
+        popupOpenerB.extend(stampaB);
+        maineditor.getActions().addComponent(stampaB);
+
+        BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"C");
+        Button stampaC = new Button("Busta Piccola", VaadinIcons.PRINT);
+        popupOpenerC.extend(stampaC);
+        maineditor.getActions().addComponent(stampaC);
 
         SmdEntityItemEditor<SpedizioneItem,Spedizione> editor = 
         		new SmdEntityItemEditor<SpedizioneItem, Spedizione>(dao,itemSave,itemgrid,itemeditor,maineditor) {
@@ -110,8 +120,12 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
                 return;
             }
             setHeader("Spedizioni"+":Edit:"+grid.getSelected().getHeader());
-            if (grid.getSelected().getId() != null)
-            	popupOpener.setParameter("id", grid.getSelected().getId().toString());
+            if (grid.getSelected().getId() != null) {
+            	popupOpenerA.setParameter("id", grid.getSelected().getId().toString());
+            	popupOpenerB.setParameter("id", grid.getSelected().getId().toString());
+            	popupOpenerC.setParameter("id", grid.getSelected().getId().toString());
+
+            }
             hideMenu();
             add.setVisible(false);
             search.setVisible(false);
