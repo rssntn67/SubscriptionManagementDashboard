@@ -33,9 +33,9 @@ public abstract class StampaUI extends UI{
 		html.append(indirizzo.getIndirizzo());
 		html.append("<br/>\n");
 		html.append(indirizzo.getCap());
-		html.append(" ");
+		html.append("&nbsp;");
 		html.append(indirizzo.getCitta()); ;
-		html.append(" ");
+		html.append("&nbsp;&nbsp;");
 		html.append("(");
 		html.append(indirizzo.getProvincia().name());
 		html.append(")");
@@ -106,8 +106,8 @@ public abstract class StampaUI extends UI{
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
-		lay.setWidth(260,Sizeable.Unit.MM);
-		lay.setHeight(180,Sizeable.Unit.MM);
+		lay.setWidth(230,Sizeable.Unit.MM);
+		lay.setHeight(110,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
 		VerticalLayout left = new VerticalLayout();
@@ -118,8 +118,8 @@ public abstract class StampaUI extends UI{
 		right.setSpacing(false);
 		lay.addComponent(left);
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 260*16.0f);
-		lay.setExpandRatio(right,260*10.0f);
+		lay.setExpandRatio(left, 230*14.0f);
+		lay.setExpandRatio(right,230*9.0f);
 		
 		Label label = new Label(html.toString(), ContentMode.HTML);
 		right.addComponent(label);
