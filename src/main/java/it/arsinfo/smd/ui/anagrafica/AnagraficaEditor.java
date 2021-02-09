@@ -109,6 +109,7 @@ public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
 
         co.setItems(anagraficaDao.findAll());
 
+        getBinder().forField(titolo).asRequired();
         getBinder().forField(diocesi).asRequired();
         getBinder().forField(denominazione).asRequired();
         getBinder().forField(paese).asRequired();
@@ -116,6 +117,7 @@ public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
         getBinder().bindInstanceFields(this);
 
         // Configure and style components
+        titolo.setEmptySelectionAllowed(false);
         diocesi.setItemCaptionGenerator(Diocesi::getDetails);
         diocesi.setEmptySelectionAllowed(false);
         provincia.setItemCaptionGenerator(Provincia::getNome);

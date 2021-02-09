@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -41,6 +42,7 @@ public class Anagrafica implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private CentroDiocesano centroDiocesano;
 
+    @Column(nullable=false)
     private TitoloAnagrafica titolo=TitoloAnagrafica.Nessuno;   
     
     private String nome;
@@ -87,7 +89,9 @@ public class Anagrafica implements SmdEntity {
     private boolean elencoMarisaBisi; 
     private boolean promotoreRegionale; 
     
+    @Column(nullable=false)
     private String codeLineBase;
+
     public Anagrafica() {
     }
 
