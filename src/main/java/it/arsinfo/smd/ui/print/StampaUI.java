@@ -91,10 +91,10 @@ public abstract class StampaUI extends UI{
 		bottom.setSpacing(false);
 		lay.addComponent(top);
 		lay.addComponent(bottom);
-		lay.setExpandRatio(top, 165*4.f);
-		lay.setExpandRatio(bottom,165*12.50f);
+		lay.setExpandRatio(top, 165*10.00f);
+		lay.setExpandRatio(bottom,165*6.50f);
 		Label label = new Label(html.toString(), ContentMode.HTML);
-		bottom.addComponent(label);
+		top.addComponent(label);
 
 
 		return lay;
@@ -119,10 +119,10 @@ public abstract class StampaUI extends UI{
 		bottom.setSpacing(false);
 		lay.addComponent(top);
 		lay.addComponent(bottom);
-		lay.setExpandRatio(top, 230*4.f);
-		lay.setExpandRatio(bottom,230*12.50f);
+		lay.setExpandRatio(top, 230*12.50f);
+		lay.setExpandRatio(bottom,230*4.50f);
 		Label label = new Label(html.toString(), ContentMode.HTML);
-		bottom.addComponent(label);
+		top.addComponent(label);
 
 
 		return lay;
@@ -142,12 +142,12 @@ public abstract class StampaUI extends UI{
         		"				height:110mm; \n" + 
         		"			} \n" + 
         		"			.gap-b { \n" + 
-        		"				width:90mm; \n" + 
-        		"				height:90mm; \n" + 
+        		"				width:95mm; \n" + 
+        		"				height:95mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
-        		"				width:80mm; \n" + 
-        		"				height:80mm; \n" + 
+        		"				width:90mm; \n" + 
+        		"				height:90mm; \n" + 
         		"			} ");
         
 	}
