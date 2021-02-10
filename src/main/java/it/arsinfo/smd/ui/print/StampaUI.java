@@ -75,8 +75,8 @@ public abstract class StampaUI extends UI{
 	public static Layout stampaB(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
     	html.append("<div id=\"busta_2\"><p>");
-    	html.append(getHtml(indirizzo));
     	html.append("<div class=\"gap-b\"></div>\n");
+    	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		VerticalLayout lay = new VerticalLayout();
 		lay.setWidth(110,Sizeable.Unit.MM);
@@ -103,12 +103,12 @@ public abstract class StampaUI extends UI{
 	public static Layout stampaC(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
     	html.append("<div id=\"busta_2\"><p>");
-    	html.append(getHtml(indirizzo));
     	html.append("<div class=\"gap-c\"></div>\n");
+    	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		VerticalLayout lay = new VerticalLayout();
-		lay.setWidth(230,Sizeable.Unit.MM);
-		lay.setHeight(110,Sizeable.Unit.MM);
+		lay.setWidth(110,Sizeable.Unit.MM);
+		lay.setHeight(230,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
 		HorizontalLayout top = new HorizontalLayout();
@@ -142,8 +142,8 @@ public abstract class StampaUI extends UI{
         		"				height:110mm; \n" + 
         		"			} \n" + 
         		"			.gap-b { \n" + 
-        		"				width:85mm; \n" + 
-        		"				height:85mm; \n" + 
+        		"				width:90mm; \n" + 
+        		"				height:90mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
         		"				width:80mm; \n" + 
