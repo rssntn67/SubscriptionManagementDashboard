@@ -101,28 +101,28 @@ public abstract class StampaUI extends UI{
     }
 
 	public static Layout stampaC(Indirizzo indirizzo) {
-    	StringBuffer html = new StringBuffer("<div><p>");
-    	html.append("<div class=\"gap-c\"></div>\n");
+    	StringBuffer html = new StringBuffer();
+    	html.append("<div id=\"busta_2\"><p>");
     	html.append(getHtml(indirizzo));
+    	html.append("<div class=\"gap-c\"></div>\n");
 		html.append("</p></div>\n");
-		HorizontalLayout lay = new HorizontalLayout();
+		VerticalLayout lay = new VerticalLayout();
 		lay.setWidth(230,Sizeable.Unit.MM);
 		lay.setHeight(110,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
-		VerticalLayout left = new VerticalLayout();
-		left.setMargin(false);
-		left.setSpacing(false);
-		VerticalLayout right = new VerticalLayout();
-		right.setMargin(false);
-		right.setSpacing(false);
-		lay.addComponent(left);
-		lay.addComponent(right);
-		lay.setExpandRatio(left, 230*14.0f);
-		lay.setExpandRatio(right,230*9.0f);
-		
+		HorizontalLayout top = new HorizontalLayout();
+		top.setMargin(false);
+		top.setSpacing(false);
+		HorizontalLayout bottom = new HorizontalLayout();
+		bottom.setMargin(false);
+		bottom.setSpacing(false);
+		lay.addComponent(top);
+		lay.addComponent(bottom);
+		lay.setExpandRatio(top, 230*4.f);
+		lay.setExpandRatio(bottom,230*12.50f);
 		Label label = new Label(html.toString(), ContentMode.HTML);
-		right.addComponent(label);
+		bottom.addComponent(label);
 
 
 		return lay;
@@ -131,11 +131,11 @@ public abstract class StampaUI extends UI{
 	@Override
 	protected void init(VaadinRequest request) {
         getPage().getStyles().add("#busta_2 {\n" + 
-        		"  -webkit-transform: rotate(90deg);\n" + 
-        		"  -moz-transform: rotate(90deg);\n" + 
-        		"  -o-transform: rotate(90deg);\n" + 
-        		"  -ms-transform: rotate(90deg);\n" + 
-        		"  transform: rotate(90deg);\n" + 
+        		"  -webkit-transform: rotate(-90deg);\n" + 
+        		"  -moz-transform: rotate(270deg);\n" + 
+        		"  -o-transform: rotate(270deg);\n" + 
+        		"  -ms-transform: rotate(270deg);\n" + 
+        		"  transform: rotate(270deg);\n" + 
         		"}");	
         getPage().getStyles().add(".gap-a { \n" + 
         		"				width:100%; \n" + 
@@ -146,8 +146,8 @@ public abstract class StampaUI extends UI{
         		"				height:85mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
-        		"				width:100%; \n" + 
-        		"				height:110mm; \n" + 
+        		"				width:80mm; \n" + 
+        		"				height:80mm; \n" + 
         		"			} ");
         
 	}
