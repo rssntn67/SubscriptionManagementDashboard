@@ -75,26 +75,25 @@ public abstract class StampaUI extends UI{
 	public static Layout stampaB(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
     	html.append("<div id=\"busta_2\"><p>");
-    	html.append("<div class=\"gap-b\"></div>\n");
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
-		VerticalLayout lay = new VerticalLayout();
-		lay.setWidth(110,Sizeable.Unit.MM);
-		lay.setHeight(165,Sizeable.Unit.MM);
+		HorizontalLayout lay = new HorizontalLayout();
+		lay.setWidth(210,Sizeable.Unit.MM);
+		lay.setHeight(297,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
-		HorizontalLayout top = new HorizontalLayout();
-		top.setMargin(false);
-		top.setSpacing(false);
-		HorizontalLayout bottom = new HorizontalLayout();
-		bottom.setMargin(false);
-		bottom.setSpacing(false);
-		lay.addComponent(top);
-		lay.addComponent(bottom);
-		lay.setExpandRatio(top, 165*10.00f);
-		lay.setExpandRatio(bottom,165*6.50f);
-		Label label = new Label(html.toString(), ContentMode.HTML);
-		top.addComponent(label);
+		VerticalLayout left = new VerticalLayout();
+		left.setSpacing(false);
+		left.setMargin(false);
+		lay.addComponent(left);
+		VerticalLayout right = new VerticalLayout();
+		right.setSpacing(false);
+		right.setMargin(false);
+		right.addComponent(new Label("<div class=\"gap-b\"></div>\n", ContentMode.HTML));
+		right.addComponent(new Label(html.toString(), ContentMode.HTML));
+		lay.addComponent(right);
+		lay.setExpandRatio(left, 210*0.37f);
+		lay.setExpandRatio(right, 210*0.63f);
 
 
 		return lay;
@@ -103,26 +102,25 @@ public abstract class StampaUI extends UI{
 	public static Layout stampaC(Indirizzo indirizzo) {
     	StringBuffer html = new StringBuffer();
     	html.append("<div id=\"busta_2\"><p>");
-    	html.append("<div class=\"gap-c\"></div>\n");
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
-		VerticalLayout lay = new VerticalLayout();
-		lay.setWidth(110,Sizeable.Unit.MM);
-		lay.setHeight(230,Sizeable.Unit.MM);
+		HorizontalLayout lay = new HorizontalLayout();
+		lay.setWidth(210,Sizeable.Unit.MM);
+		lay.setHeight(297,Sizeable.Unit.MM);
 		lay.setSpacing(false);
 		lay.setMargin(false);
-		HorizontalLayout top = new HorizontalLayout();
-		top.setMargin(false);
-		top.setSpacing(false);
-		HorizontalLayout bottom = new HorizontalLayout();
-		bottom.setMargin(false);
-		bottom.setSpacing(false);
-		lay.addComponent(top);
-		lay.addComponent(bottom);
-		lay.setExpandRatio(top, 230*12.50f);
-		lay.setExpandRatio(bottom,230*4.50f);
-		Label label = new Label(html.toString(), ContentMode.HTML);
-		top.addComponent(label);
+		VerticalLayout left = new VerticalLayout();
+		left.setSpacing(false);
+		left.setMargin(false);
+		lay.addComponent(left);
+		VerticalLayout right = new VerticalLayout();
+		right.setSpacing(false);
+		right.setMargin(false);
+		right.addComponent(new Label("<div class=\"gap-c\"></div>\n", ContentMode.HTML));
+		right.addComponent(new Label(html.toString(), ContentMode.HTML));
+		lay.addComponent(right);
+		lay.setExpandRatio(left, 210*0.4f);
+		lay.setExpandRatio(right, 210*0.6f);
 
 
 		return lay;
@@ -142,13 +140,14 @@ public abstract class StampaUI extends UI{
         		"				height:110mm; \n" + 
         		"			} \n" + 
         		"			.gap-b { \n" + 
-        		"				width:95mm; \n" + 
-        		"				height:95mm; \n" + 
+        		"				width:100%; \n" + 
+        		"				height:25mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
-        		"				width:90mm; \n" + 
-        		"				height:90mm; \n" + 
-        		"			} ");
+        		"				width:100%; \n" + 
+        		"				height:40mm; \n" + 
+        		"			}" 
+        		);
         
 	}
 	
