@@ -45,19 +45,19 @@ public class Indirizzo {
     }
     
     public static String getIntestazione(Anagrafica tizio) {
-    	if (tizio.getNome() == null)
-            return String.format("%s %s", tizio.getTitolo().getIntestazione(), tizio.getDenominazione());
-        return String.format("%s %s %s", tizio.getTitolo().getIntestazione(),tizio.getNome(), tizio.getDenominazione());    	
+        return String.format("%s %s", tizio.getTitolo().getIntestazione(), tizio.getDenominazione());
     }
 
     public static String getIntestazioneCo(Anagrafica caio) {
-    	if (caio.getNome() == null)
-            return String.format("c/o %s %s", caio.getTitolo().getIntestazione(), caio.getDenominazione());
-        return String.format("c/o %s %s %s", caio.getTitolo().getIntestazione(),caio.getNome(), caio.getDenominazione());    	
+        return String.format("c/o %s %s", caio.getTitolo().getIntestazione(), caio.getDenominazione());
     }
 
     public String getIntestazione() {
     	return getIntestazione(primo);
+    }
+
+    public String getNome() {
+    	return primo.getNome();
     }
 
     public String getSottoIntestazione() {

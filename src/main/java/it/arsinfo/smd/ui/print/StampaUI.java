@@ -24,7 +24,12 @@ public abstract class StampaUI extends UI{
 
 	private static String getHtml(Indirizzo indirizzo) {
 		StringBuffer html = new StringBuffer();
+		html.append("<b>");
 		html.append(indirizzo.getIntestazione());
+    	if (indirizzo.getNome() != null && !indirizzo.getNome().equals("")) {
+    		html.append("<br/>\n");
+    		html.append(indirizzo.getNome());
+    	}
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
     		html.append(indirizzo.getSottoIntestazione());
@@ -41,6 +46,7 @@ public abstract class StampaUI extends UI{
 		html.append(")");
 		html.append("<br/>\n");
 		html.append(indirizzo.getPaese().getNome());
+		html.append("</b>");
 		return html.toString();
 	}
 
@@ -92,8 +98,8 @@ public abstract class StampaUI extends UI{
 		right.addComponent(new Label("<div class=\"gap-b\"></div>\n", ContentMode.HTML));
 		right.addComponent(new Label(html.toString(), ContentMode.HTML));
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 210*0.37f);
-		lay.setExpandRatio(right, 210*0.63f);
+		lay.setExpandRatio(left, 210*0.30f);
+		lay.setExpandRatio(right, 210*0.70f);
 
 
 		return lay;
@@ -119,8 +125,8 @@ public abstract class StampaUI extends UI{
 		right.addComponent(new Label("<div class=\"gap-c\"></div>\n", ContentMode.HTML));
 		right.addComponent(new Label(html.toString(), ContentMode.HTML));
 		lay.addComponent(right);
-		lay.setExpandRatio(left, 210*0.4f);
-		lay.setExpandRatio(right, 210*0.6f);
+		lay.setExpandRatio(left, 210*0.35f);
+		lay.setExpandRatio(right, 210*0.65f);
 
 
 		return lay;
@@ -141,11 +147,11 @@ public abstract class StampaUI extends UI{
         		"			} \n" + 
         		"			.gap-b { \n" + 
         		"				width:100%; \n" + 
-        		"				height:35mm; \n" + 
+        		"				height:30mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
         		"				width:100%; \n" + 
-        		"				height:50mm; \n" + 
+        		"				height:45mm; \n" + 
         		"			}" 
         		);
         
