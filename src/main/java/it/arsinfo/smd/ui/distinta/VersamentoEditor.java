@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -81,14 +81,14 @@ public class VersamentoEditor extends SmdItemEditor<Versamento> {
         
         getBinder().forField(importo)
             .asRequired()
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .withValidator(imp -> imp != null, "Importo non può essere null")
             .bind(Versamento::getImporto,Versamento::setImporto);
         getBinder().forField(incassato)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .bind(Versamento::getIncassato,Versamento::setIncassato);
         getBinder().forField(residuo)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind(Versamento::getResiduo,null);
         getBinder().forField(progressivo)
             .asRequired()

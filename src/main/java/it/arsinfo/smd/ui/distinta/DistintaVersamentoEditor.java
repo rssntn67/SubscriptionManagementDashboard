@@ -5,7 +5,7 @@ import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -74,19 +74,19 @@ public class DistintaVersamentoEditor extends SmdEntityEditor<DistintaVersamento
             .bind(DistintaVersamento::getErrati, DistintaVersamento::setErrati);
 
         getBinder().forField(importo)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .bind(DistintaVersamento::getImporto,DistintaVersamento::setImporto);
         getBinder().forField(incassato)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind(DistintaVersamento::getIncassato,DistintaVersamento::setIncassato);
         getBinder().forField(residuo)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind(DistintaVersamento::getResiduo,null);
        getBinder().forField(importoEsatti)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .bind(DistintaVersamento::getImportoEsatti,DistintaVersamento::setImportoEsatti);
         getBinder().forField(importoErrati)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .bind(DistintaVersamento::getImportoErrati,DistintaVersamento::setImportoErrati);
         getBinder().forField(dataContabile)
             .withConverter(new LocalDateToDateConverter(ZoneId.systemDefault())).bind("dataContabile");

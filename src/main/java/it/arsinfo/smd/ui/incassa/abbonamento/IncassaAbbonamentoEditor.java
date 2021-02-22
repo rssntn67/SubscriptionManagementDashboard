@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.converter.LocalDateToDateConverter;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -123,40 +123,40 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
         getBinder()
         .forField(importo)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind("importo");
         getBinder()
         .forField(spese)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(sp -> sp != null, "Spese non può essere null")
         .bind("spese");
         getBinder()
         .forField(speseEstero)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(sp -> sp != null, "Spese Estero non può essere null")
         .bind("speseEstero");
         getBinder()
         .forField(speseEstrattoConto)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(sp -> sp != null, "Spese Estratto conto non può essere null")
         .bind("speseEstrattoConto");
         getBinder()
         .forField(pregresso)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(sp -> sp != null, "Pregresso non può essere null")
         .bind("pregresso");
         getBinder()
         .forField(totale)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind("totale");
 
         getBinder()
         .forField(incassato)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind("incassato");
         getBinder()
             .forField(residuo)
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .bind("residuo");
                
         getBinder().forField(dataContabile).asRequired()

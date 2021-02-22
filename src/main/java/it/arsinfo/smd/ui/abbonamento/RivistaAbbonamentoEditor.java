@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -89,7 +89,7 @@ public class RivistaAbbonamentoEditor
                       );
  
         getBinder()
-        .forField(importo).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .forField(importo).withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
         .bind(RivistaAbbonamento::getImporto,RivistaAbbonamento::setImporto);
   

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -219,7 +219,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         getBinder()
         .forField(residuo)
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .bind("residuo");
         
         getBinder().bindInstanceFields(this);

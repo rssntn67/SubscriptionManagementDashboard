@@ -3,7 +3,7 @@ package it.arsinfo.smd.ui.spesaspedizione;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
@@ -50,17 +50,17 @@ public class SpesaSpedizioneEditor
         .bind(SpesaSpedizione::getRangeSpeseSpedizione,SpesaSpedizione::setRangeSpeseSpedizione);
        
         getBinder()
-        .forField(spese).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .forField(spese).withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
         .bind(SpesaSpedizione::getSpese,SpesaSpedizione::setSpese);
 
         getBinder()
-        .forField(cor24h).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .forField(cor24h).withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
         .bind(SpesaSpedizione::getCor24h,SpesaSpedizione::setCor24h);
 
         getBinder()
-        .forField(cor3gg).withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .forField(cor3gg).withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
         .bind(SpesaSpedizione::getCor3gg,SpesaSpedizione::setCor3gg);
 

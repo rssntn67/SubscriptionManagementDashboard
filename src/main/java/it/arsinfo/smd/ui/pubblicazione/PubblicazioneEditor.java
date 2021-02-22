@@ -3,7 +3,6 @@ package it.arsinfo.smd.ui.pubblicazione;
 import java.util.EnumSet;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -15,6 +14,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
+import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
 public class PubblicazioneEditor extends SmdEntityEditor<Pubblicazione> {
@@ -103,31 +103,31 @@ public class PubblicazioneEditor extends SmdEntityEditor<Pubblicazione> {
 
         getBinder().forField(costoUnitario)
             .asRequired()
-            .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+            .withConverter(new EuroConverter("Conversione in Eur"))
             .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
             .bind(Pubblicazione::getCostoUnitario,Pubblicazione::setCostoUnitario);
 
         getBinder().forField(abbonamento)
         .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
         .bind(Pubblicazione::getAbbonamento,Pubblicazione::setAbbonamento);
 
         getBinder().forField(abbonamentoWeb)
         .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
         .bind(Pubblicazione::getAbbonamentoWeb,Pubblicazione::setAbbonamentoWeb);
 
         getBinder().forField(abbonamentoConSconto)
         .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
         .bind(Pubblicazione::getAbbonamentoConSconto,Pubblicazione::setAbbonamentoConSconto);
 
         getBinder().forField(abbonamentoSostenitore)
         .asRequired()
-        .withConverter(new StringToBigDecimalConverter("Conversione in Eur"))
+        .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(f -> f.signum() == 1,"Deve essere maggiore di 0")
         .bind(Pubblicazione::getAbbonamentoSostenitore,Pubblicazione::setAbbonamentoSostenitore);
 
