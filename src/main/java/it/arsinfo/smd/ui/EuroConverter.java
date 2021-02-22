@@ -8,10 +8,28 @@ import java.util.Locale;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.ui.renderers.NumberRenderer;
 
 import it.arsinfo.smd.ui.EuroConverter;
 
 public class EuroConverter extends StringToBigDecimalConverter {
+	
+	public static NumberRenderer getEuroRenderer() {
+		return new NumberRenderer(NumberFormat.getCurrencyInstance(getLocalFromISO("EUR")));
+	}
+
+    public static Locale getLocalFromISO(String iso4217code){
+        Locale toReturn = null;
+        for (Locale locale : NumberFormat.getAvailableLocales()) {
+            String code = NumberFormat.getCurrencyInstance(locale).
+                    getCurrency().getCurrencyCode();
+            if (iso4217code.equals(code)) {
+                toReturn = locale;
+                break;
+            }
+        }
+        return toReturn;
+    }
 
     /**
 	 * 

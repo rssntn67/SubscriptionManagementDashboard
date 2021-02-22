@@ -51,6 +51,7 @@ public abstract class SmdGrid<T>
         this.grid = grid;
         this.gridName = gridName;
         this.grid.setWidth("100%");
+        this.grid.setColumns();
 
         selected = this.grid.asSingleSelect();
         selected.addValueChangeListener(e -> onChange());

@@ -7,6 +7,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
 public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
@@ -15,7 +16,20 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
 
     public AbbonamentoGrid(String gridName) {
         super(new Grid<>(Abbonamento.class),gridName);
-    	setColumns("intestazione",
+        
+        getGrid().addColumn("intestazione");
+        getGrid().addColumn("importo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("spese",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("speseEstero",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("speseEstrattoConto",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("pregresso",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("totale",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("residuo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("statoAbbonamento");
+        getGrid().addColumn("anno.anno").setCaption("Anno");
+
+        getGrid().setColumnOrder("intestazione",
         		"importo",
         		"spese",
         		"speseEstero",
@@ -25,7 +39,8 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         		"incassato",
         		"residuo",
         		"statoAbbonamento",
-        		"anno");
+        		"anno.anno");
+
         gridfooter = getGrid().prependFooterRow();
 	}
     
@@ -43,6 +58,7 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         gridfooter.getCell("residuo").setHtml("<b>"+getResiduo(items).toString()+"</b>");
  
     }
+    
     private BigDecimal getPregresso(List<Abbonamento> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Abbonamento abbonamento:abbonamenti) {
