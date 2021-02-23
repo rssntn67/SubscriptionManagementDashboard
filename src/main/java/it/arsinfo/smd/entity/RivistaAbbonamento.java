@@ -292,6 +292,15 @@ public class RivistaAbbonamento implements SmdEntity {
 		return statoRivista;
 	}
 
+	@Transient
+	public String getInizio() {
+		return meseInizio.getNomeBreve()+annoInizio.getAnnoAsString();
+	}
+	@Transient
+	public String getFine() {
+		return meseFine.getNomeBreve()+annoFine.getAnnoAsString();
+		
+	}
 	public void setStatoRivista(StatoRivista statoRivista) {
 		this.statoRivista = statoRivista;
 	}
