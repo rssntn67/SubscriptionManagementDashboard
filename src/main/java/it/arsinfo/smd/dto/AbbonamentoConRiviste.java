@@ -1,9 +1,7 @@
 package it.arsinfo.smd.dto;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.util.Assert;
 
@@ -16,7 +14,6 @@ public class AbbonamentoConRiviste extends Indirizzo {
 
 	public static String numeroPlaceHolder="-";
     private final Abbonamento abbonamento;
-    private final NumberFormat fmt_IT  = NumberFormat.getNumberInstance(Locale.ITALIAN);
     private Integer numeroMessaggi=0;
     private Integer numeroBlocchetti=0;
     private Integer numeroLodare=0;
@@ -29,8 +26,6 @@ public class AbbonamentoConRiviste extends Indirizzo {
 
     public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
     	super(intestatario,co);
-    	fmt_IT.setMaximumFractionDigits(2);    	
-    	fmt_IT.setMinimumFractionDigits(2);    	
     	Assert.notNull(abbonamento,"abbonamento must be not null");
     	this.abbonamento= abbonamento;
     	for (RivistaAbbonamento ec:estrattiConto) {
@@ -103,101 +98,59 @@ public class AbbonamentoConRiviste extends Indirizzo {
 		return numeroManifesti;
 	}
 
-	public BigDecimal getImportoMessaggiBG() {
+	public BigDecimal getImportoMessaggi() {
 		return importoMessaggi;
 	}
 
-	public BigDecimal getImportoBlocchettiBG() {
+	public BigDecimal getImportoBlocchetti() {
 		return importoBlocchetti;
 	}
 
-	public BigDecimal getImportoLodareBG() {
+	public BigDecimal getImportoLodare() {
 		return importoLodare;
 	}
 
-	public BigDecimal getImportoManifestiBG() {
+	public BigDecimal getImportoManifesti() {
 		return importoManifesti;
 	}
 	
-	public BigDecimal getSpesePostaliBG() {
+	public BigDecimal getSpesePostali() {
 		return abbonamento.getSpese().add(abbonamento.getSpeseEstero());
 	}
 
-	public BigDecimal getSpeseEstrattoContoBG() {
+	public BigDecimal getSpeseEstrattoConto() {
 		return abbonamento.getSpeseEstrattoConto();
 	}
 
-	public BigDecimal getTotaleImportiBG() {
+	public BigDecimal getTotaleImporti() {
 		return importoManifesti.
 				add(importoBlocchetti).
 				add(importoMessaggi).
 				add(importoLodare).
-				add(getSpesePostaliBG()).
-				add(getSpeseEstrattoContoBG());
+				add(getSpesePostali()).
+				add(getSpeseEstrattoConto());
 	}
 	    
-    public BigDecimal getPregressoBG() {
+    public BigDecimal getPregresso() {
         return abbonamento.getPregresso();
     }
 	
-    public BigDecimal getTotaleBG() {
-		return getTotaleImportiBG().add(abbonamento.getPregresso());
+    public BigDecimal getTotale() {
+		return getTotaleImporti().add(abbonamento.getPregresso());
 	}
 	
-    public BigDecimal getIncassatoBG() {
+    public BigDecimal getIncassato() {
         return abbonamento.getIncassato();
     }
 
-	public BigDecimal getSaldoBG() {
-		return getTotaleBG().subtract(getIncassatoBG());
+	public BigDecimal getSaldo() {
+		return getTotale().subtract(getIncassato());
 	}
 		
-	public String getImportoMessaggi() {
-		return fmt_IT.format(getImportoMessaggiBG());
-	}
-
-	public String getImportoBlocchetti() {
-		return fmt_IT.format(getImportoBlocchettiBG());
-	}
-
-	public String getImportoLodare() {
-		return fmt_IT.format(getImportoLodareBG());
-	}
-
-	public String getImportoManifesti() {
-		return fmt_IT.format(getImportoManifestiBG());
-	}
-
-	public String getSpesePostali() {
-		return fmt_IT.format(getSpesePostaliBG());
-	}
-
-	public String getSpeseEstrattoConto() {
-		return fmt_IT.format(getSpeseEstrattoContoBG());
-	}
-
-	public String getTotaleImporti() {
-		return fmt_IT.format(getTotaleImportiBG());
-	}
-
-    public String getPregresso() {
-		return fmt_IT.format(getPregressoBG());
-    }
-
-	public String getTotale() {
-		return fmt_IT.format(getTotaleBG());
+	public BigDecimal getRiportoAnnoPrecedente() {
+		return getPregresso().subtract(getIncassato());
 	}
     
-	public String getIncassato() {
-		return fmt_IT.format(getIncassatoBG());
-    }
-	public String getRiportoAnnoPrecedente() {
-		return fmt_IT.format(getPregressoBG().subtract(getIncassatoBG()));
-	}
-    
-	public String getSaldo() {
-		return fmt_IT.format(getSaldoBG());
-	}
 	
 
  

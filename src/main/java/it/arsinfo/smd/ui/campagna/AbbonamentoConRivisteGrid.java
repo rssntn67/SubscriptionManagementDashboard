@@ -7,6 +7,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
 public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
@@ -15,6 +16,32 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
 
     public AbbonamentoConRivisteGrid(String gridName) {
         super(new Grid<>(AbbonamentoConRiviste.class),gridName);
+        getGrid().addColumn("codeLine");
+        getGrid().addColumn("intestazione");
+        getGrid().addColumn("sottoIntestazione");
+        getGrid().addColumn("indirizzo");
+        getGrid().addColumn("citta");
+        getGrid().addColumn("cap");
+        getGrid().addColumn("provincia");
+        getGrid().addColumn("paese");
+        getGrid().addColumn("numeroMessaggi");
+        getGrid().addColumn("numeroBlocchetti");
+        getGrid().addColumn("numeroManifesti");
+        getGrid().addColumn("numeroLodare");
+        getGrid().addColumn("importoMessaggi",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("importoBlocchetti",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("importoManifesti",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("importoLodare",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("spesePostali",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("speseEstrattoConto",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("totaleImporti",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("pregresso",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("totale",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("riportoAnnoPrecedente",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("saldo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("anno.anno").setCaption("Anno");
+
         setColumns(
         		"codeLine",
         		"intestazione",
@@ -40,8 +67,8 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
                 "incassato",
                 "riportoAnnoPrecedente",
                 "saldo",
-                "anno");
-        setColumnCaption("captionBrief", "Intestatario");		
+                "anno"
+                );
         gridfooter = getGrid().prependFooterRow();
 	}
 
@@ -97,7 +124,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getImportoMessaggi(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoMessaggiBG());
+            importo=importo.add(abbonamento.getImportoMessaggi());
         }
         return importo;
     }
@@ -105,7 +132,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getImportoLodare(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoLodareBG());
+            importo=importo.add(abbonamento.getImportoLodare());
         }
         return importo;
     }
@@ -113,7 +140,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getImportoBlocchetti(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoBlocchettiBG());
+            importo=importo.add(abbonamento.getImportoBlocchetti());
         }
         return importo;
     }
@@ -121,7 +148,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getImportoManifesti(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getImportoManifestiBG());
+            importo=importo.add(abbonamento.getImportoManifesti());
         }
         return importo;
     }
@@ -129,7 +156,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getPregresso(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getPregressoBG());
+            importo=importo.add(abbonamento.getPregresso());
         }
         return importo;
     }
@@ -138,7 +165,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getSpesePostali(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getSpesePostaliBG());
+            importo=importo.add(abbonamento.getSpesePostali());
         }
         return importo;
     }
@@ -146,7 +173,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getSpeseEstrattoConto(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getSpeseEstrattoContoBG());
+            importo=importo.add(abbonamento.getSpeseEstrattoConto());
         }
         return importo;
     }
@@ -154,7 +181,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getTotaleImporti(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getTotaleImportiBG());
+            importo=importo.add(abbonamento.getTotaleImporti());
         }
         return importo;
     }
@@ -162,7 +189,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getTotale(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamento:abbonamenti) {
-            importo=importo.add(abbonamento.getTotaleBG());
+            importo=importo.add(abbonamento.getTotale());
         }
         return importo;
     }
@@ -171,7 +198,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abb:abbonamenti) {
             if (abb.getIncassato() != null)
-                importo=importo.add(abb.getIncassatoBG());
+                importo=importo.add(abb.getIncassato());
         }
         return importo;
     }
@@ -179,7 +206,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
     private BigDecimal getSaldo(List<AbbonamentoConRiviste> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (AbbonamentoConRiviste abbonamneto:abbonamenti) {
-            importo=importo.add(abbonamneto.getSaldoBG());
+            importo=importo.add(abbonamneto.getSaldo());
         }
         return importo;
     }
