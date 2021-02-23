@@ -11,6 +11,8 @@ public class CampagnaGrid extends SmdGrid<Campagna> {
         super(new Grid<>(Campagna.class),gridname);
 
         setColumns("anno.anno","statoCampagna");
+        setColumnCaption("anno.anno", "Anno");
+        setColumnCaption("statoCampagna", "Campagna");
         
 
     }
