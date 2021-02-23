@@ -11,13 +11,13 @@ public class OperazioneSospendiGrid extends SmdGrid<OperazioneSospendi> {
         super(new Grid<>(OperazioneSospendi.class),gridName);
         setColumns(
         		"pubblicazione.nome",
-        		"campagna.anno",
-        		"meseSpedizione",
+        		"campagna.anno.anno",
+        		"meseSpedizione.nomeBreve",
         		"data",
         		"operatore");
         setColumnCaption("pubblicazione.nome", "Pubblicazione");
-        setColumnCaption("campagna.anno", "Anno");
-        setColumnCaption("meseSpedizione", "Mese");
+        setColumnCaption("campagna.anno.anno", "Anno");
+        setColumnCaption("meseSpedizione.nomeBreve", "Mese");
 	}
 
 }
