@@ -42,7 +42,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
         getGrid().addColumn("saldo",EuroConverter.getEuroRenderer());
         getGrid().addColumn("anno.anno").setCaption("Anno");
 
-        setColumns(
+        getGrid().setColumnOrder(
         		"codeLine",
         		"intestazione",
         		"sottoIntestazione",
@@ -67,7 +67,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
                 "incassato",
                 "riportoAnnoPrecedente",
                 "saldo",
-                "anno"
+                "anno.anno"
                 );
         gridfooter = getGrid().prependFooterRow();
 	}
