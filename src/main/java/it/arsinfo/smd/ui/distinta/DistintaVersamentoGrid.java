@@ -10,6 +10,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
 import it.arsinfo.smd.entity.DistintaVersamento;
+import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
 public class DistintaVersamentoGrid extends SmdGrid<DistintaVersamento> {
@@ -17,9 +18,19 @@ public class DistintaVersamentoGrid extends SmdGrid<DistintaVersamento> {
     private final FooterRow gridfooter;
     public DistintaVersamentoGrid(String gridname) {
         super(new Grid<>(DistintaVersamento.class),gridname);
+        getGrid().addColumn("dettagli");
+        getGrid().addColumn("importo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("residuo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("dataContabile");
 
-        setColumns("dettagli","importo","incassato","residuo", 
-                   "dataContabile");
+        getGrid().setColumnOrder(
+        		"dettagli",
+        		"importo",
+        		"incassato",
+        		"residuo", 
+                "dataContabile"
+    		);
         gridfooter = getGrid().prependFooterRow();
     }
     @Override
