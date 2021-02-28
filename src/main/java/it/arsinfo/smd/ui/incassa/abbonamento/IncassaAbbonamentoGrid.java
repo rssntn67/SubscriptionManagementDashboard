@@ -7,7 +7,7 @@ public class IncassaAbbonamentoGrid extends IncassaAbbonamentoAbstractGrid {
     public IncassaAbbonamentoGrid(String gridname) {
         super(gridname);
         getGrid().addColumn("operatore");
-        getGrid().addColumn("statoOperazioneIncasso");
+        getGrid().addColumn("statoOperazioneIncasso").setCaption("Operazione");
         getGrid().addColumn("importo",EuroConverter.getEuroRenderer());
         getGrid().addColumn("versamento.codeLine");
         getGrid().addColumn("versamento.progressivo");

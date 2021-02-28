@@ -10,6 +10,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
 import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
 public class VersamentoGrid extends SmdGrid<Versamento> {
@@ -17,7 +18,17 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
     private final FooterRow gridfooter;
     public VersamentoGrid(String gridname) {
         super(new Grid<>(Versamento.class),gridname);
-        setColumns(                  
+        
+        getGrid().addColumn("nomeCommittente").setCaption("Committente");
+        getGrid().addColumn("codeLine");
+        getGrid().addColumn("importo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("residuo",EuroConverter.getEuroRenderer());
+        getGrid().addColumn("progressivo");
+        getGrid().addColumn("dataPagamento");
+        getGrid().addColumn("dataContabile");
+
+        getGrid().setColumnOrder(                  
                 "nomeCommittente",
                 "codeLine",
                    "importo",
@@ -28,7 +39,6 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
                    "dataContabile"
                   );
         gridfooter = getGrid().prependFooterRow();
-        setColumnCaption("nomeCommittente", "Committente");
 
     }
 
