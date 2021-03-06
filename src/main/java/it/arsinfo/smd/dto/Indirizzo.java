@@ -8,6 +8,10 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public class Indirizzo {
 
+	public Anagrafica getPrimo() {
+		return primo;
+	}
+
 	public static Indirizzo getIndirizzo(Anagrafica primo) {
 		return new Indirizzo(primo);
 	}
@@ -119,5 +123,30 @@ public class Indirizzo {
         }
         return secondo.getPaese();        
     }
+    
+    public String getTelefono() {
+        String telefono = primo.getTelefono();
+        if (telefono == null) {
+            	return "-";
+        }
+        return telefono;
+    }
+
+    public String getEmail() {
+        String email = primo.getEmail();
+        if (email == null) {
+            	return "-";
+        }
+        return email;
+    }    
+
+    public String getCellulare() {
+        String cell = primo.getCellulare();
+        if (cell == null) {
+            	return "-";
+        }
+        return cell;
+    }    
+
     
 }

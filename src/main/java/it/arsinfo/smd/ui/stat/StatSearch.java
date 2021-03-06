@@ -1,5 +1,6 @@
-package it.arsinfo.smd.ui.anagrafica;
+package it.arsinfo.smd.ui.stat;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -9,7 +10,8 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.dao.AbbonamentoConRivisteServiceDao;
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -17,11 +19,12 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.ui.vaadin.SmdSearch;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
-public class AnagraficaSearch extends SmdSearch<Anagrafica> {
+public class StatSearch extends SmdChangeHandler {
 
+    private Anno anno;
     private Diocesi searchDiocesi;
     private String searchDenominazione;
     private String searchNome;
@@ -58,12 +61,13 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
+    private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno",EnumSet.allOf(Anno.class));
     
-    private final AnagraficaServiceDao dao;
+    private final AbbonamentoConRivisteServiceDao dao;
 
-    public AnagraficaSearch(AnagraficaServiceDao dao) {
-        super(dao);
+    public StatSearch(AbbonamentoConRivisteServiceDao dao) {
         this.dao=dao;
+        
         TextField filterDenominazione = new TextField("Cerca per Denominazione");
         TextField filterNome = new TextField("Cerca per Nome");
         TextField filterCap = new TextField("Cerca per CAP");
@@ -71,7 +75,7 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
         ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Cerca per diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
-        setComponents(
+        setComponents(new HorizontalLayout(filterAnno),
                       new HorizontalLayout(
                                            filterTitolo,
                                            filterDiocesi, 
@@ -106,6 +110,20 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
                                            filterElencoMarisaBisi,
                                            filterPromotoreRegionale));
 
+
+        filterAnno.setEmptySelectionAllowed(true);
+        filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
+        filterAnno.setPlaceholder("Cerca per Anno");
+        filterAnno.setValue(Anno.getAnnoCorrente());
+
+        filterAnno.addSelectionListener(e -> {
+        	if (e.getValue() == null) {
+        		anno=null;
+        	} else {
+        		anno = e.getSelectedItem().get();
+        	}
+        	onChange();
+        });
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
@@ -182,17 +200,38 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
 
     }
 
-	@Override
-	public List<Anagrafica> find() {
-		return dao.searchBy(searchDiocesi, searchNome, searchDenominazione, searchCitta, searchCap,
-				filterPaese.getValue(), filterAreaSpedizione.getValue(), filterProvincia.getValue(),
-				filterTitolo.getValue(), filterRegioneVescovi.getValue(), filterCentroDiocesano.getValue(),
-				filterRegioneDirettoreDiocesano.getValue(), filterDirettoreDiocesano.getValue(),
-				filterPresidenteDiocesano.getValue(), filterRegionePresidenteDiocesano.getValue(),
-				filterDirettoreZonaMilano.getValue(), filterConsiglioNazionaleADP.getValue(),
-				filterPresidenzaADP.getValue(), filterDirezioneADP.getValue(), filterCaricheSocialiADP.getValue(),
-				filterDelegatiRegionaliADP.getValue(), filterElencoMarisaBisi.getValue(),
-				filterPromotoreRegionale.getValue());
+    public List<AbbonamentoConRiviste> find() {
+        return dao.searchBy(
+        		anno,
+        		searchDiocesi,
+				searchNome,
+				searchDenominazione,
+				searchCitta,
+				searchCap,
+				filterPaese.getValue(),
+				filterAreaSpedizione.getValue(),
+				filterProvincia.getValue(),
+				filterTitolo.getValue(),
+				filterRegioneVescovi.getValue(),
+				filterCentroDiocesano.getValue(),
+				filterRegioneDirettoreDiocesano.getValue(),
+	    		filterDirettoreDiocesano.getValue(),
+	    		filterPresidenteDiocesano.getValue(),
+	    		filterRegionePresidenteDiocesano.getValue(),
+	    		filterDirettoreZonaMilano.getValue(),
+	    		filterConsiglioNazionaleADP.getValue(),
+	    		filterPresidenzaADP.getValue(),
+	    		filterDirezioneADP.getValue(),
+	    		filterCaricheSocialiADP.getValue(),
+	    		filterDelegatiRegionaliADP.getValue(),
+	    		filterElencoMarisaBisi.getValue(),
+	    		filterPromotoreRegionale.getValue()
+				);
+    }
+
+
+	public List<AbbonamentoConRiviste> findNone() {
+		return new ArrayList<AbbonamentoConRiviste>();
 	}
 
 }

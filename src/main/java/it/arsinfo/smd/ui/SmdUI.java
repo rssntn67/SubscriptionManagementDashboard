@@ -54,6 +54,7 @@ public abstract class SmdUI extends UI {
     public final static String URL_CAMPAGNA = "/campagna";
     public final static String URL_NOTE = "/note";
     public final static String URL_RIEPILOGO = "/riepilogo";
+    public final static String URL_STAT = "/stat";
 
     public final static String URL_DISTINTA_VERSAMENTI = "/distinta";
     public final static String URL_UPLOAD_POSTE = "/upload/poste";
@@ -84,6 +85,7 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_CAMPAGNA = "Campagne";
     public final static String TITLE_NOTE = "Note";
     public final static String TITLE_RIEPILOGO = "Riepilogo";
+    public final static String TITLE_STAT = "Statistiche";
 
     public final static String TITLE_DISTINTA_VERSAMENTI = "Distinta Versamenti";
     public final static String TITLE_INCASSA_VERSAMENTI = "Incassa Versamenti";
@@ -197,6 +199,15 @@ public abstract class SmdUI extends UI {
                 getUI().getPage().setLocation(URL_RIEPILOGO);
             }
         } );
+        
+        abbonamenti.addItem(TITLE_STAT,new MenuBar.Command() {
+            private static final long serialVersionUID = 1L;
+            
+            public void menuSelected(MenuItem selectedItem) {
+                getUI().getPage().setLocation(URL_STAT);
+            }
+        } );
+
         
         MenuItem incassi = menu.addItem("Gestione Incassi",null);
         incassi.addItem(TITLE_DISTINTA_VERSAMENTI,new MenuBar.Command() {

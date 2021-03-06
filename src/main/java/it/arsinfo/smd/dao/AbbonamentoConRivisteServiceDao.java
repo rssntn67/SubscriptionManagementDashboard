@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -11,12 +12,13 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
-import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 
 @Service
-public interface AnagraficaServiceDao extends SmdServiceDao<Anagrafica> {
+public interface AbbonamentoConRivisteServiceDao {
 
-	public List<Anagrafica> searchBy(
+	public List<AbbonamentoConRiviste> searchBy(
+			Anno anno,
 			Diocesi searchDiocesi, 
 			String searchNome,
 			String searchDenominazione,
@@ -40,6 +42,6 @@ public interface AnagraficaServiceDao extends SmdServiceDao<Anagrafica> {
     		boolean filterDelegatiRegionaliADP,
     		boolean filterElencoMarisaBisi,
     		boolean filterPromotoreRegionale
- );
+    		);
 	
 }

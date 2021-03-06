@@ -1,6 +1,7 @@
 package it.arsinfo.smd.service.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,13 @@ import org.springframework.util.StringUtils;
 
 import it.arsinfo.smd.dao.AnagraficaServiceDao;
 import it.arsinfo.smd.dao.repository.AnagraficaDao;
+import it.arsinfo.smd.data.AreaSpedizione;
+import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.data.Paese;
+import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.Regione;
+import it.arsinfo.smd.data.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 
 @Service
@@ -41,9 +48,11 @@ public class AnagraficaServiceDaoImpl implements AnagraficaServiceDao {
 		return repository;
 	}
 
-	@Override
-	public List<Anagrafica> searchBy(Diocesi diocesi, String nome, String denominazione,
-			String citta, String cap) {
+	private List<Anagrafica> search(Diocesi diocesi, 
+			String nome, 
+			String denominazione,
+			String citta, 
+			String cap) {
         if (       diocesi == null 
         		&& StringUtils.isEmpty(nome) 
         		&& StringUtils.isEmpty(denominazione) 
@@ -208,7 +217,94 @@ public class AnagraficaServiceDaoImpl implements AnagraficaServiceDao {
         }
 
         return repository.findByDiocesiAndNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapIgnoreCase(diocesi,nome,denominazione,citta,cap);
-        
+		
 	}
+
+	@Override
+	public List<Anagrafica> searchBy(
+			Diocesi diocesi, 
+			String nome, 
+			String denominazione,
+			String citta, 
+			String cap, 
+			Paese paese,
+	   		AreaSpedizione areaSped, 
+    		Provincia provincia, 
+    		TitoloAnagrafica titolo,
+    		Regione regioneVescovi,
+    		CentroDiocesano centroDiocesano,
+    		Regione regioneDirettoreDiocesano,
+    		boolean filterDirettoreDiocesano,
+    		boolean filterPresidenteDiocesano,
+    		Regione regionePresidenteDiocesano,
+    		boolean filterDirettoreZonaMilano,
+    		boolean filterConsiglioNazionaleADP,
+    		boolean filterPresidenzaADP,
+    		boolean filterDirezioneADP,
+    		boolean filterCaricheSocialiADP,
+    		boolean filterDelegatiRegionaliADP,
+    		boolean filterElencoMarisaBisi,
+    		boolean filterPromotoreRegionale
+    		) {
+		List<Anagrafica> anagrafiche = search(diocesi, nome, denominazione, citta, cap);
+
+		if (paese != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> paese == a.getPaese()).collect(Collectors.toList());
+        }
+        if (areaSped != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> areaSped == a.getAreaSpedizione()).collect(Collectors.toList());
+        }
+        if (provincia != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> provincia == a.getProvincia()).collect(Collectors.toList());
+        }
+        if (titolo != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> titolo == a.getTitolo()).collect(Collectors.toList());
+        }
+        if (regioneVescovi != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> regioneVescovi == a.getRegioneVescovi()).collect(Collectors.toList());
+        }
+        if (centroDiocesano != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> centroDiocesano == a.getCentroDiocesano()).collect(Collectors.toList());
+        }
+        if (regioneDirettoreDiocesano != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> regioneDirettoreDiocesano == a.getRegioneDirettoreDiocesano()).collect(Collectors.toList());
+        }
+        if (regionePresidenteDiocesano != null) {
+            anagrafiche = anagrafiche.stream().filter(a -> regionePresidenteDiocesano == a.getRegionePresidenteDiocesano()).collect(Collectors.toList());
+        }
+        if (filterDirettoreDiocesano) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isDirettoreDiocesiano()).collect(Collectors.toList());
+        }
+        if (filterPresidenteDiocesano) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isPresidenteDiocesano()).collect(Collectors.toList());
+        }
+        if (filterDirettoreZonaMilano) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isDirettoreZonaMilano()).collect(Collectors.toList());
+        }
+        if (filterConsiglioNazionaleADP) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isConsiglioNazionaleADP()).collect(Collectors.toList());
+        }
+        if (filterPresidenzaADP) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isPresidenzaADP()).collect(Collectors.toList());
+        }
+        if (filterDirezioneADP) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isDirezioneADP()).collect(Collectors.toList());
+        }
+        if (filterCaricheSocialiADP) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isCaricheSocialiADP()).collect(Collectors.toList());
+        }
+        if (filterDelegatiRegionaliADP) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isDelegatiRegionaliADP()).collect(Collectors.toList());
+        }
+        if (filterElencoMarisaBisi) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isElencoMarisaBisi()).collect(Collectors.toList());
+        }
+        if (filterPromotoreRegionale) {
+            anagrafiche = anagrafiche.stream().filter(a -> a.isPromotoreRegionale()).collect(Collectors.toList());            
+        }
+       
+        return anagrafiche;
+    }
+
 	
 }
