@@ -17,13 +17,5 @@ public class SpedizioneGrid extends SmdGrid<Spedizione> {
         getGrid().addColumn("spesePostali", EuroConverter.getEuroRenderer());
         getGrid().addColumn("invioSpedizione").setCaption("Invio");
 
-        getGrid().setColumnOrder(
-        			"destinazione",
-        		   "meseSpedizione",
-        		   "annoSpedizione", 
-        		   "pesoStimato",
-                   "spesePostali",
-                   "invioSpedizione"
-                   );
     }
 }
