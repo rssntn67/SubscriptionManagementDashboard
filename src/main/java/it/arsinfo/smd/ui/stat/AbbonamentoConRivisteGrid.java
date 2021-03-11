@@ -39,38 +39,9 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
         getGrid().addColumn("pregresso",EuroConverter.getEuroRenderer());
         getGrid().addColumn("totale",EuroConverter.getEuroRenderer());
         getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
-        getGrid().addColumn("riportoAnnoPrecedente",EuroConverter.getEuroRenderer());
         getGrid().addColumn("saldo",EuroConverter.getEuroRenderer());
         getGrid().addColumn("anno.anno").setCaption("Anno");
 
-        getGrid().setColumnOrder(
-        		"intestazione",
-        		"indirizzo",
-        		"citta",
-        		"cap",
-        		"provincia",
-        		"paese",
-        		"email",
-        		"telefono",
-        		"cellulare",
-        		"numeroMessaggi",
-        		"numeroBlocchetti",
-        		"numeroManifesti",
-           		"numeroLodare",
-        		"importoMessaggi",
-        		"importoBlocchetti",
-        		"importoManifesti",
-           		"importoLodare",
-                "spesePostali",
-                "speseEstrattoConto",
-                "totaleImporti",
-                "pregresso",
-                "totale",
-                "incassato",
-                "riportoAnnoPrecedente",
-                "saldo",
-                "anno.anno"
-                );
         gridfooter = getGrid().prependFooterRow();
 	}
 

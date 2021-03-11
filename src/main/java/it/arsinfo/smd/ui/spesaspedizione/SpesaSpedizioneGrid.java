@@ -16,13 +16,6 @@ public class SpesaSpedizioneGrid extends SmdGrid<SpesaSpedizione> {
         getGrid().addColumn("cor24h", EuroConverter.getEuroRenderer()).setCaption("Corriere 24h");
         getGrid().addColumn("cor3gg", EuroConverter.getEuroRenderer()).setCaption("Corriere 3gg");
         
-        getGrid().setColumnOrder(
-        		"rangeSpeseSpedizione",
-        		"areaSpedizione",
-        		"spese",
-        		"cor24h",
-        		"cor3gg"
-        		);
     }
 
 }

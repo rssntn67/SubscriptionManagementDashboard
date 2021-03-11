@@ -24,13 +24,6 @@ public class DistintaVersamentoGrid extends SmdGrid<DistintaVersamento> {
         getGrid().addColumn("residuo",EuroConverter.getEuroRenderer());
         getGrid().addColumn("dataContabile");
 
-        getGrid().setColumnOrder(
-        		"dettagli",
-        		"importo",
-        		"incassato",
-        		"residuo", 
-                "dataContabile"
-    		);
         gridfooter = getGrid().prependFooterRow();
     }
     @Override

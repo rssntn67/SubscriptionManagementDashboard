@@ -29,18 +29,6 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         getGrid().addColumn("statoAbbonamento");
         getGrid().addColumn("anno.anno").setCaption("Anno");
 
-        getGrid().setColumnOrder("intestazione",
-        		"importo",
-        		"spese",
-        		"speseEstero",
-        		"speseEstrattoConto",
-        		"pregresso",
-        		"totale",
-        		"incassato",
-        		"residuo",
-        		"statoAbbonamento",
-        		"anno.anno");
-
         gridfooter = getGrid().prependFooterRow();
 	}
     

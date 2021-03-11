@@ -21,18 +21,6 @@ public class RivistaAbbonamentoGrid extends SmdGrid<RivistaAbbonamento> {
         getGrid().addColumn("numeroTotaleRiviste");
         getGrid().addColumn("importo", EuroConverter.getEuroRenderer());
 
-        getGrid().setColumnOrder(
-    		"pubblicazione.nome",
-            "inizio",
-            "fine",
-            "tipoAbbonamentoRivista",
-    		"beneficiario",
-            "statoRivista",
-            "numero",
-    		"numeroTotaleRiviste",
-    		"importo")
-        ;
-
     }
 
 }

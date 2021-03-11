@@ -167,13 +167,6 @@ public class AbbonamentoConRiviste extends Indirizzo {
 	public BigDecimal getSaldo() {
 		return getTotale().subtract(getIncassato());
 	}
-		
-	public BigDecimal getRiportoAnnoPrecedente() {
-		return getPregresso().subtract(getIncassato());
-	}
-    
-	
-
- 
+		 
     
 }

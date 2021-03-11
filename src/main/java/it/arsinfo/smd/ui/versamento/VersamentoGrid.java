@@ -27,17 +27,7 @@ public class VersamentoGrid extends SmdGrid<Versamento> {
         getGrid().addColumn("progressivo");
         getGrid().addColumn("dataPagamento");
         getGrid().addColumn("dataContabile");
-
-        getGrid().setColumnOrder(                  
-                "nomeCommittente",
-                "codeLine",
-                   "importo",
-                   "incassato",
-                   "residuo",
-                   "progressivo",
-                   "dataPagamento",
-                   "dataContabile"
-                  );
+        
         gridfooter = getGrid().prependFooterRow();
 
     }

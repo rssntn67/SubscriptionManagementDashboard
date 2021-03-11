@@ -12,9 +12,6 @@ public class OfferteCumulateGrid extends SmdGrid<OfferteCumulate>{
 		super(new Grid<>(OfferteCumulate.class), gridName);
         getGrid().addColumn("anno.anno").setCaption("Anno");
         getGrid().addColumn("importo",EuroConverter.getEuroRenderer());
-
-        getGrid().setColumnOrder("anno.anno","importo");
-
 	}
 	
 

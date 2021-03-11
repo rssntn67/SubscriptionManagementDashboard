@@ -15,16 +15,6 @@ public class IncassaAbbonamentoGrid extends IncassaAbbonamentoAbstractGrid {
         getGrid().addColumn("versamento.importo",EuroConverter.getEuroRenderer()).setCaption("importo ver.");
         getGrid().addColumn("versamento.incassato",EuroConverter.getEuroRenderer()).setCaption("incassato ver.");
         
-        getGrid().setColumnOrder(                  
-                "operatore",
-                "statoOperazioneIncasso",
-                "importo",
-                "versamento.codeLine",
-                "versamento.progressivo",
-                "versamento.dataContabile",
-                "versamento.importo",
-                "versamento.incassato"
-		);
         prependGridFooter();
     }
 
