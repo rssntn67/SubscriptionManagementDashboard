@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ValueChangeMode;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,26 +33,27 @@ public class StatSearch extends SmdChangeHandler {
     private String searchCap;
     private String searchCitta;
 
-    private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Cerca per Paese",
+    private final Button searchButton = new Button("Cerca", VaadinIcons.SEARCH);
+    private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Paese",
             EnumSet.allOf(Paese.class));
 
-    private final ComboBox<AreaSpedizione> filterAreaSpedizione = new ComboBox<AreaSpedizione>("Cerca per Area Spedizione",
+    private final ComboBox<AreaSpedizione> filterAreaSpedizione = new ComboBox<AreaSpedizione>("Area Spedizione",
             EnumSet.allOf(AreaSpedizione.class));
 
-    private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Cerca per Provincia",
+    private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Provincia",
             EnumSet.allOf(Provincia.class));
 
-    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<Regione>("Cerca per Regione Vescovi",
+    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<Regione>("Regione Vescovi",
             EnumSet.allOf(Regione.class));
 
-    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<CentroDiocesano>("Cerca per Centro Diocesano",
+    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<CentroDiocesano>("Centro Diocesano",
                              EnumSet.allOf(CentroDiocesano.class));
 
-    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Cerca per Titolo",
+    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Titolo",
                       EnumSet.allOf(TitoloAnagrafica.class));
 
-    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Cerca per Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
-    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Cerca per Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
     private final CheckBox filterDirettoreDiocesano = new CheckBox("Dir. Diocesano");
     private final CheckBox filterPresidenteDiocesano = new CheckBox("Pres. Diocesano");
     private final CheckBox filterDirettoreZonaMilano = new CheckBox("Dir. Zona Milano");
@@ -68,14 +71,16 @@ public class StatSearch extends SmdChangeHandler {
     public StatSearch(AbbonamentoConRivisteServiceDao dao) {
         this.dao=dao;
         
-        TextField filterDenominazione = new TextField("Cerca per Denominazione");
-        TextField filterNome = new TextField("Cerca per Nome");
-        TextField filterCap = new TextField("Cerca per CAP");
-        TextField filterCitta = new TextField("Cerca per Città");
-        ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("Cerca per diocesi",
+        TextField filterDenominazione = new TextField("Denominazione");
+        TextField filterNome = new TextField("Nome");
+        TextField filterCap = new TextField("CAP");
+        TextField filterCitta = new TextField("Città");
+        ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
-        setComponents(new HorizontalLayout(filterAnno),
+        setComponents(
+        			new HorizontalLayout(searchButton),
+                	new HorizontalLayout(filterAnno),
                       new HorizontalLayout(
                                            filterTitolo,
                                            filterDiocesi, 
@@ -111,18 +116,13 @@ public class StatSearch extends SmdChangeHandler {
                                            filterPromotoreRegionale));
 
 
-        filterAnno.setEmptySelectionAllowed(true);
+        filterAnno.setEmptySelectionAllowed(false);
         filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
-        filterAnno.setPlaceholder("Cerca per Anno");
-        filterAnno.setValue(Anno.getAnnoCorrente());
-
+        anno=Anno.getAnnoCorrente();
+        filterAnno.setValue(anno);
+		
         filterAnno.addSelectionListener(e -> {
-        	if (e.getValue() == null) {
-        		anno=null;
-        	} else {
         		anno = e.getSelectedItem().get();
-        	}
-        	onChange();
         });
 
         filterDiocesi.setEmptySelectionAllowed(true);
@@ -135,21 +135,18 @@ public class StatSearch extends SmdChangeHandler {
             } else {
                 searchDiocesi = e.getSelectedItem().get();
             }
-            onChange();
         });
 
         filterDenominazione.setPlaceholder("Inserisci Denominazione");
         filterDenominazione.setValueChangeMode(ValueChangeMode.EAGER);
         filterDenominazione.addValueChangeListener(e -> {
             searchDenominazione = e.getValue();
-            onChange();
         });
 
         filterNome.setPlaceholder("Inserisci Nome");
         filterNome.setValueChangeMode(ValueChangeMode.EAGER);
         filterNome.addValueChangeListener(e -> {
             searchNome = e.getValue();
-            onChange();
         });
 
 
@@ -157,46 +154,27 @@ public class StatSearch extends SmdChangeHandler {
         filterCap.setValueChangeMode(ValueChangeMode.EAGER);
         filterCap.addValueChangeListener(e -> {
             searchCap = e.getValue();
-            onChange();
         });
         
         filterCitta.setPlaceholder("Inserisci Città");
         filterCitta.setValueChangeMode(ValueChangeMode.EAGER);
         filterCitta.addValueChangeListener(e -> {
             searchCitta = e.getValue();
-            onChange();
         });
 
 
         filterTitolo.setPlaceholder("Seleziona Titolo");
-        filterTitolo.addSelectionListener(e -> onChange());
         filterCentroDiocesano.setPlaceholder("Seleziona Centro");
-        filterCentroDiocesano.addSelectionListener(e -> onChange());
         filterRegioneVescovi.setPlaceholder("Seleziona Regione");
-        filterRegioneVescovi.addSelectionListener(e -> onChange());
         filterProvincia.setPlaceholder("Seleziona Provincia");
-        filterProvincia.addSelectionListener(e -> onChange());
         filterPaese.setPlaceholder("Seleziona Paese");
         filterPaese.setItemCaptionGenerator(Paese::getNome);
-        filterPaese.addSelectionListener(e -> onChange());
         filterAreaSpedizione.setPlaceholder("Seleziona Area");
-        filterAreaSpedizione.addSelectionListener(e -> onChange());
 
         filterRegionePresidenteDiocesano.setPlaceholder("Seleziona Regione");
-        filterRegionePresidenteDiocesano.addSelectionListener(e -> onChange());
         filterRegioneDirettoreDiocesano.setPlaceholder("Seleziona Regione");
-        filterRegioneDirettoreDiocesano.addSelectionListener(e -> onChange());
-
-        filterDirettoreDiocesano.addValueChangeListener(e -> onChange());
-        filterPresidenteDiocesano.addValueChangeListener(e -> onChange());
-        filterDirettoreZonaMilano.addValueChangeListener(e -> onChange());
-        filterConsiglioNazionaleADP.addValueChangeListener(e -> onChange());
-        filterPresidenzaADP.addValueChangeListener(e -> onChange());
-        filterDirezioneADP.addValueChangeListener(e -> onChange());
-        filterCaricheSocialiADP.addValueChangeListener(e -> onChange());
-        filterDelegatiRegionaliADP.addValueChangeListener(e -> onChange());
-        filterElencoMarisaBisi.addValueChangeListener(e -> onChange());
-        filterPromotoreRegionale.addValueChangeListener(e -> onChange());
+        
+        searchButton.addClickListener(e -> onChange());
 
     }
 
