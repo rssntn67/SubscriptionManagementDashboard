@@ -147,7 +147,7 @@ public abstract class StampaUI extends UI{
         		"			} \n" + 
         		"			.gap-b { \n" + 
         		"				width:100%; \n" + 
-        		"				height:20mm; \n" + 
+        		"				height:50mm; \n" + 
         		"			} \n" + 
         		"			.gap-c { \n" + 
         		"				width:100%; \n" + 
