@@ -58,7 +58,7 @@ public class Versamento implements SmdEntity {
     @Enumerated(EnumType.STRING)
     private Sostitutivo sostitutivo;
 
-    @ManyToOne(optional=true,fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY)
     private Anagrafica committente;
 
     public Versamento() {

@@ -15,8 +15,4 @@ public interface SmdEntity {
         }
         return "no";
     }
-
-    static String getHeaderBase(SmdEntity entity) {
-    	return entity.getClass().getName()+":"+"Edit";
-    }
 }

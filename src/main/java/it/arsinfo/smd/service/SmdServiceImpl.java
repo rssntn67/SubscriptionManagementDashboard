@@ -1,16 +1,12 @@
 package it.arsinfo.smd.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.repository.*;
+import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.ui.SmdUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,55 +17,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.repository.DocumentiTrasportoCumulatiDao;
-import it.arsinfo.smd.dao.repository.DocumentoTrasportoDao;
-import it.arsinfo.smd.dao.repository.OffertaDao;
-import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
-import it.arsinfo.smd.dao.repository.OperazioneDao;
-import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.repository.UserInfoDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoCampagna;
-import it.arsinfo.smd.data.StatoOperazione;
-import it.arsinfo.smd.data.StatoOperazioneIncasso;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.SpedizioneDto;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
-import it.arsinfo.smd.entity.DocumentoTrasporto;
-import it.arsinfo.smd.entity.Offerta;
-import it.arsinfo.smd.entity.OfferteCumulate;
-import it.arsinfo.smd.entity.Operazione;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.ui.SmdUI;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class SmdServiceImpl implements SmdService {
@@ -202,16 +153,14 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("Non si può cancellare un abbonamento con incasso: "+abbonamento.getIncassato());    		
     	}
         if (abbonamento.getStatoAbbonamento() != StatoAbbonamento.Nuovo) {
-        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento {} con stato in uno stato diverso da Nuovo.", abbonamento);
+        	log.warn("rimuovi: {} , Non si può cancellare un abbonamento con stato in uno stato diverso da Nuovo.", abbonamento);
             throw new UnsupportedOperationException("Non si può cancellare abbonamento con rivista nello stato: "+abbonamento.getStatoAbbonamento());
         }
         spedizioneDao
         .findByAbbonamento(abbonamento)
         .forEach(sped -> 
             {
-                spedizioneItemDao.findBySpedizione(sped).forEach(item -> {
-                    spedizioneItemDao.deleteById(item.getId());
-                });
+                spedizioneItemDao.findBySpedizione(sped).forEach(item -> spedizioneItemDao.deleteById(item.getId()));
                 spedizioneDao.deleteById(sped.getId());
             }
         );
@@ -229,16 +178,16 @@ public class SmdServiceImpl implements SmdService {
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
             rivistaAbbonamentoDao.save(ec);
         }
-        spedizioni.stream().forEach(sped -> {
+        spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
     }
 
     @Override
     @Transactional
     public void aggiornaRivistaAbbonamento(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception {
-        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).get();
+        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
         
@@ -267,10 +216,10 @@ public class SmdServiceImpl implements SmdService {
         	aggiornaStato(aggiorna.getAbbonamentoToSave());
         }
 
-        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+        aggiorna.getSpedizioniToSave().forEach(sped -> {
         	log.info("aggiorna: {}, save {}", rivistaAbbonamento, sped.getSpedizione());
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         
         aggiorna.getItemsToDelete().forEach(rimitem -> {
@@ -299,11 +248,9 @@ public class SmdServiceImpl implements SmdService {
                                                      spedizioni,
                                                     spesaSpedizioneDao.findAll());  
         
-        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+        aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> {
-                spedizioneItemDao.save(item);
-               });
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         aggiorna.getItemsToDelete().forEach(item -> spedizioneItemDao.deleteById(item.getId()));
         
@@ -341,13 +288,8 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void generaStatisticheTipografia(Anno anno, Pubblicazione p) {
-        EnumSet.allOf(Mese.class).forEach(mese -> generaStatisticheTipografia(anno, mese,p));
-    }
-
-    @Override
     @Transactional
-    public void inviaSpedizionere(Operazione operazione) throws Exception{
+    public void inviaSpedizionere(Operazione operazione) {
     	log.info("inviaSpedizionere: {} - start", operazione);
         if ( operazione == null || operazione.getStatoOperazione() != StatoOperazione.Inviata) {
         	log.error("inviaSpedizionere: {} : Operazione non valida",operazione);
@@ -362,14 +304,14 @@ public class SmdServiceImpl implements SmdService {
     
     @Override
     @Transactional
-    public void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception {
+    public void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) {
         final List<Long> spedizioniIds = 
     		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
     				meseSpedizione, 
     				annoSpedizione, 
     				invio)
     		.stream()
-    		.map(s -> s.getId()).collect(Collectors.toList());
+    		.map(Spedizione::getId).collect(Collectors.toList());
         
         spedizioneItemDao.findByStatoSpedizione(StatoSpedizione.PROGRAMMATA)
         .stream()
@@ -385,14 +327,14 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void annullaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception {
+    public void annullaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) {
         final List<Long> spedizioniIds = 
     		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
     				meseSpedizione, 
     				annoSpedizione, 
     				invio)
     		.stream()
-    		.map(s -> s.getId()).collect(Collectors.toList());
+    		.map(Spedizione::getId).collect(Collectors.toList());
         
         spedizioneItemDao.findByStatoSpedizione(StatoSpedizione.SOSPESA)
         .stream()
@@ -408,14 +350,14 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) throws Exception {
+    public void inviaSpedizioni(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p, InvioSpedizione invio) {
         final List<Long> spedizioniIds = 
     		spedizioneDao.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
     				meseSpedizione, 
     				annoSpedizione, 
     				invio)
     		.stream()
-    		.map(s -> s.getId()).collect(Collectors.toList());
+    		.map(Spedizione::getId).collect(Collectors.toList());
         
         spedizioneItemDao.findByPubblicazioneAndStatoSpedizione(p, StatoSpedizione.PROGRAMMATA)
         .stream()
@@ -455,23 +397,26 @@ public class SmdServiceImpl implements SmdService {
         spedizioneItemDao
         	.findByPubblicazioneAndStatoSpedizione(pubblicazione,statoSpedizione)
         	.stream()
-        	.filter(spedItem -> approved.keySet().contains(spedItem.getSpedizione().getId()))
+        	.filter(spedItem -> approved.containsKey(spedItem.getSpedizione().getId()))
         	.forEach(spedItem -> {
         		rivistaAbbonamentoIdSet.add(spedItem.getRivistaAbbonamento().getId());
         		items.add(spedItem);
 			});
     	List<Long> omaggi = 
-			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
+			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet)
+                    .stream()
+                    .filter(Smd::isOmaggio)
+                    .map(RivistaAbbonamento::getId).collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
     		Anagrafica co = destinatario.getCo();
-    		SpedizioneDto dto = null;
-    		if (co == null) {
+    		SpedizioneDto dto;
+            if (co == null) {
     			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
     		} else {
-        		co = anagraficaDao.findById(co.getId()).get();
+        		co = anagraficaDao.findById(co.getId()).orElse(null);
         		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
     		}
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
@@ -498,23 +443,27 @@ public class SmdServiceImpl implements SmdService {
         spedizioneItemDao
         	.findByStatoSpedizione(statoSpedizione)
         	.stream()
-        	.filter(spedItem -> approved.keySet().contains(spedItem.getSpedizione().getId()))
+        	.filter(spedItem -> approved.containsKey(spedItem.getSpedizione().getId()))
         	.forEach(spedItem -> {
         		rivistaAbbonamentoIdSet.add(spedItem.getRivistaAbbonamento().getId());
         		items.add(spedItem);
 			});
     	List<Long> omaggi = 
-			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet).stream().filter(ra -> Smd.isOmaggio(ra)).map(ra -> ra.getId()).collect(Collectors.toList());
+			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet)
+                    .stream()
+                    .filter(Smd::isOmaggio)
+                    .map(RivistaAbbonamento::getId)
+                    .collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
     		Anagrafica co = destinatario.getCo();
-    		SpedizioneDto dto = null;
+    		SpedizioneDto dto;
     		if (co == null) {
     			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
     		} else {
-        		co = anagraficaDao.findById(co.getId()).get();
+        		co = anagraficaDao.findById(co.getId()).orElse(null);
         		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
     		}
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
@@ -669,7 +618,7 @@ public class SmdServiceImpl implements SmdService {
 
 
     @Override
-    public void storna(Offerta offerta, UserInfo user) throws Exception {
+    public void storna(Offerta offerta, UserInfo user) {
     	if (offerta.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
             log.warn("storna: tipo Storno, non dissociabile {}", offerta);
             throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
@@ -704,7 +653,7 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void storna(OperazioneIncasso operazioneIncasso, UserInfo user, String description) throws Exception {
+    public void storna(OperazioneIncasso operazioneIncasso, UserInfo user, String description) {
     	if (operazioneIncasso.getStatoOperazioneIncasso() == StatoOperazioneIncasso.Storno) {
             log.warn("storna: tipo Storno, non dissociabile {}", operazioneIncasso);
             throw new UnsupportedOperationException("dissocia: Operazione tipo Storno, non dissociabile, non dissociabile");                		
@@ -738,54 +687,50 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
-        .forEach(sped -> {
-        	spedizioneItemDao
-        	.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
-        	.forEach( item -> 
-        	{
-        		switch (rivista.getStatoRivista()) {
-        		case Attiva:
-        			break;
-        		case Sospesa:
-		        	item.setStatoSpedizione(StatoSpedizione.SOSPESA);
-	            	spedizioneItemDao.save(item);
-					break;
-				default:
-					break;
-				}
-        	});        	
-        });
+        .forEach(sped -> spedizioneItemDao
+        .findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
+        .forEach( item ->
+        {
+            switch (rivista.getStatoRivista()) {
+            case Attiva:
+                break;
+            case Sospesa:
+                item.setStatoSpedizione(StatoSpedizione.SOSPESA);
+                spedizioneItemDao.save(item);
+                break;
+            default:
+                break;
+            }
+        }));
 
     }
 
     @Override
     public void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
-        .forEach(sped -> {        	
-			spedizioneItemDao
-			.findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(
-					sped, StatoSpedizione.SOSPESA,rivista)
-        	.forEach( item -> 
-        	{
-        		if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere ) {
-            		Operazione operazione = 
-            				operazioneDao.findByAnnoAndMeseAndPubblicazione(sped.getAnnoSpedizione(), sped.getMeseSpedizione(),item.getPubblicazione());
-            		if (operazione != null && operazione.getStatoOperazione() == StatoOperazione.Spedita) {
-            			return;
-            		}
-        		}
-        		switch (rivista.getStatoRivista()) {
-				case Attiva:
-		        	item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
-        			spedizioneItemDao.save(item);
-					break;
-				case Sospesa:
-					break;
-				default:
-					break;
-				}
-        	});
-        });
+        .forEach(sped -> spedizioneItemDao
+        .findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(
+                sped, StatoSpedizione.SOSPESA,rivista)
+.forEach( item ->
+{
+if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere ) {
+Operazione operazione =
+                        operazioneDao.findByAnnoAndMeseAndPubblicazione(sped.getAnnoSpedizione(), sped.getMeseSpedizione(),item.getPubblicazione());
+if (operazione != null && operazione.getStatoOperazione() == StatoOperazione.Spedita) {
+                    return;
+}
+}
+switch (rivista.getStatoRivista()) {
+            case Attiva:
+                item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
+                spedizioneItemDao.save(item);
+                break;
+            case Sospesa:
+                break;
+            default:
+                break;
+            }
+}));
     }
 
     @Override
@@ -820,16 +765,16 @@ public class SmdServiceImpl implements SmdService {
         		spedizioni.get(sped.getId()).addSpedizioneItem(item);
         	}
         }
-        return spedizioni.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(spedizioni.values());
     }
 
 	@Override
-	public void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) throws Exception {
-		Abbonamento abbonamento = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).get();
+	public void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) {
+		Abbonamento abbonamento = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).orElse(null);
 		List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(spedizione);
 		for (SpedizioneItem item: items) {
 			
-			RivistaAbbonamento ra0= rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).get();
+			RivistaAbbonamento ra0= rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).orElse(null);
 			if (ra0 == null) {
 				log.error("inviaDuplicato: rivista abbonamento not trovata per item {}", item);
 				throw new UnsupportedOperationException("Rivista Abbonamento non trovata");
@@ -844,15 +789,15 @@ public class SmdServiceImpl implements SmdService {
 			ra.setPubblicazione(item.getPubblicazione());
 			ra.setDestinatario(ra0.getDestinatario());
 			ra.setInvioSpedizione(invio);
-			abbonamento.addItem(ra);
-		}
+            abbonamento.addItem(ra);
+        }
 
 		genera(abbonamento);
 		
 	}
 
 	@Override
-	public void aggiornaStato(Abbonamento abbonamento) throws Exception {
+	public void aggiornaStato(Abbonamento abbonamento)  {
 		Campagna campagna = campagnaDao.findByAnno(abbonamento.getAnno());
 		if (campagna == null) {
     		abbonamento.setStatoAbbonamento(StatoAbbonamento.Nuovo);

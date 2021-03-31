@@ -52,7 +52,7 @@ public class Storico implements SmdEntityItems<Nota> {
     private StatoStorico statoStorico = StatoStorico.Nuovo;
 
     @Transient
-    private List<Nota> items = new ArrayList<Nota>();
+    private List<Nota> items = new ArrayList<>();
 
     public Storico() {
         super();
@@ -107,15 +107,7 @@ public class Storico implements SmdEntityItems<Nota> {
     public String getIntestazione() {
         return Anagrafica.generaIntestazione(intestatario);
     }
-    
-    @Transient
-    public String getCaptionPubblicazione() {
-        if (pubblicazione != null)
-            return pubblicazione.getNome();
-        else
-            return "";
-    }
-    
+
     @Transient
     public String getCaption() {
     	if (intestatario.equals(destinatario)) {
@@ -123,6 +115,14 @@ public class Storico implements SmdEntityItems<Nota> {
     	}
         return String.format("'%s', %d %s ->'%s'", getIntestazione(),numero,  pubblicazione.getNome(),getBeneficiario());
     }
+
+    @Transient
+    public String getCaptionPubblicazione() {
+        if (pubblicazione != null)
+            return pubblicazione.getNome();
+        return "";
+    }
+
     @Transient
     public String getHeader() {
         return String.format("'%s' %d %s %s",
@@ -244,12 +244,11 @@ public class Storico implements SmdEntityItems<Nota> {
 				return false;
 		} else if (!items.equals(other.items))
 			return false;
-		if (pubblicazione == null) {
-			if (other.pubblicazione != null)
+		if (pubblicazione == null)
+		    return false;
+        if (other.pubblicazione == null)
 				return false;
-		} else if (!pubblicazione.equals(other.pubblicazione))
-			return false;
-		return true;
+		return pubblicazione.equals(other.pubblicazione);
 	}
     
 }

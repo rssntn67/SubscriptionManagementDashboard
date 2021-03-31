@@ -45,7 +45,7 @@ public class Spedizione implements SmdEntityItems<SpedizioneItem> {
     private BigDecimal spesePostali = BigDecimal.ZERO;
 
     @Transient
-    private List<SpedizioneItem> items = new ArrayList<SpedizioneItem>();
+    private List<SpedizioneItem> items = new ArrayList<>();
 
     public Spedizione() {
     }
@@ -172,11 +172,9 @@ public class Spedizione implements SmdEntityItems<SpedizioneItem> {
             return false;
         if (meseSpedizione != other.meseSpedizione)
             return false;
-        if (abbonamento == null && other.abbonamento == null)
+        if (abbonamento == null)
             return false;
-        if (abbonamento == null && other.abbonamento != null)
-                return false;
-        if (abbonamento != null && other.abbonamento == null)
+        if (other.abbonamento == null)
             return false;
         if (abbonamento.getId() != null && other.abbonamento.getId() == null)
         	return false;
@@ -204,21 +202,15 @@ public class Spedizione implements SmdEntityItems<SpedizioneItem> {
     }
 
 	@Override
-	public boolean addItem(SpedizioneItem item) {
-		
-		return items.add(item);
-	}
-
+	public boolean addItem(SpedizioneItem item) { return items.add(item);}
 	@Override
 	public boolean removeItem(SpedizioneItem item) {
 		return items.remove(item);
 	}
-
 	@Override
 	public List<SpedizioneItem> getItems() {
 		return items;
 	}
-
 	@Override
 	public void setItems(List<SpedizioneItem> items) {
 		this.items=items;
