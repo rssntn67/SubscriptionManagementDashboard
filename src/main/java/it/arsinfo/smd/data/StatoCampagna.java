@@ -7,6 +7,4 @@ public enum StatoCampagna {
     InviatoSospeso,
     InviatoEC,
     Chiusa
-;
-            
 }

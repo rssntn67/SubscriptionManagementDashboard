@@ -8,5 +8,5 @@ import it.arsinfo.smd.entity.SpesaSpedizione;
 
 public interface SpesaSpedizioneServiceDao extends SmdServiceDao<SpesaSpedizione> {
 	
-	public List<SpesaSpedizione> searchBy(AreaSpedizione area, RangeSpeseSpedizione range);
+	List<SpesaSpedizione> searchBy(AreaSpedizione area, RangeSpeseSpedizione range);
 }

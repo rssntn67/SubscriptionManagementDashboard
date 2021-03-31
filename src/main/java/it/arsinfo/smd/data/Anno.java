@@ -31,8 +31,7 @@ public enum Anno {
             int annopiuuno= anno.getAnno()+1;
             return Anno.valueOf("ANNO"+annopiuuno);
             
-        }
-	private Anno(int anno) {
+        }Anno(int anno) {
 		this.anno=anno;
 	}
 	
@@ -48,11 +47,11 @@ public enum Anno {
 		this.anno = anno;
 	}
     public static Anno getAnnoProssimo() {
-        Integer annoProssimo = getAnnoCorrente().getAnno()+1;
+        int annoProssimo = getAnnoCorrente().getAnno()+1;
         return valueOf("ANNO"+annoProssimo);
     }
     public static Anno getAnnoPassato() {
-        Integer annoScorso = getAnnoCorrente().getAnno()-1;
+        int annoScorso = getAnnoCorrente().getAnno()-1;
         return valueOf("ANNO"+annoScorso);
     }
     public static Anno getAnnoCorrente() {

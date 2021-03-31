@@ -17,9 +17,9 @@ public enum Mese {
 	NOVEMBRE("Nov.",11, "11"),
 	DICEMBRE("Dic.",12, "12");
 	
-	private String nomeBreve;
-	private int posizione;
-	private String code;
+	private final String nomeBreve;
+	private final int posizione;
+	private final String code;
 
 	public static Mese getMeseSuccessivo(Mese mese) {
 	    if (mese == Mese.DICEMBRE) 
@@ -46,42 +46,21 @@ public enum Mese {
 	    return null;
 	}
 	
-	private Mese(String nome, int posizione, String cod) {
+	Mese(String nome, int posizione, String cod) {
 		this.nomeBreve=nome;
 		this.posizione=posizione;
 		this.code=cod;
 	}
 
-
 	public String getNomeBreve() {
 		return nomeBreve;
 	}
-
-
-	public void setNomeBreve(String nomeBreve) {
-		this.nomeBreve = nomeBreve;
-	}
-
-
 	public int getPosizione() {
 		return posizione;
 	}
-
-
-	public void setPosizione(int posizione) {
-		this.posizione = posizione;
-	}
-
-
 	public String getCode() {
 		return code;
 	}
-
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
     public static Mese getMeseCorrente() {
         return getByCode(new SimpleDateFormat("MM").format(new Date()));        
     }

@@ -10,7 +10,7 @@ import it.arsinfo.smd.entity.SpedizioneItem;
 public class SpedizioneWithItems {
 
     private final Spedizione spedizione;
-    private List<SpedizioneItem> spedizioneItems = new ArrayList<SpedizioneItem>();
+    private List<SpedizioneItem> spedizioneItems = new ArrayList<>();
 
     public SpedizioneWithItems(Spedizione sped) {
         this.spedizione=sped;
@@ -20,7 +20,7 @@ public class SpedizioneWithItems {
         return 
             spedizioneItems.stream()
             .filter(
-            item -> item.isPosticipata()
+                    SpedizioneItem::isPosticipata
         ).collect(Collectors.toList());
     }
 
@@ -33,14 +33,12 @@ public class SpedizioneWithItems {
     }
 
     public void addSpedizioneItem(SpedizioneItem item) {
-        if (spedizioneItems.contains(item)) {
-            spedizioneItems.remove(item);
-        }
+        spedizioneItems.remove(item);
         spedizioneItems.add(item);
     }
     
-    public boolean deleteSpedizioneItem(SpedizioneItem item) {
-        return spedizioneItems.remove(item);
+    public void deleteSpedizioneItem(SpedizioneItem item) {
+        spedizioneItems.remove(item);
     }
 
 
@@ -68,11 +66,8 @@ public class SpedizioneWithItems {
             return false;
         SpedizioneWithItems other = (SpedizioneWithItems) obj;
         if (spedizione == null) {
-            if (other.spedizione != null)
-                return false;
-        } else if (!spedizione.equals(other.spedizione))
-            return false;
-        return true;
+            return other.spedizione == null;
+        } else return spedizione.equals(other.spedizione);
     }
 
 }

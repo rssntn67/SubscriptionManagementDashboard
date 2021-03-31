@@ -8,17 +8,14 @@ import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.SpedizioneItem;
 
 public class RivistaAbbonamentoAggiorna {
-	private List<RivistaAbbonamento> rivisteToSave = new ArrayList<>();
-	private List<RivistaAbbonamento> rivisteToDelete = new ArrayList<>();
+	private final List<RivistaAbbonamento> rivisteToSave = new ArrayList<>();
+	private final List<RivistaAbbonamento> rivisteToDelete = new ArrayList<>();
 	private Abbonamento abbonamentoToSave;
 	private List<SpedizioneItem> itemsToDelete = new ArrayList<>();
 	private List<SpedizioneWithItems> spedizioniToSave = new ArrayList<>();
 	
 	public List<RivistaAbbonamento> getRivisteToSave() {
 		return rivisteToSave;
-	}
-	public void setRivisteToSave(List<RivistaAbbonamento> rivisteToSave) {
-		this.rivisteToSave = rivisteToSave;
 	}
 	public Abbonamento getAbbonamentoToSave() {
 		return abbonamentoToSave;
@@ -40,9 +37,6 @@ public class RivistaAbbonamentoAggiorna {
 	}
 	public List<RivistaAbbonamento> getRivisteToDelete() {
 		return rivisteToDelete;
-	}
-	public void setRivisteToDelete(List<RivistaAbbonamento> rivisteToDelete) {
-		this.rivisteToDelete = rivisteToDelete;
 	}
 
 }

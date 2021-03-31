@@ -4,5 +4,5 @@ public enum StatoStorico {
     Nuovo,
     Valido,
     Annullato,
-    Sospeso;    
+    Sospeso
 }

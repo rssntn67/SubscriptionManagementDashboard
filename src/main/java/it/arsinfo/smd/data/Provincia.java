@@ -115,9 +115,9 @@ public enum Provincia {
        VI("Vicenza"),
        VT("Viterbo");
     
-    private String nome;
+    private final String nome;
 
-    private Provincia(String nome) {
+    Provincia(String nome) {
         this.nome = nome;
     }
 
@@ -125,9 +125,4 @@ public enum Provincia {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    
-    
 }

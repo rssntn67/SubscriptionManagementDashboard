@@ -6,17 +6,13 @@ public enum TipoPubblicazione {
 	SEMESTRALE("Periodico Semestrale"),
 	ANNUALE("Periodico Annuale");
     
-    private String descrizione;
+    private final String descrizione;
 
     public String getDescrizione() {
         return descrizione;
     }
 
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    private TipoPubblicazione(String descrizione) {
+    TipoPubblicazione(String descrizione) {
         this.descrizione = descrizione;
     }
     

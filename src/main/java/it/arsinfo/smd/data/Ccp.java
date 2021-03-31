@@ -1,13 +1,17 @@
 package it.arsinfo.smd.data;
 
+
 public enum Ccp {
-    UNO("000063470009","Poste"),
-    DUE("000063470010","Mps"),
-    TRE("000063470011","Cassa"),
-    QUATTRO("000063470011","BPER");
-    private String ccp; 
-    private String cc; 
-    
+    UNO("000063470009","Poste","IT90C0760103200000063470009"),
+    DUE("NA","Mps","NA"),
+    TRE("NA","Cassa","NA"),
+    QUATTRO("NA","BPER","IT93U0538703222000000001920");
+    private final String ccp;
+    private final String cc;
+    private final String iban;
+
+    public static final String intestazioneCcp = "SEGRETARIATO NAZIONALE DELL'APOSTOLATO DELLA PREGHIERA";
+
     public static Ccp getByCc(String cc) {
         for (Ccp l : Ccp.values()) {
             if (l.cc.equals(cc)) return l;
@@ -15,9 +19,10 @@ public enum Ccp {
         throw new IllegalArgumentException("Ccp not found.");
     }
 
-    private Ccp(String cc, String ccp) {
+    Ccp(String cc, String ccp, String iban) {
         this.cc =cc;
         this.ccp = ccp;
+        this.iban = iban;
     }
     
     public String getCcp() {
@@ -27,5 +32,7 @@ public enum Ccp {
     public String getCc() {
         return cc;
     }
+
+    public String getIban() {return iban;}
 
 }

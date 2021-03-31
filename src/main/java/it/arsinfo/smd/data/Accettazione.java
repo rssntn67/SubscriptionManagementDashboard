@@ -6,8 +6,8 @@ public enum Accettazione {
      DP("DP","Dematerializzato Premarcato"),
      DI("DI","Dematerializzato con Immagine");
     
-    String descr;
-    String tipo;
+    private final String descr;
+    private final String tipo;
     
     public static Accettazione getTipoAccettazione(String tipo) {
         for (Accettazione l : Accettazione.values()) {
@@ -16,7 +16,7 @@ public enum Accettazione {
         throw new IllegalArgumentException("Tipo Accettazione not found.");
     }
     
-    private Accettazione(String tipo,String descr) {
+    Accettazione(String tipo, String descr) {
         this.descr=descr;
         this.tipo=tipo;        
     }
@@ -25,17 +25,8 @@ public enum Accettazione {
         return descr;
     }
 
-    public void setDescr(String descr) {
-        this.descr = descr;
-    }
-
     public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-    
-    
 }

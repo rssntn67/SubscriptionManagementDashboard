@@ -7,18 +7,13 @@ public enum InvioSpedizione {
     AdpSedeNoSpese("Spedizione da sede con posta ordinaria senza oneri per il ricevente"),
     Spedizioniere("Spedizione da spedizioniere");
     
-    String descr;
+    private final String descr;
     
-    private InvioSpedizione(String descr) {
+    InvioSpedizione(String descr) {
         this.descr=descr;
     }
 
     public String getDescr() {
         return descr;
     }
-
-    public void setDescr(String descr) {
-        this.descr = descr;
-    }
-        
 }

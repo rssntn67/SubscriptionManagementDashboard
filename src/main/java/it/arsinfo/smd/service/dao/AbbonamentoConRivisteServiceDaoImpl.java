@@ -3,6 +3,7 @@ package it.arsinfo.smd.service.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.entity.Anagrafica;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class AbbonamentoConRivisteServiceDaoImpl implements AbbonamentoConRivist
     		boolean filterPromotoreRegionale)
 
     {
-		List<Long> intestatarioId = 
+		List<Long> intestatarioId =
 				dao.searchBy(searchDiocesi, searchNome, searchDenominazione, searchCitta, searchCap,
 						paese, areaSped, provincia,
 						titolo, regioneVescovi, centroDiocesano,
@@ -71,7 +72,7 @@ public class AbbonamentoConRivisteServiceDaoImpl implements AbbonamentoConRivist
 						filterPresidenzaADP, filterDirezioneADP, filterCaricheSocialiADP,
 						filterDelegatiRegionaliADP, filterElencoMarisaBisi,
 						filterPromotoreRegionale)
-				.stream().map(a-> a.getId()).collect(Collectors.toList());
+				.stream().map(Anagrafica::getId).collect(Collectors.toList());
 		List<Abbonamento> abbonamenti = abbonamento.findByAnno(anno).stream().filter(abb -> intestatarioId.contains(abb.getIntestatario().getId())).collect(Collectors.toList()); 
 		return service.get(abbonamenti);
 	}

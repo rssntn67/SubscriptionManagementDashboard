@@ -16,7 +16,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 @Service
 public interface AnagraficaServiceDao extends SmdServiceDao<Anagrafica> {
 
-	public List<Anagrafica> searchBy(
+	List<Anagrafica> searchBy(
 			Diocesi searchDiocesi, 
 			String searchNome,
 			String searchDenominazione,

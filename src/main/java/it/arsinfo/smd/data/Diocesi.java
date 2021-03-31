@@ -230,8 +230,8 @@ public enum Diocesi {
     DIOCESI225("00225","Spoleto - Norcia"),
     DIOCESI226("00226","Sorrento - Castellamare di Stabia");
 
-    private String codice;
-    private String details;
+    private final String codice;
+    private final String details;
 
     public String getDetails() {
         return details;

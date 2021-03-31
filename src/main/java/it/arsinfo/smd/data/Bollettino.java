@@ -7,8 +7,8 @@ public enum Bollettino {
      TIPO451(451,"bianchi personalizzati"),
      TIPO123(123,"bianchi");
     
-    String bollettino;
-    int tipo;
+    private final String bollettino;
+    private final int tipo;
     
     public static Bollettino getTipoBollettino(int tipo) {
         for (Bollettino l : Bollettino.values()) {
@@ -17,7 +17,7 @@ public enum Bollettino {
         throw new IllegalArgumentException("Tipo Documento not found.");
     }
     
-    private Bollettino(int tipo,String descr) {
+    Bollettino(int tipo,String descr) {
         this.bollettino=descr;
         this.tipo=tipo;        
     }
@@ -26,17 +26,8 @@ public enum Bollettino {
         return bollettino;
     }
 
-    public void setBollettino(String descr) {
-        this.bollettino = descr;
-    }
-
     public int getTipo() {
         return tipo;
     }
 
-    public void setTipo(int tipo) {
-        this.tipo = tipo;
-    }
-    
-    
 }

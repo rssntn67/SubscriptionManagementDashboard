@@ -9,9 +9,9 @@ public enum Cuas {
     BARI(7,"Bari","C.U.A.S. reale"),
     AVDS(8,"AVDS e dematerializzati","C.U.A.S. virtuale");
     
-    private int codice;
-    private String denominazione;
-    private String note;
+    private final int codice;
+    private final String denominazione;
+    private final String note;
 
     public static Cuas getCuas(int codice) 
     {
@@ -21,7 +21,8 @@ public enum Cuas {
         throw new IllegalArgumentException("CUAS not found.");
 
     }
-    private Cuas(int codice, String denominazione, String note) {
+
+    Cuas(int codice, String denominazione, String note) {
         this.codice=codice;
         this.denominazione = denominazione;
         this.note=note;

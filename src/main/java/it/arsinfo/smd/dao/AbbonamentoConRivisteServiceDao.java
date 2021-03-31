@@ -17,7 +17,7 @@ import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 @Service
 public interface AbbonamentoConRivisteServiceDao {
 
-	public List<AbbonamentoConRiviste> searchBy(
+	 List<AbbonamentoConRiviste> searchBy(
 			Anno anno,
 			Diocesi searchDiocesi, 
 			String searchNome,

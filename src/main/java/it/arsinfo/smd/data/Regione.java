@@ -2,7 +2,7 @@ package it.arsinfo.smd.data;
 
 public enum Regione {
 	ABRUZZO,
-        ABRUZZOMOLISE,
+	ABRUZZOMOLISE,
 	BASILICATA,
 	CALABRIA,
 	CAMPANIA,
@@ -18,5 +18,5 @@ public enum Regione {
 	SICILIA,
 	TOSCANA,
 	TRIVENETO,
-	UMBRIA;
+	UMBRIA
 }

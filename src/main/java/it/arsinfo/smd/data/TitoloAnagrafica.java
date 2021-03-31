@@ -41,8 +41,8 @@ public enum TitoloAnagrafica {
 	Cardinale("S. Em. Card.");
     
     
-    private String intestazione;
-    private boolean persona;
+    private final String intestazione;
+    private final boolean persona;
     
     public static TitoloAnagrafica getByIntestazione(String intestazione) {
         for (TitoloAnagrafica ta: TitoloAnagrafica.values()) {
@@ -53,12 +53,12 @@ public enum TitoloAnagrafica {
         return TitoloAnagrafica.Nessuno;
     }
 
-    private TitoloAnagrafica(String intestazione) {
+    TitoloAnagrafica(String intestazione) {
         this.intestazione=intestazione;
         this.persona = true;
     }
 
-    private TitoloAnagrafica(String intestazione,boolean persona) {
+    TitoloAnagrafica(String intestazione,boolean persona) {
         this.intestazione=intestazione;
         this.persona = persona;
     }
@@ -66,17 +66,8 @@ public enum TitoloAnagrafica {
     public String getIntestazione() {
         return intestazione;
     }
-
-    public void setIntestazione(String intestazione) {
-        this.intestazione = intestazione;
-    }
-
     public boolean isPersona() {
         return persona;
     }
 
-    public void setPersona(boolean persona) {
-        this.persona = persona;
-    }
-        
 }

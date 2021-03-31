@@ -253,17 +253,17 @@ public enum Paese {
     ZW("Zimbabwe","ZWE"),
     ND("Non Definito","000");
     
-    private String nome;
-    private String sigla;
-    private String oldsigla;
+    private final String nome;
+    private final String sigla;
+    private final String oldsigla;
     
-    private Paese(String nome,String sigla) {
+    Paese(String nome,String sigla) {
         this.nome = nome;
         this.sigla = sigla;
         this.oldsigla=sigla;
     }
 
-    private Paese(String nome,String sigla,String oldsigla) {
+    Paese(String nome,String sigla,String oldsigla) {
         this.nome = nome;
         this.sigla = sigla;
         this.oldsigla=oldsigla;
@@ -272,22 +272,16 @@ public enum Paese {
     public String getNome() {
         return nome;
     }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getSigla() {
         return sigla;
     }
-
-    public void setSigla(String sigla) {
-        this.sigla = sigla;
+    public String getOldsigla() {
+        return oldsigla;
     }
-    
+
     public static Paese getByNome(String nome) {
         for (Paese p : Paese.values()) {
-            if (p.getNome().toLowerCase().equals(nome.toLowerCase())) {
+            if (p.getNome().equalsIgnoreCase(nome)) {
                 return p;
             }
         }
@@ -303,13 +297,4 @@ public enum Paese {
         }
         return Paese.ND;
     }
-
-    public String getOldsigla() {
-        return oldsigla;
-    }
-
-    public void setOldsigla(String oldsigla) {
-        this.oldsigla = oldsigla;
-    }
-    
 }

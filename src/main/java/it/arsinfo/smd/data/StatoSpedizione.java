@@ -6,9 +6,9 @@ public enum StatoSpedizione {
     SOSPESA("Sospesa"),
     ANNULLATA("Annullata");
     
-    String descr;
+    private final String descr;
     
-    private StatoSpedizione(String descr) {
+    StatoSpedizione(String descr) {
         this.descr=descr;
     }
 
@@ -16,9 +16,4 @@ public enum StatoSpedizione {
         return descr;
     }
 
-    public void setDescr(String descr) {
-        this.descr = descr;
-    }
-    
-    
 }

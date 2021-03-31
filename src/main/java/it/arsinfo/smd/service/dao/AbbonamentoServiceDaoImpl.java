@@ -105,7 +105,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Override
 	public Abbonamento findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -147,8 +147,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         } else {
             smdService.rimuovi(t,item);        	
         }
-        Abbonamento abbonamento = findById(t.getId());
-        return abbonamento;
+        return findById(t.getId());
 	}
 
 	@Override
@@ -168,7 +167,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             t.addItem(item);
             smdService.genera(t);
         } else {
-        	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).get();
+        	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).orElse(null);
         	smdService.aggiornaRivistaAbbonamento(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
         }
         return findById(t.getId());
@@ -225,10 +224,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
 	
-	public List<RivistaAbbonamento> findByTipo(TipoAbbonamentoRivista tec) {
-		return itemRepository.findByTipoAbbonamentoRivista(tec);
-	}
-
 	public List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione) {
 		return itemRepository.findByPubblicazione(pubblicazione);
 	}
@@ -354,7 +349,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
         }
         if (checkContrassegno) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.isContrassegno() == checkContrassegno).collect(Collectors.toList());      
+            abbonamenti=abbonamenti.stream().filter(Abbonamento::isContrassegno).collect(Collectors.toList());
         }
         if (checkResiduo) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() >0).collect(Collectors.toList());      
@@ -366,10 +361,10 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
             abbonamenti=abbonamenti.stream().filter(a -> a.getResiduo().signum() == 0).collect(Collectors.toList());      
         }
         if (checkSollecitato) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.isSollecitato() == checkSollecitato).collect(Collectors.toList());              	
+            abbonamenti=abbonamenti.stream().filter(Abbonamento::isSollecitato).collect(Collectors.toList());
         }
         if (checkInviatoEC) {
-            abbonamenti=abbonamenti.stream().filter(a -> a.isInviatoEC() == checkInviatoEC).collect(Collectors.toList());              	
+            abbonamenti=abbonamenti.stream().filter(Abbonamento::isInviatoEC).collect(Collectors.toList());
         }
 
         return filterBy(beneficiario,t, p, sr, abbonamenti);
