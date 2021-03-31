@@ -94,7 +94,7 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
 
 	public List<Versamento> searchBy(String importo, LocalDate dataContabile, LocalDate dataPagamento,
 			String codeLine) {
-        if (!StringUtils.isEmpty(importo)) {
+        if (StringUtils.hasLength(importo)) {
             try {
                 new BigDecimal(importo);
             } catch (NumberFormatException e) {
@@ -102,21 +102,21 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
             }
         }
 
-        if (StringUtils.isEmpty(importo) && dataContabile == null
-                && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+        if (!StringUtils.hasLength(importo) && dataContabile == null
+                && dataPagamento == null && !StringUtils.hasLength(codeLine)) {
             return findAll();
         }
         List<Versamento> vs;
-        if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+        if (dataContabile == null && dataPagamento == null && !StringUtils.hasLength(codeLine)) {
                 vs =  repository
                     .findByImporto(new BigDecimal(importo));
-        } else if (dataContabile == null && dataPagamento == null && StringUtils.isEmpty(importo)) {
+        } else if (dataContabile == null && dataPagamento == null && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine);
-        } else if (StringUtils.isEmpty(importo) && dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+        } else if (!StringUtils.hasLength(importo) && dataPagamento == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByDataContabile(Smd.getStandardDate(dataContabile));
-        } else  if (StringUtils.isEmpty(importo) && dataContabile == null && StringUtils.isEmpty(codeLine)) {
+        } else  if (!StringUtils.hasLength(importo) && dataContabile == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByDataPagamento(Smd.getStandardDate(dataPagamento));
         } else if (dataContabile == null && dataPagamento == null) {
@@ -125,37 +125,37 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                     .stream()
                     .filter(v-> v.getImporto().compareTo(new BigDecimal(importo)) == 0)
                     .collect(Collectors.toList());
-        } else if (dataContabile == null && StringUtils.isEmpty(codeLine)) {
+        } else if (dataContabile == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        } else if (dataPagamento == null && StringUtils.isEmpty(codeLine)) {
+        } else if (dataPagamento == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        } else if (dataContabile == null && StringUtils.isEmpty(importo)) {
+        } else if (dataContabile == null && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        } else if (dataPagamento == null && StringUtils.isEmpty(importo)) {
+        } else if (dataPagamento == null && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        } else if (StringUtils.isEmpty(codeLine) && StringUtils.isEmpty(importo)) {
+        } else if (!StringUtils.hasLength(codeLine) && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByDataPagamento(Smd.getStandardDate(dataPagamento))
                     .stream()
                     .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
-        } else if (StringUtils.isEmpty(codeLine)) {
+        } else if (!StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
@@ -163,7 +163,7 @@ public class VersamentoServiceDaoImpl implements VersamentoServiceDao {
                        v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
                     && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
-        } else if (StringUtils.isEmpty(importo)) {
+        } else if (!StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()

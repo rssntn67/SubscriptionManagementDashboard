@@ -42,10 +42,10 @@ public class UserInfoServiceDaoImpl implements UserInfoServiceDao {
 	}
 
 	public List<UserInfo> searchBy(String searchText, Role role) {
-        if (StringUtils.isEmpty(searchText) && role == null) {
+        if (!StringUtils.hasLength(searchText) && role == null) {
             return findAll();
         }
-        if (StringUtils.isEmpty(searchText)) {
+        if (!StringUtils.hasLength(searchText)) {
             return repository.findByRole(role);
         }
         if (role == null ) {

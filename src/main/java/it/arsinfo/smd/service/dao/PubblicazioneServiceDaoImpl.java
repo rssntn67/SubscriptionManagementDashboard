@@ -43,14 +43,14 @@ public class PubblicazioneServiceDaoImpl implements PubblicazioneServiceDao {
 	}
 	
 	public List<Pubblicazione> searchBy(String nome, TipoPubblicazione tipo) {
-        if (StringUtils.isEmpty(nome) && tipo == null) {
+        if (!StringUtils.hasLength(nome) && tipo == null) {
             return findAll();
         }
 
         if (tipo == null) {
             return repository.findByNomeStartsWithIgnoreCase(nome);
         }
-        if (StringUtils.isEmpty(nome)) {
+        if (!StringUtils.hasLength(nome)) {
             return repository.findByTipo(tipo);
         }
         return repository.findByNomeStartsWithIgnoreCase(nome).stream().filter(p -> p.getTipo().equals(tipo)).collect(Collectors.toList());

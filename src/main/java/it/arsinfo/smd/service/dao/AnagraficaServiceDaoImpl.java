@@ -54,151 +54,151 @@ public class AnagraficaServiceDaoImpl implements AnagraficaServiceDao {
 			String citta, 
 			String cap) {
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)
         		) {
             return repository.findAll();
         }
         
-        if (       StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)) {
+        if (       !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByDiocesi(diocesi);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByNomeContainingIgnoreCase(nome);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByDenominazioneContainingIgnoreCase(denominazione);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByCittaContainingIgnoreCase(citta);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)) {
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)) {
             return repository.findByCapContainingIgnoreCase(cap);
         }
         
-        if (       StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)) {
+        if (       !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByDiocesiAndNomeContainingIgnoreCase(diocesi,nome);
         }
-        if (    StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(citta) 
-        		&& StringUtils.isEmpty(cap)
+        if (    !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(citta) 
+        		&& !StringUtils.hasLength(cap)
         		) {
             return repository.findByDiocesiAndDenominazioneContainingIgnoreCase(diocesi,denominazione);
         }
-        if (    StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(cap)
+        if (    !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(cap)
         		) {
             return repository.findByDiocesiAndCittaContainingIgnoreCase(diocesi,citta);
         }
-        if (    StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
-        		&& StringUtils.isEmpty(citta)
+        if (    !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
+        		&& !StringUtils.hasLength(citta)
         		) {
             return repository.findByDiocesiAndCapContainingIgnoreCase(diocesi,cap);
         }        
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCase(nome,denominazione);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(denominazione)
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(denominazione)
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByNomeContainingIgnoreCaseAndCittaContainingIgnoreCase(nome,citta);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(denominazione)
-        		&& StringUtils.isEmpty(citta)) {
+        		&& !StringUtils.hasLength(denominazione)
+        		&& !StringUtils.hasLength(citta)) {
             return repository.findByNomeContainingIgnoreCaseAndCapContainingIgnoreCase(nome,cap);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCase(denominazione,citta);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(citta)) {
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(citta)) {
             return repository.findByDenominazioneContainingIgnoreCaseAndCapContainingIgnoreCase(denominazione,cap);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome) 
-        		&& StringUtils.isEmpty(denominazione) 
+        		&& !StringUtils.hasLength(nome) 
+        		&& !StringUtils.hasLength(denominazione) 
         ) {
             return repository.findByCittaContainingIgnoreCaseAndCapContainingIgnoreCase(citta,cap);
         }
         
-        if (       StringUtils.isEmpty(citta)
-        		&& StringUtils.isEmpty(cap)
+        if (       !StringUtils.hasLength(citta)
+        		&& !StringUtils.hasLength(cap)
     		) {
             return repository.findByDiocesiAndNomeContainingIgnoreCaseAndDenominazioneIgnoreCase(diocesi,nome,denominazione);
         }
-        if (       StringUtils.isEmpty(denominazione)
-        		&& StringUtils.isEmpty(cap)
+        if (       !StringUtils.hasLength(denominazione)
+        		&& !StringUtils.hasLength(cap)
     		) {
             return repository.findByDiocesiAndNomeContainingIgnoreCaseAndCittaIgnoreCase(diocesi,nome,citta);
         }
-        if (       StringUtils.isEmpty(denominazione)
-        		&& StringUtils.isEmpty(citta)
+        if (       !StringUtils.hasLength(denominazione)
+        		&& !StringUtils.hasLength(citta)
     		) {
             return repository.findByDiocesiAndNomeContainingIgnoreCaseAndCapIgnoreCase(diocesi,nome,cap);
         }
-        if (       StringUtils.isEmpty(nome)
-        		&& StringUtils.isEmpty(cap)
+        if (       !StringUtils.hasLength(nome)
+        		&& !StringUtils.hasLength(cap)
     		) {
             return repository.findByDiocesiAndDenominazioneContainingIgnoreCaseAndCittaIgnoreCase(diocesi,denominazione,citta);
         }
-        if (       StringUtils.isEmpty(nome)
-        		&& StringUtils.isEmpty(citta)
+        if (       !StringUtils.hasLength(nome)
+        		&& !StringUtils.hasLength(citta)
     		) {
             return repository.findByDiocesiAndDenominazioneContainingIgnoreCaseAndCapIgnoreCase(diocesi,denominazione,cap);
         }
-        if (       StringUtils.isEmpty(nome)
-        		&& StringUtils.isEmpty(denominazione)
+        if (       !StringUtils.hasLength(nome)
+        		&& !StringUtils.hasLength(denominazione)
     		) {
             return repository.findByDiocesiAndCittaContainingIgnoreCaseAndCapIgnoreCase(diocesi,citta,cap);
         }
         
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(cap)) {
+        		&& !StringUtils.hasLength(cap)) {
             return repository.findByNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCase(nome,denominazione,citta);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(citta)) {
+        		&& !StringUtils.hasLength(citta)) {
             return repository.findByNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCaseAndCapContainingIgnoreCase(nome,denominazione,cap);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(denominazione)) {
+        		&& !StringUtils.hasLength(denominazione)) {
             return repository.findByNomeContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapContainingIgnoreCase(nome,citta,cap);
         }
         if (       diocesi == null 
-        		&& StringUtils.isEmpty(nome)) {
+        		&& !StringUtils.hasLength(nome)) {
             return repository.findByDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapContainingIgnoreCase(denominazione,citta,cap);
         }
 
@@ -206,13 +206,13 @@ public class AnagraficaServiceDaoImpl implements AnagraficaServiceDao {
         if ( diocesi == null ) {
             return repository.findByNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapContainingIgnoreCase(nome,denominazione,citta,cap);
         }
-        if (       StringUtils.isEmpty(nome)) {
+        if (       !StringUtils.hasLength(nome)) {
             return repository.findByDiocesiAndDenominazioneContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapIgnoreCase(diocesi,denominazione,citta,cap);
         }
-        if (       StringUtils.isEmpty(denominazione)) {
+        if (       !StringUtils.hasLength(denominazione)) {
             return repository.findByDiocesiAndNomeContainingIgnoreCaseAndCittaContainingIgnoreCaseAndCapIgnoreCase(diocesi,nome,citta,cap);
         }
-        if (       StringUtils.isEmpty(citta)) {
+        if (       !StringUtils.hasLength(citta)) {
             return repository.findByDiocesiAndNomeContainingIgnoreCaseAndDenominazioneContainingIgnoreCaseAndCapIgnoreCase(diocesi,nome,denominazione,cap);
         }
 

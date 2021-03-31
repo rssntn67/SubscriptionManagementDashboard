@@ -51,10 +51,10 @@ public class NotaServiceDaoImpl implements NotaServiceDao {
 	}
 		
 	public List<Nota> searchBy(String searchText, Storico storico) {
-        if (StringUtils.isEmpty(searchText) && storico == null) {
+        if (!StringUtils.hasLength(searchText) && storico == null) {
             return findAll();
         }
-        if (StringUtils.isEmpty(searchText)) {
+        if (!StringUtils.hasLength(searchText)) {
             return repository.findByStorico(storico);
         }
         if (storico == null) {

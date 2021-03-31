@@ -350,7 +350,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
         if (inc != null) {
         	abbonamenti = abbonamenti.stream().filter(a -> inc == Smd.getStatoIncasso(a)).collect(Collectors.toList());
         }
-        if (!StringUtils.isEmpty(searchCodeLine)) {
+        if (StringUtils.hasLength(searchCodeLine)) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
         }
         if (checkContrassegno) {

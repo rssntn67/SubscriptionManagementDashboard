@@ -1,10 +1,9 @@
 package it.arsinfo.smd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,10 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
@@ -95,7 +92,6 @@ import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
 import it.arsinfo.smd.ui.security.SecurityConfig;
 import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class SmdApplicationTests {
 
@@ -159,41 +155,41 @@ public class SmdApplicationTests {
     
     private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
 
-    @Before    
-    public void setUp() {
-        assertNotNull(abbonamentoDao);
-        assertNotNull(anagraficaDao);
-        assertNotNull(pubblicazioneDao);
-        assertNotNull(rivistaAbbonamentoDao);
-        assertNotNull(storicoDao);
-        assertNotNull(campagnaDao);
-        assertNotNull(campagnaItemDao);
-        assertNotNull(notaDao);
-        assertNotNull(storicoDao);
-        assertNotNull(versamentoDao);
-        assertNotNull(incassoDao);
-        assertNotNull(operazioneDao);
-        assertNotNull(operazioneIncassoDao);
-        assertNotNull(operazioneSospendiDao);
-        assertNotNull(userInfoDao);
-        assertNotNull(spedizioneDao);
-        assertNotNull(spedizioneItemDao);
-        assertNotNull(spesaSpedizioneDao);
-        assertNotNull(offerteCumulateDao);
-        assertNotNull(offertaDao);
+    @BeforeEach
+    public void onSetUp() {
+        assertThat(abbonamentoDao).isNotNull();
+        assertThat(anagraficaDao).isNotNull();
+        assertThat(pubblicazioneDao).isNotNull();
+        assertThat(rivistaAbbonamentoDao).isNotNull();
+        assertThat(storicoDao).isNotNull();
+        assertThat(campagnaDao).isNotNull();
+        assertThat(campagnaItemDao).isNotNull();
+        assertThat(notaDao).isNotNull();
+        assertThat(storicoDao).isNotNull();
+        assertThat(versamentoDao).isNotNull();
+        assertThat(incassoDao).isNotNull();
+        assertThat(operazioneDao).isNotNull();
+        assertThat(operazioneIncassoDao).isNotNull();
+        assertThat(operazioneSospendiDao).isNotNull();
+        assertThat(userInfoDao).isNotNull();
+        assertThat(spedizioneDao).isNotNull();
+        assertThat(spedizioneItemDao).isNotNull();
+        assertThat(spesaSpedizioneDao).isNotNull();
+        assertThat(offerteCumulateDao).isNotNull();
+        assertThat(offertaDao).isNotNull();
 
-        assertNotNull(smdService);
-        assertTrue(smdService instanceof SmdServiceImpl);
+        assertThat(smdService).isNotNull();
+        assertThat(smdService instanceof SmdServiceImpl).isTrue();
 
-        assertNotNull(securityConfig);
-        assertNotNull(userDetailsService);
-        assertTrue(userDetailsService instanceof UserDetailsServiceImpl);
-        assertNotNull(passwordEncoder);
-        assertTrue(passwordEncoder instanceof BCryptPasswordEncoder);
-        assertNotNull(authenticationSuccessHandler);
-        assertTrue(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler);        
-        assertNotNull(logoutSuccessHandler);
-        assertTrue(logoutSuccessHandler instanceof CustomLogoutSuccessHandler);        
+        assertThat(securityConfig).isNotNull();
+        assertThat(userDetailsService).isNotNull();
+        assertThat(userDetailsService instanceof UserDetailsServiceImpl).isTrue();
+        assertThat(passwordEncoder).isNotNull();
+        assertThat(passwordEncoder instanceof BCryptPasswordEncoder).isTrue();
+        assertThat(authenticationSuccessHandler).isNotNull();
+        assertThat(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler).isTrue();        
+        assertThat(logoutSuccessHandler).isNotNull();
+        assertThat(logoutSuccessHandler instanceof CustomLogoutSuccessHandler).isTrue();        
         log.info("----------------->EnteringSetUp<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, notaDao.findAll().size());
@@ -235,8 +231,8 @@ public class SmdApplicationTests {
         
     }
     
-    @After
-    public void clearDown() {
+    @AfterEach
+    public void onTearDown() {
         try {
 	        operazioneDao.deleteAll();
 	        spedizioneItemDao.deleteAll();
@@ -269,7 +265,7 @@ public class SmdApplicationTests {
             securityConfig.authenticationManagerBean().authenticate(auth);
         } catch (Exception e) {
             log.error(e.getMessage(),e);
-            assertTrue(false);
+            assertThat(false).isTrue();
         }
 
         UserInfo admin = userInfoDao.findById(1L).get();
@@ -291,7 +287,7 @@ public class SmdApplicationTests {
             securityConfig.authenticationManagerBean().authenticate(auth);
         } catch (Exception e) {
             log.info(e.getMessage());
-            assertTrue(false);
+            assertThat(false).isTrue();
         }
                 
         userInfoDao.delete(user);
@@ -302,7 +298,7 @@ public class SmdApplicationTests {
     public void testOperazioneSospendiCRUD() {
         log.info("----------------->testOperazioneSospendiCRUD<----------------");
         Pubblicazione estratti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti").iterator().next();
-        assertNotNull(estratti);
+        assertThat(estratti);
         Campagna campagna = new Campagna();
         campagnaDao.save(campagna);
         OperazioneSospendi sospendiEstratti = new OperazioneSospendi(estratti, campagna);
@@ -312,14 +308,14 @@ public class SmdApplicationTests {
         operazioneSospendiDao.findAll().stream().forEach( a -> log.info(a.toString()));
         
         OperazioneSospendi sospeso = operazioneSospendiDao.findUniqueByCampagnaAndPubblicazione(campagna, estratti);
-        assertNotNull(sospeso);
+        assertThat(sospeso);
         
         OperazioneSospendi sospendiEstratti2 = new OperazioneSospendi(estratti, campagna);
         sospendiEstratti2.setMeseSpedizione(Mese.APRILE);
         
         try {
         	operazioneSospendiDao.save(sospendiEstratti2);
-        	assertTrue(false);
+            assertThat(false).isTrue();
         } catch (Exception e) {
             log.info("Fail saving duplicate key");        	
 		}                
@@ -333,7 +329,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(antonioRusso);
         assertEquals(1, anagraficaDao.findAll().size());
         
-        assertNotNull(anagraficaDao.findById(antonioRusso.getId()));
+        assertThat(anagraficaDao.findById(antonioRusso.getId()));
         assertEquals(1,anagraficaDao.findByDenominazioneContainingIgnoreCase("us").size());
         assertEquals(0,anagraficaDao.findByDenominazioneContainingIgnoreCase("Rosso").size());
         assertEquals(1,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
@@ -356,7 +352,7 @@ public class SmdApplicationTests {
         
         try {
             anagraficaDao.delete(diocesiMilano);
-            assertTrue(false);
+            assertThat(false).isTrue();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -391,7 +387,7 @@ public class SmdApplicationTests {
         
         try {
             anagraficaDao.delete(diocesiMilano);
-            assertTrue(false);
+            assertThat(false).isTrue();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -406,7 +402,7 @@ public class SmdApplicationTests {
     public void testSpesaSpedizioneCRUD() {
         log.info("----------------->testSpesaSpedizioneCRUD<----------------");
         SpesaSpedizione spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
-        assertNotNull(spedizioneItaliaDa1a2Kg);
+        assertThat(spedizioneItaliaDa1a2Kg);
         
         SpesaSpedizione duplicato=new SpesaSpedizione();
         duplicato.setAreaSpedizione(AreaSpedizione.Italia);
@@ -415,14 +411,14 @@ public class SmdApplicationTests {
         
         try {
             spesaSpedizioneDao.save(duplicato);
-            assertTrue(false);
+            assertThat(false).isTrue();
         } catch (DataIntegrityViolationException e) {
             log.info(e.getMessage());
         }
         
         spesaSpedizioneDao.delete(spedizioneItaliaDa1a2Kg);
         spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
-        assertNull(spedizioneItaliaDa1a2Kg);
+        assertThat(spedizioneItaliaDa1a2Kg).isNull();
         assertEquals(19, spesaSpedizioneDao.findAll().size());
         spesaSpedizioneDao.save(duplicato);
         assertEquals(20, spesaSpedizioneDao.findAll().size());
@@ -504,7 +500,7 @@ public class SmdApplicationTests {
         assertEquals(4, pubblicazioni.size());
         Map<String, Long> nameToIdMap = new HashMap<>();
         for (Pubblicazione pubblicazione : pubblicazioni) {
-            assertNotNull(pubblicazione.getId());
+            assertThat(pubblicazione.getId());
             nameToIdMap.put(pubblicazione.getNome(), pubblicazione.getId());
             assertEquals("AAVV", pubblicazione.getAutore());
             assertEquals("ADP", pubblicazione.getEditore());
@@ -549,7 +545,7 @@ public class SmdApplicationTests {
         log.info("");
 
         assertTrue(nameToIdMap.containsKey("Messaggio"));
-        assertNotNull(nameToIdMap.get("Messaggio"));
+        assertThat(nameToIdMap.get("Messaggio"));
         Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("Messaggio")).get();
         log.info("Messaggio found with findOne: "+nameToIdMap.get("Messaggio"));
         log.info("--------------------------------");
@@ -1739,7 +1735,7 @@ public class SmdApplicationTests {
         campagna.getCampagnaItems().forEach( item -> campagnaItemDao.save(item));
         
         campagna = campagnaDao.findByAnno(campagna.getAnno());
-        assertNotNull(campagna);
+        assertThat(campagna);
         assertEquals(2, campagna.getCampagnaItems().size());
         assertEquals(2, campagnaItemDao.findByCampagna(campagna).size());
         assertEquals(1, campagnaItemDao.findByPubblicazione(blocchetti).size());
@@ -1889,10 +1885,10 @@ public class SmdApplicationTests {
         assertEquals(1, versamentoDao.findAll().size());
         
         Versamento versamento = versamentoDao.findAll().iterator().next();
-        assertNotNull(versamento);
-        assertNull(versamento.getCommittente());
+        assertThat(versamento).isNotNull();
+        assertThat(versamento.getCommittente()).isNull();
         Anagrafica committente = anagraficaDao.findAll().iterator().next();
-        assertNotNull(committente);
+        assertThat(committente);
         
         versamento.setCommittente(committente);
         versamentoDao.save(versamento);
@@ -1903,8 +1899,8 @@ public class SmdApplicationTests {
         Versamento persisted1 = versamentoDao.findAll().iterator().next();
         assertEquals(versamento.getId(), persisted1.getId());
         assertEquals(1, anagraficaDao.findAll().size());
-        assertNotNull(persisted1);
-        assertNotNull(persisted1.getCommittente());
+        assertThat(persisted1);
+        assertThat(persisted1.getCommittente());
         
         log.info("committente: {}", persisted1.getCommittente().getId());
 
@@ -1914,8 +1910,8 @@ public class SmdApplicationTests {
         Versamento persisted2 = versamentoDao.findAll().iterator().next();
         assertEquals(versamento.getId(), persisted2.getId());
         assertEquals(1, anagraficaDao.findAll().size());
-        assertNotNull(persisted2);
-        assertNull(persisted2.getCommittente());
+        assertThat(persisted2).isNotNull();
+        assertThat(persisted2.getCommittente()).isNull();
 
         incassoDao.delete(incasso);
         anagraficaDao.delete(committente);
@@ -1994,7 +1990,7 @@ public class SmdApplicationTests {
 
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        assertNotNull(abbonamento);
+        assertThat(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));        
         assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
@@ -2003,7 +1999,7 @@ public class SmdApplicationTests {
         OperazioneIncasso operazione = 
         		operazioneIncassoDao
         		.findByAbbonamentoAndVersamentoAndStatoOperazioneIncasso(abbonamento, versamento, StatoOperazioneIncasso.Incasso).iterator().next();
-        assertNotNull(operazione);
+        assertThat(operazione);
         assertEquals(abbonamento.getId(), operazione.getAbbonamento().getId());
         assertEquals(versamento.getId(), operazione.getVersamento().getId());
         assertEquals(incassato.doubleValue(), operazione.getImporto().doubleValue(),0);
@@ -2088,7 +2084,7 @@ public class SmdApplicationTests {
               abb1.getCcp(), 
               abb1.getCuas());
 
-        assertNotNull(incasso);
+        assertThat(incasso);
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
         abb2.setProgressivo("00002");

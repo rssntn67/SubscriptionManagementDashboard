@@ -1,9 +1,9 @@
 package it.arsinfo.smd;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -17,11 +17,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
@@ -50,7 +48,6 @@ import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 
-@RunWith(SpringRunner.class)
 public class SmdUnitTests {
     
     private static final Logger log = LoggerFactory.getLogger(SmdUnitTests.class);
