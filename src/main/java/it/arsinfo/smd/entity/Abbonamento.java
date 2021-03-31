@@ -88,7 +88,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private String progressivo;
 
     @Transient
-    private List<RivistaAbbonamento> items = new ArrayList<RivistaAbbonamento>();
+    private List<RivistaAbbonamento> items = new ArrayList<>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -188,14 +188,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     }
     
     @Transient
-    public String getCampagnaAsString() {
-        if (campagna == null) {
-            return "Non Associato a Campagna";
-        }
-        return campagna.getCaption();
-    }
-    
-    @Transient
     public BigDecimal getResiduo() {
         return getTotale().subtract(incassato);
     }
@@ -237,9 +229,9 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         
         String codice = codeline.substring(0, 16);
         
-        Long valorecodice = (Long.parseLong(codice) % 93);
-        Integer codicecontrollo = Integer.parseInt(codeline.substring(16,18));
-        return codicecontrollo.intValue() == valorecodice.intValue();
+        long valorecodice = (Long.parseLong(codice) % 93);
+        int codicecontrollo = Integer.parseInt(codeline.substring(16,18));
+        return codicecontrollo == valorecodice;
     }
 
     /*
@@ -262,7 +254,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         // primi 2 caratteri anno
         String codeLine = anno.getAnnoAsString().substring(2, 4);
         // 3-16
-        codeLine += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
+        codeLine += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999L));
         codeLine += String.format("%02d", Long.parseLong(codeLine) % 93);
         return codeLine;
     }
@@ -332,7 +324,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 			return prime * result + id.hashCode();
 		}
 		result = prime * result + ((codeLine == null) ? 0 : codeLine.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 
@@ -348,13 +339,9 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 		if (id != null) {
 			return id.equals(other.getId());
 		}
-		if (codeLine == null) {
-			if (other.codeLine != null)
-				return false;
-		} else if (!codeLine.equals(other.codeLine))
-			return false;
-		return true;
-	}
+		if (codeLine == null) return other.codeLine == null;
+        else return codeLine.equals(other.codeLine);
+    }
 
 	public BigDecimal getSpeseEstero() {
 		return speseEstero;
