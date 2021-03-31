@@ -67,11 +67,11 @@ public class Indirizzo {
     public String getSottoIntestazione() {
         if (secondo == null) {
     		return null;
-        } 
+        }
         if (terzo != null) {
         	return getIntestazioneCo(terzo);
         }
-    	return getIntestazioneCo(terzo);
+    	return getIntestazioneCo(secondo);
     }
     
     public String getIndirizzo() {
