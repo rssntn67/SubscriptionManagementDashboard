@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.data.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -20,11 +22,6 @@ import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.repository.PubblicazioneDao;
 import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.repository.VersamentoDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -65,6 +62,18 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Autowired
 	private SmdService smdService;
+
+	@Value("${ccp.api.url}")
+	public static String ccpApiUrl;
+
+	@Value("${ccp.api.key}")
+	public static String ccpApiKey;
+
+	@Value("${ccp.api.user}")
+	public static String ccpApiUser;
+
+	@Value("${ccp.file.path}")
+	public static String ccpFilePath;
 
 	@Override
 	@Transactional
@@ -382,4 +391,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 		return repository.findByIntestatarioAndAnno(tValue, sValue);
 	}
 
+	@Override
+	public String getPrintCcpJsonString(Abbonamento abbonamento) {
+		return null;
+	}
 }

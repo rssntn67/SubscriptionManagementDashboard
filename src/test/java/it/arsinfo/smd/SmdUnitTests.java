@@ -1,32 +1,10 @@
 package it.arsinfo.smd;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.io.CharStreams;
+import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.helper.SmdHelper;
+import it.arsinfo.smd.service.Smd;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -36,35 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.CharStreams;
+import java.io.*;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.*;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.RangeSpeseSpedizione;
-import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.service.Smd;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SmdUnitTests {
     
@@ -1461,34 +1416,19 @@ public class SmdUnitTests {
     public void TestTd674() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost("https://api.stampabollettini.com/api/td674");
-        String json = "{" +
-                "\"apiKey\":\"druslcruwaw2up5swexospl6awruphut\"," +
-                "\"apiUser\":\"adp-289020\","+
-                "\"checkingAccount\": \""+ Ccp.UNO.getCc()+"\","+
-                "\"iban\": \""+Ccp.UNO.getIban()+"\","+
-                "\"accountHolder1\": \""+Ccp.intestazioneCcp+"\","+
-                "\"accountHolder2\": \"Messaggio 15 Eur\","+
-                "\"accountAuthorizationCode\": \"Lodare Service 10 Eur\","+
-                "\"code\": \"2018099999110078\","+
-                "\"name\": \"Rossi Mario\","+
-                "\"address\": \"Via Roma, 1\","+
-                "\"zip\": \"50100\","+
-                "\"city\": \"Firenze\","+
-                "\"province\": \"FI\","+
-                "\"reason\": \"Abbonamenti 2021\","+
-                "\"dueDate\": \"\"}";
-        StringEntity entity = new StringEntity(json);
+        String code = "2018099999110078";
+        StringEntity entity = new StringEntity(Smd.getCcpJsonString("druslcruwaw2up5swexospl6awruphut","adp-289020",code,SmdHelper.getGP(), Ccp.UNO, "Abbonamenti 2020"));
         httpPost.setEntity(entity);
         httpPost.setHeader("Content-type", "application/json");
 
         CloseableHttpResponse response = client.execute(httpPost);
         assertEquals(response.getStatusLine().getStatusCode(), 200);
         InputStream inputStream =response.getEntity().getContent();
-        String text = null;
+        String text;
         try (Reader reader = new InputStreamReader(inputStream)) {
             text = CharStreams.toString(reader);
         }
-        File file = new File("/Users/antonio/Rcs/test.pdf");
+        File file = new File("/Users/antonio/Downloads/"+code+".pdf");
         FileOutputStream fos = new FileOutputStream(file);
         byte[] decoder = Base64.getDecoder().decode(text);
         fos.write(decoder);

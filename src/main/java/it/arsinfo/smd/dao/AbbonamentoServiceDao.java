@@ -41,4 +41,6 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 			boolean checkInviatoEC
 			);
 	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
+
+	String getPrintCcpJsonString(Abbonamento abbonamento);
 }

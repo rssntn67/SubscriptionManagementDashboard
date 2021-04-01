@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.dto.Indirizzo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -72,9 +73,28 @@ public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
     private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
-    private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");    
+    private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
 
-    public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
+	public static String getCcpJsonString(String apiKey, String apiUser, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
+		return "{" +
+				"\"apiKey\":\""+apiKey+"\"," +
+				"\"apiUser\":\""+apiUser+"\","+
+				"\"checkingAccount\": \""+ ccp.getCc()+"\","+
+				"\"iban\": \""+ccp.getIban()+"\","+
+				"\"accountHolder1\": \""+Ccp.intestazioneCcp+"\","+
+				"\"accountHolder2\": \"\","+
+				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
+				"\"code\": \""+code+"\","+
+				"\"name\": \""+anagrafica.getIntestazione()+"\","+
+				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
+				"\"zip\": \""+anagrafica.getCap()+"\","+
+				"\"city\": \""+anagrafica.getCitta()+"\","+
+				"\"province\": \""+anagrafica.getProvincia().name()+"\","+
+				"\"reason\": \""+reason+ "("+anagrafica.getCodeLineBase()+")\","+
+				"\"dueDate\": \"\"}";
+	}
+
+	public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
     	if (statoCampagna == StatoCampagna.Generata ) {
     		return StatoAbbonamento.Nuovo;
     	}

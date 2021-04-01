@@ -12,6 +12,8 @@ public enum Ccp {
 
     public static final String intestazioneCcp = "SEGRETARIATO NAZIONALE DELL'APOSTOLATO DELLA PREGHIERA";
 
+    public static final String accountAuthorizationCode = "AUT. DB/SISB/E 15513 DEL 6/5/2004";
+
     public static Ccp getByCc(String cc) {
         for (Ccp l : Ccp.values()) {
             if (l.cc.equals(cc)) return l;
