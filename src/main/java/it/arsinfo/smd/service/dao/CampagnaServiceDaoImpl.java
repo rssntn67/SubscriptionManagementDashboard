@@ -208,13 +208,13 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 		for (Abbonamento abbonamento : abbonamentoDao.findByCampagna(entity)) {
 			smdService.rimuovi(abbonamento);
 		}
-		entity.getCampagnaItems().stream().forEach(item -> campagnaItemDao.delete(item));
+		entity.getCampagnaItems().forEach(item -> campagnaItemDao.delete(item));
 		log.info("delete: Campagna end {}", entity);
 	}
 
 	@Override
 	public Campagna findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -277,7 +277,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 				
 	@Override
-	public void invia(Campagna campagna, UserInfo user) throws Exception {
+	public void invia(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
         	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
@@ -318,7 +318,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 
 	@Override
-	public void sollecita(Campagna campagna, UserInfo user) throws Exception {
+	public void sollecita(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
         	log.warn("sollecita: Impossibile sollecita campagna {}, lo stato campagna non 'Inviata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire sollecito campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
@@ -340,7 +340,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 
 	@Transactional
-	private void doSollecito(Campagna campagna) throws Exception {
+	private void doSollecito(Campagna campagna) {
         log.info("sollecito Campagna start {}", campagna);
         campagna.setStatoCampagna(StatoCampagna.InviatoSollecito);
         repository.save(campagna);  
@@ -362,7 +362,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 
 	@Override
-	public void sospendi(Campagna campagna, Pubblicazione p, UserInfo user) throws Exception {
+	public void sospendi(Campagna campagna, Pubblicazione p, UserInfo user) {
         log.info("sospendi Campagna start {} {}", campagna, p);
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoSollecito && campagna.getStatoCampagna() != StatoCampagna.InviatoSospeso) {
         	log.warn("sospendi: Impossibile sospendere campagna {}, lo stato campagna non 'Inviato Sollecito'", campagna);
@@ -389,7 +389,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 	
 	@Transactional
-	private void doSospendi(Campagna campagna, Pubblicazione p) throws Exception {
+	private void doSospendi(Campagna campagna, Pubblicazione p) {
         campagna.setStatoCampagna(StatoCampagna.InviatoSospeso);
         repository.save(campagna);  
         abbonamentoDao.
@@ -426,7 +426,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 
 	@Override
-	public void estratto(Campagna campagna, UserInfo user) throws Exception{
+	public void estratto(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoSollecito ) {
         	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'InviatoSollecito'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire estratto conto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
@@ -451,7 +451,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 	
 	@Transactional
-	private void doEstratto(Campagna campagna) throws Exception {
+	private void doEstratto(Campagna campagna) {
         log.info("estratto Campagna start {}", campagna);
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         repository.save(campagna);  
@@ -481,7 +481,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 	
 	@Override
-	public void chiudi(Campagna campagna, UserInfo user) throws Exception{
+	public void chiudi(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
         	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
@@ -504,7 +504,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	}
 	
 	@Transactional
-	private void doChiudi(Campagna campagna) throws Exception {
+	private void doChiudi(Campagna campagna) {
         log.info("chiudi Campagna start {}", campagna);
         storicoDao.findByNumero(0).forEach(s -> {
         	if (s.getStatoStorico() != StatoStorico.Annullato) {
