@@ -63,18 +63,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 	@Autowired
 	private SmdService smdService;
 
-	@Value("${ccp.api.url}")
-	public static String ccpApiUrl;
-
-	@Value("${ccp.api.key}")
-	public static String ccpApiKey;
-
-	@Value("${ccp.api.user}")
-	public static String ccpApiUser;
-
-	@Value("${ccp.file.path}")
-	public static String ccpFilePath;
-
 	@Override
 	@Transactional
 	public Abbonamento save(Abbonamento entity) throws Exception {

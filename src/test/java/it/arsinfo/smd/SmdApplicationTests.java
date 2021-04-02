@@ -1,30 +1,24 @@
 package it.arsinfo.smd;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.*;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.google.common.io.CharStreams;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.repository.*;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.service.dao.AbbonamentoServiceDaoImpl;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.helper.SmdHelper;
+import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.SmdServiceImpl;
+import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
+import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
+import it.arsinfo.smd.ui.security.SecurityConfig;
+import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,53 +29,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.CampagnaItemDao;
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.repository.NotaDao;
-import it.arsinfo.smd.dao.repository.OffertaDao;
-import it.arsinfo.smd.dao.repository.OfferteCumulateDao;
-import it.arsinfo.smd.dao.repository.OperazioneDao;
-import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
-import it.arsinfo.smd.dao.repository.UserInfoDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.Nota;
-import it.arsinfo.smd.entity.Offerta;
-import it.arsinfo.smd.entity.OfferteCumulate;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.OperazioneSospendi;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdServiceImpl;
-import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
-import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
-import it.arsinfo.smd.ui.security.SecurityConfig;
-import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class SmdApplicationTests {
@@ -259,7 +212,8 @@ public class SmdApplicationTests {
             assertThat(false).isTrue();
         }
 
-        UserInfo admin = userInfoDao.findById(1L).get();
+        UserInfo admin = userInfoDao.findById(1L).orElse(null);
+        assertNotNull(admin);
         assertEquals("admin", admin.getUsername());
 
     }
@@ -289,17 +243,17 @@ public class SmdApplicationTests {
     public void testOperazioneSospendiCRUD() {
         log.info("----------------->testOperazioneSospendiCRUD<----------------");
         Pubblicazione estratti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Estratti").iterator().next();
-        assertThat(estratti);
+        assertNotNull(estratti);
         Campagna campagna = new Campagna();
         campagnaDao.save(campagna);
         OperazioneSospendi sospendiEstratti = new OperazioneSospendi(estratti, campagna);
         operazioneSospendiDao.save(sospendiEstratti);
         assertEquals(1, operazioneSospendiDao.findAll().size());
                 
-        operazioneSospendiDao.findAll().stream().forEach( a -> log.info(a.toString()));
+        operazioneSospendiDao.findAll().forEach( a -> log.info(a.toString()));
         
         OperazioneSospendi sospeso = operazioneSospendiDao.findUniqueByCampagnaAndPubblicazione(campagna, estratti);
-        assertThat(sospeso);
+        assertNotNull(sospeso);
         
         OperazioneSospendi sospendiEstratti2 = new OperazioneSospendi(estratti, campagna);
         sospendiEstratti2.setMeseSpedizione(Mese.APRILE);
@@ -320,7 +274,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(antonioRusso);
         assertEquals(1, anagraficaDao.findAll().size());
         
-        assertThat(anagraficaDao.findById(antonioRusso.getId()));
+        assertThat(anagraficaDao.findById(antonioRusso.getId())).isNotNull();
         assertEquals(1,anagraficaDao.findByDenominazioneContainingIgnoreCase("us").size());
         assertEquals(0,anagraficaDao.findByDenominazioneContainingIgnoreCase("Rosso").size());
         assertEquals(1,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
@@ -348,7 +302,7 @@ public class SmdApplicationTests {
             log.info(e.getMessage());
         }
         
-        anagraficaDao.findAll().stream().forEach( a -> log.info(a.toString()));
+        anagraficaDao.findAll().forEach( a -> log.info(a.toString()));
         anagraficaDao.delete(antonioRusso);
         anagraficaDao.delete(diocesiMilano);
         
@@ -393,12 +347,12 @@ public class SmdApplicationTests {
     public void testSpesaSpedizioneCRUD() {
         log.info("----------------->testSpesaSpedizioneCRUD<----------------");
         SpesaSpedizione spedizioneItaliaDa1a2Kg=spesaSpedizioneDao.findByAreaSpedizioneAndRangeSpeseSpedizione(AreaSpedizione.Italia, RangeSpeseSpedizione.Da1KgA2Kg);
-        assertThat(spedizioneItaliaDa1a2Kg);
+        assertThat(spedizioneItaliaDa1a2Kg).isNotNull();
         
         SpesaSpedizione duplicato=new SpesaSpedizione();
         duplicato.setAreaSpedizione(AreaSpedizione.Italia);
         duplicato.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da1KgA2Kg);
-        duplicato.setSpese(new BigDecimal(10.88));
+        duplicato.setSpese(new BigDecimal("10.88"));
         
         try {
             spesaSpedizioneDao.save(duplicato);
@@ -446,7 +400,7 @@ public class SmdApplicationTests {
         pubblicazioneDao.save(p1);
         
         assertEquals(6, pubblicazioneDao.findAll().size());
-        anagraficaDao.findAll().stream().forEach( msg -> log.info(msg.toString()));
+        anagraficaDao.findAll().forEach( msg -> log.info(msg.toString()));
 
         List<Pubblicazione> ff = pubblicazioneDao.findByNomeStartsWithIgnoreCase("Pr");
         assertEquals(1, ff.size());
@@ -491,7 +445,7 @@ public class SmdApplicationTests {
         assertEquals(4, pubblicazioni.size());
         Map<String, Long> nameToIdMap = new HashMap<>();
         for (Pubblicazione pubblicazione : pubblicazioni) {
-            assertThat(pubblicazione.getId());
+            assertThat(pubblicazione.getId()).isNotNull();
             nameToIdMap.put(pubblicazione.getNome(), pubblicazione.getId());
             assertEquals("AAVV", pubblicazione.getAutore());
             assertEquals("ADP", pubblicazione.getEditore());
@@ -536,8 +490,9 @@ public class SmdApplicationTests {
         log.info("");
 
         assertTrue(nameToIdMap.containsKey("Messaggio"));
-        assertThat(nameToIdMap.get("Messaggio"));
-        Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("Messaggio")).get();
+        assertNotNull(nameToIdMap.get("Messaggio"));
+        Pubblicazione messaggio = pubblicazioneDao.findById(nameToIdMap.get("Messaggio")).orElse(null);
+        assertNotNull(messaggio);
         log.info("Messaggio found with findOne: "+nameToIdMap.get("Messaggio"));
         log.info("--------------------------------");
         assertEquals(nameToIdMap.get("Messaggio").longValue(), messaggio.getId().longValue());
@@ -557,7 +512,8 @@ public class SmdApplicationTests {
         assertTrue(messaggio.isDic());
         log.info(messaggio.toString());
 
-        Pubblicazione lodare = pubblicazioneDao.findById(nameToIdMap.get("Lodare")).get();
+        Pubblicazione lodare = pubblicazioneDao.findById(nameToIdMap.get("Lodare")).orElse(null);
+        assertNotNull(lodare);
         log.info("lodare found with findOne: " + nameToIdMap.get("Lodare"));
         log.info("--------------------------------");
         assertEquals(nameToIdMap.get("Lodare").longValue(), lodare.getId().longValue());
@@ -565,7 +521,8 @@ public class SmdApplicationTests {
         log.info(lodare.toString());
         log.info("");
 
-        Pubblicazione blocchetti = pubblicazioneDao.findById(nameToIdMap.get("Blocchetti")).get();
+        Pubblicazione blocchetti = pubblicazioneDao.findById(nameToIdMap.get("Blocchetti")).orElse(null);
+        assertNotNull(blocchetti);
         log.info("blocchetti found with findOne:" + nameToIdMap.get("Blocchetti"));
         log.info("--------------------------------");
         assertEquals(nameToIdMap.get("Blocchetti").longValue(), blocchetti.getId().longValue());
@@ -593,7 +550,7 @@ public class SmdApplicationTests {
         
         try {
             storicoDao.save(storico0);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
             log.info(e.getMessage());
@@ -606,7 +563,7 @@ public class SmdApplicationTests {
 
         try {
             storicoDao.save(storico0);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
             log.info(e.getMessage());
@@ -619,7 +576,7 @@ public class SmdApplicationTests {
 
         try {
             storicoDao.save(storico0);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             assertEquals(0, storicoDao.findAll().size());
             log.info(e.getMessage());
@@ -708,8 +665,8 @@ public class SmdApplicationTests {
         
         assertEquals(1, notaDao.findByDescriptionContainingIgnoreCase("sospeso").size());
 
-        storicoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        notaDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        storicoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        notaDao.findAll().forEach(msg -> log.info(msg.toString()));
 
         notaDao.delete(nota2);
         assertEquals(2, notaDao.findAll().size());
@@ -748,8 +705,8 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
-        abb.setPregresso(new BigDecimal(10.0));
-        abb.setImporto(new BigDecimal(15.0));
+        abb.setPregresso(new BigDecimal("10.0"));
+        abb.setImporto(new BigDecimal("15.0"));
         
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
@@ -768,7 +725,7 @@ public class SmdApplicationTests {
 
         try {
             rivistaAbbonamentoDao.save(ec);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -777,8 +734,8 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
                 
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
-        abb.setPregresso(new BigDecimal(10.0));
-        abb.setImporto(new BigDecimal(15.0));        
+        abb.setPregresso(new BigDecimal("10.0"));
+        abb.setImporto(new BigDecimal("15.0"));
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
@@ -787,7 +744,7 @@ public class SmdApplicationTests {
 
         try {
             rivistaAbbonamentoDao.save(ec);
-            assertTrue(false);
+            fail();
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -816,8 +773,8 @@ public class SmdApplicationTests {
         anagraficaDao.save(tizio);
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
-        abb.setPregresso(new BigDecimal(10.0));
-        abb.setImporto(new BigDecimal(15.0));        
+        abb.setPregresso(new BigDecimal("10.0"));
+        abb.setImporto(new BigDecimal("15.0"));
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         
@@ -846,8 +803,8 @@ public class SmdApplicationTests {
         Pubblicazione lodare =pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
 
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
-        abb.setPregresso(new BigDecimal(10.0));
-        abb.setImporto(new BigDecimal(15.0));        
+        abb.setPregresso(new BigDecimal("10.0"));
+        abb.setImporto(new BigDecimal("15.0"));
         assertEquals(25.0, abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         assertEquals(1, abbonamentoDao.findAll().size());
@@ -918,7 +875,7 @@ public class SmdApplicationTests {
         
         assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(item -> items.add(item)));
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
         for (SpedizioneItem item: items) {
@@ -931,9 +888,9 @@ public class SmdApplicationTests {
         assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
-        spedizioni.stream().forEach(sped -> {
+        spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, rivistaAbbonamentoDao.findAll().size());
@@ -941,10 +898,10 @@ public class SmdApplicationTests {
         assertEquals(items.size(), spedizioneDao.findAll().size());
         assertEquals(items.size(), spedizioneItemDao.findByRivistaAbbonamento(ec).size());
 
-        abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneItemDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
     }
     
     @Test 
@@ -976,7 +933,7 @@ public class SmdApplicationTests {
         
         assertTrue(Smd.isAbbonamentoAnnuale(ec));
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.stream().forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(item -> items.add(item)));
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
         for (SpedizioneItem item: items) {
@@ -988,7 +945,7 @@ public class SmdApplicationTests {
         assertEquals(mesi, messaggio.getMesiPubblicazione());
         assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
-        assertEquals(false, abb.isContrassegno());
+        assertFalse(abb.isContrassegno());
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, abbonamentoDao.findWithResiduoAndAnno(abb.getAnno()).size());                
         abb.setContrassegno(true);
@@ -1018,22 +975,13 @@ public class SmdApplicationTests {
 
         switch (tipoEC) {
         	case OmaggioDirettoreAdp:
- 		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
+            case OmaggioCuriaDiocesiana:
+            case OmaggioCuriaGeneralizia:
+            case OmaggioGesuiti:
+                assertEquals(0, abbonamento.getImporto().doubleValue(),0);
 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
 		       break;
-        	case OmaggioCuriaDiocesiana:
-  		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
- 		       break;
-        	case OmaggioCuriaGeneralizia:
-  		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
-  		       break;
-           	case OmaggioGesuiti:
-  		       assertEquals(0, abbonamento.getImporto().doubleValue(),0);
- 		       assertEquals(0, rivista.getImporto().doubleValue(),0);
-   		       break;
-           	default:
+            default:
 		       assertEquals(numero*blocchetti.getAbbonamento().doubleValue(), abbonamento.getImporto().doubleValue(),0);
 		       assertEquals(numero*blocchetti.getAbbonamento().doubleValue(), rivista.getImporto().doubleValue(),0);
 			break;
@@ -1052,28 +1000,22 @@ public class SmdApplicationTests {
         	assertEquals(numero*blocchetti.getGrammi(), sped.getPesoStimato().intValue());
         	switch (invioSpedizioneSped) {
         		case Spedizioniere:
-        			assertEquals(0, sped.getSpesePostali().doubleValue(),0);
+                case AdpSedeNoSpese:
+                    assertEquals(0, sped.getSpesePostali().doubleValue(),0);
         			break;
-        		case AdpSedeNoSpese:
-        			assertEquals(0, sped.getSpesePostali().doubleValue(),0);
-        			break;
-        		default:	
+                default:
         	        SpesaSpedizione ss = Smd.getSpesaSpedizione(spesaSpedizioneDao.findAll(), tizio.getAreaSpedizione(), RangeSpeseSpedizione.getByPeso(numero*blocchetti.getGrammi()));
         	        log.info(ss.toString());
         			double spesaSped =  ss.getSpese().doubleValue();
         			int nrSped = blocchetti.getMesiPubblicazione().size();
         			assertEquals(spesaSped, sped.getSpesePostali().doubleValue(),0);
-        			switch (tizio.getAreaSpedizione()) {
-        	        case Italia:
-        	            assertEquals(0, abbonamento.getSpeseEstero().doubleValue(),0);
-        	            assertEquals( nrSped*spesaSped, abbonamento.getSpese().doubleValue(),0);
-        	        	break;
-        	        default:
+        			if (tizio.getAreaSpedizione() == AreaSpedizione.Italia) {
+                        assertEquals(0, abbonamento.getSpeseEstero().doubleValue(), 0);
+                        assertEquals(nrSped * spesaSped, abbonamento.getSpese().doubleValue(), 0);
+                    } else{
         	            assertEquals(0, abbonamento.getSpese().doubleValue(),0);
         	            assertEquals( nrSped*spesaSped, abbonamento.getSpeseEstero().doubleValue(),0);
-        	        	break;
         	        }
-        		break;
         	}
         	List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(sped);
         	assertEquals(1, items.size());
@@ -1138,7 +1080,6 @@ public class SmdApplicationTests {
         smdService.genera(abb);
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.aggiornaRivistaAbbonamento(rivista,4,TipoAbbonamentoRivista.Ordinario);
-        rivista = rivistaAbbonamentoDao.findById(rivista.getId()).get();
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(abb,rivista);
         assertEquals(0, rivistaAbbonamentoDao.count());
@@ -1285,10 +1226,10 @@ public class SmdApplicationTests {
         assertEquals(12, spedizioneDao.findAll().size());
         assertEquals(12, spedizioneItemDao.findAll().size());
 
-        abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneItemDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
 
         RivistaAbbonamento ec3 = new RivistaAbbonamento();
         ec3.setAbbonamento(abb);
@@ -1305,20 +1246,18 @@ public class SmdApplicationTests {
                                           SmdHelper.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec3);
-        spedizioni.stream().forEach(sped -> {
+        spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> {
-                spedizioneItemDao.save(item);
-            });
+            sped.getSpedizioneItems().forEach(spedizioneItemDao::save);
         });
         assertEquals(3, rivistaAbbonamentoDao.findAll().size());        
         assertEquals(14, spedizioneDao.findAll().size());
         assertEquals(14, spedizioneItemDao.findAll().size());
 
-        abbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
-        spedizioneItemDao.findAll().stream().forEach(msg -> log.info(msg.toString()));
+        abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
+        spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
     }
     
     @Test
@@ -1362,7 +1301,7 @@ public class SmdApplicationTests {
                 Smd.genera(
                      abb,
                      ec1,
-                     new ArrayList<SpedizioneWithItems>(),
+                     new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());
         spedizioni = 
                 Smd.genera(
@@ -1383,9 +1322,9 @@ public class SmdApplicationTests {
         rivistaAbbonamentoDao.save(ec2);
         rivistaAbbonamentoDao.save(ec3);        
 
-        spedizioni.stream().forEach( sped -> {
+        spedizioni.forEach( sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
 
         assertEquals(1, anagraficaDao.findAll().size());
@@ -1401,11 +1340,11 @@ public class SmdApplicationTests {
 
         assertEquals(6, aggiorna.getItemsToDelete().size());
         
-        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+        aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> {
-                spedizioneItemDao.save(item);
-               });
+            sped.getSpedizioneItems().forEach(item ->
+                spedizioneItemDao.save(item)
+               );
         });
         for (SpedizioneItem delitem: aggiorna.getItemsToDelete() ) {
             spedizioneItemDao.deleteById(delitem.getId());
@@ -1439,9 +1378,7 @@ public class SmdApplicationTests {
         
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> {
-                spedizioneItemDao.save(item);
-               });
+            sped.getSpedizioneItems().forEach(spedizioneItemDao::save);
         });
         for (SpedizioneItem delitem: aggiorna.getItemsToDelete()) {
             spedizioneItemDao.deleteById(delitem.getId());
@@ -1548,9 +1485,9 @@ public class SmdApplicationTests {
         }
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
-        spedizioni.stream().forEach(sped -> {
+        spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         
         spedizioni.stream()
@@ -1569,7 +1506,7 @@ public class SmdApplicationTests {
         RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         for (SpedizioneItem deletedItem:aggiorna.getItemsToDelete()) {
             assertEquals(StatoSpedizione.PROGRAMMATA, deletedItem.getStatoSpedizione());
@@ -1658,9 +1595,9 @@ public class SmdApplicationTests {
         assertTrue(Smd.isAbbonamentoAnnuale(ec1));
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
-        spedizioni.stream().forEach(sped -> {
+        spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
         assertEquals(1, rivistaAbbonamentoDao.findAll().size());
@@ -1689,9 +1626,9 @@ public class SmdApplicationTests {
         assertEquals(0, aggiorna.getItemsToDelete().size());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
-        aggiorna.getSpedizioniToSave().stream().forEach(sped -> {
+        aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().stream().forEach(item -> spedizioneItemDao.save(item));
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
 
         spedizioneDao.findAll().forEach(s -> {
@@ -1726,7 +1663,7 @@ public class SmdApplicationTests {
         campagna.getCampagnaItems().forEach( item -> campagnaItemDao.save(item));
         
         campagna = campagnaDao.findByAnno(campagna.getAnno());
-        assertThat(campagna);
+        assertNotNull(campagna);
         assertEquals(2, campagna.getCampagnaItems().size());
         assertEquals(2, campagnaItemDao.findByCampagna(campagna).size());
         assertEquals(1, campagnaItemDao.findByPubblicazione(blocchetti).size());
@@ -1748,7 +1685,7 @@ public class SmdApplicationTests {
         assertEquals(0, incassoDao.findAll().size());
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().forEach(versamentoDao::save);
         
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
@@ -1765,7 +1702,7 @@ public class SmdApplicationTests {
         assertEquals(0, incassoDao.findAll().size());
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().forEach(v -> versamentoDao.save(v));
         
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
@@ -1810,7 +1747,7 @@ public class SmdApplicationTests {
         
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
 
@@ -1871,7 +1808,7 @@ public class SmdApplicationTests {
 
         DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
         incassoDao.save(incasso);
-        incasso.getItems().stream().forEach(v -> versamentoDao.save(v));
+        incasso.getItems().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
         
@@ -1879,7 +1816,7 @@ public class SmdApplicationTests {
         assertThat(versamento).isNotNull();
         assertThat(versamento.getCommittente()).isNull();
         Anagrafica committente = anagraficaDao.findAll().iterator().next();
-        assertThat(committente);
+        assertNotNull(committente);
         
         versamento.setCommittente(committente);
         versamentoDao.save(versamento);
@@ -1890,8 +1827,7 @@ public class SmdApplicationTests {
         Versamento persisted1 = versamentoDao.findAll().iterator().next();
         assertEquals(versamento.getId(), persisted1.getId());
         assertEquals(1, anagraficaDao.findAll().size());
-        assertThat(persisted1);
-        assertThat(persisted1.getCommittente());
+        assertNotNull(persisted1.getCommittente());
         
         log.info("committente: {}", persisted1.getCommittente().getId());
 
@@ -1944,9 +1880,7 @@ public class SmdApplicationTests {
         
         DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
-        incasso.getItems().stream().forEach(v-> {
-            versamentoDao.save(v);
-        });
+        incasso.getItems().forEach(versamentoDao::save);
 
         assertEquals(1, incassoDao.findAll().size());
         assertEquals(1, versamentoDao.findAll().size());
@@ -1981,7 +1915,7 @@ public class SmdApplicationTests {
 
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
-        assertThat(abbonamento);
+        assertNotNull(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
         assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));        
         assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
@@ -1990,7 +1924,7 @@ public class SmdApplicationTests {
         OperazioneIncasso operazione = 
         		operazioneIncassoDao
         		.findByAbbonamentoAndVersamentoAndStatoOperazioneIncasso(abbonamento, versamento, StatoOperazioneIncasso.Incasso).iterator().next();
-        assertThat(operazione);
+        assertNotNull(operazione);
         assertEquals(abbonamento.getId(), operazione.getAbbonamento().getId());
         assertEquals(versamento.getId(), operazione.getVersamento().getId());
         assertEquals(incassato.doubleValue(), operazione.getImporto().doubleValue(),0);
@@ -2075,7 +2009,7 @@ public class SmdApplicationTests {
               abb1.getCcp(), 
               abb1.getCuas());
 
-        assertThat(incasso);
+        assertNotNull(incasso);
         abb2.setDataPagamento(date);
         abb2.setDataContabile(date);
         abb2.setProgressivo("00002");

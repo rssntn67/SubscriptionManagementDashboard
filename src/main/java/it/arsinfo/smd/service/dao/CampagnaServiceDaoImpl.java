@@ -1,5 +1,19 @@
 package it.arsinfo.smd.service.dao;
 
+import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.dao.CampagnaServiceDao;
+import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.repository.*;
+import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,42 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import it.arsinfo.smd.dao.CampagnaServiceDao;
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.CampagnaItemDao;
-import it.arsinfo.smd.dao.repository.OperazioneCampagnaDao;
-import it.arsinfo.smd.dao.repository.OperazioneSospendiDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoCampagna;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoPubblicazione;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.OperazioneCampagna;
-import it.arsinfo.smd.entity.OperazioneSospendi;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.service.Smd;
 
 @Service
 public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
@@ -78,17 +56,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	private SmdService smdService;
 
 	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
-	
-    @Value("${limite.invio.estratto}")
-    private static String limiteInvioEstratto;
-
-    @Value("${limite.invio.sollecito}")
-    private static String limiteInvioSollecito;
 
     public static BigDecimal getLimiteInvioEstratto() {
-    	if (limiteInvioEstratto != null) {
+    	if (SmdApplication.limiteInvioEstratto != null) {
     		try {
-    			return new BigDecimal(limiteInvioEstratto);
+    			return new BigDecimal(SmdApplication.limiteInvioEstratto);
     		} catch (Exception e) {
     			log.error("getLimiteInvioEstratto: {}", e.getMessage());
 			}
@@ -97,9 +69,9 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
     }
     
     public static BigDecimal getLimiteInvioSollecito() {
-    	if (limiteInvioSollecito != null) {
+    	if (SmdApplication.limiteInvioSollecito != null) {
     		try {
-    			return new BigDecimal(limiteInvioSollecito);
+    			return new BigDecimal(SmdApplication.limiteInvioSollecito);
     		} catch (Exception e) {
     			log.error("getLimiteInvioSollecito: {}", e.getMessage());
 			}
