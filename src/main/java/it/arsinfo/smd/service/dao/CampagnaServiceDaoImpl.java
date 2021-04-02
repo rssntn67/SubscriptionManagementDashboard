@@ -1,6 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
-import it.arsinfo.smd.SmdApplication;
+import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.dao.CampagnaServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.*;
@@ -55,30 +55,11 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 	@Autowired
 	private SmdService smdService;
 
+	@Autowired
+	private CampagnaConfig campagnaConfig;
+
 	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
 
-    public static BigDecimal getLimiteInvioEstratto() {
-    	if (SmdApplication.limiteInvioEstratto != null) {
-    		try {
-    			return new BigDecimal(SmdApplication.limiteInvioEstratto);
-    		} catch (Exception e) {
-    			log.error("getLimiteInvioEstratto: {}", e.getMessage());
-			}
-    	}
-		return new BigDecimal("7.00");
-    }
-    
-    public static BigDecimal getLimiteInvioSollecito() {
-    	if (SmdApplication.limiteInvioSollecito != null) {
-    		try {
-    			return new BigDecimal(SmdApplication.limiteInvioSollecito);
-    		} catch (Exception e) {
-    			log.error("getLimiteInvioSollecito: {}", e.getMessage());
-			}
-    	}
-		return new BigDecimal("7.00");
-    	
-    }
 	public void lock(Campagna entity) {
 		entity.setRunning(true);
 		repository.save(entity);
@@ -324,7 +305,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
         	} else {
         		abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
         	}
-    		if (sendSollecito(abbonamento)) {
+    		if (sendSollecito(abbonamento,campagnaConfig)) {
     			abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
     			abbonamento.setSollecitato(true);
     		}
@@ -387,14 +368,14 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
 
 	}
 	
-	public static boolean sendEC(Abbonamento abb) {
+	public static boolean sendEC(Abbonamento abb, CampagnaConfig campagnaConfig) {
 		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
-				abb.getResiduo().subtract(getLimiteInvioEstratto()).signum() >= 0;
+				abb.getResiduo().subtract(campagnaConfig.getLimiteInvioEstratto()).signum() >= 0;
 	}
 
-	public static boolean sendSollecito(Abbonamento abb) {
+	public static boolean sendSollecito(Abbonamento abb,CampagnaConfig campagnaConfig) {
 		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
-				abb.getResiduo().subtract(getLimiteInvioSollecito()).signum() >= 0;
+				abb.getResiduo().subtract(campagnaConfig.getLimiteInvioSollecito()).signum() >= 0;
 	}
 
 	@Override
@@ -441,7 +422,7 @@ public class CampagnaServiceDaoImpl implements CampagnaServiceDao {
             		almenounarivistaattiva=true;
             	}
             }
-			if (sendEC(abbonamento) ) {
+			if (sendEC(abbonamento,campagnaConfig) ) {
 				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(new BigDecimal("2.00")));
 				abbonamento.setInviatoEC(true);
 			}

@@ -1,5 +1,7 @@
 package it.arsinfo.smd;
 
+import it.arsinfo.smd.config.CampagnaConfig;
+import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.*;
@@ -85,6 +87,10 @@ public class SmdApplicationTests {
     @Autowired
     private SecurityConfig securityConfig;
 
+    @Autowired
+    private CcpConfig ccpConfig;
+    @Autowired
+    private CampagnaConfig campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -199,7 +205,19 @@ public class SmdApplicationTests {
         }
         log.info("----------------->ExitingClearDown<----------------");
     }
-    
+
+    @Test
+    public void testConfiguration() {
+        assertNotNull(ccpConfig);
+        assertNotNull(campagnaConfig);
+        assertEquals(7.00,campagnaConfig.getLimiteInvioEstratto().doubleValue());
+        assertEquals(7.00,campagnaConfig.getLimiteInvioSollecito().doubleValue());
+        assertEquals("https://api.stampabollettini.com/api/td674",ccpConfig.getCcpApiUrl());
+        assertEquals("druslcruwaw2up5swexospl6awruphut",ccpConfig.getCcpApiKey());
+        assertEquals("adp-289020",ccpConfig.getCcpApiUser());
+        assertEquals("/Users/antonio/Download",ccpConfig.getCcpFilePath());
+    }
+
     @Test
     public void testLoginAdmin() {
         log.info("----------------->testLoginAdmin<----------------");

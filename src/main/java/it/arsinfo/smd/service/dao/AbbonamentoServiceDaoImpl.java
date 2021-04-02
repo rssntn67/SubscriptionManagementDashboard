@@ -1,37 +1,21 @@
 package it.arsinfo.smd.service.dao;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import it.arsinfo.smd.config.CcpConfig;
+import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.repository.*;
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.repository.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.Smd;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
@@ -62,6 +46,9 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Autowired
 	private SmdService smdService;
+
+	@Autowired
+	private CcpConfig ccpConfig;
 
 	@Override
 	@Transactional
@@ -381,6 +368,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Override
 	public String getPrintCcpJsonString(Abbonamento abbonamento) {
-		return null;
+		return Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),"Abbonamento" + abbonamento.getAnno().getAnnoAsString());
 	}
 }

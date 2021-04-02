@@ -38,24 +38,6 @@ public class SmdApplication {
     @Value("${load.sample.data}")
     private String loadSampleData;
 
-    @Value("${ccp.api.url}")
-    public static String ccpApiUrl;
-
-    @Value("${ccp.api.key}")
-    public static String ccpApiKey;
-
-    @Value("${ccp.api.user}")
-    public static String ccpApiUser;
-
-    @Value("${ccp.file.path}")
-    public static String ccpFilePath;
-
-    @Value("${limite.invio.estratto}")
-    public static String limiteInvioEstratto;
-
-    @Value("${limite.invio.sollecito}")
-    public static String limiteInvioSollecito;
-
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
     }
@@ -117,7 +99,6 @@ public class SmdApplication {
                    )
                 ).start();
             }
-
         };
     }
 
