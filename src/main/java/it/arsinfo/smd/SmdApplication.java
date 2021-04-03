@@ -1,7 +1,10 @@
 package it.arsinfo.smd;
 
-import javax.transaction.Transactional;
-
+import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.dao.repository.*;
+import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.helper.SmdLoadSampleData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,24 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.repository.NotaDao;
-import it.arsinfo.smd.dao.repository.OperazioneDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
-import it.arsinfo.smd.dao.repository.UserInfoDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.helper.SmdLoadSampleData;
+import javax.transaction.Transactional;
 
 @SpringBootApplication
 public class SmdApplication {

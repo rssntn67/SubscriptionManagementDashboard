@@ -1433,6 +1433,10 @@ public class SmdUnitTests {
         byte[] decoder = Base64.getDecoder().decode(text);
         fos.write(decoder);
         client.close();
+
+        assertTrue(file.isFile());
+        log.info(file.getAbsolutePath());
     }
+
 
 }

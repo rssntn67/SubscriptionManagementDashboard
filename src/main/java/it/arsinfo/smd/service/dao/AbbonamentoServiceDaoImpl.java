@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
+import com.google.common.io.CharStreams;
 import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.dao.SmdService;
@@ -7,13 +8,22 @@ import it.arsinfo.smd.dao.repository.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +59,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Autowired
 	private CcpConfig ccpConfig;
+
+	private static final Logger log = LoggerFactory.getLogger(AbbonamentoServiceDaoImpl.class);
 
 	@Override
 	@Transactional
@@ -367,7 +379,39 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 	}
 
 	@Override
-	public String getPrintCcpJsonString(Abbonamento abbonamento) {
-		return Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),"Abbonamento" + abbonamento.getAnno().getAnnoAsString());
+	public File getBollettino(Abbonamento abbonamento) {
+		log.info("getBollettino: {}", abbonamento.getCodeLine());
+		File file = new File(ccpConfig.getCcpFilePath()+"/"+abbonamento.getCodeLine()+".pdf");
+		if (!file.exists()|| !file.isFile()) {
+			try {
+				downloadBollettino(abbonamento, file);
+			} catch (IOException e) {
+				log.error("getBollettino: {}", e.getMessage(),e);
+				return null;
+			}
+		}
+		return file;
 	}
+
+	private void downloadBollettino(Abbonamento abbonamento, File file) throws IOException {
+		log.info("downloadBollettino: {}", abbonamento.getCodeLine());
+		CloseableHttpClient client = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(ccpConfig.getCcpApiUrl());
+		String jsonString = Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),"Abbonamento" + abbonamento.getAnno().getAnnoAsString());
+		StringEntity entity = new StringEntity(jsonString);
+		httpPost.setEntity(entity);
+		httpPost.setHeader("Content-type", "application/json");
+
+		CloseableHttpResponse response = client.execute(httpPost);
+		InputStream inputStream =response.getEntity().getContent();
+		String text;
+		try (Reader reader = new InputStreamReader(inputStream)) {
+			text = CharStreams.toString(reader);
+		}
+		FileOutputStream fos = new FileOutputStream(file);
+		byte[] decoder = Base64.getDecoder().decode(text);
+		fos.write(decoder);
+		client.close();
+	}
+
 }

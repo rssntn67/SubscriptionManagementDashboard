@@ -1,19 +1,10 @@
 package it.arsinfo.smd.dao;
 
-import java.util.List;
+import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.entity.*;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.UserInfo;
+import java.io.File;
+import java.util.List;
 
 public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,RivistaAbbonamento> {
 	
@@ -42,5 +33,6 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 			);
 	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 
-	String getPrintCcpJsonString(Abbonamento abbonamento);
+	File getBollettino(Abbonamento abbonamento);
+
 }
