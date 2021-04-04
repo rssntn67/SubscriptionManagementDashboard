@@ -7,9 +7,7 @@ import com.vaadin.ui.*;
 import org.springframework.util.StringUtils;
 import org.vaadin.haijian.Exporter;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Random;
 
 public abstract class SmdGrid<T>
         extends SmdChangeHandler {
@@ -20,30 +18,31 @@ public abstract class SmdGrid<T>
     Label itemNumber = new Label();
     private Integer size = 0;
 
+    private final FileDownloader csvFileDownloader;
+    private final FileDownloader excelFileDownloader;
     public SmdGrid(Grid<T> grid, String gridName) {
 
-        Button downloadAsExcel = new Button("Download As Excel");
-        Button downloadAsCSV = new Button("Download As CSV");
 
+        excelFileDownloader =
+                new FileDownloader(
+                        new StreamResource((StreamResource.StreamSource) () ->
+                        Exporter.exportAsExcel(grid), "smd"+gridName+"-"+randomAlphaNumeric(8)+".xls"));
+        Button downloadAsExcel = new Button("Download As Excel");
         downloadAsExcel.setHeight("22px");
         downloadAsExcel.setWidth("200px");
+        excelFileDownloader.extend(downloadAsExcel);
+
+        csvFileDownloader =
+                new FileDownloader(                new StreamResource((StreamResource.StreamSource) () ->
+                        Exporter.exportAsCSV(grid), "smd"+gridName+"-"+randomAlphaNumeric(8)+".csv"));
+        Button downloadAsCSV = new Button("Download As CSV");
         downloadAsCSV.setHeight("22px");
         downloadAsCSV.setWidth("200px");
-
-
-    	StreamResource excelStreamResource = 
-                new StreamResource((StreamResource.StreamSource) () -> 
-                    Exporter.exportAsExcel(grid), "smd"+gridName+"-"+generateRandom()+".xls");
-        FileDownloader excelFileDownloader = 
-                new FileDownloader(excelStreamResource);
-
-        StreamResource csvStreamResource = 
-                new StreamResource((StreamResource.StreamSource) () -> 
-                    Exporter.exportAsCSV(grid), "smd"+gridName+"-"+generateRandom()+".csv");
-        
-        FileDownloader csvFileDownloader = new FileDownloader(csvStreamResource);
-        excelFileDownloader.extend(downloadAsExcel);
         csvFileDownloader.extend(downloadAsCSV);
+
+        downloadAsCSV.addClickListener( e -> updateCsvStreamSource());
+
+        downloadAsExcel.addClickListener( e -> updateExcelStreamSource());
 
         this.grid = grid;
         this.gridName = gridName;
@@ -55,7 +54,17 @@ public abstract class SmdGrid<T>
         
         setComponents(this.grid,new HorizontalLayout(this.itemNumber,downloadAsExcel,downloadAsCSV));
     }
-        
+
+    public void updateCsvStreamSource() {
+        csvFileDownloader.setFileDownloadResource(new StreamResource((StreamResource.StreamSource) () ->
+                Exporter.exportAsCSV(grid), "smd"+gridName+"-"+randomAlphaNumeric(8)+".csv"));
+    }
+
+    public void updateExcelStreamSource() {
+        excelFileDownloader.setFileDownloadResource(new StreamResource((StreamResource.StreamSource) () ->
+                Exporter.exportAsExcel(grid), "smd"+gridName+"-"+randomAlphaNumeric(8)+".xls"));
+
+    }
 
     public void setColumns(String...columnIds) {
         grid.setColumns(columnIds);
@@ -102,14 +111,17 @@ public abstract class SmdGrid<T>
     public Grid<T> getGrid() {
         return grid;
     }
-    
+
 	public Integer getSize() {
 		return size;
 	}
 
-	public static String generateRandom() {
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        return new String(array, StandardCharsets.UTF_8);
-    }
-}
+    private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static String randomAlphaNumeric(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        }
+        return builder.toString();
+    }}
