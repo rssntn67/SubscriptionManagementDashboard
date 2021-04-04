@@ -3,27 +3,20 @@ package it.arsinfo.smd.ui.print;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
-import it.arsinfo.smd.data.Provincia;
-import it.arsinfo.smd.data.TitoloAnagrafica;
+import com.vaadin.ui.*;
+import it.arsinfo.smd.data.Stampa;
 import it.arsinfo.smd.dto.Indirizzo;
-import it.arsinfo.smd.entity.Anagrafica;
 
 public abstract class StampaUI extends UI{
-	
+
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static String getHtml(Indirizzo indirizzo) {
-		StringBuffer html = new StringBuffer();
+		StringBuffer html;
+		html = new StringBuffer();
 		html.append("<b>");
 		html.append(indirizzo.getIntestazione());
     	if (indirizzo.getNome() != null && !indirizzo.getNome().equals("")) {
@@ -39,7 +32,7 @@ public abstract class StampaUI extends UI{
 		html.append("<br/>\n");
 		html.append(indirizzo.getCap());
 		html.append("&nbsp;");
-		html.append(indirizzo.getCitta()); ;
+		html.append(indirizzo.getCitta());
 		html.append("&nbsp;&nbsp;");
 		html.append("(");
 		html.append(indirizzo.getProvincia().name());
@@ -50,9 +43,24 @@ public abstract class StampaUI extends UI{
 		return html.toString();
 	}
 
-	public static Layout stampaA(Indirizzo indirizzo) {
-    	StringBuffer html = new StringBuffer("<div><p>");
-    	html.append("<div class=\"gap-a\"></div>\n");
+	public static Layout stampa(Stampa type, Indirizzo indirizzo, Layout defaultLayout) {
+		switch (type) {
+			case Busta:
+				return stampaBusta(indirizzo);
+			case Cartoncino:
+				return stampaCartoncino(indirizzo);
+			case BustaGialla:
+				return stampaBustaGialla(indirizzo);
+			default:
+				break;
+		}
+		return defaultLayout;
+	}
+
+	public static Layout stampaBustaGialla(Indirizzo indirizzo) {
+    	StringBuffer html;
+		html = new StringBuffer("<div><p>");
+		html.append("<div class=\"gap-a\"></div>\n");
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
@@ -78,9 +86,10 @@ public abstract class StampaUI extends UI{
 		return lay;
     }
 
-	public static Layout stampaB(Indirizzo indirizzo) {
-    	StringBuffer html = new StringBuffer();
-    	html.append("<div id=\"busta_2\"><p>");
+	public static Layout stampaCartoncino(Indirizzo indirizzo) {
+    	StringBuffer html;
+		html = new StringBuffer();
+		html.append("<div id=\"busta_2\"><p>");
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
@@ -105,9 +114,10 @@ public abstract class StampaUI extends UI{
 		return lay;
     }
 
-	public static Layout stampaC(Indirizzo indirizzo) {
-    	StringBuffer html = new StringBuffer();
-    	html.append("<div id=\"busta_2\"><p>");
+	public static Layout stampaBusta(Indirizzo indirizzo) {
+    	StringBuffer html;
+		html = new StringBuffer();
+		html.append("<div id=\"busta_2\"><p>");
     	html.append(getHtml(indirizzo));
 		html.append("</p></div>\n");
 		HorizontalLayout lay = new HorizontalLayout();
@@ -162,20 +172,5 @@ public abstract class StampaUI extends UI{
 	               "setTimeout(function() {" +
 	               "  print(); self.close();}, 0);");
 	}
-
-	protected static Indirizzo getTestIndirizzo() {
-    	Anagrafica antonio = new Anagrafica();
-    	antonio.setTitolo(TitoloAnagrafica.Rettore);
-    	antonio.setDenominazione("Russo");
-    	antonio.setNome("Antonio");
-    	antonio.setIndirizzo("Largo Aldifreda 9");
-    	antonio.setCap("81100");
-    	antonio.setCitta("Caserta");
-    	antonio.setProvincia(Provincia.CE);
-		return Indirizzo.getIndirizzo(antonio);
-
-	}
-
-    public abstract Layout stampa(Indirizzo indirizzo);
 
 }

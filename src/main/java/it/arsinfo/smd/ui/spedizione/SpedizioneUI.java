@@ -2,6 +2,7 @@ package it.arsinfo.smd.ui.spedizione;
 
 import java.util.List;
 
+import it.arsinfo.smd.data.Stampa;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
@@ -78,20 +79,20 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         duplicaAdpSpesePostal.addClickListener(e -> duplica(maineditor.get(),InvioSpedizione.AdpSede));
         maineditor.getActions().addComponent(duplicaAdpSpesePostal);
         
-        BrowserWindowOpener popupOpenerA = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"A");
-        Button stampaA = new Button("Busta", VaadinIcons.PRINT);
-        popupOpenerA.extend(stampaA);
-        maineditor.getActions().addComponent(stampaA);
+        BrowserWindowOpener popupOpenerA = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.BustaGialla.name());
+        Button stampaBustaGialla = new Button("Busta", VaadinIcons.PRINT);
+        popupOpenerA.extend(stampaBustaGialla);
+        maineditor.getActions().addComponent(stampaBustaGialla);
 
-        BrowserWindowOpener popupOpenerB = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"B");
-        Button stampaB = new Button("Cartoncino", VaadinIcons.PRINT);
-        popupOpenerB.extend(stampaB);
-        maineditor.getActions().addComponent(stampaB);
+        BrowserWindowOpener popupOpenerB = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.Cartoncino.name());
+        Button stampaCartoncino = new Button("Cartoncino", VaadinIcons.PRINT);
+        popupOpenerB.extend(stampaCartoncino);
+        maineditor.getActions().addComponent(stampaCartoncino);
 
-        BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"C");
-        Button stampaC = new Button("Busta Piccola", VaadinIcons.PRINT);
-        popupOpenerC.extend(stampaC);
-        maineditor.getActions().addComponent(stampaC);
+        BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.Busta.name());
+        Button stampaBusta = new Button("Busta Piccola", VaadinIcons.PRINT);
+        popupOpenerC.extend(stampaBusta);
+        maineditor.getActions().addComponent(stampaBusta);
 
         SmdEntityItemEditor<SpedizioneItem,Spedizione> editor = 
         		new SmdEntityItemEditor<SpedizioneItem, Spedizione>(dao,itemSave,itemgrid,itemeditor,maineditor) {

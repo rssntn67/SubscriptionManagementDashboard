@@ -1,15 +1,19 @@
 package it.arsinfo.smd.ui.print;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
-
 import it.arsinfo.smd.dao.SpedizioneServiceDao;
+import it.arsinfo.smd.data.Stampa;
 import it.arsinfo.smd.entity.Spedizione;
+import it.arsinfo.smd.ui.SmdUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class StampaSpedizioneUI extends StampaUI {
+@SpringUI(path= SmdUI.URL_STAMPA_INDIRIZZO_SPEDIZIONE)
+public class StampaSpedizioneUI extends StampaUI {
 
     @Autowired
     SpedizioneServiceDao dao;
@@ -17,19 +21,23 @@ public abstract class StampaSpedizioneUI extends StampaUI {
 	 * 
 	 */
 	private static final long serialVersionUID = 3428443647083120006L;
+	private static final Logger log = LoggerFactory.getLogger(StampaSpedizioneUI.class);
 
 	@Override
     protected void init(VaadinRequest request) {
-		   super.init(request);
-	       setContent(stampa(request.getParameter("id")));
-	       print();
-    }   
+		super.init(request);
+		log.info("init: id {} ",request.getParameter("id") );
+		log.info("init: type {} ",request.getParameter("type") );
+		setContent(stampa(request.getParameter("id"),Stampa.valueOf(request.getParameter("type"))));
+	   	print();
+
+	}
 		
-    private Layout stampa(String id) {
+    private Layout stampa(String id, Stampa type) {
     	VerticalLayout subContent = new VerticalLayout();
     	subContent.setMargin(true);
     	subContent.setSpacing(true);
-    	if (id == null) {
+    	if (id == null || type == null) {
     		return subContent;
     	}
     	try {
@@ -41,7 +49,7 @@ public abstract class StampaSpedizioneUI extends StampaUI {
     	if (sped == null) {
     		return subContent;
     	}
-    	return stampa(dao.getIndirizzo(sped));
+    	return stampa(type,dao.getIndirizzo(sped),subContent);
     }
         
 }
