@@ -1,28 +1,25 @@
 package it.arsinfo.smd.ui.vaadin;
 
-import java.util.List;
-
-import org.springframework.util.StringUtils;
-import org.vaadin.haijian.Exporter;
-
 import com.vaadin.data.ValueProvider;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.SingleSelect;
+import com.vaadin.ui.*;
+import org.springframework.util.StringUtils;
+import org.vaadin.haijian.Exporter;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Random;
 
 public abstract class SmdGrid<T>
         extends SmdChangeHandler {
 
     private final Grid<T> grid;
-    private SingleSelect<T> selected;
+    private final SingleSelect<T> selected;
     private final String gridName;
     Label itemNumber = new Label();
     private Integer size = 0;
+
     public SmdGrid(Grid<T> grid, String gridName) {
 
         Button downloadAsExcel = new Button("Download As Excel");
@@ -36,13 +33,13 @@ public abstract class SmdGrid<T>
 
     	StreamResource excelStreamResource = 
                 new StreamResource((StreamResource.StreamSource) () -> 
-                    Exporter.exportAsExcel(grid), "smd"+gridName+".xls");
+                    Exporter.exportAsExcel(grid), "smd"+gridName+"-"+generateRandom()+".xls");
         FileDownloader excelFileDownloader = 
                 new FileDownloader(excelStreamResource);
 
         StreamResource csvStreamResource = 
                 new StreamResource((StreamResource.StreamSource) () -> 
-                    Exporter.exportAsCSV(grid), "smd"+gridName+".csv");
+                    Exporter.exportAsCSV(grid), "smd"+gridName+"-"+generateRandom()+".csv");
         
         FileDownloader csvFileDownloader = new FileDownloader(csvStreamResource);
         excelFileDownloader.extend(downloadAsExcel);
@@ -62,7 +59,7 @@ public abstract class SmdGrid<T>
 
     public void setColumns(String...columnIds) {
         grid.setColumns(columnIds);
-        if (!StringUtils.isEmpty(gridName)) {
+        if (StringUtils.hasLength(gridName)) {
             grid.prependHeaderRow().join(columnIds).setText(gridName);            
         }
     }
@@ -105,14 +102,14 @@ public abstract class SmdGrid<T>
     public Grid<T> getGrid() {
         return grid;
     }
-
-
-	public Label getItemNumber() {
-		return itemNumber;
-	}
-
-
+    
 	public Integer getSize() {
 		return size;
 	}
+
+	public static String generateRandom() {
+        byte[] array = new byte[7]; // length is bounded by 7
+        new Random().nextBytes(array);
+        return new String(array, StandardCharsets.UTF_8);
+    }
 }
