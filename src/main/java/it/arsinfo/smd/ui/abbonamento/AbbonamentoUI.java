@@ -1,19 +1,10 @@
 package it.arsinfo.smd.ui.abbonamento;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-
-import com.vaadin.server.BrowserWindowOpener;
-import com.vaadin.ui.Button;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
-
 import it.arsinfo.smd.dao.AbbonamentoServiceDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -22,6 +13,9 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @SpringUI(path = SmdUI.URL_ABBONAMENTI)
 @Title("Abbonamenti ADP")

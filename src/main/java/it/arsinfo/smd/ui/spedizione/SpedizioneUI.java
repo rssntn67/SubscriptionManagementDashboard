@@ -79,17 +79,20 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         duplicaAdpSpesePostal.addClickListener(e -> duplica(maineditor.get(),InvioSpedizione.AdpSede));
         maineditor.getActions().addComponent(duplicaAdpSpesePostal);
         
-        BrowserWindowOpener popupOpenerA = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.BustaGialla.name());
+        BrowserWindowOpener popupOpenerA = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
+        popupOpenerA.setParameter("type",Stampa.BustaGialla.name());
         Button stampaBustaGialla = new Button("Busta", VaadinIcons.PRINT);
         popupOpenerA.extend(stampaBustaGialla);
         maineditor.getActions().addComponent(stampaBustaGialla);
 
-        BrowserWindowOpener popupOpenerB = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.Cartoncino.name());
+        BrowserWindowOpener popupOpenerB = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
+        popupOpenerB.setParameter("type",Stampa.Cartoncino.name());
         Button stampaCartoncino = new Button("Cartoncino", VaadinIcons.PRINT);
         popupOpenerB.extend(stampaCartoncino);
         maineditor.getActions().addComponent(stampaCartoncino);
 
-        BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE+"?type="+Stampa.Busta.name());
+        BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
+        popupOpenerC.setParameter("type",Stampa.Busta.name());
         Button stampaBusta = new Button("Busta Piccola", VaadinIcons.PRINT);
         popupOpenerC.extend(stampaBusta);
         maineditor.getActions().addComponent(stampaBusta);
