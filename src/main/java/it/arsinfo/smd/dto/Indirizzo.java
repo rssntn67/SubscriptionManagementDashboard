@@ -5,6 +5,7 @@ import org.springframework.util.Assert;
 import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.entity.Anagrafica;
+import org.springframework.util.StringUtils;
 
 public class Indirizzo {
 
@@ -44,10 +45,12 @@ public class Indirizzo {
     }
 
     public String getSottoIntestazione() {
-        if (secondo == null) {
+        if (secondo == null && StringUtils.hasLength(primo.getNome())) {
     		return primo.getNome();
         }
-    	return getIntestazioneCo(secondo);
+        if (secondo != null)
+        	return getIntestazioneCo(secondo);
+        return "";
     }
     
     public String getIndirizzo() {

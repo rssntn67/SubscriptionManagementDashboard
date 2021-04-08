@@ -6,6 +6,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import it.arsinfo.smd.data.Stampa;
 import it.arsinfo.smd.dto.Indirizzo;
+import org.springframework.util.StringUtils;
 
 public abstract class StampaUI extends UI{
 
@@ -19,7 +20,7 @@ public abstract class StampaUI extends UI{
 		html = new StringBuffer();
 		html.append("<b>");
 		html.append(indirizzo.getIntestazione());
-    	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
+    	if (StringUtils.hasLength(indirizzo.getSottoIntestazione())) {
     		html.append("<br/>\n");
     		html.append(indirizzo.getSottoIntestazione());
     	}

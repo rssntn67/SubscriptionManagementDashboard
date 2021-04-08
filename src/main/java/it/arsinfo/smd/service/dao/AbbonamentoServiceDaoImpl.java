@@ -380,8 +380,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 
 	@Override
 	public File getBollettino(Abbonamento abbonamento) {
-		log.info("getBollettino: {}", abbonamento.getCodeLine());
-		File file = new File(ccpConfig.getCcpFilePath()+"/"+abbonamento.getCodeLine()+".pdf");
+		log.info("getBollettino: {} residuo {} ", abbonamento.getCodeLine(), abbonamento.getResiduo());
+		File file = new File(ccpConfig.getCcpFilePath()+"/"+abbonamento.getCodeLine()+"_"+abbonamento.getResiduo()+".pdf");
 		if (!file.exists()|| !file.isFile()) {
 			try {
 				downloadBollettino(abbonamento, file);

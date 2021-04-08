@@ -85,7 +85,7 @@ public class Smd {
 				"\"accountHolder2\": \"\","+
 				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
 				"\"code\": \""+code+"\","+
-				"\"name\": \""+anagrafica.getIntestazione()+"\","+
+				"\"name\": \""+anagrafica.getCodeLineBase()+"\n"+anagrafica.getIntestazione()+"\","+
 				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
 				"\"zip\": \""+anagrafica.getCap()+"\","+
 				"\"city\": \""+anagrafica.getCitta()+"\","+
