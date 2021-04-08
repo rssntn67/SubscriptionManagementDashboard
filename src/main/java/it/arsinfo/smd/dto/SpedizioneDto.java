@@ -15,10 +15,6 @@ public class SpedizioneDto extends Indirizzo {
 	public static SpedizioneDto getSpedizioneDto(Spedizione sped,SpedizioneItem item, Anagrafica destinatario, Anagrafica co) {
 		return new SpedizioneDto(sped,item, destinatario, co);
 	}
-	
-	public static SpedizioneDto getSpedizioneDto(Spedizione sped,SpedizioneItem item, Anagrafica destinatario, Anagrafica co, Anagrafica coco) {
-		return new SpedizioneDto(sped,item, destinatario, co,coco);
-	}
 
 	private final SpedizioneItem item;
 	private final Spedizione sped;
@@ -35,14 +31,6 @@ public class SpedizioneDto extends Indirizzo {
 
 	protected SpedizioneDto(Spedizione sped,SpedizioneItem item, Anagrafica destinatario, Anagrafica co) {
 		super(destinatario, co);
-		Assert.notNull(sped, "spedizione non deve essere null");
-		Assert.notNull(item, "spedizioneItem non deve essere null");
-		this.item=item;				
-		this.sped=sped;
-	}
-
-	protected SpedizioneDto(Spedizione sped,SpedizioneItem item, Anagrafica destinatario, Anagrafica co, Anagrafica coco) {
-		super(destinatario, co,coco);
 		Assert.notNull(sped, "spedizione non deve essere null");
 		Assert.notNull(item, "spedizioneItem non deve essere null");
 		this.item=item;				
