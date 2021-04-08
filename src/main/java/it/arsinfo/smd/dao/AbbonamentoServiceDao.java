@@ -33,6 +33,6 @@ public interface AbbonamentoServiceDao extends SmdServiceItemDao<Abbonamento,Riv
 			);
 	List<Abbonamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
 
-	File getBollettino(Abbonamento abbonamento);
+	File getBollettino(Abbonamento abbonamento, boolean download);
 
 }

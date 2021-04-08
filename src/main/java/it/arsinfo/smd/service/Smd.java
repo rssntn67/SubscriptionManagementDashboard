@@ -85,12 +85,12 @@ public class Smd {
 				"\"accountHolder2\": \"\","+
 				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
 				"\"code\": \""+code+"\","+
-				"\"name\": \""+anagrafica.getCodeLineBase()+"\n"+anagrafica.getIntestazione()+"\","+
+				"\"name\": \""+anagrafica.getCodeLineBase()+"              "+anagrafica.getIntestazione()+"\","+
 				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
 				"\"zip\": \""+anagrafica.getCap()+"\","+
 				"\"city\": \""+anagrafica.getCitta()+"\","+
 				"\"province\": \""+anagrafica.getProvincia().name()+"\","+
-				"\"reason\": \""+reason+ "("+anagrafica.getCodeLineBase()+")\","+
+				"\"reason\": \""+reason+ "\","+
 				"\"dueDate\": \"\"}";
 	}
 

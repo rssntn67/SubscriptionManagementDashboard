@@ -15,7 +15,6 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
-import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -88,6 +87,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         residuo.setReadOnly(true);
         speseEstrattoConto.setReadOnly(true);
 
+        stampaBollettino.addClickListener(c-> dao.getBollettino(get(),true));
         getBinder().forField(codeLine).asRequired().withValidator(Objects::nonNull,
                 "Deve essere definito").bind(Abbonamento::getCodeLine,
                                              Abbonamento::setCodeLine);
@@ -174,12 +174,9 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         stampaBollettino.setVisible(persisted);
 
         if (persisted) {
-            File file =dao.getBollettino(abbonamento) ;
-            if (file != null) {
-                BrowserWindowOpener opener = new BrowserWindowOpener(new FileResource(file));
-                opener.setWindowName("_blank_"+abbonamento.getCodeLine());
-                opener.extend(stampaBollettino);
-            }
+            BrowserWindowOpener opener = new BrowserWindowOpener(new FileResource(dao.getBollettino(abbonamento,false)));
+            opener.setWindowName("_blank_"+abbonamento.getCodeLine());
+            opener.extend(stampaBollettino);
         }
         intestatario.focus();
 

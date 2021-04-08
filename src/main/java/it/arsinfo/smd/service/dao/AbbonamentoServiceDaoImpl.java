@@ -22,9 +22,11 @@ import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -379,10 +381,10 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 	}
 
 	@Override
-	public File getBollettino(Abbonamento abbonamento) {
-		log.info("getBollettino: {} residuo {} ", abbonamento.getCodeLine(), abbonamento.getResiduo());
+	public File getBollettino(Abbonamento abbonamento, boolean download) {
+		log.info("getBollettino: {} download {} residuo {} ", abbonamento.getCodeLine(), download, abbonamento.getResiduo());
 		File file = new File(ccpConfig.getCcpFilePath()+"/"+abbonamento.getCodeLine()+"_"+abbonamento.getResiduo()+".pdf");
-		if (!file.exists()|| !file.isFile()) {
+		if (download && !file.exists()) {
 			try {
 				downloadBollettino(abbonamento, file);
 			} catch (IOException e) {
@@ -394,10 +396,13 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 	}
 
 	private void downloadBollettino(Abbonamento abbonamento, File file) throws IOException {
-		log.info("downloadBollettino: {}", abbonamento.getCodeLine());
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(ccpConfig.getCcpApiUrl());
-		String jsonString = Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),"Abbonamento" + abbonamento.getAnno().getAnnoAsString());
+		String saldo = NumberFormat.getNumberInstance(Locale.ITALY).format(abbonamento.getResiduo());
+		log.info("downloadBollettino: {} saldo {}", abbonamento.getCodeLine(), saldo);
+		String jsonString = Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),
+				"Abbonamento " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Eur " + saldo);
+		log.info(jsonString);
 		StringEntity entity = new StringEntity(jsonString);
 		httpPost.setEntity(entity);
 		httpPost.setHeader("Content-type", "application/json");
