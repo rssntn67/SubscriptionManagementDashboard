@@ -3,6 +3,8 @@ package it.arsinfo.smd.ui.spedizione;
 import java.util.List;
 
 import it.arsinfo.smd.data.Stampa;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
@@ -37,6 +39,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
      */
     private static final long serialVersionUID = 7884064928998716106L;
 
+    private final static Logger log = LoggerFactory.getLogger(SpedizioneUI.class);
     @Autowired
     private SpedizioneServiceDao dao;
                 
@@ -123,6 +126,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
             if (grid.getSelected() == null) {
                 return;
             }
+            log.info("selected: sped.id {}",grid.getSelected().getId());
             setHeader("Spedizioni"+":Edit:"+grid.getSelected().getHeader());
             if (grid.getSelected().getId() != null) {
             	popupOpenerA.setParameter("id", grid.getSelected().getId().toString());
@@ -135,6 +139,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
             search.setVisible(false);
             grid.setVisible(false);
             editor.edit(grid.getSelected());
+            log.info("edit: sped {} id {}",grid.getSelected(),grid.getSelected().getId());
             spedisci.setEnabled(grid.getSelected().getInvioSpedizione() != InvioSpedizione.Spedizioniere);
         });
 

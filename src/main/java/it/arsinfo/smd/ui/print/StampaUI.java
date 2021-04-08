@@ -19,10 +19,6 @@ public abstract class StampaUI extends UI{
 		html = new StringBuffer();
 		html.append("<b>");
 		html.append(indirizzo.getIntestazione());
-    	if (indirizzo.getNome() != null && !indirizzo.getNome().equals("")) {
-    		html.append("<br/>\n");
-    		html.append(indirizzo.getNome());
-    	}
     	if (indirizzo.getSottoIntestazione() != null && !indirizzo.getSottoIntestazione().equals("")) {
     		html.append("<br/>\n");
     		html.append(indirizzo.getSottoIntestazione());
