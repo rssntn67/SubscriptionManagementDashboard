@@ -24,25 +24,36 @@ public class AbbonamentoConRiviste extends Indirizzo {
     private BigDecimal importoLodare=BigDecimal.ZERO;
     private BigDecimal importoManifesti=BigDecimal.ZERO;
 
-    public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
+    private void populate(List<RivistaAbbonamento> estrattiConto) {
+		for (RivistaAbbonamento ec:estrattiConto) {
+			if (ec.getPubblicazione().getNome().equals("Messaggio")) {
+				numeroMessaggi+=ec.getNumero();
+				importoMessaggi=importoMessaggi.add(ec.getImporto());
+			} else if(ec.getPubblicazione().getNome().equals("Lodare")) {
+				numeroLodare+=ec.getNumero();
+				importoLodare=importoLodare.add(ec.getImporto());
+			} else if(ec.getPubblicazione().getNome().equals("Blocchetti")) {
+				numeroBlocchetti+=ec.getNumero();
+				importoBlocchetti=importoBlocchetti.add(ec.getImporto());
+			} else if(ec.getPubblicazione().getNome().equals("Estratti")) {
+				numeroManifesti+=ec.getNumero();
+				importoManifesti=importoManifesti.add(ec.getImporto());
+			}
+		}
+	}
+
+	public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario) {
+		super(intestatario);
+		Assert.notNull(abbonamento,"abbonamento must be not null");
+		this.abbonamento= abbonamento;
+		populate(estrattiConto);
+	}
+
+	public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
     	super(intestatario,co);
     	Assert.notNull(abbonamento,"abbonamento must be not null");
     	this.abbonamento= abbonamento;
-    	for (RivistaAbbonamento ec:estrattiConto) {
-    		if (ec.getPubblicazione().getNome().equals("Messaggio")) {
-    			numeroMessaggi+=ec.getNumero();
-    			importoMessaggi=importoMessaggi.add(ec.getImporto());
-    		} else if(ec.getPubblicazione().getNome().equals("Lodare")) {
-    			numeroLodare+=ec.getNumero();
-    			importoLodare=importoLodare.add(ec.getImporto());
-    		} else if(ec.getPubblicazione().getNome().equals("Blocchetti")) {
-    			numeroBlocchetti+=ec.getNumero();
-    			importoBlocchetti=importoBlocchetti.add(ec.getImporto());
-    		} else if(ec.getPubblicazione().getNome().equals("Estratti")) {
-    			numeroManifesti+=ec.getNumero();
-    			importoManifesti=importoManifesti.add(ec.getImporto());
-    		}     		
-    	}
+    	populate(estrattiConto);
     }
     
 	public Anno getAnno() {

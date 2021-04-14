@@ -137,10 +137,21 @@ public class SmdServiceImpl implements SmdService {
     public List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti) {
     	List<AbbonamentoConRiviste> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
-    		list.add(new 
-				AbbonamentoConRiviste(abbonamento, 
-						rivistaAbbonamentoDao.findByAbbonamento(abbonamento),
-    					abbonamento.getIntestatario(),abbonamento.getIntestatario().getCo()));
+    	    List<RivistaAbbonamento> ralist =  rivistaAbbonamentoDao.findByAbbonamento(abbonamento);
+            Anagrafica co;
+            co = null;
+    	    if (abbonamento.getIntestatario().getCo() != null) {
+                co = anagraficaDao.findById(abbonamento.getIntestatario().getCo().getId()).orElse(null);
+            }
+    	    if (co != null) {
+                list.add(new
+                        AbbonamentoConRiviste(abbonamento, ralist,abbonamento.getIntestatario(), co));
+            } else {
+                list.add(new
+                        AbbonamentoConRiviste(abbonamento,
+                        ralist,
+                        abbonamento.getIntestatario()));
+            }
     	}
     	return list;
     }
@@ -692,13 +703,12 @@ public class SmdServiceImpl implements SmdService {
         .forEach( item ->
         {
             switch (rivista.getStatoRivista()) {
-            case Attiva:
-                break;
-            case Sospesa:
+                case Sospesa:
                 item.setStatoSpedizione(StatoSpedizione.SOSPESA);
                 spedizioneItemDao.save(item);
                 break;
-            default:
+                case Attiva:
+                default:
                 break;
             }
         }));
@@ -725,9 +735,8 @@ switch (rivista.getStatoRivista()) {
                 item.setStatoSpedizione(StatoSpedizione.PROGRAMMATA);
                 spedizioneItemDao.save(item);
                 break;
-            case Sospesa:
-                break;
-            default:
+    case Sospesa:
+    default:
                 break;
             }
 }));
@@ -789,6 +798,7 @@ switch (rivista.getStatoRivista()) {
 			ra.setPubblicazione(item.getPubblicazione());
 			ra.setDestinatario(ra0.getDestinatario());
 			ra.setInvioSpedizione(invio);
+            assert abbonamento != null;
             abbonamento.addItem(ra);
         }
 
@@ -808,22 +818,16 @@ switch (rivista.getStatoRivista()) {
 	        		break;
 	        	
 	        	case Inviata:
-	        		if (getNotValid(abbonamento, campagna).isEmpty()) {
+
+                case InviatoSollecito:
+                    if (getNotValid(abbonamento, campagna).isEmpty()) {
 	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
 	        		} else {
 	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
 	        		}
 	        		break;
-	        	
-	        	case InviatoSollecito:
-	        		if (getNotValid(abbonamento, campagna).isEmpty()) {
-	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Valido);
-	        		} else {
-	        			abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
-	        		}
-	        		break;
-	        	
-	        	case InviatoSospeso:
+
+                case InviatoSospeso:
 	        		abbonamento.setStatoAbbonamento(aggiornaCampagnaInviatoSospeso(abbonamento,campagna));
 	        		break;
 	        	
@@ -832,8 +836,6 @@ switch (rivista.getStatoRivista()) {
 	        		break;
 	        	
 	        	case Chiusa:
-	        		break;
-	        	
 	    		default:
 	    			break;
 	        }
