@@ -96,7 +96,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 
         BrowserWindowOpener popupOpenerC = new BrowserWindowOpener(URL_STAMPA_INDIRIZZO_SPEDIZIONE);
         popupOpenerC.setParameter("type",Stampa.Busta.name());
-        Button stampaBusta = new Button("Busta Piccola", VaadinIcons.PRINT);
+        Button stampaBusta = new Button("Lettera", VaadinIcons.PRINT);
         popupOpenerC.extend(stampaBusta);
         maineditor.getActions().addComponent(stampaBusta);
 
