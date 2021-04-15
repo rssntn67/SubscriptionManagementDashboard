@@ -401,7 +401,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoServiceDao {
 		String saldo = NumberFormat.getNumberInstance(Locale.ITALY).format(abbonamento.getResiduo());
 		log.info("downloadBollettino: {} saldo {}", abbonamento.getCodeLine(), saldo);
 		String jsonString = Smd.getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),
-				"Abbonamento " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Eur " + saldo);
+				"Anno " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Euro " + saldo);
 		log.info(jsonString);
 		StringEntity entity = new StringEntity(jsonString);
 		httpPost.setEntity(entity);
