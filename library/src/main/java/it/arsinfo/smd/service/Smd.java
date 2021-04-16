@@ -162,46 +162,7 @@ public class Smd {
 	    return spedMap;        
 	}
 
-    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese meseInizio, Anno annoInizio, Mese meseFine, Anno annoFine, Pubblicazione p) throws UnsupportedOperationException {
-        if (annoInizio.getAnno() > annoFine.getAnno()) {
-            throw new UnsupportedOperationException("data inizio maggiore di data fine");
-        }
-        if (annoInizio == annoFine 
-                && meseInizio.getPosizione() > meseFine.getPosizione()) {
-            throw new UnsupportedOperationException("data inizio maggiore di data fine");
-        }
-        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
-        Anno anno = annoInizio;
-        Mese mese = meseInizio;
-        while (anno.getAnno() < annoFine.getAnno()) {
-            if (p.getMesiPubblicazione().contains(mese)) {
-                if (!map.containsKey(anno)) {
-                    map.put(anno, EnumSet.noneOf(Mese.class));
-                }                
-                map.get(anno).add(mese);
-            }
-            mese = Mese.getMeseSuccessivo(mese);
-            if (mese == Mese.GENNAIO) {
-                anno=Anno.getAnnoSuccessivo(anno);
-            }
-        }
-        
-        while (mese.getPosizione() <= meseFine.getPosizione()) {
-            if (p.getMesiPubblicazione().contains(mese)) {
-                if (!map.containsKey(anno)) {
-                    map.put(anno, EnumSet.noneOf(Mese.class));
-                }                
-                map.get(anno).add(mese);
-            }
-            mese = Mese.getMeseSuccessivo(mese);
-            if (mese == Mese.GENNAIO) {
-                break;
-            }
-        }
-        return map;
-    }
-
-    public static RivistaAbbonamento genera(Abbonamento abb, Storico storico) {
+	public static RivistaAbbonamento genera(Abbonamento abb, Storico storico) {
         final RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setStorico(storico);
         ec.setAbbonamento(abb);

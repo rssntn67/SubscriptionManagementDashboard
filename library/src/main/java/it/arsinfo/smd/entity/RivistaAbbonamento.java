@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -19,7 +20,6 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class RivistaAbbonamento implements SmdEntity {
@@ -60,7 +60,46 @@ public class RivistaAbbonamento implements SmdEntity {
 
     public RivistaAbbonamento() {
     }
-    
+
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese meseInizio, Anno annoInizio, Mese meseFine, Anno annoFine, Pubblicazione p) throws UnsupportedOperationException {
+        if (annoInizio.getAnno() > annoFine.getAnno()) {
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
+        }
+        if (annoInizio == annoFine
+                && meseInizio.getPosizione() > meseFine.getPosizione()) {
+            throw new UnsupportedOperationException("data inizio maggiore di data fine");
+        }
+        Map<Anno,EnumSet<Mese>> map = new HashMap<>();
+        Anno anno = annoInizio;
+        Mese mese = meseInizio;
+        while (anno.getAnno() < annoFine.getAnno()) {
+            if (p.getMesiPubblicazione().contains(mese)) {
+                if (!map.containsKey(anno)) {
+                    map.put(anno, EnumSet.noneOf(Mese.class));
+                }
+                map.get(anno).add(mese);
+            }
+            mese = Mese.getMeseSuccessivo(mese);
+            if (mese == Mese.GENNAIO) {
+                anno=Anno.getAnnoSuccessivo(anno);
+            }
+        }
+
+        while (mese.getPosizione() <= meseFine.getPosizione()) {
+            if (p.getMesiPubblicazione().contains(mese)) {
+                if (!map.containsKey(anno)) {
+                    map.put(anno, EnumSet.noneOf(Mese.class));
+                }
+                map.get(anno).add(mese);
+            }
+            mese = Mese.getMeseSuccessivo(mese);
+            if (mese == Mese.GENNAIO) {
+                break;
+            }
+        }
+        return map;
+    }
+
     public Long getId() {
         return id;
     }
@@ -171,7 +210,7 @@ public class RivistaAbbonamento implements SmdEntity {
         if (ec.getPubblicazione() == null) {
             throw new UnsupportedOperationException("pubblicazione null");
         }        
-        return Smd.getAnnoMeseMap(ec.getMeseInizio(), ec.getAnnoInizio(), ec.getMeseFine(), ec.getAnnoFine(), ec.getPubblicazione());
+        return getAnnoMeseMap(ec.getMeseInizio(), ec.getAnnoInizio(), ec.getMeseFine(), ec.getAnnoFine(), ec.getPubblicazione());
     }
 
     public Anagrafica getDestinatario() {
@@ -267,12 +306,9 @@ public class RivistaAbbonamento implements SmdEntity {
 		} else if (!pubblicazione.equals(other.pubblicazione))
 			return false;
 		if (storico == null) {
-			if (other.storico != null)
-				return false;
-		} else if (!storico.equals(other.storico))
-			return false;
-		return true;
-	}
+            return other.storico == null;
+		} else return storico.equals(other.storico);
+    }
 	
 	public RivistaAbbonamento clone() {
 		RivistaAbbonamento r = new RivistaAbbonamento();

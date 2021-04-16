@@ -273,7 +273,7 @@ public class SmdUnitTests {
         Anno annof=Anno.ANNO2020;
         Mese mesef=Mese.GENNAIO;
         
-        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        Map<Anno,EnumSet<Mese>> map = RivistaAbbonamento.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
         Assertions.assertEquals(2, map.size());
         Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
         Assertions.assertTrue(map.containsKey(Anno.ANNO2020));
@@ -296,7 +296,7 @@ public class SmdUnitTests {
         Anno annof=Anno.ANNO2020;
         Mese mesef=Mese.SETTEMBRE;
         
-        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        Map<Anno,EnumSet<Mese>> map = RivistaAbbonamento.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
         Assertions.assertEquals(2, map.size());
         Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
         Assertions.assertTrue(map.containsKey(Anno.ANNO2020));
@@ -325,7 +325,7 @@ public class SmdUnitTests {
         Anno annof=Anno.ANNO2019;
         Mese mesef=Mese.DICEMBRE;
         
-        Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
+        Map<Anno,EnumSet<Mese>> map = RivistaAbbonamento.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
         Assertions.assertEquals(1, map.size());
         Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
         EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);

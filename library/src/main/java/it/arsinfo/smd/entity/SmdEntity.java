@@ -1,12 +1,9 @@
 package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.service.Smd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Transient;
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,7 +13,7 @@ import java.util.Date;
 
 public interface SmdEntity {
 
-    static final Logger log = LoggerFactory.getLogger(SmdEntity.class);
+    Logger log = LoggerFactory.getLogger(SmdEntity.class);
 
     DateFormat formatter = new SimpleDateFormat("yyMMddH");
     DateFormat unformatter = new SimpleDateFormat("yyMMdd");

@@ -37,6 +37,7 @@
 	</licenses>
 
     <modules>
+      <module>model</module>
       <module>library</module>
       <module>library-test</module>
       <module>ui-admin-app</module>
