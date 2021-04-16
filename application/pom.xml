@@ -129,13 +129,6 @@
                 <activatedProperties>prod</activatedProperties>
             </properties>
         </profile>
-        <profile>
-            <id>demo</id>
-            <properties>
-                        <maven.test.skip>true</maven.test.skip>
-                <activatedProperties>demo</activatedProperties>
-            </properties>
-        </profile>
     </profiles>
 
 	<build>

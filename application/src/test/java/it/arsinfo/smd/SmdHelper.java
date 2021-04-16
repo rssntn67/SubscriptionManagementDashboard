@@ -1,4 +1,4 @@
-package it.arsinfo.smd.helper;
+package it.arsinfo.smd;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

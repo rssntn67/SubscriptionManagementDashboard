@@ -8,7 +8,6 @@ import it.arsinfo.smd.dao.repository.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.SmdServiceImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;

@@ -4,10 +4,8 @@ import it.arsinfo.smd.dao.SmdService;
 import it.arsinfo.smd.dao.repository.*;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.helper.SmdLoadSampleData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,9 +18,6 @@ import javax.transaction.Transactional;
 public class SmdApplication {
 
     private static final Logger log = LoggerFactory.getLogger(SmdApplication.class);
-
-    @Value("${load.sample.data}")
-    private String loadSampleData;
 
     public static void main(String[] args) {
         SpringApplication.run(SmdApplication.class, args);
@@ -60,30 +55,6 @@ public class SmdApplication {
                adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
                userInfoDao.save(adp);
                log.info("creato user adp/adp");
-            }
-            
-            boolean loadSD = loadSampleData != null && loadSampleData.equals("true");
-            log.info("loadSampleData {}",loadSampleData);
-            
-            if (loadSD ) {
-                new Thread(
-                   new SmdLoadSampleData(
-                      smdService,                                
-                      anagraficaDao, 
-                      storicoDao, 
-                      notaDao,
-                      pubblicazioneDao, 
-                      spesaSpedizioneDao,
-                      abbonamentoDao, 
-                      rivistaAbbonamentoDao,
-                      spedizioneDao,
-                      spedizioneItemDao,
-                      campagnaDao, 
-                      incassoDao, 
-                      versamentoDao, 
-                      operazioneDao
-                   )
-                ).start();
             }
         };
     }

@@ -3,7 +3,6 @@ package it.arsinfo.smd;
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
