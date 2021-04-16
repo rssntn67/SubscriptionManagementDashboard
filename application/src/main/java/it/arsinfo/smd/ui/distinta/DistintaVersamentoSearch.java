@@ -8,7 +8,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.ui.service.api.DistintaVersamentoService;
+import it.arsinfo.smd.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;

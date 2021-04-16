@@ -11,8 +11,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.ui.service.api.OperazioneService;
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.OperazioneService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.dao.PubblicazioneDao;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoOperazione;

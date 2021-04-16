@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.ui.service.api.OperazioneService;
+import it.arsinfo.smd.service.api.OperazioneService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.entity.Operazione;

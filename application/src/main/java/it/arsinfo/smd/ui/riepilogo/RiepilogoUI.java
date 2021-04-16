@@ -11,10 +11,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.ui.service.api.AbbonamentoService;
-import it.arsinfo.smd.ui.service.api.OffertaService;
-import it.arsinfo.smd.ui.service.api.StoricoService;
-import it.arsinfo.smd.ui.service.api.VersamentoService;
+import it.arsinfo.smd.service.api.AbbonamentoService;
+import it.arsinfo.smd.service.api.OffertaService;
+import it.arsinfo.smd.service.api.StoricoService;
+import it.arsinfo.smd.service.api.VersamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdUI;

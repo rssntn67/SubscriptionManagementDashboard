@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.ui.service.api.AbbonamentoService;
+import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;

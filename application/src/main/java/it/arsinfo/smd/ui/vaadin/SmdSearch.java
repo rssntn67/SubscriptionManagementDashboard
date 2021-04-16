@@ -3,7 +3,7 @@ package it.arsinfo.smd.ui.vaadin;
 
 import java.util.List;
 
-import it.arsinfo.smd.ui.service.api.SmdServiceBase;
+import it.arsinfo.smd.service.api.SmdServiceBase;
 import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdSearch<T extends SmdEntity>

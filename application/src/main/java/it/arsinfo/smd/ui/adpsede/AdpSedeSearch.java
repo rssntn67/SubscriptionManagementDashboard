@@ -6,7 +6,7 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;

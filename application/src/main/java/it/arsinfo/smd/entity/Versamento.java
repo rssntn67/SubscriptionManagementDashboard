@@ -18,7 +18,7 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Sostitutivo;
-import it.arsinfo.smd.ui.Smd;
+import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class Versamento implements SmdEntity {

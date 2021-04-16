@@ -3,7 +3,7 @@ package it.arsinfo.smd;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.SmdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

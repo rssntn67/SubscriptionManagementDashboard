@@ -13,8 +13,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.ui.service.api.AbbonamentoService;
-import it.arsinfo.smd.ui.service.api.VersamentoService;
+import it.arsinfo.smd.service.api.AbbonamentoService;
+import it.arsinfo.smd.service.api.VersamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;

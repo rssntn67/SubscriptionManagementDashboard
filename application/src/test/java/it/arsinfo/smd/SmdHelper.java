@@ -29,7 +29,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.ui.Smd;
+import it.arsinfo.smd.service.Smd;
 
 public class SmdHelper {
 

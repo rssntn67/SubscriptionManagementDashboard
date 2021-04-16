@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.ui.service.api.AnagraficaService;
+import it.arsinfo.smd.service.api.AnagraficaService;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;

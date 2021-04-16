@@ -1,6 +1,6 @@
 package it.arsinfo.smd.ui.distinta;
 
-import it.arsinfo.smd.ui.service.api.DistintaVersamentoService;
+import it.arsinfo.smd.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.vaadin.SmdAddItem;

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.arsinfo.smd.ui.Smd;
+import it.arsinfo.smd.service.Smd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.dao.AbbonamentoDao;
 import it.arsinfo.smd.dao.AnagraficaDao;
 import it.arsinfo.smd.dao.CampagnaDao;

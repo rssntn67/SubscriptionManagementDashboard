@@ -16,7 +16,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.ui.service.api.UserInfoService;
+import it.arsinfo.smd.service.api.UserInfoService;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;

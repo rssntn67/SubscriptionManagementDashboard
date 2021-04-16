@@ -17,7 +17,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.ui.service.api.SpedizioneService;
+import it.arsinfo.smd.service.api.SpedizioneService;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;

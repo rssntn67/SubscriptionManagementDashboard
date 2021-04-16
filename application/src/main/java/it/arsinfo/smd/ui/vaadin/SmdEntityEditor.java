@@ -9,7 +9,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.ui.service.api.SmdServiceBase;
+import it.arsinfo.smd.service.api.SmdServiceBase;
 import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdEntityEditor<T extends SmdEntity>

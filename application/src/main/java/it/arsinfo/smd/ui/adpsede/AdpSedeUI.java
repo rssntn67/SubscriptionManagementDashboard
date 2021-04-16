@@ -10,7 +10,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.StatoSpedizione;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.dto.SpedizioneDtoGrid;

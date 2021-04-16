@@ -6,7 +6,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.ui.service.api.SpesaSpedizioneService;
+import it.arsinfo.smd.service.api.SpesaSpedizioneService;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;

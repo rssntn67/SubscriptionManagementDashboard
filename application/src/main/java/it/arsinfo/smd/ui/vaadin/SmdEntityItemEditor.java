@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.ui.service.api.SmdServiceItem;
+import it.arsinfo.smd.service.api.SmdServiceItem;
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.entity.SmdEntityItems;
 

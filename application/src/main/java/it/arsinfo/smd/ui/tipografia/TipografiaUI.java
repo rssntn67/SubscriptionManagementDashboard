@@ -10,8 +10,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.ui.service.api.OperazioneService;
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.OperazioneService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.dao.PubblicazioneDao;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdUI;

@@ -5,7 +5,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
-import it.arsinfo.smd.ui.service.api.AbbonamentoService;
+import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;

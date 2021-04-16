@@ -14,7 +14,7 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 
 import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.ui.Smd;
+import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 public class IncassoUpload extends SmdChangeHandler implements Receiver, SucceededListener {

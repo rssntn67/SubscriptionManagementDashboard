@@ -13,7 +13,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.ui.service.api.StoricoService;
+import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;

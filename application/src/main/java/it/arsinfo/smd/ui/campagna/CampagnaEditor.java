@@ -20,8 +20,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import it.arsinfo.smd.ui.service.api.CampagnaService;
-import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.service.api.CampagnaService;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;

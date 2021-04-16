@@ -19,7 +19,7 @@ import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoRivista;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.ui.Smd;
+import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class RivistaAbbonamento implements SmdEntity {

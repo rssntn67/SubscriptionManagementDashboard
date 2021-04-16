@@ -12,7 +12,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.ui.service.api.DistintaVersamentoService;
+import it.arsinfo.smd.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoGrid;
