@@ -7,14 +7,9 @@ import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.ui.SmdUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,67 +67,10 @@ public class SmdServiceImpl implements SmdService {
     private DocumentiTrasportoCumulatiDao ddtCumulatiDao;
 
     @Autowired
-    private UserInfoDao userInfoDao;
-
-    @Autowired
     private OperazioneSospendiDao operazioneSospendiDao;
     
     private static final Logger log = LoggerFactory.getLogger(SmdService.class);
 
-    @Override
-    public void logout(String userName) {
-        log.info("logout: {}",userInfoDao.findByUsername(userName));
-    }
-
-    @Override
-    public UserInfo login(String userName) throws UsernameNotFoundException {
-        UserInfo user = userInfoDao.findByUsername(userName);
-        if (null == user) {
-        	log.info("login: '{}' not found, access is denied.", userName);
-            throw new UsernameNotFoundException("No user found with username: "
-                + userName);
-        }
-        log.info("login: {}",user);
-        return user;
-    }
-
-    @Override
-    public void auditlog(AuditApplicationEvent auditApplicationEvent) {
-        
-    	AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
-        
-        WebAuthenticationDetails details
-          = (WebAuthenticationDetails) auditEvent.getData().get("details");
-        String requestUrl = (String)auditEvent.getData().get("requestUrl"); 
-        if (requestUrl == null && auditEvent.getType().equals("AUTHENTICATION_SUCCESS")) {
-        	requestUrl = SmdUI.URL_LOGIN;
-        } else if (requestUrl == null && auditEvent.getType().equals("AUTHENTICATION_FAILURE")) {
-        	requestUrl = SmdUI.URL_LOGIN_FAILURE;        	
-        } else if (requestUrl == null) {
-        	requestUrl="NA";
-        }
-        String message = (String)auditEvent.getData().get("message");        
-        String remoteAddress=null;
-        String sessionId = null;
-        if (details != null) {
-            remoteAddress = details.getRemoteAddress();
-            if (remoteAddress == null ) {
-            	remoteAddress = "NA";
-            }
-            sessionId = details.getSessionId();
-            if (sessionId == null) {
-            	sessionId="NA";
-            }
-        }
-        log.info("auditlog: {} '{} from {}'   URL {}, SessionId {}: {}" ,
-	                 auditEvent.getType(),
-	                 auditEvent.getPrincipal() ,
-	                 remoteAddress,
-	                 requestUrl,
-	                 sessionId,
-	                 message
-	                );   	
-    }
 
     @Override
     public List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti) {
