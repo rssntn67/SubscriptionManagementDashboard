@@ -21,7 +21,7 @@
 	<dependencies>
                 <dependency>
                         <groupId>it.arsinfo.smd</groupId>
-                        <artifactId>it.arsinfo.smd.model</artifactId>
+                        <artifactId>it.arsinfo.smd.dao</artifactId>
                         <version>${project.version}</version>
                 </dependency>
 		<dependency>

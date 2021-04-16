@@ -38,6 +38,7 @@
 
     <modules>
       <module>model</module>
+      <module>dao</module>
       <module>service</module>
       <module>service-test</module>
       <module>ui-admin-app</module>
