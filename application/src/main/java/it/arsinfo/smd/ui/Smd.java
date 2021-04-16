@@ -1,30 +1,7 @@
 package it.arsinfo.smd.ui;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -32,40 +9,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import it.arsinfo.smd.data.Accettazione;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.Bollettino;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.RangeSpeseSpedizione;
-import it.arsinfo.smd.data.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.data.Sostitutivo;
-import it.arsinfo.smd.data.SpedizioneWithItems;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoCampagna;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
-import it.arsinfo.smd.entity.OfferteCumulate;
-import it.arsinfo.smd.entity.Operazione;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.entity.SpesaSpedizione;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.entity.Versamento;
+import java.io.*;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Configuration
 public class Smd {
@@ -126,13 +79,8 @@ public class Smd {
         
         if (campagna != null) {
         	switch (campagna.getStatoCampagna()) {
-			case Generata:
-				break;
 
 			case Inviata:
-				stato = StatoAbbonamento.Proposto;
-				break;
-
 			case InviatoSollecito:
 				stato=StatoAbbonamento.Proposto;
 				break;
@@ -145,11 +93,8 @@ public class Smd {
 				}
 				break;
 
-			case InviatoEC:
-				stato=StatoAbbonamento.Sospeso;
-				break;
-				
 			case Chiusa:
+			case InviatoEC:
 				stato=StatoAbbonamento.Sospeso;
 				break;
 
@@ -160,19 +105,9 @@ public class Smd {
 
     	switch (abbonamento.getStatoIncasso()) {
 			case Si:
-				stato = StatoAbbonamento.Valido;
-				break;
-			
 			case SiConDebito:
 				stato = StatoAbbonamento.Valido;
 				break;
-
-			case No:
-				break;
-			
-			case Parzialmente:
-				break;
-			
 			default:
 				break;
         }
@@ -190,19 +125,9 @@ public class Smd {
         StatoRivista stato = StatoRivista.Sospesa;
     	switch (abbonamento.getStatoIncasso()) {
 			case Si:
-				stato = StatoRivista.Attiva;
-				break;
-
 			case SiConDebito:
 				stato = StatoRivista.Attiva;
 				break;
-
-			case No:
-				break;
-
-			case Parzialmente:
-				break;
-
 			default:
 				break;
         }
@@ -214,34 +139,16 @@ public class Smd {
     public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
     	boolean isOmaggio=false;
     	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
-    	case Duplicato:
-    		isOmaggio=true;
-    		break;
-		case OmaggioCuriaDiocesiana:
-    		isOmaggio=true;
-    		break;
-		case OmaggioCuriaGeneralizia:
-    		isOmaggio=true;
-    		break;
-		case OmaggioDirettoreAdp:
-    		isOmaggio=true;
-    		break;
-		case OmaggioEditore:
-    		isOmaggio=true;
-    		break;
-		case OmaggioGesuiti:
-    		isOmaggio=true;
-			break;
-		case Ordinario:
-			break;
-		case Scontato:
-			break;
-		case Sostenitore:
-			break;
-		case Web:
-			break;
-		default:
-			break;
+	    	case Duplicato:
+			case OmaggioCuriaDiocesiana:
+			case OmaggioCuriaGeneralizia:
+			case OmaggioDirettoreAdp:
+			case OmaggioEditore:
+			case OmaggioGesuiti:
+    			isOmaggio=true;
+				break;
+			default:
+				break;
     	}
     	return isOmaggio;
     }
@@ -252,14 +159,12 @@ public class Smd {
         if (rivistaAbbonamento.getMeseInizio() != Mese.GENNAIO) {
             return false;
         }
-        if (rivistaAbbonamento.getMeseFine() != Mese.DICEMBRE) {
-            return false;
-        }
-        return true;
-    }
+		return rivistaAbbonamento.getMeseFine() == Mese.DICEMBRE;
+	}
 
     
-    public static final BigDecimal contrassegno=new BigDecimal(4.50);
+    public static final BigDecimal contrassegno=new BigDecimal("4.50");
+
     @Bean
     public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
@@ -295,76 +200,28 @@ public class Smd {
             log.error("Incasso Cancellato: " + e.getMessage());
             throw e;
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
-        String strLine;
-
-        //Read File Line By Line
-        try {
-            Set<String> versamentiLine = new HashSet<>();
-            while ((strLine = br.readLine()) != null)   {
-                if (strLine.trim().equals("")) {
-                    log.warn("uploadIncasso: Riga vuota!");
-                } else if (isVersamento(strLine)) {
-                    versamentiLine.add(strLine);
-                } else if (isRiepilogo(strLine)) {
-                    incassi.add(Smd.generaIncasso(versamentiLine, strLine));
-                    versamentiLine.clear();
-                } else {
-                    throw new UnsupportedOperationException("Valore non riconosciuto->" +strLine);
-                }
-            }
-        } catch (Exception e) {
-            log.error("uploadIncasso:: Incasso da File Cancellato: " + e.getMessage());
-            throw e;
-        } finally {
-            br.close();
-    	}
+		//Read File Line By Line
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(fstream))) {
+			String strLine;
+			Set<String> versamentiLine = new HashSet<>();
+			while ((strLine = br.readLine()) != null) {
+				if (strLine.trim().equals("")) {
+					log.warn("uploadIncasso: Riga vuota!");
+				} else if (isVersamento(strLine)) {
+					versamentiLine.add(strLine);
+				} else if (isRiepilogo(strLine)) {
+					incassi.add(Smd.generaIncasso(versamentiLine, strLine));
+					versamentiLine.clear();
+				} else {
+					throw new UnsupportedOperationException("Valore non riconosciuto->" + strLine);
+				}
+			}
+		} catch (Exception e) {
+			log.error("uploadIncasso:: Incasso da File Cancellato: " + e.getMessage());
+			throw e;
+		}
     	return incassi;
-    }
-    
-    public static Map<Versamento, BigDecimal> getVersamentoMap(List<OperazioneIncasso> operazioni) {
-    	Map<Versamento, BigDecimal> versamentoMap = new HashMap<>();
-    	for (OperazioneIncasso oi: operazioni ) {
-        	BigDecimal saldo = BigDecimal.ZERO;
-    		if (versamentoMap.containsKey(oi.getVersamento())) {
-    			saldo = versamentoMap.get(oi.getVersamento());
-    		}
-    		switch (oi.getStatoOperazioneIncasso()) {
-			case Incasso:
-				saldo=saldo.add(oi.getImporto());
-				break;
-			case Storno:
-				saldo=saldo.subtract(oi.getImporto());
-				break;
-			default:
-				break;
-    		}
-    		versamentoMap.put(oi.getVersamento(), saldo);
-    	}
-    	return versamentoMap;
-    }
-
-    public static Map<Abbonamento, BigDecimal> getAbbonamentoMap(List<OperazioneIncasso> operazioni) {
-    	Map<Abbonamento, BigDecimal> abbonamentoMap = new HashMap<>();
-    	for (OperazioneIncasso oi: operazioni ) {
-        	BigDecimal saldo = BigDecimal.ZERO;
-    		if (abbonamentoMap.containsKey(oi.getAbbonamento())) {
-    			saldo = abbonamentoMap.get(oi.getAbbonamento());
-    		}
-    		switch (oi.getStatoOperazioneIncasso()) {
-			case Incasso:
-				saldo=saldo.add(oi.getImporto());
-				break;
-			case Storno:
-				saldo=saldo.subtract(oi.getImporto());
-				break;
-			default:
-				break;
-    		}
-    		abbonamentoMap.put(oi.getAbbonamento(), saldo);
-    	}
-    	return abbonamentoMap;
     }
 
     public static Incassato getStatoIncasso(Abbonamento abbonamento) {
@@ -444,7 +301,7 @@ public class Smd {
         return ec;
     }
 
-    public static boolean checkEquals(RivistaAbbonamento cloned, RivistaAbbonamento persisted) throws Exception {
+    public static boolean checkEquals(RivistaAbbonamento cloned, RivistaAbbonamento persisted) throws UnsupportedOperationException {
     	if (cloned == null || persisted == null ) {
     		throw new UnsupportedOperationException("non possono essere null");
     	}
@@ -467,7 +324,7 @@ public class Smd {
             RivistaAbbonamento original,
             int numero,
             TipoAbbonamentoRivista tipo
-		)    throws Exception {
+		)    throws UnsupportedOperationException {
         if (original == null ) {
             log.error("aggiorna: failed {} : Aggiorna non consentita per Riviste null",abbonamento);
             throw new UnsupportedOperationException("Aggiorna non consentito per Riviste null");
@@ -548,17 +405,14 @@ public class Smd {
     					}
 						break;
 						
-					case PROGRAMMATA:
-						usabili.add(item);
-						break;
-						
-					case SOSPESA:
-						usabili.add(item);
-						break;
-						
-					case ANNULLATA:
-						annullate.add(item);
-						break;
+						case PROGRAMMATA:
+						case SOSPESA:
+							usabili.add(item);
+							break;
+
+						case ANNULLATA:
+							annullate.add(item);
+							break;
 						
 					default:
 						break;
@@ -647,7 +501,7 @@ public class Smd {
             output.setAbbonamentoToSave(abbonamento);
             output.setSpedizioniToSave(spedizioni);
             output.getRivisteToSave().add(original);
-            log.info("aggiorna: spedizioni inviata ed incremento {} {} {} ",abbonamento,original);
+            log.info("aggiorna: spedizioni inviata ed incremento {} {} ",abbonamento,original);
             return output;
     	}
     	log.info("aggiorna: {}, spedizioni inviate e decremento: prima {} {}, ultima {} {}", original,meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
@@ -822,7 +676,7 @@ public class Smd {
         List<SpedizioneItem> items = new ArrayList<>();
         Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
         for (Anno anno: mappaPubblicazioni.keySet()) {
-            mappaPubblicazioni.get(anno).stream().forEach(mese -> {
+            mappaPubblicazioni.get(anno).forEach(mese -> {
                 SpedizioneItem item = new SpedizioneItem();
                 item.setRivistaAbbonamento(ec);
                 item.setAnnoPubblicazione(anno);
@@ -847,10 +701,9 @@ public class Smd {
     	return sped.hashCode();
     }
 
-    public static Map<Integer,SpedizioneWithItems> aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
+    public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
         Anagrafica destinatario = ec.getDestinatario();
-        InvioSpedizione invioSpedizione =ec.getInvioSpedizione();
-        InvioSpedizione isped = invioSpedizione;
+        InvioSpedizione isped = ec.getInvioSpedizione();
         Mese mesePubblicazione = item.getMesePubblicazione();
         Anno annoPubblicazione = item.getAnnoPubblicazione();
         boolean posticipata=false;
@@ -868,7 +721,8 @@ public class Smd {
                     - anticipoSpedizione);
             spedAnno = annoPubblicazione;
         }
-        log.info("aggiungiItemSpedizione: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+		assert spedMese != null;
+		log.info("aggiungiItemSpedizione: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
 
         if (spedAnno.getAnno() < annoPost.getAnno()
                 || (spedAnno == annoPost
@@ -899,7 +753,6 @@ public class Smd {
         item.setSpedizione(sped.getSpedizione());
         sped.addSpedizioneItem(item); 
         log.info("aggiungiItemSpedizione: aggiunto {}, a spedizione {}, size {}",item,spedizione,spedMap.size());
-        return spedMap;
     }
     
     public static List<SpedizioneWithItems> genera(Abbonamento abb,
@@ -928,11 +781,11 @@ public class Smd {
 
         if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
 	        for (SpedizioneItem item : items) {
-	            spedMap=aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
+	            aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
 	        }
     	}
         calcolaPesoESpesePostali(abb, spedMap.values(), spese);
-        return spedMap.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(spedMap.values());
     }
 
     private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
@@ -953,17 +806,16 @@ public class Smd {
             sped.getSpedizione().setPesoStimato(pesoStimato);
             sped.getSpedizione().setSpesePostali(calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione(),spesa));
             switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
-            case Italia:
-                abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
-                break;
-            case EuropaBacinoMediterraneo:
-                abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
-                break;
-            case AmericaAfricaAsia:
-                abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
-                break;
-            default:
-                break;
+            	case Italia:
+                	abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
+                	break;
+
+				case EuropaBacinoMediterraneo:
+				case AmericaAfricaAsia:
+					abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
+                	break;
+				default:
+                	break;
             }
         }
         if (abb.isContrassegno()) {
@@ -984,10 +836,6 @@ public class Smd {
     public static BigDecimal calcolaSpesePostali(InvioSpedizione sped, SpesaSpedizione spesa) throws UnsupportedOperationException {
     	BigDecimal spesePostali = BigDecimal.ZERO;
         switch (sped) {
-        case Spedizioniere:
-        	break;
-        case AdpSedeNoSpese:
-        	break;
         case AdpSede:
             spesePostali = spesa.getSpese();
         	break;
@@ -1002,35 +850,10 @@ public class Smd {
         }
         return spesePostali;
     }
-    
-    public static List<RivistaAbbonamento> 
-        generaRivisteAbbonamentiCampagna(final Campagna campagna,final Abbonamento abbonamento, List<Storico> storici) 
-        throws UnsupportedOperationException {
-        if (abbonamento.getCampagna() != campagna) {
-            throw new UnsupportedOperationException("Campagna ed abbonamento non matchano");
-        }
-        if (campagna.getStatoCampagna() != StatoCampagna.Generata) {
-            throw new UnsupportedOperationException("Campagna ed abbonamento non nuovi");
-        }
-        final List<RivistaAbbonamento> ecs = new ArrayList<>();
-        storici
-        .stream()
-        .filter(storico -> 
-            storico.getIntestatario().getId().longValue() == abbonamento.getIntestatario().getId().longValue()
-            && 
-            campagna.hasPubblicazione(storico.getPubblicazione())
-            &&
-            abbonamento.isContrassegno() == storico.isContrassegno()
-                ).forEach(storico ->
-            genera(abbonamento, storico));
-        return ecs;
-    }
-    
+
     public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici) {
         final List<Abbonamento> abbonamenti = new ArrayList<>();
-        anagrafiche.stream().forEach(a -> {
-            abbonamenti.addAll(genera(campagna, a, storici));
-        });        
+        anagrafiche.forEach(a -> abbonamenti.addAll(genera(campagna, a, storici)));
         return abbonamenti;
 
     }
@@ -1115,18 +938,6 @@ public class Smd {
             importo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
             break;
                 
-        case OmaggioCuriaDiocesiana:
-            break;
-        case OmaggioCuriaGeneralizia:
-            break;
-        case OmaggioDirettoreAdp:
-            break;
-        case OmaggioEditore:
-            break;
-        case OmaggioGesuiti:
-            break;
-        case Duplicato:
-            break;
         default:
             break;
 
@@ -1149,23 +960,6 @@ public class Smd {
             log.error(e.getMessage());
         }
         return null;
-    };
-
-    public static List<Operazione> generaOperazioni(
-            List<Pubblicazione> pubblicazioni, 
-            List<SpedizioneWithItems> spedizioni
-        ) {
-        Anno anno = Anno.getAnnoCorrente();
-        Mese mese = Mese.getMeseCorrente();
-        List<Operazione> operazioni = new ArrayList<>();
-        pubblicazioni.stream().forEach(p -> {
-            Operazione operazione = generaOperazione(p, spedizioni,mese,anno);
-            if (operazione.getStimatoSede() != 0 || operazione.getStimatoSped() != 0) {
-                    operazioni.add(operazione);
-            }
-        }
-        );
-        return operazioni;
     }
 
     public static Operazione generaOperazione(
@@ -1204,14 +998,11 @@ public class Smd {
                   	&& item.getPubblicazione().hashCode() == pubblicazione.hashCode())
                   .forEach(item -> 
                   {
-                      switch (sped.getSpedizione().getInvioSpedizione()) {
-                      case  Spedizioniere: 
-                          op.setStimatoSped(op.getStimatoSped()+item.getNumero());
-                          break;
-                      default:
-                          op.setStimatoSede(op.getStimatoSede()+item.getNumero());
-                        break;
-                      }
+					  if (sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+						  op.setStimatoSped(op.getStimatoSped() + item.getNumero());
+					  } else {
+						  op.setStimatoSede(op.getStimatoSede() + item.getNumero());
+					  }
                   })
               );                        
         return op;        
@@ -1233,7 +1024,7 @@ public class Smd {
  
         BigDecimal incassato = importo;
         if (importo.compareTo(versamento.getResiduo()) > 0) {
-        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        	incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
         }        
         versamento.setIncassato(versamento.getIncassato().add(incassato));
         ddtAnno.setImporto(ddtAnno.getImporto().add(incassato));
@@ -1257,7 +1048,7 @@ public class Smd {
  
         BigDecimal incassato = importo;
         if (importo.compareTo(versamento.getResiduo()) > 0) {
-        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        	incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
         }        
         versamento.setIncassato(versamento.getIncassato().add(incassato));
         offerte.setImporto(offerte.getImporto().add(incassato));
@@ -1332,11 +1123,11 @@ public class Smd {
             throw new UnsupportedOperationException("incassa: Abbonamento null");
         }
  
-        BigDecimal incassato = BigDecimal.ZERO;
+        BigDecimal incassato;
         if ((versamento.getResiduo()).compareTo(abbonamento.getResiduo()) < 0) {
-        	incassato = new BigDecimal(versamento.getResiduo().doubleValue());
+        	incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
         } else {
-        	incassato = new BigDecimal(abbonamento.getResiduo().doubleValue());
+        	incassato = BigDecimal.valueOf(abbonamento.getResiduo().doubleValue());
         }
         
         versamento.setIncassato(versamento.getIncassato().add(incassato));
@@ -1382,7 +1173,7 @@ public class Smd {
                  riepilogo.length() == 200 &&
                  riepilogo.trim().length() == 96 &&
                  riepilogo.substring(19,33).trim().length() == 0 &&
-                 riepilogo.substring(33,36).equals("999")
+                 riepilogo.startsWith("999", 33)
                 );
     }
     
@@ -1393,8 +1184,6 @@ public class Smd {
         incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
         incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
         incasso.setDataContabile(Smd.getStandardDate(riepilogo.substring(13,19)));
-//          String filler = riepilogo.substring(19,33);
-//          String idriepilogo = riepilogo.substring(33,36);
         incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,44)));
         incasso.setImporto(new BigDecimal(riepilogo.substring(44,54)
                 + "." + riepilogo.substring(54,56)));
@@ -1468,7 +1257,7 @@ public class Smd {
     }
     
     public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
-    	if (v != null && a != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
+    	if (v != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
         	v.setCommittente(a);    		
     	}
     	return v;
