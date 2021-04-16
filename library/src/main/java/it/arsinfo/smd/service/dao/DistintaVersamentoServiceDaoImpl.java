@@ -2,14 +2,11 @@ package it.arsinfo.smd.service.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +21,6 @@ import it.arsinfo.smd.dao.VersamentoDao;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.Smd;
 
 @Service
 public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoService {
@@ -56,7 +48,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         if (entity.getId() == null && entity.getItems().isEmpty()) {
             throw new UnsupportedOperationException("Aggiungere Versamenti Prima di Salvare");
         }
-        if (entity.getDataContabile().after(Smd.getStandardDate(new Date()))) {
+        if (entity.getDataContabile().after(SmdEntity.getStandardDate(new Date()))) {
         	throw new UnsupportedOperationException("Non si può selezionare una data contabile futuro");
         }       
         repository.save(entity);
@@ -75,7 +67,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
 	@Override
 	public DistintaVersamento findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -104,7 +96,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         }
         if (cuas == null && cassa == null && ccp == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile));
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile));
         }
         
         if (dataContabile == null && ccp == null) {
@@ -128,49 +120,50 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
             
         if (cassa == null && ccp == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas)
                     .collect(Collectors.toList());
         }
         if (cuas == null && ccp == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCassa() == cassa)
                     .collect(Collectors.toList());
         }
         if (cassa == null && cuas == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (cassa == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas && inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (cuas == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCassa() == cassa && inc.getCcp() == ccp)
                     .collect(Collectors.toList());
         }
         if (ccp == null) {
             return repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile))
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                     .stream()
                     .filter(inc -> inc.getCuas() == cuas && inc.getCassa() == cassa)
                     .collect(Collectors.toList());
         }
 
+        assert dataContabile != null;
         return repository
-                .findByDataContabile(Smd.getStandardDate(dataContabile))
+                .findByDataContabile(SmdEntity.getStandardDate(dataContabile))
                 .stream()
                 .filter(inc -> inc.getCassa() == cassa && inc.getCuas() == cuas && inc.getCcp() == ccp)            
                 .collect(Collectors.toList());
@@ -178,7 +171,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
 	@Override
 	public List<Versamento> incassaCodeLine(List<DistintaVersamento> find, UserInfo loggedInUser) throws Exception {
-    	Map<Long, Versamento> versamentoMap = new HashMap<Long, Versamento>();
+    	Map<Long, Versamento> versamentoMap = new HashMap<>();
     	for (DistintaVersamento incasso:find) {
     		if (incasso.getResiduo().signum() == 0) {
     			continue;
@@ -194,13 +187,13 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
     			}
     		}
 		}
-    	return versamentoMap.values().stream().collect(Collectors.toList());
+    	return new ArrayList<>(versamentoMap.values());
 	}
 
 	@Override
 	public List<Versamento> getItems(DistintaVersamento t) {
         List<Versamento> versamenti = versamentoDao.findByDistintaVersamento(t);
-      	Set<Long> ids = new HashSet<Long>();
+      	Set<Long> ids = new HashSet<>();
         for (Versamento v: versamenti) {
     		if (v.getCommittente() != null) {
     			ids.add(v.getCommittente().getId());
@@ -210,7 +203,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	}
 
 	@Override
-	public DistintaVersamento deleteItem(DistintaVersamento t, Versamento item) throws Exception {
+	public DistintaVersamento deleteItem(DistintaVersamento t, Versamento item) throws UnsupportedOperationException {
         if (t.getId() == null) {
             t.removeItem(item);
             Smd.calcoloImportoIncasso(t);
@@ -239,7 +232,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	}
 
 	@Override
-	public DistintaVersamento saveItem(DistintaVersamento t, Versamento item) throws Exception {
+	public DistintaVersamento saveItem(DistintaVersamento t, Versamento item) throws UnsupportedOperationException {
         if (item.getImporto().compareTo(BigDecimal.ZERO) <= 0) {
             throw new UnsupportedOperationException("L'Importo del Versamento non deve essere ZERO");
         }

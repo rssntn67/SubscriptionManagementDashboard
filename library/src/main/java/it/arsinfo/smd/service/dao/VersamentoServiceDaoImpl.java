@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,16 +26,6 @@ import it.arsinfo.smd.dao.OfferteCumulateDao;
 import it.arsinfo.smd.dao.OperazioneIncassoDao;
 import it.arsinfo.smd.dao.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.DocumentiTrasportoCumulati;
-import it.arsinfo.smd.entity.DocumentoTrasporto;
-import it.arsinfo.smd.entity.Offerta;
-import it.arsinfo.smd.entity.OfferteCumulate;
-import it.arsinfo.smd.entity.OperazioneIncasso;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.Smd;
 
 @Service
 public class VersamentoServiceDaoImpl implements VersamentoService {
@@ -75,9 +67,10 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 
 	@Override
 	public Versamento findById(Long id) {
-		Versamento v = repository.findById(id).get();
+		Versamento v = repository.findById(id).orElse(null);
+		assert v != null;
 		if (v.getCommittente() != null) {
-			return Smd.getWithAnagrafica(v, anagraficaDao.findById(v.getCommittente().getId()).get());
+			return Smd.getWithAnagrafica(v, anagraficaDao.findById(v.getCommittente().getId()).orElse(null));
 		}
 
 		return v;
@@ -115,10 +108,10 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
                     .findByCodeLineContainingIgnoreCase(codeLine);
         } else if (!StringUtils.hasLength(importo) && dataPagamento == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
-                    .findByDataContabile(Smd.getStandardDate(dataContabile));
+                    .findByDataContabile(SmdEntity.getStandardDate(dataContabile));
         } else  if (!StringUtils.hasLength(importo) && dataContabile == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
-                    .findByDataPagamento(Smd.getStandardDate(dataPagamento));
+                    .findByDataPagamento(SmdEntity.getStandardDate(dataPagamento));
         } else if (dataContabile == null && dataPagamento == null) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
@@ -129,54 +122,54 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
+                    .filter(v -> v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         } else if (dataPagamento == null && !StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         } else if (dataContabile == null && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
-                    .filter(v -> v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
+                    .filter(v -> v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         } else if (dataPagamento == null && !StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         } else if (!StringUtils.hasLength(codeLine) && !StringUtils.hasLength(importo)) {
             vs =  repository
-                    .findByDataPagamento(Smd.getStandardDate(dataPagamento))
+                    .findByDataPagamento(SmdEntity.getStandardDate(dataPagamento))
                     .stream()
-                    .filter(v -> v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime())
+                    .filter(v -> v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime())
                     .collect(Collectors.toList());
         } else if (!StringUtils.hasLength(codeLine)) {
             vs =  repository
                     .findByImporto(new BigDecimal(importo))
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
+                       v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         } else if (!StringUtils.hasLength(importo)) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                    && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime())
+                       v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime()
+                    && v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime())
                     .collect(Collectors.toList());
         } else if (dataPagamento == null) {
             vs =  repository
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
-                       v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
+                       v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime()
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                     .collect(Collectors.toList());
             
@@ -185,7 +178,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
                     .findByCodeLineContainingIgnoreCase(codeLine)
                     .stream()
                     .filter(v -> 
-                       v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
+                       v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime()
                     && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                     .collect(Collectors.toList());
             
@@ -194,8 +187,8 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
                 .findByCodeLineContainingIgnoreCase(codeLine)
                 .stream()
                 .filter(v -> 
-                   v.getDataContabile().getTime() == Smd.getStandardDate(dataContabile).getTime()
-                && v.getDataPagamento().getTime() == Smd.getStandardDate(dataPagamento).getTime()
+                   v.getDataContabile().getTime() == SmdEntity.getStandardDate(dataContabile).getTime()
+                && v.getDataPagamento().getTime() == SmdEntity.getStandardDate(dataPagamento).getTime()
                 && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                 .collect(Collectors.toList());
         }
@@ -250,12 +243,12 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 
 	@Override
 	public Anagrafica findCommittente(Versamento selected) {
-		return anagraficaDao.findById(selected.getCommittente().getId()).get();
+		return anagraficaDao.findById(selected.getCommittente().getId()).orElse(null);
 	}
 
 	@Override
 	@Transactional
-	public void storna(DocumentoTrasporto ddt, UserInfo loggedInUser) throws Exception {
+	public void storna(DocumentoTrasporto ddt, UserInfo loggedInUser)  {
 		smdService.storna(ddt, loggedInUser);
 	}
 
@@ -300,7 +293,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 
 	@Override
 	@Transactional
-	public void incassaDdt(String ddt,String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws Exception {
+	public void incassaDdt(String ddt,String importo,Anno anno, Versamento selected, UserInfo loggedInUser, Anagrafica committente) throws UnsupportedOperationException {
 		if (importo == null) {
 			throw new UnsupportedOperationException("Selezionare Importo");
 		}

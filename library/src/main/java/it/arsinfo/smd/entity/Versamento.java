@@ -2,6 +2,10 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,7 +22,6 @@ import javax.persistence.Transient;
 import it.arsinfo.smd.data.Accettazione;
 import it.arsinfo.smd.data.Bollettino;
 import it.arsinfo.smd.data.Sostitutivo;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 public class Versamento implements SmdEntity {
@@ -36,7 +39,7 @@ public class Versamento implements SmdEntity {
     private String progressivo="9999999";
         
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataPagamento = Smd.getStandardDate(new Date());
+    private Date dataPagamento = SmdEntity.getStandardDate(new Date());
     
     @Enumerated(EnumType.STRING)
     private Bollettino bollettino;
@@ -139,7 +142,7 @@ public class Versamento implements SmdEntity {
         return dataContabile;
     }
     public void setDataContabile(Date dataContabile) {
-        this.dataContabile = Smd.getStandardDate(dataContabile);
+        this.dataContabile = SmdEntity.getStandardDate(dataContabile);
     }
     public String getCodeLine() {
         return codeLine;
@@ -201,7 +204,7 @@ public class Versamento implements SmdEntity {
     }
 
     public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = Smd.getStandardDate(dataPagamento);
+        this.dataPagamento = SmdEntity.getStandardDate(dataPagamento);
     }
 
 

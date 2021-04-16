@@ -27,7 +27,6 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 @Table(uniqueConstraints={
@@ -97,6 +96,27 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private Date dataContabile;
 
     public Abbonamento() {
+    }
+
+    public static Incassato getStatoIncasso(Abbonamento abbonamento) {
+        if (abbonamento.getResiduo().signum() == 0) {
+            log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
+            return Incassato.Si;
+        }
+        if (abbonamento.getIncassato().signum() == 0) {
+            log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
+            return Incassato.No;
+        }
+        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) >= 0 && abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) < 0 ){
+            log.info("getStatoIncasso: {} maggiore di 70 ma debito inferiore al 20% {}", Incassato.SiConDebito,abbonamento);
+            return Incassato.SiConDebito;
+        }
+        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) < 0 && abbonamento.getTotale().subtract(new BigDecimal("7.00")).compareTo(abbonamento.getIncassato()) < 0) {
+            log.info("getStatoIncasso: {} minore di 70 ma debito inferiore a 7 {}", Incassato.SiConDebito,abbonamento);
+            return Incassato.SiConDebito;
+        }
+        log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
+        return Incassato.Parzialmente;
     }
 
     public Anagrafica getIntestatario() {
@@ -278,7 +298,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Transient
     public void setDataPagamento(Date dataPagamento) {
-        this.dataPagamento = Smd.getStandardDate(dataPagamento);
+        this.dataPagamento = SmdEntity.getStandardDate(dataPagamento);
     }
 
     @Transient
@@ -288,7 +308,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Transient
     public void setDataContabile(Date dataContabile) {
-        this.dataContabile = Smd.getStandardDate(dataContabile);
+        this.dataContabile = SmdEntity.getStandardDate(dataContabile);
     }
 
     @Transient
@@ -313,7 +333,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Transient
     public Incassato getStatoIncasso() {
-        return Smd.getStatoIncasso(this);
+        return getStatoIncasso(this);
     }
 
 	@Override

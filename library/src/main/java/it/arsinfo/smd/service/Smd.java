@@ -6,13 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.*;
 import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,8 +15,6 @@ import java.util.stream.Collectors;
 public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
-    private static final DateFormat formatter = new SimpleDateFormat("yyMMddH");
-    private static final DateFormat unformatter = new SimpleDateFormat("yyMMdd");
 
 	public static String getCcpJsonString(String apiKey, String apiUser, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
 		return "{" +
@@ -170,73 +162,6 @@ public class Smd {
 	    return spedMap;        
 	}
 
-	public static OutputStream getFileOutputStream(File file) throws Exception {
-        try {
-            log.info("Loading file: {}" , file.getName());
-            return new FileOutputStream(file);
-        } catch (final java.io.FileNotFoundException e) {
-        	log.error("Cannot open file {}", e.getMessage());
-        	throw e;
-        }
-    }
-    public static File getIncassoFile(String filename) {
-    	return new File("/tmp/" + filename);
-    }
-    
-    public static List<DistintaVersamento> uploadIncasso(File file) throws Exception {
-    	List<DistintaVersamento> incassi = new ArrayList<>();
-        FileInputStream fstream;
-        try {
-            fstream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            log.error("Incasso Cancellato: " + e.getMessage());
-            throw e;
-        }
-
-		//Read File Line By Line
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(fstream))) {
-			String strLine;
-			Set<String> versamentiLine = new HashSet<>();
-			while ((strLine = br.readLine()) != null) {
-				if (strLine.trim().equals("")) {
-					log.warn("uploadIncasso: Riga vuota!");
-				} else if (isVersamento(strLine)) {
-					versamentiLine.add(strLine);
-				} else if (isRiepilogo(strLine)) {
-					incassi.add(Smd.generaIncasso(versamentiLine, strLine));
-					versamentiLine.clear();
-				} else {
-					throw new UnsupportedOperationException("Valore non riconosciuto->" + strLine);
-				}
-			}
-		} catch (Exception e) {
-			log.error("uploadIncasso:: Incasso da File Cancellato: " + e.getMessage());
-			throw e;
-		}
-    	return incassi;
-    }
-
-    public static Incassato getStatoIncasso(Abbonamento abbonamento) {
-        if (abbonamento.getResiduo().signum() == 0) {
-        	log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
-            return Incassato.Si;
-        }
-        if (abbonamento.getIncassato().signum() == 0) {
-        	log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
-            return Incassato.No;
-        }
-        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) >= 0 && abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) < 0 ){
-           	log.info("getStatoIncasso: {} maggiore di 70 ma debito inferiore al 20% {}", Incassato.SiConDebito,abbonamento);
-           	return Incassato.SiConDebito;        	
-        }
-        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) < 0 && abbonamento.getTotale().subtract(new BigDecimal("7.00")).compareTo(abbonamento.getIncassato()) < 0) {
-           	log.info("getStatoIncasso: {} minore di 70 ma debito inferiore a 7 {}", Incassato.SiConDebito,abbonamento);
-            return Incassato.SiConDebito;        	
-        }
-    	log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
-        return Incassato.Parzialmente;
-    }
-
     public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese meseInizio, Anno annoInizio, Mese meseFine, Anno annoFine, Pubblicazione p) throws UnsupportedOperationException {
         if (annoInizio.getAnno() > annoFine.getAnno()) {
             throw new UnsupportedOperationException("data inizio maggiore di data fine");
@@ -276,7 +201,7 @@ public class Smd {
         return map;
     }
 
-    public static RivistaAbbonamento genera(Abbonamento abb,Storico storico) {
+    public static RivistaAbbonamento genera(Abbonamento abb, Storico storico) {
         final RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setStorico(storico);
         ec.setAbbonamento(abb);
@@ -290,8 +215,8 @@ public class Smd {
         ec.setInvioSpedizione(storico.getInvioSpedizione());
         ec.setDestinatario(storico.getDestinatario());
         abb.addItem(ec);
-        return ec;
-    }
+		return ec;
+	}
 
     public static boolean checkEquals(RivistaAbbonamento cloned, RivistaAbbonamento persisted) throws UnsupportedOperationException {
     	if (cloned == null || persisted == null ) {
@@ -570,8 +495,7 @@ public class Smd {
             Abbonamento abb, 
             RivistaAbbonamento original, 
             List<SpedizioneWithItems> spedizioni,
-            List<SpesaSpedizione> spese) throws Exception
-    {
+            List<SpesaSpedizione> spese) {
         abb.setImporto(abb.getImporto().subtract(original.getImporto()));
         log.info("rimuovi: rimosso importo rivista: {}", abb);
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
@@ -936,23 +860,6 @@ public class Smd {
         }          
         ec.setImporto(importo);
     }
-           
-    public static Date getStandardDate(LocalDate localDate) {
-        return getStandardDate(Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));       
-    }
-
-    public static Date getStandardDate(Date date) {
-        return getStandardDate(unformatter.format(date));
-    }
-
-    public static Date getStandardDate(String yyMMdd) {
-        try {
-            return formatter.parse(yyMMdd+"8");
-        } catch (ParseException e) {
-            log.error(e.getMessage());
-        }
-        return null;
-    }
 
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
@@ -1153,79 +1060,7 @@ public class Smd {
         abbonamento.setIncassato(abbonamento.getIncassato().subtract(importo));
         incasso.setIncassato(incasso.getIncassato().subtract(importo));
     }
-    
-    public static boolean isVersamento(String versamento) {   
-               return (
-                versamento != null && versamento.length() == 200 
-                && (versamento.trim().length() == 82 || versamento.trim().length() == 89));
-    }
-    
-    public static boolean isRiepilogo(String riepilogo) {
-        return ( riepilogo != null &&
-                 riepilogo.length() == 200 &&
-                 riepilogo.trim().length() == 96 &&
-                 riepilogo.substring(19,33).trim().length() == 0 &&
-                 riepilogo.startsWith("999", 33)
-                );
-    }
-    
-    public static DistintaVersamento generaIncasso(Set<String> versamenti,
-            String riepilogo) throws UnsupportedOperationException {
-        final DistintaVersamento incasso = new DistintaVersamento();
-        incasso.setCassa(Cassa.Ccp);
-        incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
-        incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
-        incasso.setDataContabile(Smd.getStandardDate(riepilogo.substring(13,19)));
-        incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,44)));
-        incasso.setImporto(new BigDecimal(riepilogo.substring(44,54)
-                + "." + riepilogo.substring(54,56)));
 
-        incasso.setEsatti(Integer.parseInt(riepilogo.substring(56,64)));
-        incasso.setImportoEsatti(new BigDecimal(riepilogo.substring(64,74)
-                + "." + riepilogo.substring(74, 76)));
-
-        incasso.setErrati(Integer.parseInt(riepilogo.substring(76,84)));
-        incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,94)
-                + "." + riepilogo.substring(94, 96)));
-        log.info("generaIncasso: {}", incasso);
-
-        versamenti.
-            forEach(s -> incasso.addItem(generateVersamento(incasso,s)));
-        checkIncasso(incasso);
-        return incasso;
-    }
-
-    private static void checkIncasso(DistintaVersamento incasso) throws UnsupportedOperationException {
-    	BigDecimal importoVersamenti = BigDecimal.ZERO;
-    	for (Versamento v: incasso.getItems()) {
-    		importoVersamenti = importoVersamenti.add(v.getImporto());
-    	}
-    	if (incasso.getImporto().subtract(importoVersamenti).signum() != 0 ) {
-    		log.error("checkincasso: importo incasso {} non corrisponde a importoVersamenti {}",incasso.getImporto(),importoVersamenti);
-    		throw new UnsupportedOperationException("Importo Incasso e Versamento non corrispondono ");
-    	}
-    }
-    
-    private static Versamento generateVersamento(DistintaVersamento incasso,String value)
-            {
-        Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
-        versamento.setBobina(value.substring(0, 3));
-        versamento.setProgressivoBobina(value.substring(3, 8));
-        versamento.setProgressivo(value.substring(8,15));
-        versamento.setDataPagamento(Smd.getStandardDate(value.substring(27,33)));
-        versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
-        versamento.setProvincia(value.substring(46, 49));
-        versamento.setUfficio(value.substring(49, 52));
-        versamento.setSportello(value.substring(52, 54));
-//          value.substring(54,55);
-        versamento.setDataContabile(Smd.getStandardDate(value.substring(55,61)));
-        versamento.setCodeLine(value.substring(61,79));
-        versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
-        versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
-        log.info("generateVersamento: {}", versamento);
-        return versamento;
-    }
-        
     public static void calcoloImportoIncasso(DistintaVersamento incasso) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Versamento versamento: incasso.getItems()) {
@@ -1247,25 +1082,82 @@ public class Smd {
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
     }
-    
-    public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
-    	if (v != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
-        	v.setCommittente(a);    		
-    	}
-    	return v;
-    }
-    
-    public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
-        Map<Long,Anagrafica> anagraficaMap=anagrafica
-        		.stream()
-        		.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
-      	for (Versamento versamento: versamenti) {
-    		if (versamento.getCommittente() != null) {
-    			versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
-    		}
-    	}
-      	return versamenti;
 
-    }
-    
+	public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
+		if (v != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
+			v.setCommittente(a);
+		}
+		return v;
+	}
+
+	public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
+		Map<Long,Anagrafica> anagraficaMap=anagrafica
+				.stream()
+				.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
+		for (Versamento versamento: versamenti) {
+			if (versamento.getCommittente() != null) {
+				versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+			}
+		}
+		return versamenti;
+
+	}
+
+	public static DistintaVersamento generaIncasso(Set<String> versamenti,
+												   String riepilogo) throws UnsupportedOperationException {
+		final DistintaVersamento incasso = new DistintaVersamento();
+		incasso.setCassa(Cassa.Ccp);
+		incasso.setCuas(Cuas.getCuas(Integer.parseInt(riepilogo.substring(0,1))));
+		incasso.setCcp(Ccp.getByCc(riepilogo.substring(1,13)));
+		incasso.setDataContabile(SmdEntity.getStandardDate(riepilogo.substring(13,19)));
+		incasso.setDocumenti(Integer.parseInt(riepilogo.substring(36,44)));
+		incasso.setImporto(new BigDecimal(riepilogo.substring(44,54)
+				+ "." + riepilogo.substring(54,56)));
+
+		incasso.setEsatti(Integer.parseInt(riepilogo.substring(56,64)));
+		incasso.setImportoEsatti(new BigDecimal(riepilogo.substring(64,74)
+				+ "." + riepilogo.substring(74, 76)));
+
+		incasso.setErrati(Integer.parseInt(riepilogo.substring(76,84)));
+		incasso.setImportoErrati(new BigDecimal(riepilogo.substring(84,94)
+				+ "." + riepilogo.substring(94, 96)));
+		log.info("generaIncasso: {}", incasso);
+
+		versamenti.
+				forEach(s -> incasso.addItem(generateVersamento(incasso,s)));
+		checkIncasso(incasso);
+		return incasso;
+	}
+
+	private static void checkIncasso(DistintaVersamento incasso) throws UnsupportedOperationException {
+		BigDecimal importoVersamenti = BigDecimal.ZERO;
+		for (Versamento v: incasso.getItems()) {
+			importoVersamenti = importoVersamenti.add(v.getImporto());
+		}
+		if (incasso.getImporto().subtract(importoVersamenti).signum() != 0 ) {
+			log.error("checkincasso: importo incasso {} non corrisponde a importoVersamenti {}",incasso.getImporto(),importoVersamenti);
+			throw new UnsupportedOperationException("Importo Incasso e Versamento non corrispondono ");
+		}
+	}
+
+	private static Versamento generateVersamento(DistintaVersamento incasso,String value)
+	{
+		Versamento versamento = new Versamento(incasso,new BigDecimal(value.substring(36, 44) + "." + value.substring(44, 46)));
+		versamento.setBobina(value.substring(0, 3));
+		versamento.setProgressivoBobina(value.substring(3, 8));
+		versamento.setProgressivo(value.substring(8,15));
+		versamento.setDataPagamento(SmdEntity.getStandardDate(value.substring(27,33)));
+		versamento.setBollettino(Bollettino.getTipoBollettino(Integer.parseInt(value.substring(33,36))));
+		versamento.setProvincia(value.substring(46, 49));
+		versamento.setUfficio(value.substring(49, 52));
+		versamento.setSportello(value.substring(52, 54));
+//          value.substring(54,55);
+		versamento.setDataContabile(SmdEntity.getStandardDate(value.substring(55,61)));
+		versamento.setCodeLine(value.substring(61,79));
+		versamento.setAccettazione(Accettazione.getTipoAccettazione(value.substring(79,81)));
+		versamento.setSostitutivo(Sostitutivo.getTipoAccettazione(value.substring(81,82)));
+		log.info("generateVersamento: {}", versamento);
+		return versamento;
+	}
+
 }

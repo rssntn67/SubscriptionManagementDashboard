@@ -22,7 +22,6 @@ import javax.persistence.UniqueConstraint;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.service.Smd;
 
 @Entity
 @Table(uniqueConstraints={
@@ -46,7 +45,7 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     private List<Versamento> versamenti = new ArrayList<Versamento>();
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dataContabile = Smd.getStandardDate(new Date());
+    private Date dataContabile = SmdEntity.getStandardDate(new Date());
     
     private int documenti=0;
     private BigDecimal importo=BigDecimal.ZERO;
@@ -175,7 +174,7 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     }
 
     public void setDataContabile(Date datacontabile) {
-        this.dataContabile = Smd.getStandardDate(datacontabile);
+        this.dataContabile = SmdEntity.getStandardDate(datacontabile);
     }
     @Transient
     public String getHeader() {

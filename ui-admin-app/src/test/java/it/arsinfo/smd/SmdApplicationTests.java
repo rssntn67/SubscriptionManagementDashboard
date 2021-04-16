@@ -1279,7 +1279,7 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamento() throws Exception{
+    public void testAbbonamentoRimuoviRivistaAbbonamento() {
         log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
@@ -1452,7 +1452,7 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() throws Exception {
+    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() {
         log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamentoConSpediti<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1929,13 +1929,13 @@ public class SmdApplicationTests {
         assertEquals(0, abb.getResiduo().doubleValue(),0);
         assertEquals(0, incasso.getResiduo().doubleValue(),0);
         assertEquals(incassato.doubleValue(), abb.getIncassato().doubleValue(),0);
-        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
+        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb));
 
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
         assertNotNull(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
-        assertEquals(Incassato.Si, Smd.getStatoIncasso(abbonamento));        
+        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abbonamento));
         assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
         assertEquals(0, versamento.getResiduo().doubleValue(),0);
    
@@ -2018,7 +2018,7 @@ public class SmdApplicationTests {
         assertEquals(1, operazioneIncassoDao.count());
         
         DistintaVersamento inc1 = incassoDao.findAll().iterator().next();
-        assertEquals(Smd.getStandardDate(inc1.getDataContabile()), Smd.getStandardDate(abb1.getDataContabile()));
+        assertEquals(SmdEntity.getStandardDate(inc1.getDataContabile()), SmdEntity.getStandardDate(abb1.getDataContabile()));
         DistintaVersamento incasso = 
         incassoDao
         .findByDataContabileAndCassaAndCcpAndCuas(
