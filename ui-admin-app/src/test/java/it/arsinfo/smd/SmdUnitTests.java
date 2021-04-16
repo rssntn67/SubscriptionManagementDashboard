@@ -792,7 +792,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testAggiornaException() throws Exception {
+    public void testAggiornaException() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
@@ -872,7 +872,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testAggiornaNumero() throws Exception {
+    public void testAggiornaNumero() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
@@ -935,7 +935,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testAggiornaTipoAbbonamentoRivista() throws Exception {
+    public void testAggiornaTipoAbbonamentoRivista() {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         
         Anagrafica tizio = SmdHelper.getGP();
