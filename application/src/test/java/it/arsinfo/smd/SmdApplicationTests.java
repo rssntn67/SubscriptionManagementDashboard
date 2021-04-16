@@ -215,7 +215,7 @@ public class SmdApplicationTests {
         assertEquals("https://api.stampabollettini.com/api/td674",ccpConfig.getCcpApiUrl());
         assertEquals("druslcruwaw2up5swexospl6awruphut",ccpConfig.getCcpApiKey());
         assertEquals("adp-289020",ccpConfig.getCcpApiUser());
-        assertEquals("/Users/antonio/Download",ccpConfig.getCcpFilePath());
+        assertEquals("/Users/antonio/Downloads",ccpConfig.getCcpFilePath());
     }
 
     @Test
