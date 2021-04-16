@@ -1,12 +1,12 @@
 package it.arsinfo.smd.service.dao;
 
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.ui.SmdUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,7 +198,7 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void aggiornaRivistaAbbonamento(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws Exception {
+    public void aggiornaRivistaAbbonamento(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws UnsupportedOperationException {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
         if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
         log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
