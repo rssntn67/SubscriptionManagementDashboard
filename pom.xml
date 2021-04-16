@@ -37,6 +37,7 @@
 	</licenses>
 
     <modules>
+      <module>library</module>
       <module>application</module>
     </modules>
 
