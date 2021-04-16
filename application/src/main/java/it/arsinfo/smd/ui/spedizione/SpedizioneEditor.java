@@ -10,7 +10,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.SpedizioneServiceDao;
+import it.arsinfo.smd.ui.service.api.SpedizioneService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -31,7 +31,7 @@ public class SpedizioneEditor
     private final TextField spesePostali = new TextField("Spese Postali");
 
     public SpedizioneEditor(
-            SpedizioneServiceDao spedizioneDao, List<Anagrafica> anagrafica) {
+            SpedizioneService spedizioneDao, List<Anagrafica> anagrafica) {
 
         super(spedizioneDao, new Binder<>(Spedizione.class) );
         destinatario.setEmptySelectionAllowed(false);

@@ -29,7 +29,7 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.ui.Smd;
 
 public class SmdHelper {
 
@@ -37,7 +37,7 @@ public class SmdHelper {
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();
         versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
-        return Smd.generaIncasso(versamenti1, riepilogo1); 
+        return Smd.generaIncasso(versamenti1, riepilogo1);
         
     }
 

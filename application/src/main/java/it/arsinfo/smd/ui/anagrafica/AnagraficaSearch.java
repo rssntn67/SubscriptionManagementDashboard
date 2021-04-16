@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.ui.service.api.AnagraficaService;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -59,9 +59,9 @@ public class AnagraficaSearch extends SmdSearch<Anagrafica> {
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
     
-    private final AnagraficaServiceDao dao;
+    private final AnagraficaService dao;
 
-    public AnagraficaSearch(AnagraficaServiceDao dao) {
+    public AnagraficaSearch(AnagraficaService dao) {
         super(dao);
         this.dao=dao;
         TextField filterDenominazione = new TextField("Cerca per Denominazione");

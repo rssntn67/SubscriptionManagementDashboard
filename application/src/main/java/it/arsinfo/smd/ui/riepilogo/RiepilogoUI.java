@@ -11,10 +11,10 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.OffertaServiceDao;
-import it.arsinfo.smd.dao.StoricoServiceDao;
-import it.arsinfo.smd.dao.VersamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
+import it.arsinfo.smd.ui.service.api.OffertaService;
+import it.arsinfo.smd.ui.service.api.StoricoService;
+import it.arsinfo.smd.ui.service.api.VersamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdUI;
@@ -35,16 +35,16 @@ public class RiepilogoUI extends SmdUI {
     private static final long serialVersionUID = 6407425404499250763L;
 
     @Autowired
-    private VersamentoServiceDao dao;
+    private VersamentoService dao;
 
     @Autowired
-    private AbbonamentoServiceDao abbonamentoDao;
+    private AbbonamentoService abbonamentoDao;
 
     @Autowired
-    private StoricoServiceDao storicoDao;
+    private StoricoService storicoDao;
 
     @Autowired
-    private OffertaServiceDao offertaDao;
+    private OffertaService offertaDao;
 
     @Override
     protected void init(VaadinRequest request) {

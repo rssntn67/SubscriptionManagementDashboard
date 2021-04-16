@@ -9,7 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.ui.service.api.SmdService;
 import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdRepositoryDaoEditor<T extends SmdEntity>

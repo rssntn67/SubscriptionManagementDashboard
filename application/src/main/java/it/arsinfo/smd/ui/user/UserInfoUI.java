@@ -7,7 +7,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.UserInfoServiceDao;
+import it.arsinfo.smd.ui.service.api.UserInfoService;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
@@ -17,7 +17,7 @@ import it.arsinfo.smd.ui.SmdUI;
 public class UserInfoUI extends SmdEditorUI<UserInfo> {
 
     @Autowired
-    private UserInfoServiceDao userInfoDao;
+    private UserInfoService userInfoDao;
     
     @Autowired
     private PasswordEncoder passwordEncoder;

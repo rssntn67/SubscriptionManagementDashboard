@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.arsinfo.smd.ui.Smd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,20 +12,20 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.AbbonamentoDao;
-import it.arsinfo.smd.dao.repository.AnagraficaDao;
-import it.arsinfo.smd.dao.repository.CampagnaDao;
-import it.arsinfo.smd.dao.repository.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.repository.NotaDao;
-import it.arsinfo.smd.dao.repository.OperazioneDao;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
-import it.arsinfo.smd.dao.repository.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.repository.SpedizioneDao;
-import it.arsinfo.smd.dao.repository.SpedizioneItemDao;
-import it.arsinfo.smd.dao.repository.SpesaSpedizioneDao;
-import it.arsinfo.smd.dao.repository.StoricoDao;
-import it.arsinfo.smd.dao.repository.VersamentoDao;
+import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.dao.AbbonamentoDao;
+import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.dao.CampagnaDao;
+import it.arsinfo.smd.dao.DistintaVersamentoDao;
+import it.arsinfo.smd.dao.NotaDao;
+import it.arsinfo.smd.dao.OperazioneDao;
+import it.arsinfo.smd.dao.PubblicazioneDao;
+import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
+import it.arsinfo.smd.dao.SpedizioneDao;
+import it.arsinfo.smd.dao.SpedizioneItemDao;
+import it.arsinfo.smd.dao.SpesaSpedizioneDao;
+import it.arsinfo.smd.dao.StoricoDao;
+import it.arsinfo.smd.dao.VersamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -38,7 +39,6 @@ import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.SpedizioneItem;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.Smd;
 
 
 public class SmdLoadSampleData implements Runnable {

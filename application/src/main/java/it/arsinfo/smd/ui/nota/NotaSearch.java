@@ -7,7 +7,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.NotaServiceDao;
+import it.arsinfo.smd.ui.service.api.NotaService;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
@@ -16,9 +16,9 @@ public class NotaSearch extends SmdSearch<Nota> {
 
     private String searchText;
     private Storico storico;
-    private NotaServiceDao dao;
+    private NotaService dao;
 
-    public NotaSearch(NotaServiceDao dao, List<Storico> storici) {
+    public NotaSearch(NotaService dao, List<Storico> storici) {
         super(dao);
         this.dao=dao;
         TextField filter = new TextField();

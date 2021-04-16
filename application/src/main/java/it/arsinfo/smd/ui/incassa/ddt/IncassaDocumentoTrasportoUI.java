@@ -13,8 +13,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.VersamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
+import it.arsinfo.smd.ui.service.api.VersamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -35,10 +35,10 @@ public class IncassaDocumentoTrasportoUI extends SmdUI {
     private static final long serialVersionUID = 6407425404499250763L;
 
     @Autowired
-    private VersamentoServiceDao dao;
+    private VersamentoService dao;
 
     @Autowired
-    private AbbonamentoServiceDao abbonamentoDao;
+    private AbbonamentoService abbonamentoDao;
     
     @Override
     protected void init(VaadinRequest request) {

@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.PubblicazioneServiceDao;
+import it.arsinfo.smd.ui.service.api.PubblicazioneService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.TipoPubblicazione;
@@ -22,7 +22,7 @@ public class PubblicazioneEditor extends SmdEntityEditor<Pubblicazione> {
      private TextField nome = new TextField("Nome");
 
 
-    public PubblicazioneEditor(PubblicazioneServiceDao repo) {
+    public PubblicazioneEditor(PubblicazioneService repo) {
         super(repo,new Binder<>(Pubblicazione.class));
 
         TextField descrizione = new TextField("Descrizione");

@@ -16,7 +16,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.UserInfoServiceDao;
+import it.arsinfo.smd.ui.service.api.UserInfoService;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
@@ -34,8 +34,8 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
     private final PasswordField confirm = new PasswordField("confirm");
 
     private boolean persisted;
-    private final UserInfoServiceDao dao;
-    public UserInfoEditor(UserInfoServiceDao dao, PasswordEncoder passwordEncoder) {
+    private final UserInfoService dao;
+    public UserInfoEditor(UserInfoService dao, PasswordEncoder passwordEncoder) {
         super(dao, new Binder<>(UserInfo.class));
         this.dao=dao;
         setComponents(getActions(),

@@ -8,7 +8,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.StoricoServiceDao;
+import it.arsinfo.smd.ui.service.api.StoricoService;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -28,9 +28,9 @@ public class StoricoSearch extends SmdSearch<Storico> {
     private final CheckBox filterContrassegno = new CheckBox("Contrassegno");
     private final CheckBox filterNumero = new CheckBox("Numero > 0");
 
-    private final StoricoServiceDao dao;
-    public StoricoSearch(StoricoServiceDao dao,
-            List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
+    private final StoricoService dao;
+    public StoricoSearch(StoricoService dao,
+                         List<Anagrafica> anagrafica, List<Pubblicazione> pubblicazioni) {
         super(dao);
         this.dao =dao;
 

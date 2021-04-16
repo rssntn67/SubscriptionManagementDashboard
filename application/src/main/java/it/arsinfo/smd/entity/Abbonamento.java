@@ -27,7 +27,7 @@ import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.ui.Smd;
 
 @Entity
 @Table(uniqueConstraints={

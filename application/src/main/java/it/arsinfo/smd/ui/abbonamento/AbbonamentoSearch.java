@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -41,10 +41,10 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
     
-    private final AbbonamentoServiceDao dao;
+    private final AbbonamentoService dao;
 
-    public AbbonamentoSearch(AbbonamentoServiceDao dao, List<Campagna> campagne, List<Pubblicazione> pubblicazioni,
-    		List<Anagrafica> anagrafica) {
+    public AbbonamentoSearch(AbbonamentoService dao, List<Campagna> campagne, List<Pubblicazione> pubblicazioni,
+                             List<Anagrafica> anagrafica) {
         super(dao);
 
         this.dao=dao;

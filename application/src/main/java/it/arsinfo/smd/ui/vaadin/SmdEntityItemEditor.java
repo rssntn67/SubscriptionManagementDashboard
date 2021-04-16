@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.SmdServiceItemDao;
+import it.arsinfo.smd.ui.service.api.SmdServiceItem;
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.entity.SmdEntityItems;
 
@@ -18,12 +18,12 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
     private final SmdGrid<I> itemGrid;
     private final SmdItemEditor<I> itemEditor;
     private final SmdEntityEditor<T> editor;    
-    private final SmdServiceItemDao<T,I> dao;
+    private final SmdServiceItem<T,I> dao;
 
     private static final Logger log = LoggerFactory.getLogger(SmdEntityItemEditor.class);
 
-    public SmdEntityItemEditor(SmdServiceItemDao<T,I> dao,SmdAddItem<I,T> itemAdd, SmdButton itemDel, SmdButton itemSave,SmdGrid<I> itemGrid,
-			SmdItemEditor<I> itemEditor, SmdEntityEditor<T> editor) {
+    public SmdEntityItemEditor(SmdServiceItem<T,I> dao, SmdAddItem<I,T> itemAdd, SmdButton itemDel, SmdButton itemSave, SmdGrid<I> itemGrid,
+                               SmdItemEditor<I> itemEditor, SmdEntityEditor<T> editor) {
 		this.dao=dao;
 		this.itemAdd = itemAdd;
 		this.itemDel=itemDel;
@@ -74,8 +74,8 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 
 	}
     
-    public SmdEntityItemEditor(SmdServiceItemDao<T,I> dao,SmdButton itemSave,SmdGrid<I> itemGrid,
-			SmdItemEditor<I> itemEditor, SmdEntityEditor<T> editor) {
+    public SmdEntityItemEditor(SmdServiceItem<T,I> dao, SmdButton itemSave, SmdGrid<I> itemGrid,
+                               SmdItemEditor<I> itemEditor, SmdEntityEditor<T> editor) {
 		this.dao=dao;
 		this.itemSave=itemSave;
 		this.itemGrid = itemGrid;

@@ -4,7 +4,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import it.arsinfo.smd.dao.repository.UserInfoDao;
+import it.arsinfo.smd.dao.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
 
 /**

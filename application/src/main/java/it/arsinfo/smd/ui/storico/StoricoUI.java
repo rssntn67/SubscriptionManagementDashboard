@@ -13,7 +13,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.StoricoServiceDao;
+import it.arsinfo.smd.ui.service.api.StoricoService;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.Nota;
@@ -29,7 +29,7 @@ import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 @Push
 public class StoricoUI extends SmdEditorUI<Storico> {
 
-	private class MyDao implements StoricoServiceDao {
+	private class MyDao implements StoricoService {
 
 		@Override
 		public List<Nota> getItems(Storico t) {
@@ -115,7 +115,7 @@ public class StoricoUI extends SmdEditorUI<Storico> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private StoricoServiceDao dao;
+    private StoricoService dao;
     
     @Override
     protected void init(VaadinRequest request) {

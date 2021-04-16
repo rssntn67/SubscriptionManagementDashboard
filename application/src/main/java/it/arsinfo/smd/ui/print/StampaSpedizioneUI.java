@@ -4,7 +4,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
-import it.arsinfo.smd.dao.SpedizioneServiceDao;
+import it.arsinfo.smd.ui.service.api.SpedizioneService;
 import it.arsinfo.smd.data.Stampa;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.ui.SmdUI;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class StampaSpedizioneUI extends StampaUI {
 
     @Autowired
-    SpedizioneServiceDao dao;
+    SpedizioneService dao;
 	/**
 	 * 
 	 */

@@ -5,7 +5,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -42,8 +42,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     private final ComboBox<Incassato> statoIncasso = new ComboBox<>("Incassato",EnumSet.allOf(Incassato.class));
 
-    private final AbbonamentoServiceDao dao;
-    public AbbonamentoEditor(AbbonamentoServiceDao dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    private final AbbonamentoService dao;
+    public AbbonamentoEditor(AbbonamentoService dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(dao,new Binder<>(Abbonamento.class));
         this.dao=dao;

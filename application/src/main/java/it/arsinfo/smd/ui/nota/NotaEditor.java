@@ -8,7 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.NotaServiceDao;
+import it.arsinfo.smd.ui.service.api.NotaService;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
@@ -19,7 +19,7 @@ public class NotaEditor extends SmdEntityEditor<Nota> {
     private final ComboBox<Storico> storico = new ComboBox<Storico>("Selezionare lo storico");
     private final TextField  user = new TextField("User");
 
-    public NotaEditor(NotaServiceDao notaDao, List<Storico> storici) {
+    public NotaEditor(NotaService notaDao, List<Storico> storici) {
 
         super(notaDao, new Binder<>(Nota.class));
         HorizontalLayout pri = new HorizontalLayout();

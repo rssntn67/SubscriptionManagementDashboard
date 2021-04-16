@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.ui.Smd;
 
 @Entity
 @Table(uniqueConstraints={

@@ -6,7 +6,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.AbbonamentoConRivisteServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoConRivisteService;
 import it.arsinfo.smd.ui.SmdUI;
 
 @SpringUI(path = SmdUI.URL_STAT)
@@ -19,7 +19,7 @@ public class StatUI extends SmdUI {
     private static final long serialVersionUID = 6407425404499250763L;
 
     @Autowired
-    private AbbonamentoConRivisteServiceDao dao;
+    private AbbonamentoConRivisteService dao;
 
     @Override
     protected void init(VaadinRequest request) {

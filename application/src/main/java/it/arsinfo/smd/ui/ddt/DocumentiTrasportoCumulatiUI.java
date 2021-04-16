@@ -7,8 +7,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.repository.DocumentoTrasportoDao;
-import it.arsinfo.smd.dao.repository.DocumentiTrasportoCumulatiDao;
+import it.arsinfo.smd.dao.DocumentoTrasportoDao;
+import it.arsinfo.smd.dao.DocumentiTrasportoCumulatiDao;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 

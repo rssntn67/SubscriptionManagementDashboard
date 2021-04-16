@@ -6,7 +6,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.ui.service.api.AnagraficaService;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
@@ -21,7 +21,7 @@ public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    AnagraficaServiceDao anagraficaServiceDao;
+    AnagraficaService anagraficaServiceDao;
 
     @Override
     protected void init(VaadinRequest request) {

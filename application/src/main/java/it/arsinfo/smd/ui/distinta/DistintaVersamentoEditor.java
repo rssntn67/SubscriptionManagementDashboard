@@ -12,7 +12,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -36,7 +36,7 @@ public class DistintaVersamentoEditor extends SmdEntityEditor<DistintaVersamento
     private final TextField importoErrati = new TextField("Importo Errati");
     private final DateField dataContabile = new DateField("Data contabile");
     
-    public DistintaVersamentoEditor(DistintaVersamentoServiceDao dao) {
+    public DistintaVersamentoEditor(DistintaVersamentoService dao) {
         super(dao, new Binder<>(DistintaVersamento.class));
 
         setComponents(

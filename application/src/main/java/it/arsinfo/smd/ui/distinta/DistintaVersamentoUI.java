@@ -8,7 +8,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.DistintaVersamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
@@ -24,7 +24,7 @@ public class DistintaVersamentoUI extends SmdEditorUI<DistintaVersamento> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    private DistintaVersamentoServiceDao dao;
+    private DistintaVersamentoService dao;
     
     @Override
     protected void init(VaadinRequest request) {

@@ -6,7 +6,7 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.SpesaSpedizioneServiceDao;
+import it.arsinfo.smd.ui.service.api.SpesaSpedizioneService;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
@@ -17,8 +17,8 @@ public class SpesaSpedizioneSearch extends SmdSearch<SpesaSpedizione> {
     private AreaSpedizione area;
     private RangeSpeseSpedizione range;
 
-    private final SpesaSpedizioneServiceDao dao;
-    public SpesaSpedizioneSearch(SpesaSpedizioneServiceDao dao) {
+    private final SpesaSpedizioneService dao;
+    public SpesaSpedizioneSearch(SpesaSpedizioneService dao) {
         super(dao);
         this.dao = dao;
         ComboBox<AreaSpedizione> filterArea = new ComboBox<AreaSpedizione>(null,

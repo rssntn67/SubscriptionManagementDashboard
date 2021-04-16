@@ -12,7 +12,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AbbonamentoConRivisteServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoConRivisteService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
@@ -66,9 +66,9 @@ public class StatSearch extends SmdChangeHandler {
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
     private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno",EnumSet.allOf(Anno.class));
     
-    private final AbbonamentoConRivisteServiceDao dao;
+    private final AbbonamentoConRivisteService dao;
 
-    public StatSearch(AbbonamentoConRivisteServiceDao dao) {
+    public StatSearch(AbbonamentoConRivisteService dao) {
         this.dao=dao;
         
         TextField filterDenominazione = new TextField("Denominazione");

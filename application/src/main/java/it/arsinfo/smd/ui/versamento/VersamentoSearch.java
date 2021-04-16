@@ -11,7 +11,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.VersamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.VersamentoService;
 import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.data.Cuas;
@@ -32,8 +32,8 @@ public class VersamentoSearch extends SmdSearch<Versamento> {
 
     private Anagrafica committente;
 
-    private final VersamentoServiceDao dao;
-    public VersamentoSearch(VersamentoServiceDao dao, List<Anagrafica> anagrafica) {
+    private final VersamentoService dao;
+    public VersamentoSearch(VersamentoService dao, List<Anagrafica> anagrafica) {
         super(dao);
         this.dao=dao;
         

@@ -5,7 +5,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -27,7 +27,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
     private static final long serialVersionUID = 3429323584726379968L;
 
     @Autowired
-    AbbonamentoServiceDao dao;
+    AbbonamentoService dao;
     
     @Override
     protected void init(VaadinRequest request) {

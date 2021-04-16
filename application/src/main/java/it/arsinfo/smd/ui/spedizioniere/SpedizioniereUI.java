@@ -11,9 +11,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 
-import it.arsinfo.smd.dao.OperazioneServiceDao;
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.PubblicazioneDao;
+import it.arsinfo.smd.ui.service.api.OperazioneService;
+import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.dao.PubblicazioneDao;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoOperazione;
 import it.arsinfo.smd.data.StatoSpedizione;
@@ -38,7 +38,7 @@ public class SpedizioniereUI extends SmdUI {
     @Autowired
     private PubblicazioneDao pubblicazioneDao;
     @Autowired
-    private OperazioneServiceDao dao;
+    private OperazioneService dao;
 
     @Autowired
     private SmdService smdService;

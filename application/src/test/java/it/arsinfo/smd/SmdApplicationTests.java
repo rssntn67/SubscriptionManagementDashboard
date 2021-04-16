@@ -2,18 +2,18 @@ package it.arsinfo.smd;
 
 import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.config.CcpConfig;
-import it.arsinfo.smd.dao.AbbonamentoServiceDao;
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.*;
+import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
-import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.SmdServiceImpl;
+import it.arsinfo.smd.ui.Smd;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
 import it.arsinfo.smd.ui.security.SecurityConfig;
 import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
+import it.arsinfo.smd.ui.service.api.AbbonamentoService;
+import it.arsinfo.smd.ui.service.api.SmdService;
+import it.arsinfo.smd.ui.service.dao.SmdServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class SmdApplicationTests {
     @Autowired
     private AbbonamentoDao abbonamentoDao;
     @Autowired
-    private AbbonamentoServiceDao abbonamentoServiceDao;
+    private AbbonamentoService abbonamentoServiceDao;
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
     @Autowired
@@ -885,7 +885,7 @@ public class SmdApplicationTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni 
-            = Smd.genera(abb, 
+            = Smd.genera(abb,
                                ec,
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));

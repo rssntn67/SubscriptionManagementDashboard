@@ -9,13 +9,13 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.arsinfo.smd.dao.SmdServiceDao;
+import it.arsinfo.smd.ui.service.api.SmdServiceBase;
 import it.arsinfo.smd.entity.SmdEntity;
 
 public abstract class SmdEntityEditor<T extends SmdEntity>
         extends SmdEditor<T> {
 
-    private final SmdServiceDao<T> repositoryDao;
+    private final SmdServiceBase<T> repositoryDao;
     private T smdObj;
 
     private Button save = new Button("Salva", VaadinIcons.CHECK);
@@ -26,7 +26,7 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
     private final Binder<T> binder;
     private static final Logger log = LoggerFactory.getLogger(SmdEntityEditor.class);
 
-    public SmdEntityEditor(SmdServiceDao<T> repositoryDao, Binder<T> binder) {
+    public SmdEntityEditor(SmdServiceBase<T> repositoryDao, Binder<T> binder) {
 
         this.repositoryDao = repositoryDao;
         this.binder = binder;
@@ -116,7 +116,7 @@ public abstract class SmdEntityEditor<T extends SmdEntity>
         return smdObj;
     }
 
-    public SmdServiceDao<T> getServiceDao() {
+    public SmdServiceBase<T> getServiceDao() {
         return repositoryDao;
     }
 

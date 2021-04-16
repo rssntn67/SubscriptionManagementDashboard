@@ -1,9 +1,9 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.dao.SmdService;
-import it.arsinfo.smd.dao.repository.*;
+import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.ui.service.api.SmdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -37,7 +37,7 @@ public class SmdApplication {
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 
-            DistintaVersamentoDao incassoDao, 
+            DistintaVersamentoDao incassoDao,
             VersamentoDao versamentoDao,
             OperazioneDao operazioneDao, 
             UserInfoDao userInfoDao, 

@@ -9,7 +9,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.dao.AnagraficaServiceDao;
+import it.arsinfo.smd.ui.service.api.AnagraficaService;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.CentroDiocesano;
 import it.arsinfo.smd.data.Diocesi;
@@ -66,7 +66,7 @@ public class AnagraficaEditor extends SmdEntityEditor<Anagrafica> {
     private final CheckBox elencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox promotoreRegionale = new CheckBox("Prom. Reg.");
 
-    public AnagraficaEditor(AnagraficaServiceDao anagraficaDao) {
+    public AnagraficaEditor(AnagraficaService anagraficaDao) {
         super(anagraficaDao, new Binder<>(Anagrafica.class));
 
         HorizontalLayout intestazioni = new HorizontalLayout(diocesi, titolo,nome);

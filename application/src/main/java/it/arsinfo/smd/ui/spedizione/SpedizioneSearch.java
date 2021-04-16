@@ -6,7 +6,7 @@ import java.util.List;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.dao.SpedizioneServiceDao;
+import it.arsinfo.smd.ui.service.api.SpedizioneService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
@@ -26,10 +26,10 @@ public class SpedizioneSearch extends SmdSearch<Spedizione> {
     private final ComboBox<StatoSpedizione> filterStatoSpedizione = new ComboBox<StatoSpedizione>();
     private final ComboBox<InvioSpedizione> filterInvioSpedizione = new ComboBox<InvioSpedizione>();
     
-    private final SpedizioneServiceDao dao;
-    public SpedizioneSearch(SpedizioneServiceDao dao,
-            List<Anagrafica> anagrafica,
-            List<Pubblicazione> pubblicazioni) {
+    private final SpedizioneService dao;
+    public SpedizioneSearch(SpedizioneService dao,
+                            List<Anagrafica> anagrafica,
+                            List<Pubblicazione> pubblicazioni) {
         super(dao);
         this.dao=dao;
         ComboBox<Anagrafica> filterDestinatario = new ComboBox<Anagrafica>();

@@ -8,7 +8,7 @@ import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 
-import it.arsinfo.smd.dao.NotaServiceDao;
+import it.arsinfo.smd.ui.service.api.NotaService;
 import it.arsinfo.smd.entity.Nota;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.SmdEditorUI;
@@ -24,7 +24,7 @@ public class NotaUI extends SmdEditorUI<Nota> {
     private static final long serialVersionUID = 7884064928998716106L;
 
     @Autowired
-    NotaServiceDao dao;
+    NotaService dao;
 
     @Override
     protected void init(VaadinRequest request) {

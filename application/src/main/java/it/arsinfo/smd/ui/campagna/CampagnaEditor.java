@@ -20,8 +20,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import it.arsinfo.smd.dao.CampagnaServiceDao;
-import it.arsinfo.smd.dao.SmdService;
+import it.arsinfo.smd.ui.service.api.CampagnaService;
+import it.arsinfo.smd.ui.service.api.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
@@ -63,9 +63,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
     private final ComboBox<Pubblicazione> pubblicazione= new ComboBox<Pubblicazione>();
 
-    private final CampagnaServiceDao repo;
+    private final CampagnaService repo;
 
-    public CampagnaEditor(CampagnaServiceDao repo) {
+    public CampagnaEditor(CampagnaService repo) {
 
         super(repo, new Binder<>(Campagna.class));
         this.repo=repo;
@@ -340,9 +340,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     }
     
     private final class BgGenera extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	
-    	public BgGenera(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+    	public BgGenera(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
@@ -357,9 +357,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
     
     private final class BgInvia extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	
-    	public BgInvia(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+    	public BgInvia(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
@@ -373,9 +373,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     }
 
     private final class BgSollecita extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	
-    	public BgSollecita(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+    	public BgSollecita(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
@@ -389,10 +389,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     }
 
     private final class BgSospendi extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	private final Pubblicazione p;
     	
-    	public BgSospendi(CampagnaServiceDao repo, final Pubblicazione p, final SmdEditorUI<Campagna> ui) {
+    	public BgSospendi(CampagnaService repo, final Pubblicazione p, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 			this.p=p;
@@ -407,9 +407,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
     
     private final class BgEstrattoConto extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	
-    	public BgEstrattoConto(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+    	public BgEstrattoConto(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
@@ -423,9 +423,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     }
 
     private final class BgChiudi extends Bg {
-    	private final CampagnaServiceDao repo;
+    	private final CampagnaService repo;
     	
-    	public BgChiudi(CampagnaServiceDao repo, final SmdEditorUI<Campagna> ui) {
+    	public BgChiudi(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
 			super(ui, ui.getLoggedInUser());
 			this.repo = repo;
 		}
