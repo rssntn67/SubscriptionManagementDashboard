@@ -38,7 +38,7 @@
 		</dependency>
 		<dependency>
 			<groupId>it.arsinfo.smd</groupId>
-			<artifactId>it.arsinfo.smd.library</artifactId>
+			<artifactId>it.arsinfo.smd.service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

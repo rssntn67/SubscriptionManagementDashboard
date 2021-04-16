@@ -38,8 +38,8 @@
 
     <modules>
       <module>model</module>
-      <module>library</module>
-      <module>library-test</module>
+      <module>service</module>
+      <module>service-test</module>
       <module>ui-admin-app</module>
     </modules>
 
