@@ -5,9 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>it.arsinfo.smd</groupId>
-	<artifactId>library</artifactId>
+	<artifactId>it.arsinfo.smd.library</artifactId>
 	<version>5.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
+
+        <name>SMD::Library</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
