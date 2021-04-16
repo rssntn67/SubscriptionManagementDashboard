@@ -1,4 +1,4 @@
-package it.arsinfo.smd;
+package it.arsinfo.smd.helper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -188,25 +188,25 @@ public class SmdHelper {
         sss.add(ss10);
     
         SpesaSpedizione ss11 = new SpesaSpedizione();
-        ss11.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da100grA200gr);;
+        ss11.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da100grA200gr);
         ss11.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
         ss11.setSpese(new BigDecimal("5.70"));
         sss.add(ss11);
     
         SpesaSpedizione ss12 = new SpesaSpedizione();
-        ss12.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da200grA350gr);;
+        ss12.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da200grA350gr);
         ss12.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
         ss12.setSpese(new BigDecimal("6.50"));
         sss.add(ss12);
     
         SpesaSpedizione ss13 = new SpesaSpedizione();
-        ss13.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da350grA1Kg);;
+        ss13.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da350grA1Kg);
         ss13.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
         ss13.setSpese(new BigDecimal("8.50"));
         sss.add(ss13);
     
         SpesaSpedizione ss14 = new SpesaSpedizione();
-        ss14.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da1KgA2Kg);;
+        ss14.setRangeSpeseSpedizione(RangeSpeseSpedizione.Da1KgA2Kg);
         ss14.setAreaSpedizione(AreaSpedizione.EuropaBacinoMediterraneo);
         ss14.setSpese(new BigDecimal("13.50"));
         sss.add(ss14);

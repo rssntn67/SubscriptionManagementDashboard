@@ -6,6 +6,7 @@ import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
@@ -1586,7 +1587,7 @@ public class SmdApplicationTests {
     }
     
     @Test
-    public void testAbbonamentoAggiornaRivistaAbbonamento() throws Exception {
+    public void testAbbonamentoAggiornaRivistaAbbonamento() {
         log.info("----------------->testAbbonamentoAggiornaRivistaAbbonamento<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);

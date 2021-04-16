@@ -38,7 +38,8 @@
 
     <modules>
       <module>library</module>
-      <module>application</module>
+      <module>library-test</module>
+      <module>ui-admin-app</module>
     </modules>
 
 </project>

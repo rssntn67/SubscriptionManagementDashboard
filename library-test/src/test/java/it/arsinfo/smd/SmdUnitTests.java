@@ -3,12 +3,14 @@ package it.arsinfo.smd;
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +19,6 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SmdUnitTests {
     
@@ -60,7 +60,7 @@ public class SmdUnitTests {
         pe.setOtt(true);
         pe.setNov(true);
         pe.setDic(true);
-        assertEquals(EnumSet.allOf(Mese.class), pe.getMesiPubblicazione());
+        Assertions.assertEquals(EnumSet.allOf(Mese.class), pe.getMesiPubblicazione());
 
         
         Pubblicazione pd = new Pubblicazione("pd", TipoPubblicazione.MENSILE);
@@ -75,27 +75,27 @@ public class SmdUnitTests {
         pd.setOtt(true);
         pd.setNov(true);
         pd.setDic(true);
-        assertEquals(11, pd.getMesiPubblicazione().size());
-        assertFalse(pd.getMesiPubblicazione().contains(Mese.AGOSTO));
+        Assertions.assertEquals(11, pd.getMesiPubblicazione().size());
+        Assertions.assertFalse(pd.getMesiPubblicazione().contains(Mese.AGOSTO));
 
         Pubblicazione pa = new Pubblicazione("pa", TipoPubblicazione.SEMESTRALE);
         pa.setFeb(true);
         pa.setAgo(true);
-        assertEquals(2, pa.getMesiPubblicazione().size());
-        assertTrue(pa.getMesiPubblicazione().contains(Mese.AGOSTO));
-        assertTrue(pa.getMesiPubblicazione().contains(Mese.FEBBRAIO));
+        Assertions.assertEquals(2, pa.getMesiPubblicazione().size());
+        Assertions.assertTrue(pa.getMesiPubblicazione().contains(Mese.AGOSTO));
+        Assertions.assertTrue(pa.getMesiPubblicazione().contains(Mese.FEBBRAIO));
         
         Pubblicazione pb = new Pubblicazione("pb", TipoPubblicazione.SEMESTRALE);
         pb.setMar(true);
         pb.setSet(true);
-        assertEquals(2, pb.getMesiPubblicazione().size());
-        assertTrue(pb.getMesiPubblicazione().contains(Mese.MARZO));
-        assertTrue(pb.getMesiPubblicazione().contains(Mese.SETTEMBRE));
+        Assertions.assertEquals(2, pb.getMesiPubblicazione().size());
+        Assertions.assertTrue(pb.getMesiPubblicazione().contains(Mese.MARZO));
+        Assertions.assertTrue(pb.getMesiPubblicazione().contains(Mese.SETTEMBRE));
 
         Pubblicazione pc = new Pubblicazione("pc", TipoPubblicazione.ANNUALE);
         pc.setApr(true);
-        assertEquals(1, pc.getMesiPubblicazione().size());
-        assertTrue(pc.getMesiPubblicazione().contains(Mese.APRILE));
+        Assertions.assertEquals(1, pc.getMesiPubblicazione().size());
+        Assertions.assertTrue(pc.getMesiPubblicazione().contains(Mese.APRILE));
         
     }
 
@@ -105,11 +105,11 @@ public class SmdUnitTests {
         for (int i=0; i< 200000;i++) {
         Anagrafica a = SmdHelper.getAnagraficaBy(""+i, ""+i);
         String codeLine = Abbonamento.generaCodeLine(Anno.ANNO2019,a);
-        assertEquals("19", codeLine.substring(0, 2));
-        assertTrue(Abbonamento.checkCodeLine(codeLine));
-        assertTrue(campi.add(codeLine));
+        Assertions.assertEquals("19", codeLine.substring(0, 2));
+        Assertions.assertTrue(Abbonamento.checkCodeLine(codeLine));
+        Assertions.assertTrue(campi.add(codeLine));
         }
-        assertEquals(200000, campi.size());        
+        Assertions.assertEquals(200000, campi.size());
     }
 
     @Test
@@ -117,43 +117,43 @@ public class SmdUnitTests {
         Calendar now = Calendar.getInstance();
         now.setTime(new Date());
         int anno = now.get(Calendar.YEAR);
-        assertEquals(anno-1, Anno.getAnnoPassato().getAnno());
-        assertEquals(anno, Anno.getAnnoCorrente().getAnno());
-        assertEquals(anno+1, Anno.getAnnoProssimo().getAnno());
+        Assertions.assertEquals(anno-1, Anno.getAnnoPassato().getAnno());
+        Assertions.assertEquals(anno, Anno.getAnnoCorrente().getAnno());
+        Assertions.assertEquals(anno+1, Anno.getAnnoProssimo().getAnno());
         int mese = now.get(Calendar.MONTH);
         // Mese comincia da 0 
-        assertEquals(mese+1, Mese.getMeseCorrente().getPosizione());
+        Assertions.assertEquals(mese+1, Mese.getMeseCorrente().getPosizione());
         
     }
     
     private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, RivistaAbbonamento ec) {
-        assertEquals(0.0,abb.getSpese().doubleValue(),0);
-        assertTrue(Smd.isAbbonamentoAnnuale(ec));
-        assertEquals(abb, ec.getAbbonamento());
+        Assertions.assertEquals(0.0,abb.getSpese().doubleValue(),0);
+        Assertions.assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        Assertions.assertEquals(abb, ec.getAbbonamento());
         switch (ec.getTipoAbbonamentoRivista()) {
             case OmaggioCuriaDiocesiana:
-                assertEquals(0.0,abb.getImporto().doubleValue(),0);
+                Assertions.assertEquals(0.0,abb.getImporto().doubleValue(),0);
             break;
             case OmaggioGesuiti:
             case OmaggioCuriaGeneralizia:
             case OmaggioDirettoreAdp:
             case OmaggioEditore:
-                assertEquals(0.0,ec.getImporto().doubleValue(),0);
+                Assertions.assertEquals(0.0,ec.getImporto().doubleValue(),0);
             break;
             case Ordinario:
-                assertEquals(ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero())).doubleValue()
+                Assertions.assertEquals(ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
                 break;
             case Sostenitore:
-                assertEquals(ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero())).doubleValue()
+                Assertions.assertEquals(ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
                 break;
             case Scontato:
-                assertEquals(ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero())).doubleValue()
+                Assertions.assertEquals(ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
                 break;
             case Web:
-                assertEquals(ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero())).doubleValue()
+                Assertions.assertEquals(ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero())).doubleValue()
                          ,ec.getImporto().doubleValue(),0);
                 break;
             default:
@@ -167,7 +167,7 @@ public class SmdUnitTests {
         Abbonamento abb = new Abbonamento();
         abb.setIntestatario(SmdHelper.getAnagraficaBy("tizio", "caio"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
-        assertEquals(2, messaggio.getAnticipoSpedizione());
+        Assertions.assertEquals(2, messaggio.getAnticipoSpedizione());
         RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setPubblicazione(messaggio);
         ec.setNumero(10);
@@ -177,7 +177,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.MARZO);
         ec.setAnnoInizio(anno);
         ec.setAnnoFine(anno);
-        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
+        Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         ec.setDestinatario(SmdHelper.getAnagraficaBy("AAAA", "BBBBB"));
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         List<SpedizioneWithItems> spedizioni = 
@@ -189,24 +189,24 @@ public class SmdUnitTests {
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
         
-        assertEquals(3, items.size());
-        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
-        assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
-        assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
-        assertEquals(BigDecimal.ZERO, abb.getSpese());
-        assertEquals(abb, ec.getAbbonamento());
-        assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(3, items.size());
+        Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
+        Assertions.assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
+        Assertions.assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
+        Assertions.assertEquals(BigDecimal.ZERO, abb.getSpese());
+        Assertions.assertEquals(abb, ec.getAbbonamento());
+        Assertions.assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
         for (SpedizioneItem item: items) {
-            assertEquals(anno, item.getAnnoPubblicazione());
-            assertEquals(ec, item.getRivistaAbbonamento());
-            assertEquals(10, item.getNumero().intValue());
+            Assertions.assertEquals(anno, item.getAnnoPubblicazione());
+            Assertions.assertEquals(ec, item.getRivistaAbbonamento());
+            Assertions.assertEquals(10, item.getNumero().intValue());
            
             log.info(item.toString());
         }
         
-        assertEquals(3, spedizioni.size());
+        Assertions.assertEquals(3, spedizioni.size());
         for (SpedizioneWithItems spedizione: spedizioni) {
-            assertEquals(abb, spedizione.getSpedizione().getAbbonamento());
+            Assertions.assertEquals(abb, spedizione.getSpedizione().getAbbonamento());
             log.info(spedizione.toString());
         }
         
@@ -218,7 +218,7 @@ public class SmdUnitTests {
         Abbonamento abb = new Abbonamento();
         abb.setIntestatario(SmdHelper.getAnagraficaBy("a", "b"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
-        assertEquals(2, messaggio.getAnticipoSpedizione());
+        Assertions.assertEquals(2, messaggio.getAnticipoSpedizione());
         RivistaAbbonamento ec = new RivistaAbbonamento();
         ec.setPubblicazione(messaggio);
         ec.setNumero(10);
@@ -229,7 +229,7 @@ public class SmdUnitTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(SmdHelper.getAnagraficaBy("k", "h"));
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
-        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
+        Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         List<SpedizioneWithItems> spedizioni = 
                 Smd.genera(abb, 
                                      ec,
@@ -239,30 +239,30 @@ public class SmdUnitTests {
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
 
-        assertEquals(3, items.size());
-        assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
-        assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
-        assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
-        assertEquals(abb, ec.getAbbonamento());
-        assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(3, items.size());
+        Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
+        Assertions.assertEquals(messaggio.getCostoUnitario().multiply(new BigDecimal(10)).doubleValue()*items.size(), ec.getImporto().doubleValue(),0);
+        Assertions.assertEquals(abb.getImporto().doubleValue(), ec.getImporto().doubleValue(),0);
+        Assertions.assertEquals(abb, ec.getAbbonamento());
+        Assertions.assertEquals(items.size()*10, ec.getNumeroTotaleRiviste().intValue());
         for (SpedizioneItem item: items) {
-            assertEquals(anno, item.getAnnoPubblicazione());
-            assertEquals(ec, item.getRivistaAbbonamento());
-            assertEquals(10, item.getNumero().intValue());           
+            Assertions.assertEquals(anno, item.getAnnoPubblicazione());
+            Assertions.assertEquals(ec, item.getRivistaAbbonamento());
+            Assertions.assertEquals(10, item.getNumero().intValue());
             log.info(item.toString());
         }
-        assertEquals(1, spedizioni.size());
+        Assertions.assertEquals(1, spedizioni.size());
         SpedizioneWithItems spedwi = spedizioni.iterator().next();
         log.info(spedwi.getSpedizione().toString());
-        assertEquals(spedwi.getSpedizione().getSpesePostali().doubleValue(), abb.getSpese().doubleValue(),0);
-        assertEquals(Mese.getMeseCorrente(), spedwi.getSpedizione().getMeseSpedizione());
-        assertEquals(Anno.getAnnoCorrente(), spedwi.getSpedizione().getAnnoSpedizione());
-        assertEquals(ec.getNumeroTotaleRiviste()*messaggio.getGrammi(), spedwi.getSpedizione().getPesoStimato().intValue());
+        Assertions.assertEquals(spedwi.getSpedizione().getSpesePostali().doubleValue(), abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(Mese.getMeseCorrente(), spedwi.getSpedizione().getMeseSpedizione());
+        Assertions.assertEquals(Anno.getAnnoCorrente(), spedwi.getSpedizione().getAnnoSpedizione());
+        Assertions.assertEquals(ec.getNumeroTotaleRiviste()*messaggio.getGrammi(), spedwi.getSpedizione().getPesoStimato().intValue());
         
         SpesaSpedizione ss = Smd.getSpesaSpedizione(spese, AreaSpedizione.Italia, RangeSpeseSpedizione.getByPeso(spedwi.getSpedizione().getPesoStimato()));
-        assertEquals(ss.getSpese().doubleValue(), spedwi.getSpedizione().getSpesePostali().doubleValue(),0);
+        Assertions.assertEquals(ss.getSpese().doubleValue(), spedwi.getSpedizione().getSpesePostali().doubleValue(),0);
        
-        assertEquals(items.size(), spedwi.getSpedizioneItems().size());
+        Assertions.assertEquals(items.size(), spedwi.getSpedizioneItems().size());
     }
 
     @Test 
@@ -274,17 +274,17 @@ public class SmdUnitTests {
         Mese mesef=Mese.GENNAIO;
         
         Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
-        assertEquals(2, map.size());
-        assertTrue(map.containsKey(Anno.ANNO2019));
-        assertTrue(map.containsKey(Anno.ANNO2020));
+        Assertions.assertEquals(2, map.size());
+        Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
+        Assertions.assertTrue(map.containsKey(Anno.ANNO2020));
         EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
-        assertEquals(3, riviste2019.size());
-        assertTrue(riviste2019.contains(Mese.OTTOBRE));
-        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
-        assertTrue(riviste2019.contains(Mese.DICEMBRE));
+        Assertions.assertEquals(3, riviste2019.size());
+        Assertions.assertTrue(riviste2019.contains(Mese.OTTOBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.DICEMBRE));
         EnumSet<Mese> riviste2020 = map.get(Anno.ANNO2020);
-        assertEquals(1, riviste2020.size());
-        assertTrue(riviste2020.contains(Mese.GENNAIO));
+        Assertions.assertEquals(1, riviste2020.size());
+        Assertions.assertTrue(riviste2020.contains(Mese.GENNAIO));
         
     }
 
@@ -297,23 +297,23 @@ public class SmdUnitTests {
         Mese mesef=Mese.SETTEMBRE;
         
         Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
-        assertEquals(2, map.size());
-        assertTrue(map.containsKey(Anno.ANNO2019));
-        assertTrue(map.containsKey(Anno.ANNO2020));
+        Assertions.assertEquals(2, map.size());
+        Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
+        Assertions.assertTrue(map.containsKey(Anno.ANNO2020));
         EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
-        assertEquals(2, riviste2019.size());
-        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
-        assertTrue(riviste2019.contains(Mese.DICEMBRE));
+        Assertions.assertEquals(2, riviste2019.size());
+        Assertions.assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.DICEMBRE));
         EnumSet<Mese> riviste2020 = map.get(Anno.ANNO2020);
-        assertEquals(8, riviste2020.size());
-        assertTrue(riviste2020.contains(Mese.GENNAIO));
-        assertTrue(riviste2020.contains(Mese.FEBBRAIO));
-        assertTrue(riviste2020.contains(Mese.MARZO));
-        assertTrue(riviste2020.contains(Mese.APRILE));
-        assertTrue(riviste2020.contains(Mese.MAGGIO));
-        assertTrue(riviste2020.contains(Mese.GIUGNO));
-        assertTrue(riviste2020.contains(Mese.LUGLIO));
-        assertTrue(riviste2020.contains(Mese.SETTEMBRE));
+        Assertions.assertEquals(8, riviste2020.size());
+        Assertions.assertTrue(riviste2020.contains(Mese.GENNAIO));
+        Assertions.assertTrue(riviste2020.contains(Mese.FEBBRAIO));
+        Assertions.assertTrue(riviste2020.contains(Mese.MARZO));
+        Assertions.assertTrue(riviste2020.contains(Mese.APRILE));
+        Assertions.assertTrue(riviste2020.contains(Mese.MAGGIO));
+        Assertions.assertTrue(riviste2020.contains(Mese.GIUGNO));
+        Assertions.assertTrue(riviste2020.contains(Mese.LUGLIO));
+        Assertions.assertTrue(riviste2020.contains(Mese.SETTEMBRE));
         
     }
 
@@ -326,21 +326,21 @@ public class SmdUnitTests {
         Mese mesef=Mese.DICEMBRE;
         
         Map<Anno,EnumSet<Mese>> map = Smd.getAnnoMeseMap(mesei,annoi,mesef,annof,messaggio);
-        assertEquals(1, map.size());
-        assertTrue(map.containsKey(Anno.ANNO2019));
+        Assertions.assertEquals(1, map.size());
+        Assertions.assertTrue(map.containsKey(Anno.ANNO2019));
         EnumSet<Mese> riviste2019 = map.get(Anno.ANNO2019);
-        assertEquals(11, riviste2019.size());
-        assertTrue(riviste2019.contains(Mese.GENNAIO));
-        assertTrue(riviste2019.contains(Mese.FEBBRAIO));
-        assertTrue(riviste2019.contains(Mese.MARZO));
-        assertTrue(riviste2019.contains(Mese.APRILE));
-        assertTrue(riviste2019.contains(Mese.MAGGIO));
-        assertTrue(riviste2019.contains(Mese.GIUGNO));
-        assertTrue(riviste2019.contains(Mese.LUGLIO));
-        assertTrue(riviste2019.contains(Mese.SETTEMBRE));
-        assertTrue(riviste2019.contains(Mese.OTTOBRE));
-        assertTrue(riviste2019.contains(Mese.NOVEMBRE));
-        assertTrue(riviste2019.contains(Mese.DICEMBRE));   
+        Assertions.assertEquals(11, riviste2019.size());
+        Assertions.assertTrue(riviste2019.contains(Mese.GENNAIO));
+        Assertions.assertTrue(riviste2019.contains(Mese.FEBBRAIO));
+        Assertions.assertTrue(riviste2019.contains(Mese.MARZO));
+        Assertions.assertTrue(riviste2019.contains(Mese.APRILE));
+        Assertions.assertTrue(riviste2019.contains(Mese.MAGGIO));
+        Assertions.assertTrue(riviste2019.contains(Mese.GIUGNO));
+        Assertions.assertTrue(riviste2019.contains(Mese.LUGLIO));
+        Assertions.assertTrue(riviste2019.contains(Mese.SETTEMBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.OTTOBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.NOVEMBRE));
+        Assertions.assertTrue(riviste2019.contains(Mese.DICEMBRE));
     }
 
     @Test
@@ -417,38 +417,38 @@ public class SmdUnitTests {
         
         log.info("generato: {}", abb);
         log.info("numeroriviste: " + numeroRiviste + " Costo Unitario:" +  messaggio.getCostoUnitario());
-        assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
-        assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
-        assertEquals(numeroSpedizioni, spedizioniwithitems.size());
-        assertEquals(numeroRiviste, items.size());
-        assertEquals(3.0, abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(numeroRiviste, ec1.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(numeroSpedizioni, spedizioniwithitems.size());
+        Assertions.assertEquals(numeroRiviste, items.size());
+        Assertions.assertEquals(3.0, abb.getSpese().doubleValue(),0);
 
         for (SpedizioneWithItems spedw:spedizioniwithitems) {
             Spedizione sped = spedw.getSpedizione();
             if (sped.getMeseSpedizione() == meseA  
             		&& sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
-                assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRivisteSpedizionePosticipata, spedw.getSpedizioneItems().size());
+                Assertions.assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(numeroRivisteSpedizionePosticipata, spedw.getSpedizioneItems().size());
                 for (SpedizioneItem item : spedw.getSpedizioneItems()) {
-                    assertTrue(item.isPosticipata());
-                    assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
+                    Assertions.assertTrue(item.isPosticipata());
+                    Assertions.assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
                 }
             } else if (sped.getMeseSpedizione() == meseA 
             		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
-                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spedw.getSpedizioneItems().size());
+                Assertions.assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
-                assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
-                assertFalse(item.isPosticipata());
+                Assertions.assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
+                Assertions.assertFalse(item.isPosticipata());
             } else if (sped.getMeseSpedizione() == meseB 	
             		&& sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
-                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spedw.getSpedizioneItems().size());
+                Assertions.assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(1, spedw.getSpedizioneItems().size());
                 SpedizioneItem item = spedw.getSpedizioneItems().iterator().next();
-                assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());            
-                assertFalse(item.isPosticipata());
+                Assertions.assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
+                Assertions.assertFalse(item.isPosticipata());
             } else {
-                fail();
+                Assertions.fail();
             }
         }
         for (SpedizioneWithItems ssp:spedizioniwithitems) {
@@ -460,7 +460,7 @@ public class SmdUnitTests {
         }
         
         RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb, ec1, spedizioniwithitems, SmdHelper.getSpeseSpedizione());
-        assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, aggiorna.getItemsToDelete().size());
 
         BigDecimal ss = BigDecimal.ZERO;
         for (SpedizioneWithItems ssp:aggiorna.getSpedizioniToSave()) {
@@ -468,38 +468,38 @@ public class SmdUnitTests {
             if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.AdpSede) {
                 ss = sped.getSpesePostali();
                 for (SpedizioneItem item: ssp.getSpedizioneItems()) {
-                	assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
+                	Assertions.assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
                 }
-                assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(numeroRivisteSpedizionePosticipata, ssp.getSpedizioneItems().size());            
+                Assertions.assertEquals((numeroRivisteSpedizionePosticipata)*messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(numeroRivisteSpedizionePosticipata, ssp.getSpedizioneItems().size());
             } else if (sped.getMeseSpedizione() == meseA && sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
                 for (SpedizioneItem item: ssp.getSpedizioneItems()) {
-                	assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
+                	Assertions.assertEquals(StatoSpedizione.INVIATA, item.getStatoSpedizione());
                 }
-                assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, ssp.getSpedizioneItems().size());            	
+                Assertions.assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(1, ssp.getSpedizioneItems().size());
         	} else if (sped.getMeseSpedizione() == meseB ) {            
                 for (SpedizioneItem item: ssp.getSpedizioneItems()) {
-                	assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
+                	Assertions.assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione());
                 }
-                assertEquals(0, sped.getPesoStimato().intValue());
-                assertEquals(0, ssp.getSpedizioneItems().size());
+                Assertions.assertEquals(0, sped.getPesoStimato().intValue());
+                Assertions.assertEquals(0, ssp.getSpedizioneItems().size());
             } else {
-                fail();
+                Assertions.fail();
             }
             ssp.getSpedizioneItems().forEach(item -> log.info(item.toString()));
         }
         
-        assertEquals(0,aggiorna.getRivisteToDelete().size());
-        assertEquals(1, aggiorna.getRivisteToSave().size());
+        Assertions.assertEquals(0,aggiorna.getRivisteToDelete().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
         RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
-        assertEquals(1, rivista.getNumero().intValue());
+        Assertions.assertEquals(1, rivista.getNumero().intValue());
         Abbonamento abbonamento = aggiorna.getAbbonamentoToSave();
-        assertNotNull(abbonamento);
-        assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, rivista.getNumeroTotaleRiviste().intValue());
-        assertEquals(ss.doubleValue(), abbonamento.getSpese().doubleValue(),0);
-        assertEquals(rivista.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), rivista.getImporto().doubleValue(),0);
+        Assertions.assertNotNull(abbonamento);
+        Assertions.assertEquals(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata, rivista.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(ss.doubleValue(), abbonamento.getSpese().doubleValue(),0);
+        Assertions.assertEquals(rivista.getImporto().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(messaggio.getCostoUnitario().doubleValue()*(numeroRivisteSpedizioneMeseA+numeroRivisteSpedizionePosticipata), rivista.getImporto().doubleValue(),0);
         
 
     }
@@ -567,9 +567,9 @@ public class SmdUnitTests {
             Spedizione sped= spwi.getSpedizione();
             spwi.getSpedizioneItems()
             .forEach(item -> 
-            assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione()));
-            assertEquals(1, spwi.getSpedizioneItems().size());
-            assertEquals(InvioSpedizione.Spedizioniere, sped.getInvioSpedizione());
+            Assertions.assertEquals(StatoSpedizione.PROGRAMMATA, item.getStatoSpedizione()));
+            Assertions.assertEquals(1, spwi.getSpedizioneItems().size());
+            Assertions.assertEquals(InvioSpedizione.Spedizioniere, sped.getInvioSpedizione());
             switch (sped.getMeseSpedizione()) {
                 case OTTOBRE:
                 case NOVEMBRE:
@@ -581,7 +581,7 @@ public class SmdUnitTests {
                 case GIUGNO:
                     break;
                 default:
-                    fail();
+                    Assertions.fail();
                     break;
             }
         });
@@ -596,21 +596,21 @@ public class SmdUnitTests {
         spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec3).forEach(ec3items::add));
 
         log.info(abb.toString());
-        assertEquals(BigDecimal.ZERO, abb.getSpese());
-        assertEquals(6*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
-        assertEquals(6*lodare.getCostoUnitario().doubleValue(), ec2.getImporto().doubleValue(),0);
-        assertEquals(blocchetti.getAbbonamento().doubleValue(), ec3.getImporto().doubleValue(),0);
-        assertEquals(14, spedizioni.size());
-        assertEquals(6, ec1items.size());
-        assertEquals(6, ec2items.size());
-        assertEquals(2, ec3items.size());
+        Assertions.assertEquals(BigDecimal.ZERO, abb.getSpese());
+        Assertions.assertEquals(6*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(6*lodare.getCostoUnitario().doubleValue(), ec2.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue(), ec3.getImporto().doubleValue(),0);
+        Assertions.assertEquals(14, spedizioni.size());
+        Assertions.assertEquals(6, ec1items.size());
+        Assertions.assertEquals(6, ec2items.size());
+        Assertions.assertEquals(2, ec3items.size());
         
         //FIRST operation Delete ec2 lodare
         RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione());
-        assertEquals(6, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
         
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
-            assertEquals(ec2, item.getRivistaAbbonamento());
+            Assertions.assertEquals(ec2, item.getRivistaAbbonamento());
         }
         int spedizionelodarecount=0;
         int spedizionemessaggiocount=0;
@@ -621,10 +621,10 @@ public class SmdUnitTests {
             	spedizionelodarecount++;
             	continue;
             }
-            assertEquals(1, spwi.getSpedizioneItems().size());
+            Assertions.assertEquals(1, spwi.getSpedizioneItems().size());
             switch (sped.getMeseSpedizione()) {
                 case OTTOBRE:
-                    assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                    Assertions.assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
                     spedizioneblocchetticount++;
                     break;
                 case NOVEMBRE:
@@ -632,38 +632,38 @@ public class SmdUnitTests {
                 case GENNAIO:
                 case FEBBRAIO:
                 case MARZO:
-                    assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                    Assertions.assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                     spedizionemessaggiocount++;
                     break;
                 case APRILE:
                 SpedizioneItem item = spwi.getSpedizioneItems().iterator().next();
                 if (item.getPubblicazione().equals(blocchetti)) {
-                    assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                    Assertions.assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
                     spedizioneblocchetticount++;
                 } else if (item.getPubblicazione().equals(messaggio)) {
-                    assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
+                    Assertions.assertEquals(messaggio.getGrammi(), sped.getPesoStimato().intValue());
                     spedizionemessaggiocount++;
                 } else {
-                    fail();
+                    Assertions.fail();
                 }
                 break;
             default:
-                fail();
+                Assertions.fail();
                 break;
             }
         }
-        assertEquals(2, spedizioneblocchetticount);
-        assertEquals(6, spedizionemessaggiocount);
-        assertEquals(6, spedizionelodarecount);
-        assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
-        assertEquals(0, ec2.getImporto().doubleValue(),0);
+        Assertions.assertEquals(2, spedizioneblocchetticount);
+        Assertions.assertEquals(6, spedizionemessaggiocount);
+        Assertions.assertEquals(6, spedizionelodarecount);
+        Assertions.assertEquals(0, ec2.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(0, ec2.getImporto().doubleValue(),0);
         
 
         aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
-        assertEquals(6, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
 
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
-            assertEquals(ec1, item.getRivistaAbbonamento());
+            Assertions.assertEquals(ec1, item.getRivistaAbbonamento());
         }
         spedizioni.forEach(spwi -> {
             Spedizione sped = spwi.getSpedizione();
@@ -671,8 +671,8 @@ public class SmdUnitTests {
             spwi.getSpedizioneItems().forEach(item -> log.info(item.toString()));
             switch (sped.getMeseSpedizione()) {
             case OTTOBRE:
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
-                assertEquals(1, spwi.getSpedizioneItems().size());
+                Assertions.assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(1, spwi.getSpedizioneItems().size());
                 break;
             case NOVEMBRE:
                 case DICEMBRE:
@@ -680,39 +680,39 @@ public class SmdUnitTests {
                 case FEBBRAIO:
                 case MARZO:
                 case GIUGNO:
-                    assertEquals(0, sped.getPesoStimato().intValue());
-                assertEquals(0, spwi.getSpedizioneItems().size());
+                    Assertions.assertEquals(0, sped.getPesoStimato().intValue());
+                Assertions.assertEquals(0, spwi.getSpedizioneItems().size());
                 break;
                 case APRILE:
             	if (spwi.getSpedizioneItems().size() == 0) {
             		break;
             	}
-                assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
+                Assertions.assertEquals(blocchetti.getGrammi(), sped.getPesoStimato().intValue());
                 break;
                 default:
-                fail();
+                Assertions.fail();
                 break;
             }
         });
-        assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
-        assertEquals(0, ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(0, ec1.getImporto().doubleValue(),0);
 
         aggiorna = Smd.rimuovi(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
         for (SpedizioneItem item: aggiorna.getItemsToDelete()) {
-            assertEquals(ec3, item.getRivistaAbbonamento());
+            Assertions.assertEquals(ec3, item.getRivistaAbbonamento());
         }
-        assertEquals(2, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(2, aggiorna.getItemsToDelete().size());
 
         spedizioni.forEach(spwi -> {
             Spedizione sped = spwi.getSpedizione();
-            assertEquals(0, spwi.getSpedizioneItems().size());
-            assertEquals(0, sped.getPesoStimato().intValue());
+            Assertions.assertEquals(0, spwi.getSpedizioneItems().size());
+            Assertions.assertEquals(0, sped.getPesoStimato().intValue());
         });
-        assertEquals(0, ec3.getNumeroTotaleRiviste().intValue());
-        assertEquals(0, ec3.getImporto().doubleValue(),0);
+        Assertions.assertEquals(0, ec3.getNumeroTotaleRiviste().intValue());
+        Assertions.assertEquals(0, ec3.getImporto().doubleValue(),0);
         log.info(abb.toString());
         
-        assertEquals(abb.getTotale().doubleValue(), 0,0);
+        Assertions.assertEquals(abb.getTotale().doubleValue(), 0,0);
     }
 
     @Test
@@ -768,12 +768,12 @@ public class SmdUnitTests {
         for (SpedizioneWithItems sped: spedizioni) {
         	speseSped = speseSped.add(sped.getSpedizione().getSpesePostali());
     	}
-        assertEquals(p.getMesiPubblicazione().size(), items.size());
-        assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        Assertions.assertEquals(p.getMesiPubblicazione().size(), items.size());
+        Assertions.assertTrue(Smd.isAbbonamentoAnnuale(ec));
         
-        assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(speseSped.doubleValue(), abb.getSpeseEstero().doubleValue(),0);
-        assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
+        Assertions.assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(speseSped.doubleValue(), abb.getSpeseEstero().doubleValue(),0);
+        Assertions.assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
         
         SpesaSpedizione spesa = 
                 Smd.getSpesaSpedizione(
@@ -783,11 +783,11 @@ public class SmdUnitTests {
                            );
         spedizioni.forEach(sped ->{
             log.info(sped.toString());
-            assertEquals(p.getGrammi(), sped.getSpedizione().getPesoStimato().intValue());
-            assertEquals(spesa.getSpese().doubleValue(), sped.getSpedizione().getSpesePostali().doubleValue(),0);
+            Assertions.assertEquals(p.getGrammi(), sped.getSpedizione().getPesoStimato().intValue());
+            Assertions.assertEquals(spesa.getSpese().doubleValue(), sped.getSpedizione().getSpesePostali().doubleValue(),0);
             sped.getSpedizioneItems().forEach( item -> log.info(item.toString()));
         });
-        assertEquals(0, abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(0, abb.getSpese().doubleValue(),0);
         log.info(abb.toString());
     }
     
@@ -822,11 +822,11 @@ public class SmdUnitTests {
             sped.getSpedizioneItems().forEach(item -> {
                 log.info(item.toString());
                 items.add(item); 
-                assertEquals(15, item.getNumero().intValue());
+                Assertions.assertEquals(15, item.getNumero().intValue());
             });
         });
-        assertEquals(8, items.size());
-        assertEquals(8, spedizioni.size());
+        Assertions.assertEquals(8, items.size());
+        Assertions.assertEquals(8, spedizioni.size());
 
         RivistaAbbonamento ec2 = new RivistaAbbonamento();
         ec2.setAbbonamento(abb);
@@ -837,38 +837,38 @@ public class SmdUnitTests {
         ec2.setAnnoFine(anno);
         ec2.setDestinatario(tizio);
         ec2.setNumero(10);
-        assertNotEquals(ec2, ec1);
+        Assertions.assertNotEquals(ec2, ec1);
         
         ec2.setPubblicazione(messaggio);
         ec2.setMeseInizio(Mese.MARZO);
         ec2.setAnnoInizio(anno);
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
-        assertNotEquals(ec2, ec1);
+        Assertions.assertNotEquals(ec2, ec1);
 
         try {
             Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),null,3,ec1.getTipoAbbonamentoRivista());
-            fail();
+            Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
             Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,0,ec1.getTipoAbbonamentoRivista());
-            fail();
+            Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
             Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,3,null);
-            fail();
+            Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
-        assertEquals(8, items.size());
-        assertEquals(8, spedizioni.size());        
+        Assertions.assertEquals(8, items.size());
+        Assertions.assertEquals(8, spedizioni.size());
     }
 
     @Test
@@ -898,40 +898,40 @@ public class SmdUnitTests {
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
-            assertEquals(15, item.getNumero().intValue());
+            Assertions.assertEquals(15, item.getNumero().intValue());
         }));
-        assertEquals(8, items.size());
-        assertEquals(8, spedizioni.size());
-        assertEquals(0, abb.getSpese().doubleValue(),0);
-        assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(8, items.size());
+        Assertions.assertEquals(8, spedizioni.size());
+        Assertions.assertEquals(0, abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
         RivistaAbbonamento ec2 = ec1.clone();
         ec2.setTipoAbbonamentoRivista(ec1.getTipoAbbonamentoRivista());
         ec2.setNumero(10);
-        assertEquals(ec2, ec1);
+        Assertions.assertEquals(ec2, ec1);
 
         RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,10,ec1.getTipoAbbonamentoRivista());
         
-        assertEquals(0, aggiorna.getItemsToDelete().size());
-        assertNotNull(aggiorna.getAbbonamentoToSave());
-        assertEquals(8, aggiorna.getSpedizioniToSave().size());
-        assertEquals(1, aggiorna.getRivisteToSave().size());
+        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
+        Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
+        Assertions.assertEquals(8, aggiorna.getSpedizioniToSave().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
         
-        assertEquals(0, aggiorna.getAbbonamentoToSave().getSpese().doubleValue(),0);
-        assertEquals(10*8*messaggio.getCostoUnitario().doubleValue(), aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+        Assertions.assertEquals(0, aggiorna.getAbbonamentoToSave().getSpese().doubleValue(),0);
+        Assertions.assertEquals(10*8*messaggio.getCostoUnitario().doubleValue(), aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
         RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
-        assertNotNull(rivista);
-        assertEquals(aggiorna.getAbbonamentoToSave().getImporto().doubleValue(), rivista.getImporto().doubleValue(),0);
-        assertEquals(8, aggiorna.getSpedizioniToSave().size());        
+        Assertions.assertNotNull(rivista);
+        Assertions.assertEquals(aggiorna.getAbbonamentoToSave().getImporto().doubleValue(), rivista.getImporto().doubleValue(),0);
+        Assertions.assertEquals(8, aggiorna.getSpedizioniToSave().size());
         
         items.clear();
         aggiorna.getSpedizioniToSave().forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
-            assertSame(rivista, item.getRivistaAbbonamento());
-            assertEquals(rivista, item.getRivistaAbbonamento());
-            assertEquals(10, item.getNumero().intValue());
+            Assertions.assertSame(rivista, item.getRivistaAbbonamento());
+            Assertions.assertEquals(rivista, item.getRivistaAbbonamento());
+            Assertions.assertEquals(10, item.getNumero().intValue());
         }));
-        assertEquals(8, items.size());
+        Assertions.assertEquals(8, items.size());
     }
     
     @Test
@@ -961,12 +961,12 @@ public class SmdUnitTests {
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
-            assertEquals(1, item.getNumero().intValue());
+            Assertions.assertEquals(1, item.getNumero().intValue());
         }));
-        assertEquals(11, items.size());
-        assertEquals(11, spedizioni.size());
-        assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
-        assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(11, items.size());
+        Assertions.assertEquals(11, spedizioni.size());
+        Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
         RivistaAbbonamento ec2 = new RivistaAbbonamento();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(messaggio);
@@ -977,24 +977,24 @@ public class SmdUnitTests {
         ec2.setDestinatario(tizio);
         ec2.setNumero(1);
         ec2.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
-        assertEquals(ec2, ec1);
+        Assertions.assertEquals(ec2, ec1);
 
         RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
-        assertEquals(0, aggiorna.getSpedizioniToSave().size());        
-        assertEquals(0, aggiorna.getItemsToDelete().size());
-        assertEquals(1, aggiorna.getRivisteToSave().size());
-        assertNotNull(aggiorna.getAbbonamentoToSave());
+        Assertions.assertEquals(0, aggiorna.getSpedizioniToSave().size());
+        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
+        Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
         RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
-        assertEquals(0, rivista.getImporto().doubleValue(),0);
-        assertEquals(0, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+        Assertions.assertEquals(0, rivista.getImporto().doubleValue(),0);
+        Assertions.assertEquals(0, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
         
         items.clear();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
-            assertEquals(1, item.getNumero().intValue());
+            Assertions.assertEquals(1, item.getNumero().intValue());
         }));
-        assertEquals(11, items.size());
-        assertEquals(11, spedizioni.size());        
+        Assertions.assertEquals(11, items.size());
+        Assertions.assertEquals(11, spedizioni.size());
     }
 
 
@@ -1033,7 +1033,7 @@ public class SmdUnitTests {
         campagna.addCampagnaItem(cimessaggio);
         
         List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici);
-        assertEquals(1, abbonamenti.size());
+        Assertions.assertEquals(1, abbonamenti.size());
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());
@@ -1044,13 +1044,13 @@ public class SmdUnitTests {
             RivistaAbbonamento ec = Smd.genera(abb, storico);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         }                
-        assertEquals(25, spedizioni.size());
+        Assertions.assertEquals(25, spedizioni.size());
         spedizioni.forEach(sped -> {
-        	assertEquals(1, sped.getSpedizioneItems().size());
-        	assertEquals(0, sped.getSpedizioniPosticipate().size());
+        	Assertions.assertEquals(1, sped.getSpedizioneItems().size());
+        	Assertions.assertEquals(0, sped.getSpedizioniPosticipate().size());
         });
-        assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
-        assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
         
     }
     @Test 
@@ -1075,18 +1075,18 @@ public class SmdUnitTests {
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());
         
-        assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
-        assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
         
         abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(13)));
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(11)));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
 
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
-		assertEquals(blocchetti.getAbbonamento().doubleValue(), costoUno,0);
-		assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
+		Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue(), costoUno,0);
+		Assertions.assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
 
     	
     }
@@ -1113,18 +1113,18 @@ public class SmdUnitTests {
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());
         
-        assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
         
         abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(12)));
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(10)));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
 
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
 		
-		assertEquals(messaggio.getAbbonamento().doubleValue(), costoUno,0);
-		assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
+		Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), costoUno,0);
+		Assertions.assertEquals(4*costoUno, abb.getResiduo().doubleValue(),0);
     	
     }
 
@@ -1157,28 +1157,28 @@ public class SmdUnitTests {
             campagna.addCampagnaItem(ci);
         }
         List<Abbonamento> abbonamenti = Smd.genera(campagna, diocesiMilano, storici);
-        assertEquals(1, abbonamenti.size());
+        Assertions.assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
         	log.info("testGeneraCampagnaAR: genera Rivista abbonamento from Storico {}", storico);
             RivistaAbbonamento ec = Smd.genera(abb, storico);
-            assertEquals(1, ec.getNumero().intValue());
-            assertEquals(0, ec.getImporto().doubleValue(),0);
-            assertEquals(0, abb.getImporto().doubleValue(),0);
-            assertEquals(0,abb.getSpese().doubleValue(),0);
+            Assertions.assertEquals(1, ec.getNumero().intValue());
+            Assertions.assertEquals(0, ec.getImporto().doubleValue(),0);
+            Assertions.assertEquals(0, abb.getImporto().doubleValue(),0);
+            Assertions.assertEquals(0,abb.getSpese().doubleValue(),0);
         	log.info("testGeneraCampagnaAR: Rivista abbonamento {}", ec);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         	log.info("testGeneraCampagnaAR: spedizioni {}", spedizioni.size());
         }      
-        assertEquals(26, spedizioni.size());
-        assertEquals(0, abb.getImporto().doubleValue(),0);
-        assertEquals(0,abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(26, spedizioni.size());
+        Assertions.assertEquals(0, abb.getImporto().doubleValue(),0);
+        Assertions.assertEquals(0,abb.getSpese().doubleValue(),0);
         
         spedizioni.forEach(sped -> {
         	log.info(sped.getSpedizione().toString());
-        	assertEquals(1, sped.getSpedizioneItems().size());
-        	assertEquals(0, sped.getSpedizioniPosticipate().size());
+        	Assertions.assertEquals(1, sped.getSpedizioneItems().size());
+        	Assertions.assertEquals(0, sped.getSpedizioniPosticipate().size());
         });
 
 
@@ -1187,31 +1187,31 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
-        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
         
         abb.setImporto(new BigDecimal(10));
-        assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.No, Smd.getStatoIncasso(abb));
         
         abb.setIncassato(new BigDecimal(10));
-        assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Si, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(7));
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setSpese(new BigDecimal(3));
         abb.setIncassato(new BigDecimal(10));
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
 
         abb.setIncassato(new BigDecimal(6));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
         
         abb.setImporto(new BigDecimal(70));
         abb.setIncassato(new BigDecimal(60));
         abb.setSpese(BigDecimal.ZERO);
-        assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Smd.getStatoIncasso(abb));
         
         abb.setIncassato(new BigDecimal(54));
-        assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Smd.getStatoIncasso(abb));
 
         
     }
@@ -1230,18 +1230,18 @@ public class SmdUnitTests {
     @Test
     public void testGetPaeseBy() {
         Paese paese = Paese.getBySigla("ITA");
-        assertEquals(Paese.IT, paese);
+        Assertions.assertEquals(Paese.IT, paese);
         paese = Paese.getBySigla("CAN");
-        assertEquals(Paese.CA, paese);
+        Assertions.assertEquals(Paese.CA, paese);
         paese = Paese.getBySigla("RSM");
-        assertEquals(Paese.SM, paese);
+        Assertions.assertEquals(Paese.SM, paese);
         paese = Paese.getBySigla("SRM");
-        assertEquals(Paese.SM, paese);
+        Assertions.assertEquals(Paese.SM, paese);
         
         paese = Paese.valueOf("IT");
-        assertEquals(Paese.IT, paese);
+        Assertions.assertEquals(Paese.IT, paese);
         paese = Paese.getByNome("Italia");
-        assertEquals(Paese.IT, paese);
+        Assertions.assertEquals(Paese.IT, paese);
         
     }
         
@@ -1256,15 +1256,15 @@ public class SmdUnitTests {
     	versamento1.setImporto(new BigDecimal("200.00"));
     	
     	BigDecimal incassato = Smd.incassa(incasso, versamento1, abbonamento);
-    	assertEquals(200.00,incassato.doubleValue(),0);
-    	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(200.00,versamento1.getIncassato().doubleValue(),0);
-    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,incassato.doubleValue(),0);
+    	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,versamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
     	Smd.storna(incasso, versamento1, abbonamento, incassato);
-    	assertEquals(0.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,incasso.getIncassato().doubleValue(),0);
 
     	
     }
@@ -1282,45 +1282,45 @@ public class SmdUnitTests {
     	versamento2.setImporto(new BigDecimal("35.00"));
     	
     	BigDecimal incasso1 = Smd.incassa(incasso, versamento1, abbonamento);
-    	assertEquals(180.00,incasso1.doubleValue(),0);    	
-    	assertEquals(180.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
-    	assertEquals(180.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(180.00,incasso1.doubleValue(),0);
+    	Assertions.assertEquals(180.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(180.00,incasso.getIncassato().doubleValue(),0);
            	
     	BigDecimal incasso2 = Smd.incassa(incasso, versamento2, abbonamento);
-    	assertEquals(20.00,incasso2.doubleValue(),0);    	
-    	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
-      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(20.00,incasso2.doubleValue(),0);
+    	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
     	
     	BigDecimal incasso3 = Smd.incassa(incasso, versamento1, abbonamento);
     	BigDecimal incasso4 = Smd.incassa(incasso, versamento2, abbonamento);
-    	assertEquals(0.00,incasso3.doubleValue(),0);    	
-       	assertEquals(0.00,incasso4.doubleValue(),0);    	
-       	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,incasso3.doubleValue(),0);
+       	Assertions.assertEquals(0.00,incasso4.doubleValue(),0);
+       	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
     	Smd.storna(incasso, versamento1, abbonamento,versamento1.getImporto());
-       	assertEquals(20.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(20.00,incasso.getIncassato().doubleValue(),0);
+       	Assertions.assertEquals(20.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(20.00,incasso.getIncassato().doubleValue(),0);
     	
     	BigDecimal incasso5 = Smd.incassa(incasso, versamento2, abbonamento);
-       	assertEquals(15.00,incasso5.doubleValue(),0);    	
-       	assertEquals(35.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(35.00,incasso.getIncassato().doubleValue(),0);
+       	Assertions.assertEquals(15.00,incasso5.doubleValue(),0);
+       	Assertions.assertEquals(35.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(35.00,incasso.getIncassato().doubleValue(),0);
     	
     	BigDecimal incasso6 = Smd.incassa(incasso, versamento1, abbonamento);
-       	assertEquals(165.00,incasso6.doubleValue(),0);    	
-       	assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
-    	assertEquals(165.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
+       	Assertions.assertEquals(165.00,incasso6.doubleValue(),0);
+       	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(165.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
     }
     
@@ -1342,63 +1342,63 @@ public class SmdUnitTests {
        	incasso.setImporto(new BigDecimal("405.00"));
            	
     	BigDecimal incassato1 = Smd.incassa(incasso, versamento1, abbonamento1);
-    	assertEquals(100.00,incassato1.doubleValue(),0);
-    	assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,incassato1.doubleValue(),0);
+    	Assertions.assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,incasso.getIncassato().doubleValue(),0);
            	
     	BigDecimal incassato2=  Smd.incassa(incasso, versamento2, abbonamento2);
-    	assertEquals(135.00,incassato2.doubleValue(),0);
-    	assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(135.00,incassato2.doubleValue(),0);
+    	Assertions.assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
     	
     	BigDecimal incassato3 =  Smd.incassa(incasso, versamento3, abbonamento1);
-    	assertEquals(80.00,incassato3.doubleValue(),0);
-    	assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(80.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(315.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(80.00,incassato3.doubleValue(),0);
+    	Assertions.assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(80.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(315.00,incasso.getIncassato().doubleValue(),0);
 
     	BigDecimal incassato4 =  Smd.incassa(incasso, versamento3, abbonamento2);
-    	assertEquals(90.00,incassato4.doubleValue(),0);
-    	assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(170.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(405.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(90.00,incassato4.doubleValue(),0);
+    	Assertions.assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(170.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(405.00,incasso.getIncassato().doubleValue(),0);
 
     	Smd.storna(incasso, versamento3, abbonamento1, new BigDecimal("170.00"));
-    	assertEquals(10.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(10.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(135.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
 
     	Smd.storna(incasso, versamento2, abbonamento1,new BigDecimal("10.00"));
-    	assertEquals(0.00,abbonamento1.getIncassato().doubleValue(),0);
-    	assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
-    	assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
-      	assertEquals(125.00,versamento2.getIncassato().doubleValue(),0);
-    	assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
-    	assertEquals(225.00,incasso.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,abbonamento1.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
+      	Assertions.assertEquals(125.00,versamento2.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
+    	Assertions.assertEquals(225.00,incasso.getIncassato().doubleValue(),0);
 
     	
     }
     
    @Test
    public void testGetAnnoCorrente() {
-	   assertEquals(Anno.ANNO2021, Anno.getAnnoCorrente());
+	   Assertions.assertEquals(Anno.ANNO2021, Anno.getAnnoCorrente());
    }
    
    @Test
@@ -1408,7 +1408,7 @@ public class SmdUnitTests {
 	   nf.setMaximumFractionDigits(2);
 	   BigDecimal alfa = new BigDecimal("10.5");
 	   
-	   assertEquals("10,50", nf.format(alfa));
+	   Assertions.assertEquals("10,50", nf.format(alfa));
    }
 
    @Test
@@ -1427,7 +1427,7 @@ public class SmdUnitTests {
         httpPost.setHeader("Content-type", "application/json");
 
         CloseableHttpResponse response = client.execute(httpPost);
-        assertEquals(response.getStatusLine().getStatusCode(), 200);
+        Assertions.assertEquals(response.getStatusLine().getStatusCode(), 200);
         InputStream inputStream =response.getEntity().getContent();
         String text;
         try (Reader reader = new InputStreamReader(inputStream)) {
@@ -1439,7 +1439,7 @@ public class SmdUnitTests {
         fos.write(decoder);
         client.close();
 
-        assertTrue(file.isFile());
+        Assertions.assertTrue(file.isFile());
         log.info(file.getAbsolutePath());
     }
 
