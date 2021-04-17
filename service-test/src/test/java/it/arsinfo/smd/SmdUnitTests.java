@@ -1,23 +1,16 @@
 package it.arsinfo.smd;
 
-import com.google.common.io.CharStreams;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
@@ -346,7 +339,7 @@ public class SmdUnitTests {
     }
 
     @Test
-    public void testRimuoviRivistaConSpedizioniInviate() throws Exception{
+    public void testRimuoviRivistaConSpedizioniInviate() {
         Anagrafica tizio = SmdHelper.getGP();
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoCorrente(), false);
@@ -507,7 +500,7 @@ public class SmdUnitTests {
     }
     
     @Test
-    public void testRimuoviRivista() throws Exception {
+    public void testRimuoviRivista() {
         
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
        
@@ -1398,11 +1391,6 @@ public class SmdUnitTests {
     	
     }
     
-   @Test
-   public void testGetAnnoCorrente() {
-	   Assertions.assertEquals(Anno.ANNO2021, Anno.getAnnoCorrente());
-   }
-   
    @Test
    public void testNumberFormat() {
 	   NumberFormat nf = NumberFormat.getInstance(Locale.ITALIAN);
