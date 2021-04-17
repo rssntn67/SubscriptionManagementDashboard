@@ -221,10 +221,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 	public List<OperazioneIncasso> getOperazioneIncassoAssociate(Abbonamento abbonamento) {
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
-	
-	public List<RivistaAbbonamento> findByPubblicazione(Pubblicazione pubblicazione) {
-		return itemRepository.findByPubblicazione(pubblicazione);
-	}
 
 	public List<RivistaAbbonamento> findAllItems() {
 		return itemRepository.findAll();
