@@ -33,4 +33,20 @@ public class CcpConfig {
     public String getCcpApiUrl() {
         return ccpApiUrl;
     }
+
+    public void setCcpApiUrl(String ccpApiUrl) {
+        this.ccpApiUrl = ccpApiUrl;
+    }
+
+    public void setCcpApiKey(String ccpApiKey) {
+        this.ccpApiKey = ccpApiKey;
+    }
+
+    public void setCcpApiUser(String ccpApiUser) {
+        this.ccpApiUser = ccpApiUser;
+    }
+
+    public void setCcpFilePath(String ccpFilePath) {
+        this.ccpFilePath = ccpFilePath;
+    }
 }

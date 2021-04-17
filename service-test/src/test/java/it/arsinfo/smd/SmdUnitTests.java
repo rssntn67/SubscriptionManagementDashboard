@@ -1418,32 +1418,5 @@ public class SmdUnitTests {
        String saldo = NumberFormat.getCurrencyInstance(Locale.ITALY).format(new BigDecimal("17.89"));
         log.info(saldo);
    }
-    @Test
-    public void TestTd674() throws IOException {
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("https://api.stampabollettini.com/api/td674");
-        String code = "2018099999110078";
-        String saldo = NumberFormat.getNumberInstance(Locale.ITALY).format(new BigDecimal("17.89"));
-        StringEntity entity = new StringEntity(Smd.getCcpJsonString("druslcruwaw2up5swexospl6awruphut","adp-289020",code,SmdHelper.getGP(), Ccp.UNO, "Abbonamenti 2020 - Importo da versare a Saldo: EUR " + saldo));
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Content-type", "application/json");
-
-        CloseableHttpResponse response = client.execute(httpPost);
-        Assertions.assertEquals(response.getStatusLine().getStatusCode(), 200);
-        InputStream inputStream =response.getEntity().getContent();
-        String text;
-        try (Reader reader = new InputStreamReader(inputStream)) {
-            text = CharStreams.toString(reader);
-        }
-        File file = new File("/Users/antonio/Downloads/"+code+"R.pdf");
-        FileOutputStream fos = new FileOutputStream(file);
-        byte[] decoder = Base64.getDecoder().decode(text);
-        fos.write(decoder);
-        client.close();
-
-        Assertions.assertTrue(file.isFile());
-        log.info(file.getAbsolutePath());
-    }
-
 
 }

@@ -26,17 +26,8 @@
 		</dependency>
 		<dependency>
 			<groupId>it.arsinfo.smd</groupId>
-			<artifactId>it.arsinfo.smd.config</artifactId>
+			<artifactId>it.arsinfo.smd.api.bollettino</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-                        <version>[24.1.1,)</version>
 		</dependency>
 	</dependencies>
 </project>
