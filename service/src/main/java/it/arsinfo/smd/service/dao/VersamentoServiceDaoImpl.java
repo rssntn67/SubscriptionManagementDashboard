@@ -1,36 +1,50 @@
 package it.arsinfo.smd.service.dao;
 
+import it.arsinfo.smd.dao.*;
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.api.SmdService;
+import it.arsinfo.smd.service.api.VersamentoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.Smd;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.api.VersamentoService;
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.DocumentiTrasportoCumulatiDao;
-import it.arsinfo.smd.dao.DocumentoTrasportoDao;
-import it.arsinfo.smd.dao.OffertaDao;
-import it.arsinfo.smd.dao.OfferteCumulateDao;
-import it.arsinfo.smd.dao.OperazioneIncassoDao;
-import it.arsinfo.smd.dao.VersamentoDao;
-import it.arsinfo.smd.data.Anno;
 
 @Service
 public class VersamentoServiceDaoImpl implements VersamentoService {
 
-    @Autowired
+	public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
+		if (v != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
+			v.setCommittente(a);
+		}
+		return v;
+	}
+
+	public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
+		Map<Long,Anagrafica> anagraficaMap=anagrafica
+				.stream()
+				.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
+		for (Versamento versamento: versamenti) {
+			if (versamento.getCommittente() != null) {
+				versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
+			}
+		}
+		return versamenti;
+
+	}
+
+	@Autowired
     private VersamentoDao repository;
 
     @Autowired
@@ -70,7 +84,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 		Versamento v = repository.findById(id).orElse(null);
 		assert v != null;
 		if (v.getCommittente() != null) {
-			return Smd.getWithAnagrafica(v, anagraficaDao.findById(v.getCommittente().getId()).orElse(null));
+			return getWithAnagrafica(v, anagraficaDao.findById(v.getCommittente().getId()).orElse(null));
 		}
 
 		return v;
@@ -78,7 +92,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 
 	@Override
 	public List<Versamento> findAll() {
-      	return Smd.getWithAnagrafiche(repository.findAll(), anagraficaDao.findAll());
+      	return getWithAnagrafiche(repository.findAll(), anagraficaDao.findAll());
 	}
 
 	public VersamentoDao getRepository() {
@@ -192,7 +206,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
                 && v.getImporto().compareTo(new BigDecimal(importo)) == 0 )
                 .collect(Collectors.toList());
         }
-        return Smd.getWithAnagrafiche(vs, anagraficaDao.findAll());
+        return getWithAnagrafiche(vs, anagraficaDao.findAll());
 	}
 
 	@Override
@@ -343,7 +357,7 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 		List<Versamento> versamenti = repository.findByCommittente(tValue)
 				.stream().filter(v -> v.getDataContabile().after(start) && v.getDataContabile().before(end))
 				.collect(Collectors.toList());
-		return Smd.getWithAnagrafiche(versamenti, anagraficaDao.findAll());
+		return getWithAnagrafiche(versamenti, anagraficaDao.findAll());
 	}
 
 	@Override

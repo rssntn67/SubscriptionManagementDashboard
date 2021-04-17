@@ -97,7 +97,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
     public IncassoUpload(String caption) {
         super();
 
-        Upload upload = new Upload("",this);
+        Upload upload = new Upload(caption,this);
         upload.setImmediateMode(true);
         upload.setButtonCaption("Upload File Poste");
         upload.addSucceededListener(this);

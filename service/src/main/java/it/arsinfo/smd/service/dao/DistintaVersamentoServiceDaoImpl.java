@@ -199,7 +199,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
     			ids.add(v.getCommittente().getId());
     		}
     	}
-      	return Smd.getWithAnagrafiche(versamentoDao.findByDistintaVersamento(t), anagraficaDao.findAllById(ids));
+      	return VersamentoServiceDaoImpl.getWithAnagrafiche(versamentoDao.findByDistintaVersamento(t), anagraficaDao.findAllById(ids));
 	}
 
 	@Override

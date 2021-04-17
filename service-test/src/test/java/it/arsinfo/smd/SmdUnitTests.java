@@ -1390,7 +1390,7 @@ public class SmdUnitTests {
 
     	
     }
-    
+
    @Test
    public void testNumberFormat() {
 	   NumberFormat nf = NumberFormat.getInstance(Locale.ITALIAN);

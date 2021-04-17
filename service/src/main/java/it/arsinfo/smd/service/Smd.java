@@ -18,25 +18,6 @@ public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-	public static String getCcpJsonString(String apiKey, String apiUser, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
-		return "{" +
-				"\"apiKey\":\""+apiKey+"\"," +
-				"\"apiUser\":\""+apiUser+"\","+
-				"\"checkingAccount\": \""+ ccp.getCc()+"\","+
-				"\"iban\": \""+ccp.getIban()+"\","+
-				"\"accountHolder1\": \""+Ccp.intestazioneCcp+"\","+
-				"\"accountHolder2\": \"\","+
-				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
-				"\"code\": \""+code+"\","+
-				"\"name\": \""+anagrafica.getCodeLineBase()+"              "+anagrafica.getIntestazione()+"\","+
-				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
-				"\"zip\": \""+anagrafica.getCap()+"\","+
-				"\"city\": \""+anagrafica.getCitta()+"\","+
-				"\"province\": \""+anagrafica.getProvincia().name()+"\","+
-				"\"reason\": \""+reason+ "\","+
-				"\"dueDate\": \"\"}";
-	}
-
 	public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
     	if (statoCampagna == StatoCampagna.Generata ) {
     		return StatoAbbonamento.Nuovo;
@@ -1045,26 +1026,6 @@ public class Smd {
         incasso.setImporto(importo);
         incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
     }
-
-	public static Versamento getWithAnagrafica(Versamento v,Anagrafica a) {
-		if (v != null && v.getCommittente() != null && v.getCommittente().equals(a)) {
-			v.setCommittente(a);
-		}
-		return v;
-	}
-
-	public static List<Versamento> getWithAnagrafiche(List<Versamento> versamenti, List<Anagrafica> anagrafica) {
-		Map<Long,Anagrafica> anagraficaMap=anagrafica
-				.stream()
-				.collect(Collectors.toMap(Anagrafica::getId, Function.identity()));
-		for (Versamento versamento: versamenti) {
-			if (versamento.getCommittente() != null) {
-				versamento.setCommittente(anagraficaMap.get(versamento.getCommittente().getId()));
-			}
-		}
-		return versamenti;
-
-	}
 
 	public static DistintaVersamento generaIncasso(Set<String> versamenti,
 												   String riepilogo) throws UnsupportedOperationException {
