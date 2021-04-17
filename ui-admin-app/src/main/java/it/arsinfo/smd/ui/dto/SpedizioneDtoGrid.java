@@ -2,7 +2,7 @@ package it.arsinfo.smd.ui.dto;
 
 import com.vaadin.ui.Grid;
 
-import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.SpedizioneDto;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
 public class SpedizioneDtoGrid extends SmdGrid<SpedizioneDto> {

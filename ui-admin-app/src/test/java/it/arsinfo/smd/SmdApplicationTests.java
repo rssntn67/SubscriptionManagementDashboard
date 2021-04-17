@@ -4,6 +4,8 @@ import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;

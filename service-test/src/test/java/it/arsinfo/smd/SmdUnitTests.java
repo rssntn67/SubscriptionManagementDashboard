@@ -2,6 +2,8 @@ package it.arsinfo.smd;
 
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
@@ -180,7 +182,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         ec.setDestinatario(SmdHelper.getAnagraficaBy("AAAA", "BBBBB"));
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
-        List<SpedizioneWithItems> spedizioni = 
+        List<SpedizioneWithItems> spedizioni =
                 Smd.genera(
                          abb, 
                          ec,

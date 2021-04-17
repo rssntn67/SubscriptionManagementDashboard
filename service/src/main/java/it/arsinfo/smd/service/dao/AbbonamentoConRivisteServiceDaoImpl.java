@@ -19,7 +19,7 @@ import it.arsinfo.smd.data.Paese;
 import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Regione;
 import it.arsinfo.smd.data.TitoloAnagrafica;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.Abbonamento;
 
 @Service

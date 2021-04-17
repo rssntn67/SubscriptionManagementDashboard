@@ -1,4 +1,4 @@
-package it.arsinfo.smd.dto;
+package it.arsinfo.smd.service.dto;
 
 import org.springframework.util.Assert;
 

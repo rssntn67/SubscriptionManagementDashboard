@@ -1,4 +1,4 @@
-package it.arsinfo.smd.data;
+package it.arsinfo.smd.service.dto;
 
 import java.util.ArrayList;
 import java.util.List;

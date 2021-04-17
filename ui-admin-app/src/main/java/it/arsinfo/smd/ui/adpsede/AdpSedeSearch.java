@@ -11,7 +11,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
-import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.SpedizioneDto;
 import it.arsinfo.smd.ui.vaadin.SmdBaseSearch;
 
 public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {

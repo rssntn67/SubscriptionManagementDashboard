@@ -2,8 +2,10 @@ package it.arsinfo.smd.service.dao;
 
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.SmdService;
@@ -146,7 +148,7 @@ public class SmdServiceImpl implements SmdService {
         	return;
         }
 
-        RivistaAbbonamentoAggiorna aggiorna = 
+        RivistaAbbonamentoAggiorna aggiorna =
         		Smd.aggiorna(
         				abbonamento,
         				findByAbbonamento(abbonamento),

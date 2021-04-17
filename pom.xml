@@ -37,6 +37,8 @@
 	</licenses>
 
     <modules>
+      <module>data</module>
+      <module>config</module>
       <module>model</module>
       <module>dao</module>
       <module>service</module>

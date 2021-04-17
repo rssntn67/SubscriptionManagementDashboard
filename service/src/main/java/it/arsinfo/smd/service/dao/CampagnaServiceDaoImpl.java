@@ -5,7 +5,7 @@ import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
 import org.slf4j.Logger;

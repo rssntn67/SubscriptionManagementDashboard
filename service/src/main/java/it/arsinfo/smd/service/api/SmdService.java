@@ -1,8 +1,9 @@
 package it.arsinfo.smd.service.api;
 
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.service.dto.SpedizioneDto;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 
 import java.math.BigDecimal;

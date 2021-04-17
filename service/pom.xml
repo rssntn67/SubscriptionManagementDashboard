@@ -19,11 +19,16 @@
 	</parent>
 
 	<dependencies>
-                <dependency>
-                        <groupId>it.arsinfo.smd</groupId>
-                        <artifactId>it.arsinfo.smd.dao</artifactId>
-                        <version>${project.version}</version>
-                </dependency>
+		<dependency>
+				<groupId>it.arsinfo.smd</groupId>
+				<artifactId>it.arsinfo.smd.dao</artifactId>
+				<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>it.arsinfo.smd</groupId>
+			<artifactId>it.arsinfo.smd.config</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

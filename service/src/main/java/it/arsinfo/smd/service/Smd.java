@@ -1,6 +1,8 @@
 package it.arsinfo.smd.service;
 
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +156,7 @@ public class Smd {
     
     public static final BigDecimal contrassegno=new BigDecimal("4.50");
 
-    public static Map<Integer,SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
+    public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
 	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
 	    for (SpedizioneWithItems spedizione:spedizioni) {
 	        spedMap.put(getHashCode(spedizione.getSpedizione(), spedizione.getSpedizioneItems().iterator().next().getPubblicazione()), spedizione);
