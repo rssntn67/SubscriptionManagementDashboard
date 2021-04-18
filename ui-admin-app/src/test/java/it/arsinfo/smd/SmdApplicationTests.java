@@ -1,6 +1,8 @@
 package it.arsinfo.smd;
 
+import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
+import it.arsinfo.smd.bollettino.api.BollettinoService;
 import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.*;
@@ -105,7 +107,13 @@ public class SmdApplicationTests {
 
     @Autowired 
     private LogoutSuccessHandler logoutSuccessHandler;
-    
+
+    @Autowired
+    private BollettinoService bollettinoService;
+
+    @Autowired
+    private BancoPostaService bancoPostaService;
+
     private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
 
     @BeforeEach
@@ -142,7 +150,11 @@ public class SmdApplicationTests {
         assertThat(authenticationSuccessHandler).isNotNull();
         assertThat(authenticationSuccessHandler instanceof RedirectAuthenticationSuccessHandler).isTrue();        
         assertThat(logoutSuccessHandler).isNotNull();
-        assertThat(logoutSuccessHandler instanceof CustomLogoutSuccessHandler).isTrue();        
+        assertThat(logoutSuccessHandler instanceof CustomLogoutSuccessHandler).isTrue();
+
+        assertNotNull(bancoPostaService);
+        assertNotNull(bollettinoService);
+
         log.info("----------------->EnteringSetUp<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, notaDao.findAll().size());
