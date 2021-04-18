@@ -5,18 +5,22 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
-import it.arsinfo.smd.service.api.AbbonamentoService;
+import it.arsinfo.smd.bollettino.api.BollettinoService;
+import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 
+import java.text.NumberFormat;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
@@ -42,11 +46,21 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
     private final ComboBox<Incassato> statoIncasso = new ComboBox<>("Incassato",EnumSet.allOf(Incassato.class));
 
-    private final AbbonamentoService dao;
-    public AbbonamentoEditor(AbbonamentoService dao, List<Anagrafica> anagrafica, List<Campagna> campagne) {
+    private static String getReason(Abbonamento abbonamento) {
+           String saldo = NumberFormat.getNumberInstance(Locale.ITALY).format(abbonamento.getResiduo());
+           return "Anno " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Euro " + saldo;
+    }
 
+    private final CcpConfig ccpConfig;
+    private final BollettinoService bollettinoService;
+    public AbbonamentoEditor(AbbonamentoService dao,
+                             BollettinoService bollettinoService,
+                             CcpConfig ccpConfig,
+                             List<Anagrafica> anagrafica,
+                             List<Campagna> campagne) {
         super(dao,new Binder<>(Abbonamento.class));
-        this.dao=dao;
+        this.bollettinoService=bollettinoService;
+        this.ccpConfig=ccpConfig;
         CheckBox sollecitato = new CheckBox("Sollecitato");
         CheckBox inviatoEC = new CheckBox("InviatoEC");
         ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<>("Stato",
@@ -87,7 +101,13 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         residuo.setReadOnly(true);
         speseEstrattoConto.setReadOnly(true);
 
-        stampaBollettino.addClickListener(c-> dao.getBollettino(get(),true));
+        stampaBollettino.addClickListener(c->
+                bollettinoService.getBollettino(
+                        ccpConfig,
+                        get().getCodeLine(),
+                        get().getIntestatario(),
+                        get().getCcp(),
+                        getReason(get())));
         getBinder().forField(codeLine).asRequired().withValidator(Objects::nonNull,
                 "Deve essere definito").bind(Abbonamento::getCodeLine,
                                              Abbonamento::setCodeLine);
@@ -174,12 +194,19 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         stampaBollettino.setVisible(persisted);
 
         if (persisted) {
-            BrowserWindowOpener opener = new BrowserWindowOpener(new FileResource(dao.getBollettino(abbonamento,false)));
+            BrowserWindowOpener opener =
+                    new BrowserWindowOpener(new FileResource(
+                            bollettinoService.getFile(
+                                    ccpConfig,
+                                    abbonamento.getCodeLine(),
+                                    abbonamento.getIntestatario(),
+                                    abbonamento.getCcp(),
+                                    getReason(abbonamento))));
             opener.setWindowName("_blank_"+abbonamento.getCodeLine());
             opener.extend(stampaBollettino);
         }
         intestatario.focus();
 
     }
-            
+
 }

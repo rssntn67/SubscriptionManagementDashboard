@@ -42,6 +42,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>it.arsinfo.smd</groupId>
+			<artifactId>it.arsinfo.smd.api.bollettino</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>it.arsinfo.smd</groupId>
+			<artifactId>it.arsinfo.smd.api.bancoposta</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>

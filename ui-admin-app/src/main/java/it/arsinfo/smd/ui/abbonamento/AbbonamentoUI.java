@@ -5,6 +5,8 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
+import it.arsinfo.smd.bollettino.api.BollettinoService;
+import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -27,7 +29,13 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
     private static final long serialVersionUID = 3429323584726379968L;
 
     @Autowired
-    AbbonamentoService dao;
+    private AbbonamentoService dao;
+
+    @Autowired
+    private BollettinoService bollettinoService;
+
+    @Autowired
+    private CcpConfig ccpConfig;
     
     @Override
     protected void init(VaadinRequest request) {
@@ -49,7 +57,13 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
 	    SmdButton itemSave = new SmdButton("Salva Rivista", VaadinIcons.CHECK);
 	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
 	    
-	    AbbonamentoEditor maineditor = new AbbonamentoEditor(dao,anagrafica,campagne);
+	    AbbonamentoEditor maineditor =
+                new AbbonamentoEditor(
+                        dao,
+                        bollettinoService,
+                        ccpConfig,
+                        anagrafica,
+                        campagne);
 	    maineditor.getActions().addComponents(itemDel.getButton());
 		maineditor.getActions().addComponents(itemSave.getButton());
 		maineditor.getActions().addComponents(itemAdd.getButton());

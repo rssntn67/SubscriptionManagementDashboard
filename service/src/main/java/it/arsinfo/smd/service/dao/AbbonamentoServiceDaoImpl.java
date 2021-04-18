@@ -1,7 +1,5 @@
 package it.arsinfo.smd.service.dao;
 
-import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
@@ -13,12 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,12 +45,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 
 	@Autowired
 	private SmdService smdService;
-
-	@Autowired
-	private CcpConfig ccpConfig;
-
-	@Autowired
-	private BollettinoService bollettinoService;
 
 	@Override
 	@Transactional
@@ -369,17 +358,4 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 		return repository.findByIntestatarioAndAnno(tValue, sValue);
 	}
 
-	@Override
-	public File getBollettino(Abbonamento abbonamento, boolean download) {
-		String reason = getReason(abbonamento);
-		if (!download) {
-			return bollettinoService.getFile(ccpConfig,abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),reason);
-		}
-		return bollettinoService.getBollettino(ccpConfig,abbonamento.getCodeLine(),abbonamento.getIntestatario(),abbonamento.getCcp(),reason);
-	}
-
-	private String getReason(Abbonamento abbonamento) {
-		String saldo = NumberFormat.getNumberInstance(Locale.ITALY).format(abbonamento.getResiduo());
-		return "Anno " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Euro " + saldo;
-	}
 }

@@ -42,7 +42,7 @@ public class BollettinoServiceImpl implements BollettinoService {
 	private static final Logger log = LoggerFactory.getLogger(BollettinoServiceImpl.class);
 
 	@Override
-	public File getBollettino(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
+	public void getBollettino(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
 		log.info("getBollettino: {} {} reason: {}", ccp,code,reason);
 		File file = getFile(ccpConfig,code,anagrafica,ccp,reason);
 		if (!file.exists()) {
@@ -50,10 +50,8 @@ public class BollettinoServiceImpl implements BollettinoService {
 				downloadBollettino(ccpConfig, code, anagrafica, ccp, reason, file);
 			} catch (IOException e) {
 				log.error("getBollettino: {}", e.getMessage(),e);
-				return null;
 			}
 		}
-		return file;
 	}
 
 	@Override

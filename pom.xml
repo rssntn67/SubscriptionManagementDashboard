@@ -42,6 +42,7 @@
       <module>model</module>
       <module>dao</module>
       <module>api-bollettino</module>
+      <module>api-bancoposta</module>
       <module>service</module>
       <module>service-test</module>
       <module>ui-admin-app</module>
