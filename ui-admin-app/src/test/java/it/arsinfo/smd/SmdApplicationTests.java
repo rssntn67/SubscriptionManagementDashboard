@@ -1,5 +1,6 @@
 package it.arsinfo.smd;
 
+import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
 import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.dao.*;
@@ -1703,7 +1704,7 @@ public class SmdApplicationTests {
     public void testVersamentoCRUD() {
         log.info("----------------->testVersamentoCRUD<----------------");
         assertEquals(0, incassoDao.findAll().size());
-        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getItems().forEach(versamentoDao::save);
         
@@ -1720,7 +1721,7 @@ public class SmdApplicationTests {
     public void testVersamentoWithRediduo() {
         log.info("----------------->testVersamentoWithRediduo<----------------");
         assertEquals(0, incassoDao.findAll().size());
-        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getItems().forEach(v -> versamentoDao.save(v));
         
@@ -1738,6 +1739,13 @@ public class SmdApplicationTests {
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, versamentoDao.findAll().size());
                 
+    }
+
+    public static DistintaVersamento getIncassoTelematici() {
+        String riepilogo1 = "4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
+        Set<String> versamenti1 = new HashSet<>();
+        versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
+        return BancoPostaServiceImpl.generaIncasso(versamenti1, riepilogo1);
     }
 
     @Test
@@ -1765,7 +1773,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(ar);
         assertEquals(1, anagraficaDao.findAll().size());
         
-        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getItems().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());
@@ -1826,7 +1834,7 @@ public class SmdApplicationTests {
         anagraficaDao.save(ar);
         assertEquals(1, anagraficaDao.findAll().size());
 
-        DistintaVersamento incasso = SmdHelper.getIncassoTelematici();
+        DistintaVersamento incasso = getIncassoTelematici();
         incassoDao.save(incasso);
         incasso.getItems().forEach(v -> versamentoDao.save(v));
         assertEquals(1, incassoDao.findAll().size());

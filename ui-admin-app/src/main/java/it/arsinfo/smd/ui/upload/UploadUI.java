@@ -1,5 +1,7 @@
 package it.arsinfo.smd.ui.upload;
 
+import it.arsinfo.smd.bancoposta.api.BancoPostaService;
+import it.arsinfo.smd.config.CcpConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -24,11 +26,16 @@ public class UploadUI extends SmdUI {
 
     @Autowired
     private DistintaVersamentoService dao;
-    
+
+    @Autowired
+    private BancoPostaService bancoPostaService;
+
+    @Autowired
+    private CcpConfig ccpConfig;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
-        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste");
+        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste",bancoPostaService,ccpConfig);
         DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti Importate");
 
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti Importati");
@@ -45,7 +52,7 @@ public class UploadUI extends SmdUI {
         versGrid.setVisible(false);
 
         upload.setChangeHandler(() -> {
-            upload.getIncassi().stream().forEach(incasso -> {
+            upload.getIncassi().forEach(incasso -> {
                 try {
                     dao.save(incasso);
                 } catch (Exception e) {
