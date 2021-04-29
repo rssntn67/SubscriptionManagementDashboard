@@ -44,7 +44,12 @@ public class AnagraficaServiceDaoImpl implements AnagraficaService {
 		return repository.findAll();
 	}
 
-	public AnagraficaDao getRepository() {
+    @Override
+    public List<Anagrafica> searchByDefault() {
+        return repository.findAll();
+    }
+
+    public AnagraficaDao getRepository() {
 		return repository;
 	}
 

@@ -38,6 +38,11 @@ public class PubblicazioneServiceDaoImpl implements PubblicazioneService {
 		return repository.findAll();
 	}
 
+	@Override
+	public List<Pubblicazione> searchByDefault() {
+		return repository.findAll();
+	}
+
 	public PubblicazioneDao getRepository() {
 		return repository;
 	}

@@ -111,7 +111,7 @@ public class IncassaAbbonamentoUI extends SmdUI {
         	versamentoGrid.populate(dao.getOperazioneIncassoAssociate(editor.get()));
         });
 
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
 
     }
 

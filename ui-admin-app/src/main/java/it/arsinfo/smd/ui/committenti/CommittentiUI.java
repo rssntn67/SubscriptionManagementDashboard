@@ -134,6 +134,6 @@ public class CommittentiUI extends SmdUI {
             dissociacommittente.setVisible(false);
         });
                 
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
     }
 }

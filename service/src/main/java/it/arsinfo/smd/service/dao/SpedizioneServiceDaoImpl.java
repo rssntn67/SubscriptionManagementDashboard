@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,11 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 	@Override
 	public List<Spedizione> findAll() {
         return repository.findAll();
+	}
+
+	@Override
+	public List<Spedizione> searchByDefault() {
+		return new ArrayList<>();
 	}
 
 	public SpedizioneDao getRepository() {

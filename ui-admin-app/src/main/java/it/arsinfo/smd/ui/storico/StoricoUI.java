@@ -73,6 +73,11 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		}
 
 		@Override
+		public List<Storico> searchByDefault() {
+			return dao.searchByDefault();
+		}
+
+		@Override
 		public List<Storico> searchBy(Anagrafica intestatario, Anagrafica destinatario, Pubblicazione pubblicazione) {
 			return dao.searchBy(intestatario, destinatario, pubblicazione);
 		}
@@ -170,7 +175,7 @@ public class StoricoUI extends SmdEditorUI<Storico> {
                 grid);
 
 
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
         
         update.setChangeHandler(() -> {
             try {

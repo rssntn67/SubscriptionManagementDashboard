@@ -134,6 +134,6 @@ public class IncassaDocumentoTrasportoUI extends SmdUI {
             return button;
         });
                 
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
     }
 }

@@ -38,6 +38,11 @@ public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneService {
 		return repository.findAll();
 	}
 
+	@Override
+	public List<SpesaSpedizione> searchByDefault() {
+		return repository.findAll();
+	}
+
 	public SpesaSpedizioneDao getRepository() {
 		return repository;
 	}

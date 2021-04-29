@@ -11,4 +11,5 @@ public interface SmdServiceBase<S extends SmdEntity> {
 	void delete(S entity) throws Exception ;
 	S findById(Long id);
 	List<S> findAll();
+	List<S> searchByDefault();
 }

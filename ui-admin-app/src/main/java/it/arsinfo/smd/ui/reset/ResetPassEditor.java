@@ -91,7 +91,6 @@ public class ResetPassEditor extends SmdRepositoryDaoEditor<UserInfo> {
          * 
          */
         private static final long serialVersionUID = 1L;
-        BeanValidator passwordBeanValidator = new BeanValidator(UserInfo.class, "passwordHash");
 
         @Override
         public ValidationResult apply(String value, ValueContext context) {
@@ -99,13 +98,13 @@ public class ResetPassEditor extends SmdRepositoryDaoEditor<UserInfo> {
                 return ValidationResult.ok();
             }
             
-            if (!SecurityUtils.verify(password.getValue())) {
-                Notification.show("Il reset della Password è fallito",
-                                  "la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale",
-                                  Notification.Type.HUMANIZED_MESSAGE);
-                return ValidationResult.error("la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale");
+            if (SecurityUtils.verify(password.getValue())) {
+                return ValidationResult.ok();
             }
-            return passwordBeanValidator.apply(value, context);
+            Notification.show("Il reset della Password è fallito",
+                    "la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale",
+                    Notification.Type.HUMANIZED_MESSAGE);
+            return ValidationResult.error("la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale");
         }
 };
 

@@ -8,5 +8,6 @@ public abstract class SmdBaseSearch<T>
 
         
     public abstract List<T> find();
+    public abstract List<T> searchDefault();
         
 }

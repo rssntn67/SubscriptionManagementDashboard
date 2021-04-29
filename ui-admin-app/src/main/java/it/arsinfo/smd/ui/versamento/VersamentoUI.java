@@ -131,6 +131,6 @@ public class VersamentoUI extends SmdUI {
             abbonamentiAssociabiliGrid.populate(abbSearch.find());
         });
 
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
     }
 }

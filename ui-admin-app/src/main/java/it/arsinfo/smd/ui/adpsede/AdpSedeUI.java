@@ -80,7 +80,7 @@ public class AdpSedeUI extends SmdUI {
             }
         });
 
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
         spedisci.getButton().setEnabled(search.getStato() == StatoSpedizione.PROGRAMMATA && grid.getSize()>0);
         annulla.getButton().setEnabled(search.getStato() == StatoSpedizione.SOSPESA && grid.getSize()>0);
 

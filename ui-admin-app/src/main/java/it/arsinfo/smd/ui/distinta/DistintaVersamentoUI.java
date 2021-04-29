@@ -60,7 +60,7 @@ public class DistintaVersamentoUI extends SmdEditorUI<DistintaVersamento> {
         	
         });
 
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }  
     

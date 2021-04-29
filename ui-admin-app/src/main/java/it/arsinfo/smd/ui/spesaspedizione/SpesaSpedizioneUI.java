@@ -40,7 +40,7 @@ public class SpesaSpedizioneUI extends SmdEditorUI<SpesaSpedizione> {
 
         editor.setVisible(false);
         
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
 

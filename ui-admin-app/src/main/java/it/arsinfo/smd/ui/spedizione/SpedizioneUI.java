@@ -145,7 +145,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
 
         addSmdComponents(editor,search, grid);
 
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
 
     }
     

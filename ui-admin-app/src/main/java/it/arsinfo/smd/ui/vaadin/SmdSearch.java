@@ -18,8 +18,8 @@ public abstract class SmdSearch<T extends SmdEntity>
 
     public abstract List<T> find();
         
-    public List<T> findAll() {
-        return dao.findAll();
+    public List<T> searchDefault() {
+        return dao.searchByDefault();
     }
 
 }

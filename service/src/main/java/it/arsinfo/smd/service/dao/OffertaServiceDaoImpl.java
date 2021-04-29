@@ -38,6 +38,11 @@ public class OffertaServiceDaoImpl implements OffertaService {
 		return repository.findAll();
 	}
 
+	@Override
+	public List<Offerta> searchByDefault() {
+		return repository.findAll();
+	}
+
 	public OffertaDao getRepository() {
 		return repository;
 	}

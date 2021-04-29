@@ -1,26 +1,19 @@
 package it.arsinfo.smd.ui.user;
 
 
-import java.util.EnumSet;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
-import com.vaadin.data.validator.BeanValidator;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-
-import it.arsinfo.smd.service.api.UserInfoService;
+import com.vaadin.ui.*;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
+import it.arsinfo.smd.service.api.UserInfoService;
 import it.arsinfo.smd.ui.security.SecurityUtils;
 import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.EnumSet;
 
 
 public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
@@ -29,7 +22,7 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
      * 
      */
     private final TextField username = new TextField("username");
-    private final ComboBox<Role> role = new ComboBox<Role>("Selezionare il ruolo",EnumSet.allOf(Role.class));
+    private final ComboBox<Role> role = new ComboBox<>("Selezionare il ruolo",EnumSet.allOf(Role.class));
     private final PasswordField password = new PasswordField("password");
     private final PasswordField confirm = new PasswordField("confirm");
 
@@ -44,13 +37,31 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         
         getBinder().forField(username).asRequired().bind("username");
         getBinder().forField(role).asRequired().bind("role");
+
+        Validator<String> passwordValidator = new Validator<String>() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public ValidationResult apply(String value, ValueContext context) {
+                if (persisted && value.isEmpty()) {
+                    return ValidationResult.ok();
+                }
+                if (SecurityUtils.verify(password.getValue())) {
+                    return ValidationResult.ok();
+                }
+                return ValidationResult.error("la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale");
+            }
+        };
         getBinder().forField(password).withValidator(passwordValidator)
         .bind(
               bean -> "",
                  (bean, value) -> {
-                                 if (value.isEmpty()) {
-                                     } else {
-                                 bean.setPasswordHash(passwordEncoder.encode(value));
+                                 if (!value.isEmpty()) {
+                                  bean.setPasswordHash(passwordEncoder.encode(value));
                                      }
                                  });
 
@@ -99,9 +110,6 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
                               Notification.Type.HUMANIZED_MESSAGE);
             return;
         }
-        if (get().getId() == null ) {
-            
-        }
         super.save();
         Notification.show("Utente salvato",Notification.Type.HUMANIZED_MESSAGE);
     }
@@ -114,30 +122,6 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         role.setReadOnly(persisted && obj.getUsername().equals("admin"));
         password.setRequiredIndicatorVisible(!persisted);
     }
-    
-    private Validator<String> passwordValidator = new Validator<String>() {
-
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 1L;
-        BeanValidator passwordBeanValidator 
-        = new BeanValidator(
-        		UserInfo.class, 
-        		"passwordHash"
-        		);
-
-        @Override
-        public ValidationResult apply(String value, ValueContext context) {
-            if (persisted && value.isEmpty()) {
-                return ValidationResult.ok();
-            }            
-            if (!SecurityUtils.verify(password.getValue())) {
-                return ValidationResult.error("la password deve avere minimo 8 caratteri, contenere almeno un numero, almeno un carattere minuscolo, almeno un carattere maiuscolo e almeno nun carattere speciale");
-            }
-            return passwordBeanValidator.apply(value, context);
-        }
-};
 
 
 }

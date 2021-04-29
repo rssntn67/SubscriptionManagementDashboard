@@ -85,7 +85,7 @@ public class IncassaCodelineUI extends SmdUI {
         	indietro.setVisible(false);
         });
         
-        grid.populate(search.find());
+        grid.populate(search.searchDefault());
     }  
     
 }

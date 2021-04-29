@@ -93,6 +93,11 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 		return repository.findAll();
 	}
 
+	@Override
+	public List<Abbonamento> searchByDefault() {
+		return new ArrayList<>();
+	}
+
 	public AbbonamentoDao getRepository() {
 		return repository;
 	}

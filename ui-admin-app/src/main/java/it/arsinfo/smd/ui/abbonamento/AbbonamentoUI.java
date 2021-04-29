@@ -84,7 +84,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
                 search, 
                 grid);
 
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
 

@@ -3,7 +3,6 @@ package it.arsinfo.smd.service.dao;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.api.VersamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +92,11 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 	@Override
 	public List<Versamento> findAll() {
       	return getWithAnagrafiche(repository.findAll(), anagraficaDao.findAll());
+	}
+
+	@Override
+	public List<Versamento> searchByDefault() {
+		return new ArrayList<>();
 	}
 
 	public VersamentoDao getRepository() {

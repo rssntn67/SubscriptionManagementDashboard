@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,11 @@ public class OperazioneServiceDaoImpl implements OperazioneService {
 	@Override
 	public List<Operazione> findAll() {
 		return repository.findAll();
+	}
+
+	@Override
+	public List<Operazione> searchByDefault() {
+		return new ArrayList<>();
 	}
 
 	public OperazioneDao getRepository() {

@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,7 +97,12 @@ public class StoricoServiceDaoImpl implements StoricoService {
 		return repository.findAll();
 	}
 
-	public StoricoDao getRepository() {
+    @Override
+    public List<Storico> searchByDefault() {
+        return new ArrayList<>();
+    }
+
+    public StoricoDao getRepository() {
 		return repository;
 	}
 	

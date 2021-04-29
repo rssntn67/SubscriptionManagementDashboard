@@ -39,7 +39,7 @@ public class PubblicazioneUI extends SmdEditorUI<Pubblicazione> {
 
         editor.setVisible(false);
         
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
 

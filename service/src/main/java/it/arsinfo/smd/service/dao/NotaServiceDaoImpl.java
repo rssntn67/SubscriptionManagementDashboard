@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,11 @@ public class NotaServiceDaoImpl implements NotaService {
 	@Override
 	public List<Nota> findAll() {
 		return repository.findAll();
+	}
+
+	@Override
+	public List<Nota> searchByDefault() {
+		return new ArrayList<>();
 	}
 
 	public NotaDao getRepository() {

@@ -175,6 +175,11 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 		return repository.findAll();
 	}
 
+	@Override
+	public List<Campagna> searchByDefault() {
+		return repository.findAll();
+	}
+
 	public CampagnaDao getRepository() {
 		return repository;
 	}

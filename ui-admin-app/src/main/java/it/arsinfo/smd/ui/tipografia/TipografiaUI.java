@@ -87,7 +87,7 @@ public class TipografiaUI extends SmdUI {
             editor.setVisible(false);
             generaShow.setVisible(true);
             search.setVisible(true);
-            grid.populate(search.find());;            
+            grid.populate(search.searchDefault());;
         });
         
         grid.populate(search.find());

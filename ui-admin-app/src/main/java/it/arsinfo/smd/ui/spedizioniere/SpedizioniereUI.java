@@ -115,7 +115,7 @@ public class SpedizioniereUI extends SmdUI {
             				InvioSpedizione.Spedizioniere));                
         });
         
-        grid.populate(dao.findAll());
+        grid.populate(search.searchDefault());
 
      }
 

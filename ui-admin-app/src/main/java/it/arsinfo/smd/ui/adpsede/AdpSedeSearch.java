@@ -1,18 +1,17 @@
 package it.arsinfo.smd.ui.adpsede;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-
-import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.Mese;
 import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.dto.SpedizioneDto;
 import it.arsinfo.smd.ui.vaadin.SmdBaseSearch;
+
+import java.util.EnumSet;
+import java.util.List;
 
 public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
 
@@ -37,7 +36,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         filterAnno.setValue(anno);
         filterAnno.setItemCaptionGenerator(Anno::getAnnoAsString);
         filterAnno.addSelectionListener(e -> {
-        	anno = e.getSelectedItem().get();
+        	anno = e.getSelectedItem().orElse(Anno.getAnnoCorrente());
             onChange();
         });
 
@@ -46,7 +45,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         filterMese.setValue(mese);
         filterMese.setItemCaptionGenerator(Mese::getNomeBreve);
         filterMese.addSelectionListener(e -> {
-        	mese = e.getSelectedItem().get();
+        	mese = e.getSelectedItem().orElse(Mese.getMeseCorrente());
             onChange();
         });
         
@@ -54,7 +53,7 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         statoSpedizioneComboBox.setEmptySelectionAllowed(false);
         statoSpedizioneComboBox.setSizeFull();
         statoSpedizioneComboBox.addSelectionListener(e -> {
-        	stato=e.getSelectedItem().get();
+        	stato=e.getSelectedItem().orElse(StatoSpedizione.PROGRAMMATA);
         	onChange();
         });
 
@@ -62,16 +61,20 @@ public class AdpSedeSearch extends SmdBaseSearch<SpedizioneDto> {
         invioSpedizioneComboBox.setEmptySelectionAllowed(false);
         invioSpedizioneComboBox.setSizeFull();
         invioSpedizioneComboBox.addSelectionListener(e -> {
-        	invio=e.getSelectedItem().get();
+        	invio=e.getSelectedItem().orElse(InvioSpedizione.AdpSede);
         	onChange();
         });
-        
-        
+
     }
     
     @Override
     public List<SpedizioneDto> find() {
         return service.listBy(mese,anno,stato,invio);
+    }
+
+    @Override
+    public List<SpedizioneDto> searchDefault() {
+        return service.listBy(Mese.getMeseCorrente(),Anno.getAnnoCorrente(),StatoSpedizione.PROGRAMMATA,InvioSpedizione.AdpSede);
     }
 
     public InvioSpedizione getInvio() {

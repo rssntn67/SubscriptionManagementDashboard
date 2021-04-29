@@ -1,27 +1,20 @@
 package it.arsinfo.smd.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.*;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
 import it.arsinfo.smd.dao.UserInfoDao;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.ui.security.SecurityUtils;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
+//import java.util.ArrayList;
+// import java.util.List;
+//import com.vaadin.server.ExternalResource;
 
 @Push
 @Theme("mytheme")
@@ -33,9 +26,9 @@ public abstract class SmdUI extends UI {
      * 
      */
     private static final long serialVersionUID = 7884064928998716106L;
-    private VerticalLayout layout = new VerticalLayout();
-    private MenuBar menu = new MenuBar();
-    private Label header = new Label("");
+    private final VerticalLayout layout = new VerticalLayout();
+    private final MenuBar menu = new MenuBar();
+    private final Label header = new Label("");
     public static final String HOME = "/";
     public final static String URL_LOGIN = "/login.html";
     public final static String URL_LOGIN_PROCESSING = "/login";
@@ -52,7 +45,6 @@ public abstract class SmdUI extends UI {
     public final static String URL_DDT = "/ddt";
     public final static String URL_SPEDIZIONI = "/spedizioni";
     public final static String URL_CAMPAGNA = "/campagna";
-    public final static String URL_NOTE = "/note";
     public final static String URL_RIEPILOGO = "/riepilogo";
     public final static String URL_STAT = "/stat";
 
@@ -83,7 +75,6 @@ public abstract class SmdUI extends UI {
     public final static String TITLE_STORICO = "Storici";
     public final static String TITLE_SPEDIZIONI = "Spedizioni";
     public final static String TITLE_CAMPAGNA = "Campagne";
-    public final static String TITLE_NOTE = "Note";
     public final static String TITLE_RIEPILOGO = "Riepilogo";
     public final static String TITLE_STAT = "Statistiche";
 
@@ -104,7 +95,6 @@ public abstract class SmdUI extends UI {
 
     private UserInfo loggedInUser;
     protected void init(VaadinRequest request, String head) {
-
         loggedInUser = SecurityUtils.getCurrentUser(userInfoDao);
         header.setValue(head);
         layout.addComponent(menu);
@@ -115,7 +105,7 @@ public abstract class SmdUI extends UI {
             private static final long serialVersionUID = 1L;
             
             public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(HOME);;
+                getUI().getPage().setLocation(HOME);
             }
         });
 
@@ -183,13 +173,6 @@ public abstract class SmdUI extends UI {
             
             public void menuSelected(MenuItem selectedItem) {
                 getUI().getPage().setLocation(URL_STORICO);
-            }
-        } );
-        abbonamenti.addItem(TITLE_NOTE,new MenuBar.Command() {
-            private static final long serialVersionUID = 1L;
-            
-            public void menuSelected(MenuItem selectedItem) {
-                getUI().getPage().setLocation(URL_NOTE);
             }
         } );
         abbonamenti.addItem(TITLE_RIEPILOGO,new MenuBar.Command() {
@@ -323,10 +306,6 @@ public abstract class SmdUI extends UI {
         
     }
 
-    protected void setExpandRatio(Component component, float ratio) {
-        layout.setExpandRatio(component, ratio);
-    }
-
     protected void hideMenu() {
         menu.setVisible(false);
     }
@@ -348,7 +327,7 @@ public abstract class SmdUI extends UI {
     protected void addComponents(Component...components) {
         layout.addComponents(components);
     }
-    
+    /*
     public static Link getHomePageLink() {
         return new Link(TITLE_HOME,new ExternalResource(HOME));        
     }
@@ -376,7 +355,6 @@ public abstract class SmdUI extends UI {
         links.add(new Link(TITLE_SPEDIZIONI,  new ExternalResource(URL_SPEDIZIONI)));
         links.add(new Link(TITLE_CAMPAGNA,   new ExternalResource(URL_CAMPAGNA)));
         links.add(new Link(TITLE_STORICO,   new ExternalResource(URL_STORICO)));
-        links.add(new Link(TITLE_NOTE, new ExternalResource(URL_NOTE)));
         links.add(new Link(TITLE_RIEPILOGO, new ExternalResource(URL_RIEPILOGO)));
         return links.toArray((new Link[links.size()]));
     }
@@ -392,16 +370,12 @@ public abstract class SmdUI extends UI {
         links.add(new Link(TITLE_VERSAMENTI_COMMITTENTI, new ExternalResource(URL_VERSAMENTI_COMMITTENTI)));
         return links.toArray((new Link[links.size()]));
     }
-
     public Link getLogoutLink() {
     	return new Link("Logout: "+ loggedInUser.getUsername(), new ExternalResource(URL_LOGOUT));
     }
+*/
     public UserInfo getLoggedInUser() {
         return loggedInUser;
-    }
-
-    public void setLoggedInUser(UserInfo loggedInUser) {
-        this.loggedInUser = loggedInUser;
     }
 
 }

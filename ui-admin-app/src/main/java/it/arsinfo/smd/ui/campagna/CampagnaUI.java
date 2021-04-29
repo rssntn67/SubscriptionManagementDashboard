@@ -38,7 +38,7 @@ public class CampagnaUI extends SmdEditorUI<Campagna> {
 
         editor.setVisible(false);
         
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
 

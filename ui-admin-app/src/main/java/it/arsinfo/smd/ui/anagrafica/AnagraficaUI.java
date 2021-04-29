@@ -38,7 +38,7 @@ public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
 
         editor.setVisible(false);
         
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
     

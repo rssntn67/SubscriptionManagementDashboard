@@ -42,7 +42,7 @@ public class UserInfoUI extends SmdEditorUI<UserInfo> {
 
         editor.setVisible(false);
         
-        grid.populate(search.findAll());
+        grid.populate(search.searchDefault());
 
     }
 

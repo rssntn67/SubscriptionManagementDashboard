@@ -75,7 +75,12 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 		return repository.findAll();
 	}
 
-	public DistintaVersamentoDao getRepository() {
+    @Override
+    public List<DistintaVersamento> searchByDefault() {
+        return new ArrayList<>();
+    }
+
+    public DistintaVersamentoDao getRepository() {
 		return repository;
 	}
 
