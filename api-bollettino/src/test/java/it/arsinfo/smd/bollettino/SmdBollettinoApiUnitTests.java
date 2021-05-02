@@ -3,10 +3,7 @@ package it.arsinfo.smd.bollettino;
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.bollettino.impl.BollettinoServiceImpl;
 import it.arsinfo.smd.config.CcpConfig;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Diocesi;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.Anagrafica;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -38,7 +35,9 @@ public class SmdBollettinoApiUnitTests {
         HttpPost httpPost = new HttpPost(ccpconfig.getCcpApiUrl());
 
         Anagrafica gp = new Anagrafica();
-        gp.setDenominazione("Pasquale Nonno");
+        gp.setTitolo(TitoloAnagrafica.Parrocchia);
+        gp.setDenominazione("IMMACOLATA CONCEZIONE E S.GIOVANNI B");
+        gp.setNome("C.A.sigg.Giuseppina Bongini e Liboria Pintu Piberi");
         gp.setCodeLineBase(Anagrafica.generaCodeLineBase());
         gp.setDiocesi(Diocesi.DIOCESI116);
         gp.setIndirizzo("Piazza Sant'Ambrogio 1");

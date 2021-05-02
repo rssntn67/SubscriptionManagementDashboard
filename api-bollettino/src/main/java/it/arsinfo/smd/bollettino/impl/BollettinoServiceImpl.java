@@ -30,7 +30,7 @@ public class BollettinoServiceImpl implements BollettinoService {
 				"\"accountHolder2\": \"\","+
 				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
 				"\"code\": \""+code+"\","+
-				"\"name\": \""+anagrafica.getIntestazione()+"\","+
+				"\"name\": \""+anagrafica.getIntestazione().substring(0,52)+"\","+
 				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
 				"\"zip\": \""+anagrafica.getCap()+"\","+
 				"\"city\": \""+anagrafica.getCitta()+"\","+
