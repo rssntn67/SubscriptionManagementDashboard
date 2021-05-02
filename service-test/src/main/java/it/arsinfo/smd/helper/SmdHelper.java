@@ -5,9 +5,7 @@ import it.arsinfo.smd.entity.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class SmdHelper {
 
@@ -299,6 +297,36 @@ public class SmdHelper {
         return ar;
     }
 
+    public static Anagrafica getMP() {
+        Anagrafica mp = SmdHelper.getAnagraficaBy("Matteo", "Paro");
+        mp.setDiocesi(Diocesi.DIOCESI168);
+        mp.setTitolo(TitoloAnagrafica.Religioso);
+        mp.setIndirizzo("Piazza del Gesu' 1");
+        mp.setCitta("Roma");
+        mp.setProvincia(Provincia.RM);
+        mp.setCap("00192");
+        mp.setPaese(Paese.IT);
+        mp.setEmail("mp@arsinfo.it");
+        mp.setTelefono("+3906000020");
+        return mp;
+    }
+
+    public static Anagrafica getDP() {
+        Anagrafica dp = SmdHelper.getAnagraficaBy("Davide", "Palma");
+        dp.setDiocesi(Diocesi.DIOCESI168);
+        dp.setTitolo(TitoloAnagrafica.Sacerdote);
+        dp.setIndirizzo("Piazza Navona 3, 00100 Roma");
+        dp.setCitta("Roma");
+        dp.setProvincia(Provincia.RM);
+        dp.setCap("00195");
+        dp.setPaese(Paese.IT);
+        dp.setEmail("dp@arsinfo.it");
+        dp.setTelefono("+3906000020");
+        dp.setDirettoreDiocesiano(true);
+        dp.setRegioneDirettoreDiocesano(Regione.LAZIO);
+        return dp;
+    }
+
     public static Anagrafica getGP() {
         Anagrafica gp = SmdHelper.getAnagraficaBy("Gabriele", "Pizzo");
         gp.setDiocesi(Diocesi.DIOCESI116);
@@ -310,6 +338,25 @@ public class SmdHelper {
         gp.setEmail("gp@arsinfo.it");
         gp.setTelefono("+3902000010");
         return gp;
+    }
+
+    public static Anagrafica getMS() {
+        Anagrafica ms = SmdHelper.getAnagraficaBy("Michele", "Santoro");
+        ms.setDiocesi(Diocesi.DIOCESI126);
+        ms.setIndirizzo("Via Duomo 10");
+        ms.setCitta("Napoli");
+        ms.setProvincia(Provincia.NA);
+        ms.setCap("80135");
+        ms.setPaese(Paese.IT);
+        ms.setEmail("ms@arsinfo.it");
+        ms.setTelefono("+39081400022");
+        return ms;
+    }
+
+    public static Nota getNota(Storico storico) {
+        Nota nota= new Nota(storico);
+        nota.setDescription("Importato da Ad Hoc: " + storico.toString());
+        return nota;
     }
 
     public static Storico getStoricoBy(

@@ -1888,6 +1888,18 @@ public class SmdApplicationTests {
                 
     }
 
+     public static DistintaVersamento getIncassoByImportoAndCodeLine(BigDecimal importo,String codeLine) {
+         DistintaVersamento incasso5 = new DistintaVersamento();
+         incasso5.setCassa(Cassa.Contrassegno);
+         incasso5.setCcp(Ccp.DUE);
+
+         Versamento versamentoIncasso5 = new Versamento(incasso5,importo);
+         versamentoIncasso5.setCodeLine(codeLine);
+         versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
+         incasso5.addItem(versamentoIncasso5);
+         Smd.calcoloImportoIncasso(incasso5);
+         return incasso5;
+     }
     
     @Test
     public void testIncassa() {
@@ -1918,7 +1930,7 @@ public class SmdApplicationTests {
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         
-        DistintaVersamento incasso = SmdHelper.getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
+        DistintaVersamento incasso = getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
         incasso.getItems().forEach(versamentoDao::save);
 
