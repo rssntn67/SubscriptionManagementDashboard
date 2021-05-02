@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo.smd</groupId>
 	<artifactId>it.arsinfo.smd.service</artifactId>
-	<version>5.0.0-SNAPSHOT</version>
+	<version>5.0.0</version>
 	<packaging>jar</packaging>
 
         <name>SMD::Service</name>
