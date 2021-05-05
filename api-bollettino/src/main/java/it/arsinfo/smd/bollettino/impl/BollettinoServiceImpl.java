@@ -4,6 +4,7 @@ import com.google.common.io.CharStreams;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
 import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.entity.Anagrafica;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -32,9 +33,9 @@ public class BollettinoServiceImpl implements BollettinoService {
 				"\"code\": \""+code+"\","+
 				"\"name\": \""+anagrafica.getIntestazione().substring(0,52)+"\","+
 				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
-				"\"zip\": \""+anagrafica.getCap()+"\","+
+				"\"zip\": \""+(anagrafica.getCap() != null ? anagrafica.getCap() : "")+"\","+
 				"\"city\": \""+anagrafica.getCitta()+"\","+
-				"\"province\": \""+anagrafica.getProvincia().name()+"\","+
+				"\"province\": \""+(anagrafica.getProvincia() != Provincia.ND ? anagrafica.getProvincia().name(): "")+"\","+
 				"\"reason\": \"cod. "+anagrafica.getCodeLineBase()+"\\n"+reason+ "\","+
 				"\"dueDate\": \"\"}";
 	}

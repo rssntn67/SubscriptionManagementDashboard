@@ -4,6 +4,7 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
+import it.arsinfo.smd.data.Provincia;
 import it.arsinfo.smd.data.Stampa;
 import it.arsinfo.smd.service.dto.Indirizzo;
 import org.springframework.util.StringUtils;
@@ -20,20 +21,29 @@ public abstract class StampaUI extends UI{
 		html = new StringBuffer();
 		html.append("<b>");
 		html.append(indirizzo.getIntestazione());
+
     	if (StringUtils.hasLength(indirizzo.getSottoIntestazione())) {
     		html.append("<br/>\n");
     		html.append(indirizzo.getSottoIntestazione());
     	}
 		html.append("<br/>\n");
 		html.append(indirizzo.getIndirizzo());
+
 		html.append("<br/>\n");
-		html.append(indirizzo.getCap());
-		html.append("&nbsp;");
-		html.append(indirizzo.getCitta());
-		html.append("&nbsp;&nbsp;");
-		html.append("(");
-		html.append(indirizzo.getProvincia().name());
-		html.append(")");
+		if (StringUtils.hasLength(indirizzo.getCap())) {
+			html.append(indirizzo.getCap());
+			html.append("&nbsp;");
+		}
+		if (StringUtils.hasLength(indirizzo.getCitta())) {
+			html.append(indirizzo.getCitta());
+			html.append("&nbsp;&nbsp;");
+		}
+		if (indirizzo.getProvincia() != Provincia.ND ) {
+			html.append("(");
+			html.append(indirizzo.getProvincia().name());
+			html.append(")");
+		}
+
 		html.append("<br/>\n");
 		html.append(indirizzo.getPaese().getNome());
 		html.append("</b>");
