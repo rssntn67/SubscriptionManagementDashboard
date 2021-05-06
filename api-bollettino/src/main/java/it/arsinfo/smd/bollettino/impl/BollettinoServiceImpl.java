@@ -21,6 +21,10 @@ import java.util.Base64;
 @Service
 public class BollettinoServiceImpl implements BollettinoService {
 
+	public static String getIntestazioneCcp(Anagrafica anagrafica) {
+		return (anagrafica.getIntestazione().length() > 52 ? anagrafica.getIntestazione().substring(0,52) : anagrafica.getIntestazione());
+	}
+
 	public static String getCcpJsonString(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
 		return "{" +
 				"\"apiKey\":\""+ccpConfig.getCcpApiKey()+"\"," +
@@ -31,7 +35,7 @@ public class BollettinoServiceImpl implements BollettinoService {
 				"\"accountHolder2\": \"\","+
 				"\"accountAuthorizationCode\": \""+Ccp.accountAuthorizationCode+"\","+
 				"\"code\": \""+code+"\","+
-				"\"name\": \""+anagrafica.getIntestazione().substring(0,52)+"\","+
+				"\"name\": \""+getIntestazioneCcp(anagrafica)+"\","+
 				"\"address\": \""+anagrafica.getIndirizzo()+"\","+
 				"\"zip\": \""+(anagrafica.getCap() != null ? anagrafica.getCap() : "")+"\","+
 				"\"city\": \""+anagrafica.getCitta()+"\","+
