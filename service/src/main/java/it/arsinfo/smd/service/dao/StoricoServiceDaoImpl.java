@@ -102,6 +102,11 @@ public class StoricoServiceDaoImpl implements StoricoService {
         return new ArrayList<>();
     }
 
+    @Override
+    public Storico add() {
+        return new Storico();
+    }
+
     public StoricoDao getRepository() {
 		return repository;
 	}
@@ -261,7 +266,13 @@ public class StoricoServiceDaoImpl implements StoricoService {
 		return itemRepository.findAll();
 	}
 
-	@Override
+    @Override
+    public Nota addItem(Storico storico) {
+        Nota nota = new Nota();
+        nota.setStorico(storico);
+        return nota;    }
+
+    @Override
 	public List<Storico> searchBy(Anagrafica a) throws Exception {
     	if (a == null) {
     		throw new UnsupportedOperationException("Anagrafica deve essere valorizzata");

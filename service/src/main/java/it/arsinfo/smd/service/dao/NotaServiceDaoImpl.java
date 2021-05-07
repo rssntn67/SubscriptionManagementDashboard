@@ -2,6 +2,7 @@ package it.arsinfo.smd.service.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class NotaServiceDaoImpl implements NotaService {
 
 	@Override
 	public Nota findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -46,6 +47,11 @@ public class NotaServiceDaoImpl implements NotaService {
 	@Override
 	public List<Nota> searchByDefault() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public Nota add() {
+		return new Nota();
 	}
 
 	public NotaDao getRepository() {
@@ -68,9 +74,8 @@ public class NotaServiceDaoImpl implements NotaService {
         }
         return repository.findByDescriptionContainingIgnoreCase(searchText)
                 .stream()
-                .filter(n -> 
-                n.getStorico().getId() 
-                        == storico.getId())
+                .filter(n ->
+						Objects.equals(n.getStorico().getId(), storico.getId()))
                 .collect(Collectors.toList());
 	}
 }

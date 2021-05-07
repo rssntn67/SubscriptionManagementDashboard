@@ -2,6 +2,7 @@ package it.arsinfo.smd.ui.storico;
 
 import java.util.List;
 
+import it.arsinfo.smd.ui.vaadin.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Push;
@@ -21,8 +22,6 @@ import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
-import it.arsinfo.smd.ui.vaadin.SmdButton;
-import it.arsinfo.smd.ui.vaadin.SmdButtonComboBox;
 
 @SpringUI(path = SmdUI.URL_STORICO)
 @Title("Storico Anagrafica Pubblicazioni ADP")
@@ -52,6 +51,13 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		}
 
 		@Override
+		public Nota addItem(Storico storico) {
+			Nota nota = dao.addItem(storico);
+			nota.setOperatore(getLoggedInUser().getUsername());
+			return nota;
+		}
+
+		@Override
 		public Storico save(Storico entity) throws Exception {
         	entity.addItem(dao.getNotaOnSave(entity,getLoggedInUser().getUsername()));
         	return dao.save(entity);
@@ -75,6 +81,11 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		@Override
 		public List<Storico> searchByDefault() {
 			return dao.searchByDefault();
+		}
+
+		@Override
+		public Storico add() {
+			return dao.add();
 		}
 
 		@Override
@@ -129,18 +140,18 @@ public class StoricoUI extends SmdEditorUI<Storico> {
         List<Anagrafica> anagrafica = myDao.findAnagrafica();
         List<Pubblicazione> pubblicazioni = myDao.findPubblicazioni();
 
-        StoricoAdd add = new StoricoAdd("Aggiungi Storico");
+        SmdAdd<Storico> add = new SmdAdd<>("Aggiungi Storico",myDao);
         StoricoSearch search = new StoricoSearch(myDao,anagrafica,pubblicazioni);
         StoricoGrid grid = new StoricoGrid("Storico");
 
 
-        NotaAdd itemAdd = new NotaAdd("Aggiungi Nota");        
+        SmdAddItem<Nota,Storico> itemAdd = new SmdAddItem<>("Aggiungi Nota",myDao);
      	SmdButton itemDel = new SmdButton("Rimuovi Nota", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
     	SmdButton itemSave = new SmdButton("Salva Nota", VaadinIcons.CHECK);
 	    itemSave.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
         SmdButtonComboBox<Campagna> update = 
-                new SmdButtonComboBox<Campagna>("Seleziona", 
+                new SmdButtonComboBox<>("Seleziona",
                 		myDao.findCampagne(),"Aggiorna Campagna", VaadinIcons.ARCHIVES);
             update.getButton().addStyleName(ValoTheme.BUTTON_PRIMARY);
             update.getComboBox().setItemCaptionGenerator(Campagna::getCaption);
@@ -160,7 +171,7 @@ public class StoricoUI extends SmdEditorUI<Storico> {
         NotaEditor itemEditor = new NotaEditor();
 
 
-        StoricoNotaEditor editor = new StoricoNotaEditor(myDao, itemAdd, itemDel, itemSave, itemGrid, itemEditor, maineditor);
+        SmdEntityItemEditor<Nota,Storico> editor = new SmdEntityItemEditor<>(myDao, itemAdd, itemDel, itemSave, itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
         editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());
@@ -168,8 +179,7 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 
         super.init(request, add, search, editor, grid, "Storico");
         
-        itemAdd.setUser(getLoggedInUser());
-        addSmdComponents(editor, 
+        addSmdComponents(editor,
                 add,
                 search, 
                 grid);
@@ -183,7 +193,6 @@ public class StoricoUI extends SmdEditorUI<Storico> {
                 editor.onChange();
             } catch (Exception e) {
                 Notification.show("Campagna ed Abbonamento non aggiornati:" + e.getMessage(), Type.ERROR_MESSAGE);
-                return;                    
             }
         });
 

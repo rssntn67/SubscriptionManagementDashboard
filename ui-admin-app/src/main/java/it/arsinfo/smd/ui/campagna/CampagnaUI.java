@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.campagna;
 
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -25,7 +26,7 @@ public class CampagnaUI extends SmdEditorUI<Campagna> {
 
     @Override
     protected void init(VaadinRequest request) {
-        CampagnaAdd add = new CampagnaAdd("Genera una nuova Campagna");
+        SmdAdd<Campagna> add = new SmdAdd<>("Genera una nuova Campagna",campagnaDao);
         CampagnaSearch search = new CampagnaSearch(campagnaDao);
         CampagnaGrid grid = new CampagnaGrid("Campagne");
         CampagnaEditor editor = new CampagnaEditor(campagnaDao);

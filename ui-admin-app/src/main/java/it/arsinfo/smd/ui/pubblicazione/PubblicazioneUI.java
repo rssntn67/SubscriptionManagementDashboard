@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.pubblicazione;
 
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -25,7 +26,7 @@ public class PubblicazioneUI extends SmdEditorUI<Pubblicazione> {
 
     @Override
     protected void init(VaadinRequest request) {
-        PubblicazioneAdd add = new PubblicazioneAdd("Aggiungi Pubblicazione");
+        SmdAdd<Pubblicazione> add = new SmdAdd<>("Aggiungi Pubblicazione",pubblicazionedao);
         PubblicazioneSearch search = new PubblicazioneSearch(pubblicazionedao);
         PubblicazioneGrid grid = new PubblicazioneGrid("Pubblicazioni");
         PubblicazioneEditor editor = new PubblicazioneEditor(pubblicazionedao);

@@ -98,6 +98,11 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 		return new ArrayList<>();
 	}
 
+	@Override
+	public Abbonamento add() {
+		return new Abbonamento();
+	}
+
 	public AbbonamentoDao getRepository() {
 		return repository;
 	}
@@ -213,7 +218,17 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 		return itemRepository.findAll();
 	}
 
-    private List<Abbonamento> filterBy(Anagrafica dst, TipoAbbonamentoRivista tipo, Pubblicazione p,StatoRivista stato, List<Abbonamento> abbonamenti) {
+	@Override
+	public RivistaAbbonamento addItem(Abbonamento abbonamento) {
+		RivistaAbbonamento ec = new RivistaAbbonamento();
+		ec.setAbbonamento(abbonamento);
+		ec.setDestinatario(abbonamento.getIntestatario());
+		ec.setAnnoInizio(abbonamento.getAnno());
+		ec.setAnnoFine(abbonamento.getAnno());
+		return ec;
+	}
+
+	private List<Abbonamento> filterBy(Anagrafica dst, TipoAbbonamentoRivista tipo, Pubblicazione p,StatoRivista stato, List<Abbonamento> abbonamenti) {
     	if (abbonamenti.size() == 0)
     		return abbonamenti;
     	if (dst == null && tipo == null && p == null && stato == null)

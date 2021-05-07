@@ -1,5 +1,9 @@
 package it.arsinfo.smd.ui.distinta;
 
+import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
+import it.arsinfo.smd.ui.vaadin.SmdAddItem;
+import it.arsinfo.smd.ui.vaadin.SmdEntityItemEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -28,11 +32,11 @@ public class DistintaVersamentoUI extends SmdEditorUI<DistintaVersamento> {
     
     @Override
     protected void init(VaadinRequest request) {
-        DistintaVersamentoAdd add = new DistintaVersamentoAdd("Aggiungi Distinta");
+        SmdAdd<DistintaVersamento> add = new SmdAdd<>("Aggiungi Distinta",dao);
         DistintaVersamentoSearch search = new DistintaVersamentoSearch(dao);
         DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti");
 
-        VersamentoAdd itemAdd = new VersamentoAdd("Aggiungi Versamento");
+        SmdAddItem<Versamento,DistintaVersamento> itemAdd = new SmdAddItem<>("Aggiungi Versamento",dao);
      	SmdButton itemDel = new SmdButton("Rimuovi Versamento", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
     	SmdButton itemSave = new SmdButton("Salva Versamento", VaadinIcons.CHECK);
@@ -44,7 +48,7 @@ public class DistintaVersamentoUI extends SmdEditorUI<DistintaVersamento> {
         VersamentoGrid itemGrid = new VersamentoGrid("Versamenti");
         VersamentoEditor itemEditor = new VersamentoEditor();
 
-        DistintaEditor editor = new DistintaEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
+        SmdEntityItemEditor<Versamento,DistintaVersamento> editor = new SmdEntityItemEditor<>(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
         editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());

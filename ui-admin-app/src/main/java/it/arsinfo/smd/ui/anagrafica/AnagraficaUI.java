@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.anagrafica;
 
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -25,7 +26,7 @@ public class AnagraficaUI extends SmdEditorUI<Anagrafica> {
 
     @Override
     protected void init(VaadinRequest request) {
-        AnagraficaAdd add = new AnagraficaAdd("Aggiungi ad Anagrafica");
+        SmdAdd<Anagrafica> add = new SmdAdd<>("Aggiungi ad Anagrafica",anagraficaServiceDao);
         AnagraficaSearch search = new AnagraficaSearch(anagraficaServiceDao);
         AnagraficaGrid grid = new AnagraficaGrid("Anagrafiche");
         AnagraficaEditor editor = new AnagraficaEditor(anagraficaServiceDao);

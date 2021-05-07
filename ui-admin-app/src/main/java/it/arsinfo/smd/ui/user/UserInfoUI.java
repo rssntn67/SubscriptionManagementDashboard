@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.user;
 
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,7 +30,7 @@ public class UserInfoUI extends SmdEditorUI<UserInfo> {
     @Override
     protected void init(VaadinRequest request) {
         UserInfoSearch search = new UserInfoSearch(userInfoDao);
-        UserInfoAdd add = new UserInfoAdd("Aggiungi Utente");
+        SmdAdd<UserInfo> add = new SmdAdd<>("Aggiungi Utente",userInfoDao);
         UserInfoGrid grid = new UserInfoGrid("Users");
         UserInfoEditor editor = new UserInfoEditor(userInfoDao,passwordEncoder);
         

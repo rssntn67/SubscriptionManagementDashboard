@@ -29,7 +29,7 @@ public class OperazioneServiceDaoImpl implements OperazioneService {
 
 	@Override
 	public Operazione findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -40,6 +40,11 @@ public class OperazioneServiceDaoImpl implements OperazioneService {
 	@Override
 	public List<Operazione> searchByDefault() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public Operazione add() {
+		return new Operazione();
 	}
 
 	public OperazioneDao getRepository() {

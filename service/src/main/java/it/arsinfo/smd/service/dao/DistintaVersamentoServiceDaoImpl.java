@@ -80,6 +80,11 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         return new ArrayList<>();
     }
 
+    @Override
+    public DistintaVersamento add() {
+        return new DistintaVersamento();
+	}
+
     public DistintaVersamentoDao getRepository() {
 		return repository;
 	}
@@ -270,5 +275,10 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	public List<Versamento> findAllItems() {
 		return versamentoDao.findAll();
 	}
-	
+
+    @Override
+    public Versamento addItem(DistintaVersamento distintaVersamento) {
+        return new Versamento(distintaVersamento);
+	}
+
 }

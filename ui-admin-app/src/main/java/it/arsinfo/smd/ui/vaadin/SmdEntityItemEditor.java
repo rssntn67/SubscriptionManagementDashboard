@@ -9,7 +9,7 @@ import it.arsinfo.smd.service.api.SmdServiceItem;
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.entity.SmdEntityItems;
 
-public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEntityItems<I>>
+public class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEntityItems<I>>
         extends SmdEditor<T> {
 
     private final SmdAddItem<I,T> itemAdd;
@@ -129,7 +129,7 @@ public abstract class SmdEntityItemEditor<I extends SmdEntity, T extends SmdEnti
 
 	}
 
-    public SmdAdd<I> getItemAdd() {
+    public SmdAddItem<I,T> getItemAdd() {
 		return itemAdd;
 	}
 

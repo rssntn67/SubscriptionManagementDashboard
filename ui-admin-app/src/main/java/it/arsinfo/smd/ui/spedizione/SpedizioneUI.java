@@ -48,7 +48,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         List<Anagrafica> anagrafica = dao.findAnagrafica();
         List<Pubblicazione> pubblicazioni = dao.findPubblicazioni();
         
-        SmdAdd<Spedizione> add = new SmdAdd<Spedizione>("") {
+        SmdAdd<Spedizione> add = new SmdAdd<Spedizione>("",dao) {
 
 			@Override
 			public Spedizione generate() {
@@ -101,8 +101,7 @@ public class SpedizioneUI extends SmdEditorUI<Spedizione> {
         maineditor.getActions().addComponent(stampaBusta);
 
         SmdEntityItemEditor<SpedizioneItem,Spedizione> editor = 
-        		new SmdEntityItemEditor<SpedizioneItem, Spedizione>(dao,itemSave,itemgrid,itemeditor,maineditor) {
-				};
+        		new SmdEntityItemEditor<>(dao,itemSave,itemgrid,itemeditor,maineditor);
 
         Button spedisci = new Button("Spedisci", VaadinIcons.AIRPLANE);
         spedisci.addClickListener(e -> {

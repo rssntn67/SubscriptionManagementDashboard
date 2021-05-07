@@ -36,7 +36,7 @@ public class AnagraficaServiceDaoImpl implements AnagraficaService {
 
 	@Override
 	public Anagrafica findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -47,6 +47,15 @@ public class AnagraficaServiceDaoImpl implements AnagraficaService {
     @Override
     public List<Anagrafica> searchByDefault() {
         return repository.findAll();
+    }
+
+    @Override
+    public Anagrafica add() {
+        Anagrafica anagrafica = new Anagrafica();
+        anagrafica.setNome("Nome");
+        anagrafica.setDenominazione("Denominazione");
+        anagrafica.setCodeLineBase(Anagrafica.generaCodeLineBase());
+        return anagrafica;
     }
 
     public AnagraficaDao getRepository() {
@@ -278,34 +287,34 @@ public class AnagraficaServiceDaoImpl implements AnagraficaService {
             anagrafiche = anagrafiche.stream().filter(a -> regionePresidenteDiocesano == a.getRegionePresidenteDiocesano()).collect(Collectors.toList());
         }
         if (filterDirettoreDiocesano) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isDirettoreDiocesiano()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isDirettoreDiocesiano).collect(Collectors.toList());
         }
         if (filterPresidenteDiocesano) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isPresidenteDiocesano()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isPresidenteDiocesano).collect(Collectors.toList());
         }
         if (filterDirettoreZonaMilano) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isDirettoreZonaMilano()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isDirettoreZonaMilano).collect(Collectors.toList());
         }
         if (filterConsiglioNazionaleADP) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isConsiglioNazionaleADP()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isConsiglioNazionaleADP).collect(Collectors.toList());
         }
         if (filterPresidenzaADP) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isPresidenzaADP()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isPresidenzaADP).collect(Collectors.toList());
         }
         if (filterDirezioneADP) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isDirezioneADP()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isDirezioneADP).collect(Collectors.toList());
         }
         if (filterCaricheSocialiADP) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isCaricheSocialiADP()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isCaricheSocialiADP).collect(Collectors.toList());
         }
         if (filterDelegatiRegionaliADP) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isDelegatiRegionaliADP()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isDelegatiRegionaliADP).collect(Collectors.toList());
         }
         if (filterElencoMarisaBisi) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isElencoMarisaBisi()).collect(Collectors.toList());
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isElencoMarisaBisi).collect(Collectors.toList());
         }
         if (filterPromotoreRegionale) {
-            anagrafiche = anagrafiche.stream().filter(a -> a.isPromotoreRegionale()).collect(Collectors.toList());            
+            anagrafiche = anagrafiche.stream().filter(Anagrafica::isPromotoreRegionale).collect(Collectors.toList());
         }
        
         return anagrafiche;

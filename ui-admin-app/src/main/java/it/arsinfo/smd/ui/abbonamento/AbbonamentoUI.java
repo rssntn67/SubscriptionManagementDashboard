@@ -7,14 +7,14 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
 import it.arsinfo.smd.config.CcpConfig;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.AbbonamentoService;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
+import it.arsinfo.smd.ui.vaadin.SmdAddItem;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
+import it.arsinfo.smd.ui.vaadin.SmdEntityItemEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -42,14 +42,14 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         List<Anagrafica> anagrafica = dao.getAnagrafica();
         List<Pubblicazione> pubblicazioni = dao.getPubblicazioni();
         List<Campagna> campagne = dao.getCampagne();
-        AbbonamentoAdd add = new AbbonamentoAdd("Aggiungi abbonamento");
+        SmdAdd<Abbonamento> add = new SmdAdd<>("Aggiungi abbonamento",dao);
         if (anagrafica.size() == 0) {
             add.setVisible(false);
         }
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         
-        RivistaAbbonamentoAdd itemAdd = new RivistaAbbonamentoAdd("Aggiungi Rivista");
+        SmdAddItem<RivistaAbbonamento,Abbonamento> itemAdd = new SmdAddItem<>("Aggiungi Rivista",dao);
      	
         SmdButton itemDel = new SmdButton("Rimuovi Rivista", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
@@ -72,7 +72,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         
 		RivistaAbbonamentoEditor itemEditor = new RivistaAbbonamentoEditor(pubblicazioni, anagrafica);
    	    
-        AbbonamentoRivisteEditor editor = new AbbonamentoRivisteEditor(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
+        SmdEntityItemEditor<RivistaAbbonamento,Abbonamento> editor = new SmdEntityItemEditor<>(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
         editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());

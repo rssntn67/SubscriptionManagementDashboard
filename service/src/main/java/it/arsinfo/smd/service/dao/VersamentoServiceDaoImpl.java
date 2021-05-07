@@ -99,6 +99,11 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 		return new ArrayList<>();
 	}
 
+	@Override
+	public Versamento add() {
+		return new Versamento();
+	}
+
 	public VersamentoDao getRepository() {
 		return repository;
 	}

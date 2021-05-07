@@ -1,16 +1,15 @@
 package it.arsinfo.smd.service.dao;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import it.arsinfo.smd.service.api.SpesaSpedizioneService;
 import it.arsinfo.smd.dao.SpesaSpedizioneDao;
 import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
+import it.arsinfo.smd.service.api.SpesaSpedizioneService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneService {
@@ -30,7 +29,7 @@ public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneService {
 
 	@Override
 	public SpesaSpedizione findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -41,6 +40,11 @@ public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneService {
 	@Override
 	public List<SpesaSpedizione> searchByDefault() {
 		return repository.findAll();
+	}
+
+	@Override
+	public SpesaSpedizione add() {
+		return new SpesaSpedizione();
 	}
 
 	public SpesaSpedizioneDao getRepository() {
@@ -57,7 +61,7 @@ public class SpesaSpedizioneServiceDaoImpl implements SpesaSpedizioneService {
         if (area == null ) {
         	return repository.findByRangeSpeseSpedizione(range);
         }
-        return Arrays.asList(repository.findByAreaSpedizioneAndRangeSpeseSpedizione(area, range));
+        return Collections.singletonList(repository.findByAreaSpedizioneAndRangeSpeseSpedizione(area, range));
 	}
 	
 }

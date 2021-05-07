@@ -42,6 +42,11 @@ public class UserInfoServiceDaoImpl implements UserInfoService {
 		return repository.findAll();
 	}
 
+	@Override
+	public UserInfo add() {
+		return new UserInfo();
+	}
+
 	public UserInfoDao getRepository() {
 		return repository;
 	}

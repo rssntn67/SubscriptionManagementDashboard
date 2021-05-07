@@ -180,6 +180,11 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 		return repository.findAll();
 	}
 
+	@Override
+	public Campagna add() {
+		return new Campagna();
+	}
+
 	public CampagnaDao getRepository() {
 		return repository;
 	}

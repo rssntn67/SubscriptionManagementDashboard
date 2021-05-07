@@ -53,7 +53,7 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 
 	@Override
 	public Spedizione findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -64,6 +64,11 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 	@Override
 	public List<Spedizione> searchByDefault() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public Spedizione add() {
+		return new Spedizione();
 	}
 
 	public SpedizioneDao getRepository() {
@@ -178,6 +183,13 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 	}
 
 	@Override
+	public SpedizioneItem addItem(Spedizione spedizione) {
+		SpedizioneItem item = new SpedizioneItem();
+		item.setSpedizione(spedizione);
+		return item;
+	}
+
+	@Override
 	public List<Pubblicazione> findPubblicazioni() {
 		return pubblicazioneDao.findAll();
 	}
@@ -197,8 +209,10 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 		Anagrafica co = sped.getDestinatario().getCo();
 		if (co == null)
 			return Indirizzo.getIndirizzo(sped.getDestinatario());
-		co = anagraficaDao.findById(co.getId()).get();
-			return Indirizzo.getIndirizzo(sped.getDestinatario(),co);
+		co = anagraficaDao.findById(co.getId()).orElse(null);
+		if (co == null)
+			return Indirizzo.getIndirizzo(sped.getDestinatario());
+		return Indirizzo.getIndirizzo(sped.getDestinatario(),co);
 	}
 
 	@Override

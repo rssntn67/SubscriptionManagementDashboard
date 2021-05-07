@@ -30,7 +30,7 @@ public class OffertaServiceDaoImpl implements OffertaService {
 
 	@Override
 	public Offerta findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -41,6 +41,11 @@ public class OffertaServiceDaoImpl implements OffertaService {
 	@Override
 	public List<Offerta> searchByDefault() {
 		return repository.findAll();
+	}
+
+	@Override
+	public Offerta add() {
+		return new Offerta();
 	}
 
 	public OffertaDao getRepository() {

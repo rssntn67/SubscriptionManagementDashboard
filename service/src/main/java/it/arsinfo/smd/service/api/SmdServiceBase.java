@@ -12,4 +12,6 @@ public interface SmdServiceBase<S extends SmdEntity> {
 	S findById(Long id);
 	List<S> findAll();
 	List<S> searchByDefault();
+	S add();
+
 }

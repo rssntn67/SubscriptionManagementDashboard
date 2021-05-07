@@ -1,5 +1,6 @@
 package it.arsinfo.smd.ui.spesaspedizione;
 
+import it.arsinfo.smd.ui.vaadin.SmdAdd;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -26,7 +27,7 @@ public class SpesaSpedizioneUI extends SmdEditorUI<SpesaSpedizione> {
     @Override
     protected void init(VaadinRequest request) {
         SpesaSpedizioneSearch search = new SpesaSpedizioneSearch(spesaSpedizioneDao);
-        SpesaSpedizioneAdd add = new SpesaSpedizioneAdd("Aggiungi Spese Spedizione");
+        SmdAdd<SpesaSpedizione> add = new SmdAdd<>("Aggiungi Spese Spedizione",spesaSpedizioneDao);
         SpesaSpedizioneEditor editor = 
                 new SpesaSpedizioneEditor(spesaSpedizioneDao);
         
