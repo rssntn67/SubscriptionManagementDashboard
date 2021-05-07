@@ -46,6 +46,7 @@
       <module>service</module>
       <module>service-test</module>
       <module>ui-admin-app</module>
+      <module>ui-user-app</module>
     </modules>
 
 </project>
