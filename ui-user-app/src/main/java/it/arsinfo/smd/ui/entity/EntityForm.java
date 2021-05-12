@@ -13,7 +13,7 @@ import com.vaadin.flow.shared.Registration;
 import it.arsinfo.smd.entity.SmdEntity;
 
 public class EntityForm<T extends SmdEntity> extends FormLayout {
-    final Binder<T> binder;
+    private final Binder<T> binder;
     private T entity;
 
    Button save = new Button("Save");
@@ -46,6 +46,7 @@ public class EntityForm<T extends SmdEntity> extends FormLayout {
         }
         return false;
     }
+
     public void setEntity(T entity) {
         this.entity = entity;
         binder.readBean(entity);
@@ -66,10 +67,12 @@ public class EntityForm<T extends SmdEntity> extends FormLayout {
         return close;
     }
 
+    public Binder<T> getBinder() {
+        return binder;
+    }
     public <K extends ComponentEvent<?>> Registration addListener(Class<K> eventType,
                                                                   ComponentEventListener<K> listener) {
         return getEventBus().addListener(eventType, listener);
     }
-
 
 }

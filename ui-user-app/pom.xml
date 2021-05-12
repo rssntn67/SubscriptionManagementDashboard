@@ -69,6 +69,7 @@
             <artifactId>it.arsinfo.smd.service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>it.arsinfo.smd</groupId>
             <artifactId>it.arsinfo.smd.api.bollettino</artifactId>
@@ -79,6 +80,7 @@
             <artifactId>it.arsinfo.smd.api.bancoposta</artifactId>
             <version>${project.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
