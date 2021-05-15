@@ -26,14 +26,14 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         setSizeFull();
     }
 
-    public HorizontalLayout getToolBar(Component...components) {
-        HorizontalLayout toolbar = new HorizontalLayout(components);
+    public HorizontalLayout getToolBar() {
+        HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addClassName("toolbar");
         return toolbar;
     }
 
-    public Div getContent() {
-        Div content = new Div(getGrid(),getForm());
+    public Div getContent(Component...components) {
+        Div content = new Div(components);
         content.addClassName("content");
         content.setSizeFull();
         return content;
