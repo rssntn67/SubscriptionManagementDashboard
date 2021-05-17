@@ -9,7 +9,7 @@
 	<version>5.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-        <name>SMD::Service::Test</name>
+	<name>SMD::Service::Test</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

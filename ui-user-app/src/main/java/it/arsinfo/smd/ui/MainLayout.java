@@ -25,6 +25,7 @@ public class MainLayout extends AppLayout {
     @Autowired
     UserSession userSession;
 
+
     @PostConstruct
     public void init() {
         createHeader();
@@ -43,16 +44,14 @@ public class MainLayout extends AppLayout {
         header.addClassName("header");
 
         Div div = new Div();
-        div.setText("Hello " + userSession.getUser().getFirstName() + " " + userSession.getUser().getLastName());
+        div.setText("Benvenuto " + userSession.getUser().getEmail());
         div.getElement().getStyle().set("font-size", "xx-large");
-
-        Image image = new Image(userSession.getUser().getPicture(), "User Image");
 
         // Spring maps the 'logout' url so we should ignore it
         Anchor logout = new Anchor("/logout", "Logout");
         logout.getElement().setAttribute("router-ignore", true);
 
-        header.add(div,image,logout);
+        header.add(div,logout);
         addToNavbar(header);
 
     }

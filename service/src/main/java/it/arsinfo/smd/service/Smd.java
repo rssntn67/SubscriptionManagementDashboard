@@ -1,17 +1,15 @@
 package it.arsinfo.smd.service;
 
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;
-import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Configuration
 public class Smd {

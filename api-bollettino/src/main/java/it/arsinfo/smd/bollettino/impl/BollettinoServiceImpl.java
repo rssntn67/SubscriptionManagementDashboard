@@ -13,6 +13,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -21,14 +22,22 @@ import java.util.Base64;
 @Service
 public class BollettinoServiceImpl implements BollettinoService {
 
+	@Autowired
+	private CcpConfig ccpConfig;
+
 	public static String getIntestazioneCcp(Anagrafica anagrafica) {
 		return (anagrafica.getIntestazione().length() > 52 ? anagrafica.getIntestazione().substring(0,52) : anagrafica.getIntestazione());
 	}
 
-	public static String getCcpJsonString(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
+	public static String getCcpJsonString(String ccpApiKey,
+										  String ccpApiUser,
+										  String code,
+										  Anagrafica anagrafica,
+										  Ccp ccp,
+										  String reason) {
 		return "{" +
-				"\"apiKey\":\""+ccpConfig.getCcpApiKey()+"\"," +
-				"\"apiUser\":\""+ccpConfig.getCcpApiUser()+"\","+
+				"\"apiKey\":\""+ccpApiKey+"\"," +
+				"\"apiUser\":\""+ccpApiUser+"\","+
 				"\"checkingAccount\": \""+ ccp.getCc()+"\","+
 				"\"iban\": \""+ccp.getIban()+"\","+
 				"\"accountHolder1\": \""+Ccp.intestazioneCcp+"\","+
@@ -47,12 +56,12 @@ public class BollettinoServiceImpl implements BollettinoService {
 	private static final Logger log = LoggerFactory.getLogger(BollettinoServiceImpl.class);
 
 	@Override
-	public void getBollettino(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
+	public void getBollettino(String code, Anagrafica anagrafica, Ccp ccp, String reason) {
 		log.info("getBollettino: {} {} reason: {}", ccp,code,reason);
-		File file = getFile(ccpConfig,code,anagrafica,ccp,reason);
+		File file = getFile(code,anagrafica,ccp,reason);
 		if (!file.exists()) {
 			try {
-				downloadBollettino(ccpConfig, code, anagrafica, ccp, reason, file);
+				downloadBollettino(code, anagrafica, ccp, reason, file);
 			} catch (IOException e) {
 				log.error("getBollettino: {}", e.getMessage(),e);
 			}
@@ -60,18 +69,18 @@ public class BollettinoServiceImpl implements BollettinoService {
 	}
 
 	@Override
-	public File getFile(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason) {
+	public File getFile(String code, Anagrafica anagrafica, Ccp ccp, String reason) {
 		File file = new File(ccpConfig.getCcpFilePath()+"/"+code+"_"+reason.trim()+".pdf");
 		log.info("getFile: {}", file.getAbsolutePath());
 		return file;
 	}
 
 
-	private void downloadBollettino(CcpConfig ccpConfig, String code, Anagrafica anagrafica, Ccp ccp, String reason, File file) throws IOException {
+	private void downloadBollettino(String code, Anagrafica anagrafica, Ccp ccp, String reason, File file) throws IOException {
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(ccpConfig.getCcpApiUrl());
 		log.info("downloadBollettino: {} {} reason: {}", ccp,code,reason);
-		String jsonString = getCcpJsonString(ccpConfig,code,anagrafica,ccp, reason);
+		String jsonString = getCcpJsonString(ccpConfig.getCcpApiKey(),ccpConfig.getCcpApiUser(),code,anagrafica,ccp, reason);
 		log.info(jsonString);
 		StringEntity entity = new StringEntity(jsonString);
 		httpPost.setEntity(entity);

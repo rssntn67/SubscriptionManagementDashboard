@@ -1,7 +1,7 @@
 package it.arsinfo.smd.ui.upload;
 
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.config.CcpConfig;
+import it.arsinfo.smd.config.CcpConfigImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Title;
@@ -31,7 +31,7 @@ public class UploadUI extends SmdUI {
     private BancoPostaService bancoPostaService;
 
     @Autowired
-    private CcpConfig ccpConfig;
+    private CcpConfigImpl ccpConfig;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");

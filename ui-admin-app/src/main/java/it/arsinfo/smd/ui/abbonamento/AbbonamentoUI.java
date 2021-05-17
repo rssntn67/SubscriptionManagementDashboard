@@ -6,7 +6,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.ui.SmdEditorUI;
@@ -34,9 +33,6 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
     @Autowired
     private BollettinoService bollettinoService;
 
-    @Autowired
-    private CcpConfig ccpConfig;
-    
     @Override
     protected void init(VaadinRequest request) {
         List<Anagrafica> anagrafica = dao.getAnagrafica();
@@ -61,7 +57,6 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
                 new AbbonamentoEditor(
                         dao,
                         bollettinoService,
-                        ccpConfig,
                         anagrafica,
                         campagne);
 	    maineditor.getActions().addComponents(itemDel.getButton());

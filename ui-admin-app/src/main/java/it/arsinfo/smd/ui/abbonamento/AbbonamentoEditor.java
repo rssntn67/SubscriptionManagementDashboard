@@ -6,7 +6,6 @@ import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CcpConfig;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Incassato;
 import it.arsinfo.smd.data.StatoAbbonamento;
@@ -51,16 +50,13 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
            return "Anno " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Euro " + saldo;
     }
 
-    private final CcpConfig ccpConfig;
     private final BollettinoService bollettinoService;
     public AbbonamentoEditor(AbbonamentoService dao,
                              BollettinoService bollettinoService,
-                             CcpConfig ccpConfig,
                              List<Anagrafica> anagrafica,
                              List<Campagna> campagne) {
         super(dao,new Binder<>(Abbonamento.class));
         this.bollettinoService=bollettinoService;
-        this.ccpConfig=ccpConfig;
         CheckBox sollecitato = new CheckBox("Sollecitato");
         CheckBox inviatoEC = new CheckBox("InviatoEC");
         ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<>("Stato",
@@ -103,7 +99,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
         stampaBollettino.addClickListener(c->
                 bollettinoService.getBollettino(
-                        ccpConfig,
                         get().getCodeLine(),
                         get().getIntestatario(),
                         get().getCcp(),
@@ -197,7 +192,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
             BrowserWindowOpener opener =
                     new BrowserWindowOpener(new FileResource(
                             bollettinoService.getFile(
-                                    ccpConfig,
                                     abbonamento.getCodeLine(),
                                     abbonamento.getIntestatario(),
                                     abbonamento.getCcp(),

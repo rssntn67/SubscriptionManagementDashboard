@@ -3,8 +3,8 @@ package it.arsinfo.smd;
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CampagnaConfig;
-import it.arsinfo.smd.config.CcpConfig;
+import it.arsinfo.smd.config.CampagnaConfigImpl;
+import it.arsinfo.smd.config.CcpConfigImpl;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
@@ -93,9 +93,9 @@ public class SmdApplicationTests {
     private SecurityConfig securityConfig;
 
     @Autowired
-    private CcpConfig ccpConfig;
+    private CcpConfigImpl ccpConfig;
     @Autowired
-    private CampagnaConfig campagnaConfig;
+    private CampagnaConfigImpl campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
 
