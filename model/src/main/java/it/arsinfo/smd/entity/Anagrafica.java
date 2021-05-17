@@ -386,18 +386,11 @@ public class Anagrafica implements SmdEntity {
         if (id == null) {
             if (other.id != null)
                 return false;
-        } else if (!id.equals(other.id)) {
-            return false;
-        } else {
-            return true;
-        }
+        } else return id.equals(other.id);
 
         if (codeLineBase == null) {
-            if (other.codeLineBase != null)
-                return false;
-        } else if (!codeLineBase.equals(other.codeLineBase))
-            return false;
-        return true;
+            return other.codeLineBase == null;
+        } else return codeLineBase.equals(other.codeLineBase);
     }
 
     public String getCodeLineBase() {
@@ -409,7 +402,7 @@ public class Anagrafica implements SmdEntity {
     }
     
     public static String generaCodeLineBase() {
-        return String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999l));
+        return String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999L));
     }
 
     public static String generaIntestazione(Anagrafica a) {
