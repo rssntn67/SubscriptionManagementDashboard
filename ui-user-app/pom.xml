@@ -9,7 +9,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <vaadin.version>14.5.3</vaadin.version>
+        <vaadin.version>14.6.1</vaadin.version>
     </properties>
 
     <parent>
@@ -73,22 +73,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>it.arsinfo.smd</groupId>
-            <artifactId>it.arsinfo.smd.api.bollettino</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>it.arsinfo.smd</groupId>
-            <artifactId>it.arsinfo.smd.api.bancoposta</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
+            <artifactId>vaadin-core</artifactId>
             <exclusions>
                 <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
                 <exclusion>
@@ -153,16 +141,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!--
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-        </dependency>
-        -->
         <!-- Include JUnit 4 support for TestBench and others -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
