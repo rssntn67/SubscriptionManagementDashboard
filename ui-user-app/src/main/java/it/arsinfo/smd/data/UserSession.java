@@ -1,12 +1,12 @@
 package it.arsinfo.smd.data;
 
-import java.io.Serializable;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
+
+import java.io.Serializable;
 
 @Component
 @SessionScope

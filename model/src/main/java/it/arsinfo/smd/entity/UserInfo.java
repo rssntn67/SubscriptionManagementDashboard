@@ -26,6 +26,7 @@ public class UserInfo implements SmdEntity {
         ADMIN,
         USER,
         LOCKED,
+        ENDUSER
     }
     
     @Id

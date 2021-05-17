@@ -6,7 +6,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,8 +22,7 @@ import javax.annotation.PostConstruct;
 public class MainLayout extends AppLayout {
 
     @Autowired
-    UserSession userSession;
-
+    private UserSession userSession;
 
     @PostConstruct
     public void init() {
