@@ -9,25 +9,36 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 import it.arsinfo.smd.data.UserSession;
+import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.service.api.UserInfoService;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.home.HomeView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-
 @CssImport("./styles/shared-styles.css")
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Autowired
     private UserSession userSession;
 
-    @PostConstruct
-    public void init() {
-        createHeader();
-        createDrawer();
+   @Autowired
+   private UserInfoService userInfoService;
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        // implementation omitted
+        UserInfo userInfo = userInfoService.findByUsername(userSession.getUser().getEmail());
+        if (userInfo == null) {
+            event.rerouteTo(NoItemsView.class);
+        } else {
+            createHeader();
+            createDrawer();
+        }
     }
 
     private void createHeader() {

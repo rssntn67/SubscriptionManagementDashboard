@@ -9,6 +9,8 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 public interface AnagraficaDao extends JpaRepository<Anagrafica, Long> {
 
+	Anagrafica findByCodeLineBase(String code);
+
 	List<Anagrafica> findByDenominazioneContainingIgnoreCase(String denominazione);
 
 	List<Anagrafica> findByNomeContainingIgnoreCase(String nome);
