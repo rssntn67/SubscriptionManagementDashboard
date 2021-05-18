@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
@@ -44,7 +43,7 @@ public class NoItemsView extends VerticalLayout {
         H1 logo = new H1("Portale Riviste ADP");
         logo.addClassName("logo");
 
-        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo);
+        HorizontalLayout header = new HorizontalLayout(logo);
         header.expand(logo);
         header.setDefaultVerticalComponentAlignment(
         FlexComponent.Alignment.CENTER);
@@ -53,7 +52,6 @@ public class NoItemsView extends VerticalLayout {
 
         Div div = new Div();
         div.setText("Benvenuto " + userSession.getUser().getEmail());
-        div.getElement().getStyle().set("font-size", "xx-large");
 
         // Spring maps the 'logout' url so we should ignore it
         Anchor logout = new Anchor("/logout", "Logout");
@@ -76,13 +74,13 @@ public class NoItemsView extends VerticalLayout {
     private void activate(String code) {
         Anagrafica remoteuser = anagraficaDao.findByCodeLineBase(code);
         if (remoteuser == null) {
-            content.setText("Nessuna anagrafica associata a: " + userSession.getUser().getEmail() + "'. Inserire un valido codice cliente");
+            content.setText("Nessuna anagrafica associata a: " + code + "'. Inserire un valido codice cliente");
             userCode.clear();
             return;
         }
 
         Dialog dialog = new Dialog();
-        dialog.add(new Text("Nessuna anagrafica associata a: "
+        dialog.add(new Text("Associare '"
                 + userSession.getUser().getEmail()
                 + "'in anagrafica a: '"+remoteuser.getCaption()+"'"));
         dialog.setCloseOnEsc(false);
