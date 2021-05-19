@@ -25,7 +25,7 @@ public class HomeView extends VerticalLayout {
 
     public HomeView() {
 
-        H1 header = new H1("Welcome in Gestione Carrelli");
+        H1 header = new H1("Benvenuto nella User App dell' Apostolato della Preghiera");
         add(header);
 
 

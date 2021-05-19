@@ -20,6 +20,8 @@ import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.home.HomeView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
+
 @CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
@@ -33,12 +35,15 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         // implementation omitted
         UserInfo userInfo = userInfoService.findByUsername(userSession.getUser().getEmail());
-        if (userInfo == null) {
+        if (userInfo == null || userInfo.getRole() != UserInfo.Role.ENDUSER ) {
             event.rerouteTo(NoItemsView.class);
-        } else {
-            createHeader();
-            createDrawer();
         }
+    }
+
+    @PostConstruct
+    public void init() {
+        createHeader();
+        createDrawer();
     }
 
     private void createHeader() {
@@ -53,8 +58,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         header.addClassName("header");
 
         Div div = new Div();
-        div.setText("Benvenuto " + userSession.getUser().getEmail());
-        div.getElement().getStyle().set("font-size", "xx-large");
+        div.setText("Benvenuto " + userSession.getUser().getFirstName());
 
         // Spring maps the 'logout' url so we should ignore it
         Anchor logout = new Anchor("/logout", "Logout");
