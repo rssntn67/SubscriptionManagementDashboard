@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.anagrafica;
 
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -12,20 +11,22 @@ import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.entity.EntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Route(value="adp/anagrafica", layout = MainLayout.class)
 @PageTitle("Anagrafica | ADP Portale")
 public class AnagraficaView extends EntityView<Anagrafica> {
-    private final AnagraficaService service;
 
     public AnagraficaView(@Autowired AnagraficaService service) {
-        super(service,new Grid<>(Anagrafica.class),new AnagraficaForm(new BeanValidationBinder<>(Anagrafica.class)));
-        this.service=service;
-        ComboBox<Anagrafica> filterAnagrafica = new ComboBox<>();
-        filterAnagrafica.setItems(service.findAll());
-        filterAnagrafica.setItemLabelGenerator(Anagrafica::getCaption);
+        super(service, new Grid<>(Anagrafica.class), new AnagraficaForm(new BeanValidationBinder<>(Anagrafica.class)));
+    }
 
+    @PostConstruct
+    public void init() {
         configureGrid("titolo","denominazione", "nome", "diocesi.details",
                 "citta", "provincia","cap", "paese.nome");
 
@@ -45,7 +46,6 @@ public class AnagraficaView extends EntityView<Anagrafica> {
         });
         getForm().addListener(AnagraficaForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
-        toolbar.addAndExpand(filterAnagrafica);
         add(toolbar,getContent(getGrid(),getForm()));
         updateList();
         closeEditor();
@@ -54,6 +54,9 @@ public class AnagraficaView extends EntityView<Anagrafica> {
 
     @Override
     public List<Anagrafica> filter() {
-        return service.searchByDefault();
+        Set<Anagrafica> filtered = new HashSet<>();
+        filtered.add(getUserSession().getLoggedInIntestatario());
+        filtered.addAll(getUserSession().getDestinatari());
+        return new ArrayList<>(filtered);
     }
 }

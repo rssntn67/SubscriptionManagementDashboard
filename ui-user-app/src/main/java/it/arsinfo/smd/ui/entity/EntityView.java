@@ -6,6 +6,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import it.arsinfo.smd.data.UserSession;
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.service.api.SmdServiceBase;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,13 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
     private final Grid<T> grid;
     final private SmdServiceBase<T> service;
     private final EntityForm<T> form;
+
+    @Autowired
+    private UserSession userSession;
+
+    public UserSession getUserSession() {
+        return userSession;
+    }
 
     public EntityView(@Autowired SmdServiceBase<T> service, Grid<T> grid, EntityForm<T> form) {
         this.form=form;

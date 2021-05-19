@@ -9,6 +9,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -29,12 +30,6 @@ public class NoItemsView extends VerticalLayout {
     @Autowired
     private UserSession userSession;
 
-    @Autowired
-    private UserInfoDao userInfoDao;
-
-    @Autowired
-    private AnagraficaDao anagraficaDao;
-
     private final Div content = new Div();
     private final TextField userCode = new TextField("codice cliente");
 
@@ -51,7 +46,7 @@ public class NoItemsView extends VerticalLayout {
         header.addClassName("header");
 
         Div div = new Div();
-        div.setText("Benvenuto " + userSession.getUser().getEmail());
+        div.setText("Benvenuto " + userSession.getUser().getFirstName());
 
         // Spring maps the 'logout' url so we should ignore it
         Anchor logout = new Anchor("/logout", "Logout");
@@ -59,8 +54,7 @@ public class NoItemsView extends VerticalLayout {
 
         header.add(div,logout);
 
-        content.setText("Nessuna anagrafica associata: Per continuare bisogna inserire il codice cliente");
-        content.getElement().getStyle().set("font-size", "xx-large");
+        content.setText("Nessuna anagrafica associata! Per continuare bisogna inserire il codice cliente");
 
         userCode.setPlaceholder("inserire il codice cliente");
 
@@ -72,7 +66,7 @@ public class NoItemsView extends VerticalLayout {
     }
 
     private void activate(String code) {
-        Anagrafica remoteuser = anagraficaDao.findByCodeLineBase(code);
+        Anagrafica remoteuser = userSession.findIntestatario(code);
         if (remoteuser == null) {
             content.setText("Nessuna anagrafica associata a: " + code + "'. Inserire un valido codice cliente");
             userCode.clear();
@@ -87,11 +81,13 @@ public class NoItemsView extends VerticalLayout {
         dialog.setCloseOnOutsideClick(false);
 
         Button confirmButton = new Button("Confirm", event -> {
-            UserInfo remote = new UserInfo();
-            remote.setUsername(userSession.getUser().getEmail());
-            remote.setPasswordHash(code);
-            remote.setRole(UserInfo.Role.ENDUSER);
-            userInfoDao.save(remote);
+            try {
+                userSession.save(code);
+            } catch (Exception e) {
+                Notification.show("Error: " +e.getLocalizedMessage());
+                dialog.close();
+                return;
+            }
             dialog.close();
             UI.getCurrent().navigate("");
         });

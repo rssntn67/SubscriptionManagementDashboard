@@ -28,6 +28,5 @@ public class HomeView extends VerticalLayout {
         H1 header = new H1("Benvenuto nella User App dell' Apostolato della Preghiera");
         add(header);
 
-
     }
 }

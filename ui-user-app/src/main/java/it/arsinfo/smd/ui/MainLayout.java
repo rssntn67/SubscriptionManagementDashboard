@@ -28,14 +28,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     @Autowired
     private UserSession userSession;
 
-   @Autowired
-   private UserInfoService userInfoService;
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         // implementation omitted
-        UserInfo userInfo = userInfoService.findByUsername(userSession.getUser().getEmail());
-        if (userInfo == null || userInfo.getRole() != UserInfo.Role.ENDUSER ) {
+        if ( userSession.getLoggedIn() == null) {
             event.rerouteTo(NoItemsView.class);
         }
     }
