@@ -27,8 +27,8 @@ public class AnagraficaView extends EntityView<Anagrafica> {
 
     @PostConstruct
     public void init() {
-        configureGrid("titolo","denominazione", "nome", "diocesi.details",
-                "citta", "provincia","cap", "paese.nome");
+        configureGrid("denominazione");
+        getGrid().addColumn("diocesi.details").setHeader("Diocesi");
 
         getForm().addListener(AnagraficaForm.SaveEvent.class, e -> {
             try {

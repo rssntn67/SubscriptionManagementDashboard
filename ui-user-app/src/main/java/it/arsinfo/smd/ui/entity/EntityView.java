@@ -69,6 +69,7 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         } else {
             form.setEntity(entity);
             form.setVisible(true);
+            grid.setVisible(false);
             addClassName("editing");
         }
     }
@@ -77,6 +78,7 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         form.setEntity(null);
         form.setVisible(false);
         removeClassName("editing");
+        grid.setVisible(true);
     }
 
     public Button getAddButton() {

@@ -22,13 +22,13 @@ public class AnagraficaForm extends EntityForm<Anagrafica> {
         ComboBox<TitoloAnagrafica> titolo = new ComboBox<>("Titolo",
                 EnumSet.allOf(TitoloAnagrafica.class));
         TextField nome = new TextField("Nome");
-        TextField denominazione = new TextField("Denominazione");
+        TextField denominazione = new TextField("Denominazione/Cognome");
 
-        TextField citta = new TextField("citta");
-        TextField cap = new TextField("cap");
+        TextField citta = new TextField("Citta");
+        TextField cap = new TextField("Cap");
         ComboBox<Provincia> provincia = new ComboBox<>("Provincia",
                 EnumSet.allOf(Provincia.class));
-        TextField indirizzo = new TextField("indirizzo");
+        TextField indirizzo = new TextField("Indirizzo");
 
         ComboBox<Paese> paese = new ComboBox<>("Paese",
                 EnumSet.allOf(Paese.class));
@@ -41,9 +41,8 @@ public class AnagraficaForm extends EntityForm<Anagrafica> {
         TextField cellulare = new TextField("Cellulare");
         TextField codfis = new TextField("Cod. Fis.");
         TextField piva = new TextField("P.Iva");
-        TextField codeLineBase = new TextField("Code Line Base");
+        TextField codeLineBase = new TextField("Codice Identificativo");
         TextField descr = new TextField("Descr");
-        HorizontalLayout poste = new HorizontalLayout(codeLineBase, descr);
 
         // Configure and style components
         diocesi.setItemLabelGenerator(Diocesi::getDetails);
@@ -53,26 +52,35 @@ public class AnagraficaForm extends EntityForm<Anagrafica> {
 
         binder.forField(titolo).asRequired().bind(Anagrafica::getTitolo,Anagrafica::setTitolo);
         binder.forField(diocesi).asRequired().bind(Anagrafica::getDiocesi,Anagrafica::setDiocesi);
+        binder.forField(nome).bind(Anagrafica::getNome,Anagrafica::setNome);
         binder.forField(denominazione).asRequired().bind(Anagrafica::getDenominazione,Anagrafica::setDenominazione);
+        binder.forField(citta).asRequired().bind(Anagrafica::getCitta,Anagrafica::setCitta);
+        binder.forField(provincia).asRequired().bind(Anagrafica::getProvincia,Anagrafica::setProvincia);
+        binder.forField(cap).asRequired().bind(Anagrafica::getCap,Anagrafica::setCap);
+        binder.forField(indirizzo).asRequired().bind(Anagrafica::getIndirizzo,Anagrafica::setIndirizzo);
+        binder.forField(indirizzoSecondaRiga).bind(Anagrafica::getIndirizzoSecondaRiga,Anagrafica::setIndirizzoSecondaRiga);
         binder.forField(paese).asRequired().bind(Anagrafica::getPaese,Anagrafica::setPaese);
+        binder.forField(areaSpedizione).asRequired().bind(Anagrafica::getAreaSpedizione,Anagrafica::setAreaSpedizione);
         binder.forField(email).asRequired()
                 .withValidator(new EmailValidator("Immettere un indizzo di mail valido"))
                 .bind(Anagrafica::getEmail,Anagrafica::setEmail);
-        binder.bindInstanceFields(this);
+        binder.forField(telefono).bind(Anagrafica::getTelefono,Anagrafica::setTelefono);
+        binder.forField(cellulare).bind(Anagrafica::getCellulare,Anagrafica::setCellulare);
+        binder.forField(codfis).bind(Anagrafica::getCodfis,Anagrafica::setCodfis);
+        binder.forField(piva).bind(Anagrafica::getPiva,Anagrafica::setPiva);
+        binder.forField(codeLineBase).bind(Anagrafica::getCodeLineBase,Anagrafica::setCodeLineBase);
+        binder.forField(descr).bind(Anagrafica::getDescr,Anagrafica::setDescr);
 
-        HorizontalLayout intestazioni = new HorizontalLayout(diocesi, titolo, nome);
-        intestazioni.addAndExpand(denominazione);
-        HorizontalLayout residenza = new HorizontalLayout(citta, provincia, cap);
-        residenza.addAndExpand(indirizzo);
-        HorizontalLayout residenza2 = new HorizontalLayout(paese, areaSpedizione);
-        residenza2.addAndExpand(indirizzoSecondaRiga);
-        HorizontalLayout dati = new HorizontalLayout(email,
-                telefono,
-                cellulare,
-                codfis,
-                piva
-        );
-        add(intestazioni,residenza,residenza2,dati,poste);
+        add(createButtonsLayout());
+        add(titolo, nome);
+        add(denominazione);
+        add(indirizzo);
+        add(indirizzoSecondaRiga);
+        add(citta, provincia, cap);
+        add(diocesi);
+        add(paese, areaSpedizione);
+        add(email,telefono,cellulare,codfis,piva);
+        add(codeLineBase, descr);
 
         getSave().addClickListener(event -> {
             if (validate()) {
