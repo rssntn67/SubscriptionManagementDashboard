@@ -37,10 +37,10 @@ public class UserSession implements Serializable {
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
 
-    public UserInfo getLoggedIn() throws UnsupportedOperationException {
+    public UserInfo getLoggedIn() {
         UserInfo userInfo = userInfoService.findByUsername(getUser().getEmail());
         if (userInfo == null  || userInfo.getRole() != UserInfo.Role.SUBSCRIBED )
-            throw new UnsupportedOperationException("Lo user si deve registrare");
+            return null;
         return userInfo;
     }
 
@@ -70,13 +70,15 @@ public class UserSession implements Serializable {
         return userInfoService.findByUserInfo(getLoggedIn());
     }
 
-    public void save(String code) throws Exception {
+    public void add(String code) {
         UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
-        if (remote == null) {
-            remote = new UserInfo();
-            remote.setUsername(getUser().getEmail());
-            remote.setPasswordHash(code);
-        }
+        userInfoService.add(remote,code);
+    }
+
+    public void save(String code) throws Exception {
+        UserInfo remote = new UserInfo();
+        remote.setUsername(getUser().getEmail());
+        remote.setPasswordHash(code);
         remote.setRole(UserInfo.Role.SUBSCRIBED);
         userInfoService.save(remote);
     }

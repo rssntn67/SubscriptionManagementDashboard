@@ -41,7 +41,7 @@ public class SubscriptionView extends VerticalLayout {
         Button disattiva = new Button("Rimuovi Iscrizione Portale");
         disattiva.addClickListener( e -> deactivate());
 
-        add(content,userCode,attiva);
+        add(content,userCode,attiva,disattiva);
 
     }
 
@@ -88,7 +88,7 @@ public class SubscriptionView extends VerticalLayout {
 
         Button confirmButton = new Button("Confirm", event -> {
             try {
-                userSession.save(code);
+                userSession.add(code);
             } catch (Exception e) {
                 Notification.show("Error: " +e.getLocalizedMessage());
                 dialog.close();
