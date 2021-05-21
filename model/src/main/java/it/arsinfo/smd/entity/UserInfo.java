@@ -1,18 +1,8 @@
 package it.arsinfo.smd.entity;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 
 @Entity
@@ -26,7 +16,8 @@ public class UserInfo implements SmdEntity {
         ADMIN,
         USER,
         LOCKED,
-        ENDUSER
+        SUBSCRIBED,
+        UNSUBSCRIBED
     }
     
     @Id

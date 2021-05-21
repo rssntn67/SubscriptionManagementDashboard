@@ -2,7 +2,6 @@ package it.arsinfo.smd.ui.anagrafica;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
@@ -88,7 +87,7 @@ public class AnagraficaForm extends EntityForm<Anagrafica> {
             }
 
         });
-        getDelete().addClickListener(event -> fireEvent(new AnagraficaForm.DeleteEvent(this, getEntity())));
+        getDelete().setEnabled(false);
         getClose().addClickListener(event -> fireEvent(new AnagraficaForm.CloseEvent(this)));
     }
 

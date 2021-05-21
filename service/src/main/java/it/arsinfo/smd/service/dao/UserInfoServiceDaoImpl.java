@@ -1,7 +1,12 @@
 package it.arsinfo.smd.service.dao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.dao.RemoteUserInfoDao;
+import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.RemoteUserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,19 +22,35 @@ public class UserInfoServiceDaoImpl implements UserInfoService {
     @Autowired
     private UserInfoDao repository;
 
+    @Autowired
+	private RemoteUserInfoDao remoteUserInfoDao;
+
+    @Autowired
+	private AnagraficaDao anagraficaDao;
+
+
+
 	@Override
 	public UserInfo save(UserInfo entity) throws Exception {
-		return repository.save(entity);
+		UserInfo saved = repository.save(entity);
+		if (entity.getRole() == Role.SUBSCRIBED) {
+			add(saved,saved.getPasswordHash());
+		}
+		return saved;
 	}
 
 	@Override
 	public void delete(UserInfo entity) throws Exception {
-		repository.delete(entity);
+		if (entity.getRole() == Role.SUBSCRIBED) {
+			entity.setRole(Role.UNSUBSCRIBED);
+			repository.save(entity);
+		} else
+			repository.delete(entity);
 	}
 
 	@Override
 	public UserInfo findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -68,5 +89,25 @@ public class UserInfoServiceDaoImpl implements UserInfoService {
 	public UserInfo findByUsername(String name) {
 		return repository.findByUsername(name);
 	}
-	
+
+	@Override
+	public List<Anagrafica> findByUserInfo(UserInfo userInfo) {
+		return remoteUserInfoDao.findByUserInfo(userInfo).stream().map(ru -> anagraficaDao.findByCodeLineBase(ru.getCode())).collect(Collectors.toList());
+	}
+
+	@Override
+	public void add(UserInfo userInfo, String code) {
+		RemoteUserInfo ru = remoteUserInfoDao.findByUserInfoAndCode(userInfo,code);
+		if (ru == null)
+			remoteUserInfoDao.save(new RemoteUserInfo(userInfo,code));
+	}
+
+	@Override
+	public void delete(UserInfo userInfo, String code) {
+		RemoteUserInfo ru = remoteUserInfoDao.findByUserInfoAndCode(userInfo,code);
+		if (ru != null)
+			remoteUserInfoDao.delete(ru);
+
+	}
+
 }

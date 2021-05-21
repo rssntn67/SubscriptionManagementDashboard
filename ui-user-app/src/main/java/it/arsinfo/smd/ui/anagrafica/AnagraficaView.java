@@ -46,6 +46,7 @@ public class AnagraficaView extends EntityView<Anagrafica> {
         });
         getForm().addListener(AnagraficaForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
+        toolbar.add(getAddButton());
         add(toolbar,getContent(getGrid(),getForm()));
         updateList();
         closeEditor();

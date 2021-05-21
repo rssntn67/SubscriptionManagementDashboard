@@ -5,6 +5,7 @@ import it.arsinfo.smd.dao.AnagraficaDao;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.service.api.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,10 @@ public class UserSession implements Serializable {
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
 
-    public UserInfo getLoggedIn() {
+    public UserInfo getLoggedIn() throws UnsupportedOperationException {
         UserInfo userInfo = userInfoService.findByUsername(getUser().getEmail());
-        if (userInfo == null || userInfo.getRole() != UserInfo.Role.ENDUSER )
-            return null;
+        if (userInfo == null  || userInfo.getRole() != UserInfo.Role.SUBSCRIBED )
+            throw new UnsupportedOperationException("Lo user si deve registrare");
         return userInfo;
     }
 
@@ -57,18 +58,34 @@ public class UserSession implements Serializable {
 
     public List<Anagrafica> getDestinatari() {
         final Set<Anagrafica> destinatari = new HashSet<>();
-        getAbbonamenti().forEach(abb -> rivistaAbbonamentoDao.findByAbbonamento(abb).forEach(rivista -> destinatari.add(rivista.getDestinatario())));
+        for (Abbonamento abb: getAbbonamenti()) {
+            for (RivistaAbbonamento rivista: rivistaAbbonamentoDao.findByAbbonamento(abb)) {
+                destinatari.add(rivista.getDestinatario());
+            }
+        }
         return new ArrayList<>(destinatari);
     }
 
-    public void save(String code) throws Exception {
-        UserInfo remote = new UserInfo();
-        remote.setUsername(getUser().getEmail());
-        remote.setPasswordHash(code);
-        remote.setRole(UserInfo.Role.ENDUSER);
-        userInfoService.save(remote);
-
+    public List<Anagrafica> getSubscriptions() {
+        return userInfoService.findByUserInfo(getLoggedIn());
     }
+
+    public void save(String code) throws Exception {
+        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        if (remote == null) {
+            remote = new UserInfo();
+            remote.setUsername(getUser().getEmail());
+            remote.setPasswordHash(code);
+        }
+        remote.setRole(UserInfo.Role.SUBSCRIBED);
+        userInfoService.save(remote);
+    }
+
+    public void unsubscribe() throws Exception {
+        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        userInfoService.delete(remote);
+    }
+
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         OAuth2AuthenticatedPrincipal principal = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();

@@ -14,10 +14,9 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 import it.arsinfo.smd.data.UserSession;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.service.api.UserInfoService;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.home.HomeView;
+import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -74,7 +73,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         RouterLink anagraficaLink = new RouterLink("Anagrafica", AnagraficaView.class);
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        menu.add(homeLink,anagraficaLink);
+        RouterLink subscriptionLink = new RouterLink("Subscription", SubscriptionView.class);
+        subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
+
+        menu.add(homeLink,anagraficaLink,subscriptionLink);
 
         addToDrawer(menu);
     }
