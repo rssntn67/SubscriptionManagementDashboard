@@ -5,6 +5,8 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import it.arsinfo.smd.data.AreaSpedizione;
 import it.arsinfo.smd.data.InvioSpedizione;
 import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
@@ -53,7 +55,16 @@ public class CampagnaForm extends EntityForm<Storico> {
         ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
         statoStorico.setReadOnly(true);
 
-
+        binder.forField(destinatario).asRequired().bind(Storico::getIntestatario,Storico::setIntestatario);
+        binder.forField(pubblicazione).asRequired().bind(Storico::getPubblicazione,Storico::setPubblicazione);
+        binder.forField(tipoAbbonamentoRivista).asRequired().bind(Storico::getTipoAbbonamentoRivista,Storico::setTipoAbbonamentoRivista);
+        binder.forField(numero)
+                .withConverter(new StringToIntegerConverter("Inserire un numero"))
+                .withValidator(num -> num >= 0,"deve essere maggiore o uguale a 0")
+                .bind(Storico::getNumero, Storico::setNumero);
+        binder.forField(invioSpedizione).asRequired().bind(Storico::getInvioSpedizione,Storico::setInvioSpedizione);
+        binder.forField(contrassegno).bind(Storico::isContrassegno,Storico::setContrassegno);
+        binder.forField(statoStorico).bind(Storico::getStatoStorico,Storico::setStatoStorico);
 
         add(createButtonsLayout());
         add(intestatario,destinatario,pubblicazione,tipoAbbonamentoRivista,invioSpedizione,numero,contrassegno,statoStorico);
@@ -73,13 +84,36 @@ public class CampagnaForm extends EntityForm<Storico> {
 
     @Override
     public void setReadOnly(boolean readonly) {
-        destinatario.setReadOnly(readonly);
-        pubblicazione.setReadOnly(readonly);
-        tipoAbbonamentoRivista.setReadOnly(readonly);
-        contrassegno.setReadOnly(readonly);
-        invioSpedizione.setReadOnly(readonly);
-        numero.setReadOnly(readonly);
-        super.setReadOnly(readonly);
+        switch (getEntity().getTipoAbbonamentoRivista()) {
+            case OmaggioCuriaDiocesiana:
+            case OmaggioCuriaGeneralizia:
+            case OmaggioDirettoreAdp:
+            case OmaggioEditore:
+            case OmaggioGesuiti:
+            case Scontato:
+                destinatario.setReadOnly(true);
+                pubblicazione.setReadOnly(true);
+                tipoAbbonamentoRivista.setReadOnly(true);
+                contrassegno.setReadOnly(true);
+                invioSpedizione.setReadOnly(true);
+                numero.setReadOnly(true);
+                super.setReadOnly(true);
+                break;
+            default:
+                destinatario.setReadOnly(readonly);
+                pubblicazione.setReadOnly(readonly);
+                tipoAbbonamentoRivista.setReadOnly(readonly);
+                contrassegno.setReadOnly(readonly);
+                invioSpedizione.setReadOnly(readonly);
+                numero.setReadOnly(readonly);
+                super.setReadOnly(readonly);
+                break;
+        }
+
+        if (getEntity().getDestinatario().getAreaSpedizione() != AreaSpedizione.Italia) {
+            invioSpedizione.setReadOnly(true);
+        }
+
     }
 
     public static abstract class FormEvent extends ComponentEvent<CampagnaForm> {

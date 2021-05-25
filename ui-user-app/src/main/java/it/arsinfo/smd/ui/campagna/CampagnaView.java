@@ -70,7 +70,8 @@ public class CampagnaView extends EntityView<Storico> {
     @Override
     public void edit(Storico t) {
         super.edit(t);
-        getForm().setReadOnly(t.getIntestatario().equals(getUserSession().getLoggedInIntestatario()));
+        if (t != null)
+            getForm().setReadOnly(t.getIntestatario().equals(getUserSession().getLoggedInIntestatario()));
     }
 
     @Override

@@ -15,6 +15,9 @@ public class RemoteUserInfo {
     @ManyToOne(fetch=FetchType.LAZY)
     private UserInfo userInfo;
 
+    public RemoteUserInfo() {
+    }
+
     public Long getId() {
         return id;
     }

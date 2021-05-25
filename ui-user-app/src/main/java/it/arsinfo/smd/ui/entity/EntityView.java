@@ -11,7 +11,6 @@ import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.service.api.SmdServiceBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
@@ -30,15 +29,14 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         this.service=service;
     }
 
-    @PostConstruct
     public void init(Grid<T> grid, EntityForm<T> form) {
         this.form=form;
         this.grid=grid;
         addClassName("gc-view");
         form.addClassName("form");
         setSizeFull();
-
     }
+
     public HorizontalLayout getToolBar() {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addClassName("toolbar");

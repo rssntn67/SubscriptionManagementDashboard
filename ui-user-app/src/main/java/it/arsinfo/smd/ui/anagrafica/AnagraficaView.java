@@ -12,10 +12,7 @@ import it.arsinfo.smd.ui.entity.EntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Route(value="adp/anagrafica", layout = MainLayout.class)
 @PageTitle("Anagrafica | ADP Portale")

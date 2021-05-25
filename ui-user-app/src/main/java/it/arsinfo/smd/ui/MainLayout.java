@@ -13,8 +13,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
+import it.arsinfo.smd.dao.CampagnaDao;
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.UserSession;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
+import it.arsinfo.smd.ui.campagna.CampagnaView;
 import it.arsinfo.smd.ui.home.HomeView;
 import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Autowired
     private UserSession userSession;
+
+    @Autowired
+    private CampagnaDao campagnaDao;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -73,11 +81,22 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         RouterLink anagraficaLink = new RouterLink("Anagrafica", AnagraficaView.class);
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
+        RouterLink campagnaLink = new RouterLink(getCampagnaLinkText(), CampagnaView.class);
+        campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
+
         RouterLink subscriptionLink = new RouterLink("Subscription", SubscriptionView.class);
         subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        menu.add(homeLink,anagraficaLink,subscriptionLink);
+        menu.add(homeLink,anagraficaLink,campagnaLink,subscriptionLink);
 
         addToDrawer(menu);
+    }
+
+    private String getCampagnaLinkText() {
+        Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
+        if (campagna == null || campagna.getStatoCampagna() == StatoCampagna.Generata) {
+            return "Campagna " + Anno.getAnnoProssimo();
+        }
+        return "Campagna " + Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()).getAnno();
     }
 }
