@@ -27,9 +27,10 @@ public class CampagnaView extends EntityView<Storico> {
 
     @PostConstruct
     public void init() {
-        Grid<Storico> grid =new Grid<>(Storico.class)
-        CampagnaForm campagnaform =
-                new CampagnaForm(new BeanValidationBinder<>(Storico.class),getUserSession().getDestinatari(),service.findPubblicazioni())
+        Grid<Storico> grid =new Grid<>(Storico.class);
+        CampagnaForm form =
+                new CampagnaForm(new BeanValidationBinder<>(Storico.class),getUserSession().getAnagraficaStorico(),service.findPubblicazioni());
+        super.init(grid,form);
         configureGrid(
                 "intestazione",
                 "beneficiario",
@@ -64,6 +65,12 @@ public class CampagnaView extends EntityView<Storico> {
         updateList();
         closeEditor();
 
+    }
+
+    @Override
+    public void edit(Storico t) {
+        super.edit(t);
+        getForm().setReadOnly(t.getIntestatario().equals(getUserSession().getLoggedInIntestatario()));
     }
 
     @Override

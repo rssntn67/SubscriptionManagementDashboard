@@ -18,43 +18,42 @@ import java.util.List;
 
 public class CampagnaForm extends EntityForm<Storico> {
 
-    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
-    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
-    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
+    private final ComboBox<Anagrafica> destinatario = new ComboBox<>("Destinatario");
+    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<>("Pubblicazioni");
     private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
-            new ComboBox<TipoAbbonamentoRivista>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
-    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
+            new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
-    private final TextField numero = new TextField("Numero");
 
     private final Checkbox contrassegno = new Checkbox("Contrassegno");
+    private final TextField numero = new TextField("Numero");
 
-    private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
 
     public CampagnaForm(Binder<Storico> binder, List<Anagrafica> anagrafiche,List<Pubblicazione> pubblicazioni) {
-        super (binder);
-
+        super(binder);
+        ComboBox<Anagrafica> intestatario = new ComboBox<>("Intestatario");
+        intestatario.isRequired();
         intestatario.setReadOnly(true);
         intestatario.setPlaceholder("Intestatario");
         intestatario.setItems(anagrafiche);
         intestatario.setItemLabelGenerator(Anagrafica::getCaption);
 
-
-        destinatario.setReadOnly(true);
+        destinatario.isRequired();
         destinatario.setPlaceholder("Destinatario");
         destinatario.setItems(anagrafiche);
         destinatario.setItemLabelGenerator(Anagrafica::getCaption);
 
-        pubblicazione.setReadOnly(true);
+        pubblicazione.isRequired();
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemLabelGenerator(Pubblicazione::getNome);
 
-        tipoAbbonamentoRivista.setReadOnly(true);
+        tipoAbbonamentoRivista.isRequired();
 
+        ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
         statoStorico.setReadOnly(true);
 
-        // Configure and style components
+
 
         add(createButtonsLayout());
         add(intestatario,destinatario,pubblicazione,tipoAbbonamentoRivista,invioSpedizione,numero,contrassegno,statoStorico);
@@ -70,6 +69,17 @@ public class CampagnaForm extends EntityForm<Storico> {
             }
         });
         getClose().addClickListener(event -> fireEvent(new CloseEvent(this)));
+    }
+
+    @Override
+    public void setReadOnly(boolean readonly) {
+        destinatario.setReadOnly(readonly);
+        pubblicazione.setReadOnly(readonly);
+        tipoAbbonamentoRivista.setReadOnly(readonly);
+        contrassegno.setReadOnly(readonly);
+        invioSpedizione.setReadOnly(readonly);
+        numero.setReadOnly(readonly);
+        super.setReadOnly(readonly);
     }
 
     public static abstract class FormEvent extends ComponentEvent<CampagnaForm> {

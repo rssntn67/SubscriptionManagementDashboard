@@ -75,4 +75,9 @@ public class EntityForm<T extends SmdEntity> extends FormLayout {
         return getEventBus().addListener(eventType, listener);
     }
 
+    public void setReadOnly(boolean readonly) {
+        getSave().setEnabled(readonly);
+        getDelete().setEnabled(readonly);
+    }
+
 }

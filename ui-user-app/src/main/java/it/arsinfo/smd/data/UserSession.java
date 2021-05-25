@@ -3,10 +3,8 @@ package it.arsinfo.smd.data;
 import it.arsinfo.smd.dao.AbbonamentoDao;
 import it.arsinfo.smd.dao.AnagraficaDao;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.UserInfo;
+import it.arsinfo.smd.dao.StoricoDao;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @SessionScope
@@ -33,6 +32,9 @@ public class UserSession implements Serializable {
 
     @Autowired
     private AbbonamentoDao abbonamentoDao;
+
+    @Autowired
+    private StoricoDao storicoDao;
 
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
@@ -52,13 +54,27 @@ public class UserSession implements Serializable {
         return anagraficaDao.findByCodeLineBase(getLoggedIn().getPasswordHash());
     }
 
-    public List<Abbonamento> getAbbonamenti() {
+    public List<Anagrafica> getAnagraficaStorico() {
+        final Set<Anagrafica> anagrafiche = new HashSet<>();
+        anagrafiche.addAll(getSubscriptions());
+        anagrafiche.addAll(
+            storicoDao.findByIntestatario(getLoggedInIntestatario()).stream()
+                .map(Storico::getDestinatario).collect(Collectors.toList())
+        );
+        anagrafiche.addAll(
+            storicoDao.findByDestinatario(getLoggedInIntestatario()).stream()
+                .map(Storico::getIntestatario).collect(Collectors.toList())
+        );
+        return new ArrayList<>(anagrafiche);
+    }
+
+    public List<Abbonamento> getAbbonamentiIntestatario() {
         return abbonamentoDao.findByIntestatario(getLoggedInIntestatario());
     }
 
-    public List<Anagrafica> getDestinatari() {
+    public List<Anagrafica> getDestinatariAbbonamento() {
         final Set<Anagrafica> destinatari = new HashSet<>();
-        for (Abbonamento abb: getAbbonamenti()) {
+        for (Abbonamento abb: getAbbonamentiIntestatario()) {
             for (RivistaAbbonamento rivista: rivistaAbbonamentoDao.findByAbbonamento(abb)) {
                 destinatari.add(rivista.getDestinatario());
             }

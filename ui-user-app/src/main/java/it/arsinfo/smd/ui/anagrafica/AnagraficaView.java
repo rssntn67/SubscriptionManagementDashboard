@@ -56,9 +56,6 @@ public class AnagraficaView extends EntityView<Anagrafica> {
 
     @Override
     public List<Anagrafica> filter() {
-        Set<Anagrafica> filtered = new HashSet<>();
-        filtered.add(getUserSession().getLoggedInIntestatario());
-        filtered.addAll(getUserSession().getDestinatari());
-        return new ArrayList<>(filtered);
+        return getUserSession().getSubscriptions();
     }
 }
