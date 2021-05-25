@@ -2,6 +2,7 @@ package it.arsinfo.smd.service.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
         if (entity.getNumero() <= 0) {
         	entity.setNumero(0);
         }
-    	log.info("save: {} {}", entity);
+    	log.info("save: {}", entity);
         repository.save(entity);
         for (Nota nota:entity.getItems()) {
                 itemRepository.save(nota);
@@ -89,7 +90,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
 
 	@Override
 	public Storico findById(Long id) {
-		return repository.findById(id).get();
+		return repository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -187,7 +188,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
         RivistaAbbonamento ec = getByStorico(campagna, storico);
         if (storico.getId() == null || (ec == null && storico.getNumero() > 0) ) {
         	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
-    		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).get();
+    		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).orElse(null);
     		Abbonamento abbonamento = abbonamentoDao.findByIntestatarioAndCampagnaAndContrassegno(a, campagna, storico.isContrassegno());
     		if (abbonamento == null) {
     			abbonamento = Smd.genera(campagna, a, storico.isContrassegno());
@@ -209,7 +210,8 @@ public class StoricoServiceDaoImpl implements StoricoService {
         	log.info("aggiornaCampagna: rimuovi {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "rimuovi",username));
     		save(storico);
-            Abbonamento abbonamento = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+            Abbonamento abbonamento = abbonamentoDao.findById(Objects.requireNonNull(ec).getAbbonamento().getId()).orElse(null);
+            Objects.requireNonNull(abbonamento);
             smdService.rimuovi(abbonamento,ec);
             return;
         } 
@@ -227,7 +229,8 @@ public class StoricoServiceDaoImpl implements StoricoService {
                 .findByStorico(storico)
                 .stream()
                 .filter(ec -> {
-                    Abbonamento abb = abbonamentoDao.findById(ec.getAbbonamento().getId()).get();
+                    Abbonamento abb = abbonamentoDao.findById(ec.getAbbonamento().getId()).orElse(null);
+                    assert abb != null;
                     return abb.getAnno() == campagna.getAnno();
                 })
                 .collect(Collectors.toList());
