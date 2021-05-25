@@ -11,12 +11,13 @@ import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.service.api.SmdServiceBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
-    private final Grid<T> grid;
+    private Grid<T> grid;
     final private SmdServiceBase<T> service;
-    private final EntityForm<T> form;
+    private EntityForm<T> form;
 
     @Autowired
     private UserSession userSession;
@@ -25,15 +26,19 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         return userSession;
     }
 
-    public EntityView(@Autowired SmdServiceBase<T> service, Grid<T> grid, EntityForm<T> form) {
+    public EntityView(@Autowired SmdServiceBase<T> service) {
+        this.service=service;
+    }
+
+    @PostConstruct
+    public void init(Grid<T> grid, EntityForm<T> form) {
         this.form=form;
         this.grid=grid;
-        this.service=service;
         addClassName("gc-view");
         form.addClassName("form");
         setSizeFull();
-    }
 
+    }
     public HorizontalLayout getToolBar() {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.addClassName("toolbar");
@@ -94,6 +99,11 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
         grid.asSingleSelect().addValueChangeListener(event ->
                 edit(event.getValue()));
+    }
+
+    public void setColumnCaption(String column,String header) {
+        grid.addColumn(column).setHeader(header);
+        grid.getColumns().forEach(col -> col.setAutoWidth(true));
     }
 
     public void updateList() {

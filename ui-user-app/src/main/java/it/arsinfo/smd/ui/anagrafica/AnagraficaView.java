@@ -22,11 +22,12 @@ import java.util.Set;
 public class AnagraficaView extends EntityView<Anagrafica> {
 
     public AnagraficaView(@Autowired AnagraficaService service) {
-        super(service, new Grid<>(Anagrafica.class), new AnagraficaForm(new BeanValidationBinder<>(Anagrafica.class)));
+        super(service);
     }
 
     @PostConstruct
     public void init() {
+        super.init(new Grid<>(Anagrafica.class), new AnagraficaForm(new BeanValidationBinder<>(Anagrafica.class)));
         configureGrid("denominazione");
         getGrid().addColumn("diocesi.details").setHeader("Diocesi");
 
