@@ -55,7 +55,8 @@ public class CampagnaForm extends EntityForm<Storico> {
         ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
         statoStorico.setReadOnly(true);
 
-        binder.forField(destinatario).asRequired().bind(Storico::getIntestatario,Storico::setIntestatario);
+        binder.forField(intestatario).asRequired().bind(Storico::getIntestatario,Storico::setIntestatario);
+        binder.forField(destinatario).asRequired().bind(Storico::getDestinatario,Storico::setDestinatario);
         binder.forField(pubblicazione).asRequired().bind(Storico::getPubblicazione,Storico::setPubblicazione);
         binder.forField(tipoAbbonamentoRivista).asRequired().bind(Storico::getTipoAbbonamentoRivista,Storico::setTipoAbbonamentoRivista);
         binder.forField(numero)

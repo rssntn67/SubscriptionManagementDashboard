@@ -95,7 +95,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private String getCampagnaLinkText() {
         Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
         if (campagna == null || campagna.getStatoCampagna() == StatoCampagna.Generata) {
-            return "Campagna " + Anno.getAnnoProssimo();
+            return "Campagna " + Anno.getAnnoProssimo().getAnno();
         }
         return "Campagna " + Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()).getAnno();
     }
