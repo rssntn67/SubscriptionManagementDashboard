@@ -2,19 +2,18 @@ package it.arsinfo.smd.service.dao;
 
 import it.arsinfo.smd.config.CampagnaConfig;
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.service.api.CampagnaService;
-import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.api.CampagnaService;
+import it.arsinfo.smd.service.api.SmdService;
+import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -316,7 +315,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         		abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
         	}
     		if (sendSollecito(abbonamento,campagnaConfig)) {
-    			abbonamento.setSpeseEstrattoConto(new BigDecimal("2.00"));
+    			abbonamento.setSpeseEstrattoConto(campagnaConfig.getSpeseSollecito());
     			abbonamento.setSollecitato(true);
     		}
 			abbonamentoDao.save(abbonamento);    		
@@ -390,11 +389,14 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 
 	@Override
 	public void estratto(Campagna campagna, UserInfo user) {
-    	if (campagna.getStatoCampagna() != StatoCampagna.InviatoSollecito ) {
-        	log.warn("estratto: Impossibile estratto campagna {}, lo stato campagna non 'InviatoSollecito'", campagna);
-        	throw new UnsupportedOperationException("Impossibile eseguire estratto conto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
-
-    	}
+		switch (campagna.getStatoCampagna()) {
+			case InviatoSospeso:
+			case InviatoSollecito:
+				break;
+			default:
+				log.warn("estratto: Impossibile EC campagna {}, stato campagna non è 'InviatoSospeso' o 'InviatoSollecito", campagna);
+				throw new UnsupportedOperationException("Impossibile eseguire estratto conto campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoSospeso' o 'InviatoSollecito'");
+		}
     	lock(campagna);
 		try {
 			doEstratto(campagna);
@@ -433,7 +435,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
             	}
             }
 			if (sendEC(abbonamento,campagnaConfig) ) {
-				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(new BigDecimal("2.00")));
+				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(campagnaConfig.getSpeseEstrattoConto()));
 				abbonamento.setInviatoEC(true);
 			}
         	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));

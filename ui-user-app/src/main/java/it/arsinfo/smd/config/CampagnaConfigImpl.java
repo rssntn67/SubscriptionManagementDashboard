@@ -15,5 +15,15 @@ public class CampagnaConfigImpl implements CampagnaConfig {
         return new BigDecimal("7.00");
     }
 
+    @Override
+    public BigDecimal getSpeseEstrattoConto() {
+        return new BigDecimal("0.00");
+    }
+
+    @Override
+    public BigDecimal getSpeseSollecito() {
+        return new BigDecimal("2.00");
+    }
+
 
 }

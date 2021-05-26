@@ -15,6 +15,12 @@ public class CampagnaConfigImpl implements CampagnaConfig {
     @Value("${limite.invio.sollecito:7.00}")
     private String limiteInvioSollecito;
 
+    @Value("${spese.estratto.conto:0.00}")
+    private String speseEstrattoConto;
+
+    @Value("${spese.sollecito:2.00}")
+    private String speseSollecito;
+
     private static final Logger log = LoggerFactory.getLogger(CampagnaConfigImpl.class);
 
     public BigDecimal getLimiteInvioEstratto() {
@@ -33,6 +39,26 @@ public class CampagnaConfigImpl implements CampagnaConfig {
             log.error("getLimiteInvioSollecito: {}", e.getMessage());
         }
         return new BigDecimal("7.00");
+    }
+
+    @Override
+    public BigDecimal getSpeseEstrattoConto() {
+        try {
+            return new BigDecimal(speseEstrattoConto);
+        } catch (Exception e) {
+            log.error("getSpeseEstrattoconto: {}", e.getMessage());
+        }
+        return new BigDecimal("0.00");
+    }
+
+    @Override
+    public BigDecimal getSpeseSollecito() {
+        try {
+            return new BigDecimal(speseSollecito);
+        } catch (Exception e) {
+            log.error("getSpeseSollecito: {}", e.getMessage());
+        }
+        return new BigDecimal("2.00");
     }
 
 
