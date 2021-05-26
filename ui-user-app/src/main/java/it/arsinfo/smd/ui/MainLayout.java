@@ -18,10 +18,13 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.UserSession;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.ui.abbonamento.AbbonamentoView;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.campagna.CampagnaView;
 import it.arsinfo.smd.ui.home.HomeView;
+import it.arsinfo.smd.ui.spedizione.SpedizioneView;
 import it.arsinfo.smd.ui.subscription.SubscriptionView;
+import it.arsinfo.smd.ui.versamento.VersamentoView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -84,10 +87,20 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         RouterLink campagnaLink = new RouterLink(getCampagnaLinkText(), CampagnaView.class);
         campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
+        RouterLink abbonamentoLink = new RouterLink("Abbonamenti", AbbonamentoView.class);
+        abbonamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+
+        RouterLink spedizioneLink = new RouterLink("Spedizioni", SpedizioneView.class);
+        spedizioneLink.setHighlightCondition(HighlightConditions.sameLocation());
+
+        RouterLink versamentoLink = new RouterLink("Versamenti", VersamentoView.class);
+        versamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+
+
         RouterLink subscriptionLink = new RouterLink("Subscription", SubscriptionView.class);
         subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        menu.add(homeLink,anagraficaLink,campagnaLink,subscriptionLink);
+        menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,subscriptionLink);
 
         addToDrawer(menu);
     }

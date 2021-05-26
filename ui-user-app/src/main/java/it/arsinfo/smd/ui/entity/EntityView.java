@@ -4,43 +4,23 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import it.arsinfo.smd.data.UserSession;
 import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.service.api.SmdServiceBase;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
-public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
-    private Grid<T> grid;
-    final private SmdServiceBase<T> service;
+public abstract class EntityView<T extends SmdEntity> extends EntityGridView<T> {
     private EntityForm<T> form;
 
-    @Autowired
-    private UserSession userSession;
+    private final SmdServiceBase<T> service;
 
-    public UserSession getUserSession() {
-        return userSession;
-    }
-
-    public EntityView(@Autowired SmdServiceBase<T> service) {
+    public EntityView(SmdServiceBase<T> service) {
+        super();
         this.service=service;
     }
 
     public void init(Grid<T> grid, EntityForm<T> form) {
         this.form=form;
-        this.grid=grid;
-        addClassName("gc-view");
         form.addClassName("form");
-        setSizeFull();
-    }
-
-    public HorizontalLayout getToolBar() {
-        HorizontalLayout toolbar = new HorizontalLayout();
-        toolbar.addClassName("toolbar");
-        return toolbar;
+        super.init(grid);
     }
 
     public Div getContent(Component...components) {
@@ -72,7 +52,7 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         } else {
             form.setEntity(entity);
             form.setVisible(true);
-            grid.setVisible(false);
+            getGrid().setVisible(false);
             addClassName("editing");
         }
     }
@@ -81,7 +61,7 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
         form.setEntity(null);
         form.setVisible(false);
         removeClassName("editing");
-        grid.setVisible(true);
+        getGrid().setVisible(true);
     }
 
     public Button getAddButton() {
@@ -92,31 +72,13 @@ public abstract class EntityView<T extends SmdEntity> extends VerticalLayout {
     }
 
     public void configureGrid(String...columns) {
-        grid.addClassName("grid");
-        grid.setColumns(columns);
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.asSingleSelect().addValueChangeListener(event ->
+        super.configureGrid(columns);
+        getGrid().asSingleSelect().addValueChangeListener(event ->
                 edit(event.getValue()));
     }
 
-    public void setColumnCaption(String column,String header) {
-        grid.addColumn(column).setHeader(header);
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-    }
-
-    public void updateList() {
-        grid.setItems(filter());
-    }
-
     void add() {
-        grid.asSingleSelect().clear();
+        getGrid().asSingleSelect().clear();
         edit(service.add());
     }
-
-    public abstract List<T> filter();
-
-    public Grid<T> getGrid() {
-        return grid;
-    }
-
-}
+   }
