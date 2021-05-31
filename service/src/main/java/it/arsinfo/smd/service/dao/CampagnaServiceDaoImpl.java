@@ -43,6 +43,9 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	private StoricoDao storicoDao;
 
 	@Autowired
+	private NotaDao notaDao;
+
+	@Autowired
 	private PubblicazioneDao pubblicazioneDao;
 
 	@Autowired
@@ -115,19 +118,38 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 		for (CampagnaItem item : entity.getCampagnaItems()) {
 			campagnaItemDao.save(item);
 		}
-        List<Abbonamento> 
-            abbonamenti = 
-              Smd.genera(entity, 
-                  anagraficaDao.findAll(),
-                  storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0));
-                                                           
-        for (Abbonamento abb:abbonamenti) {
-            storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(
-                  abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
-                .forEach(storico -> {
-                   Smd.genera(abb, storico);
-                   storicoDao.save(storico);
-            });
+		for (Storico storico: storicoDao.findByStatoStorico(StatoStorico.Sospeso)) {
+			storico.setNumero(0);
+			storico.setStatoStorico(StatoStorico.Annullato);
+			Nota nota = new Nota();
+			nota.setStorico(storico);
+			nota.setOperatore("admin");
+			nota.setDescription("stato storico: Sospeso -> Annullato :: set numero 0");
+			storicoDao.save(storico);
+			notaDao.save(nota);
+		}
+		for (Storico storico: storicoDao.findByNumero(0)) {
+			storico.setStatoStorico(StatoStorico.Annullato);
+			Nota nota = new Nota();
+			nota.setStorico(storico);
+			nota.setOperatore("admin");
+			nota.setDescription("numero 0 -> stato_storico: Annullato");
+			storicoDao.save(storico);
+			notaDao.save(nota);
+		}
+		for (Storico storico: storicoDao.findByStatoStorico(StatoStorico.Nuovo)) {
+			storico.setStatoStorico(StatoStorico.Valido);
+			Nota nota = new Nota();
+			nota.setStorico(storico);
+			nota.setOperatore("admin");
+			nota.setDescription("stato_storico: Nuovo -> Valido");
+			storicoDao.save(storico);
+			notaDao.save(nota);
+		}
+
+        for (Abbonamento abb: Smd.genera(entity, anagraficaDao.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
+            storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
+                .forEach(storico -> Smd.genera(abb, storico));
             if (abb.getItems().size() >= 1) {
                 smdService.genera(abb);
             }
@@ -161,6 +183,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 			smdService.rimuovi(abbonamento);
 		}
 		entity.getCampagnaItems().forEach(item -> campagnaItemDao.delete(item));
+		operazioneCampagnaDao.findByCampagna(entity).forEach(op -> operazioneCampagnaDao.delete(op));
 		log.info("delete: Campagna end {}", entity);
 	}
 
