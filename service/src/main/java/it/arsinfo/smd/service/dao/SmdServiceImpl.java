@@ -721,14 +721,9 @@ switch (rivista.getStatoRivista()) {
 	@Override
 	public void inviaDuplicato(Spedizione spedizione, InvioSpedizione invio) {
 		Abbonamento abbonamento = abbonamentoDao.findById(spedizione.getAbbonamento().getId()).orElse(null);
-		List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(spedizione);
+        assert abbonamento != null;
+        List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(spedizione);
 		for (SpedizioneItem item: items) {
-			
-			RivistaAbbonamento ra0= rivistaAbbonamentoDao.findById(item.getRivistaAbbonamento().getId()).orElse(null);
-			if (ra0 == null) {
-				log.error("inviaDuplicato: rivista abbonamento not trovata per item {}", item);
-				throw new UnsupportedOperationException("Rivista Abbonamento non trovata");
-			}
 			RivistaAbbonamento ra = new RivistaAbbonamento();
 			ra.setAbbonamento(abbonamento);
 			ra.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.Duplicato);
@@ -737,9 +732,9 @@ switch (rivista.getStatoRivista()) {
 			ra.setMeseInizio(item.getMesePubblicazione());
 			ra.setMeseFine(item.getMesePubblicazione());
 			ra.setPubblicazione(item.getPubblicazione());
-			ra.setDestinatario(ra0.getDestinatario());
+			ra.setDestinatario(spedizione.getDestinatario());
+			ra.setNumero(item.getNumero());
 			ra.setInvioSpedizione(invio);
-            assert abbonamento != null;
             abbonamento.addItem(ra);
         }
 
