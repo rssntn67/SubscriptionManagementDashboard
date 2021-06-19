@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.campagna;
+package it.arsinfo.smd.ui.storico;
 
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -18,7 +18,7 @@ import it.arsinfo.smd.ui.entity.EntityForm;
 import java.util.EnumSet;
 import java.util.List;
 
-public class CampagnaForm extends EntityForm<Storico> {
+public class StoricoForm extends EntityForm<Storico> {
 
     private final ComboBox<Anagrafica> destinatario = new ComboBox<>("Destinatario");
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<>("Pubblicazioni");
@@ -31,7 +31,7 @@ public class CampagnaForm extends EntityForm<Storico> {
     private final TextField numero = new TextField("Numero");
 
 
-    public CampagnaForm(Binder<Storico> binder, List<Anagrafica> anagrafiche,List<Pubblicazione> pubblicazioni) {
+    public StoricoForm(Binder<Storico> binder, List<Anagrafica> anagrafiche, List<Pubblicazione> pubblicazioni) {
         super(binder);
         ComboBox<Anagrafica> intestatario = new ComboBox<>("Intestatario");
         intestatario.isRequired();
@@ -51,9 +51,13 @@ public class CampagnaForm extends EntityForm<Storico> {
         pubblicazione.setItemLabelGenerator(Pubblicazione::getNome);
 
         tipoAbbonamentoRivista.isRequired();
+        tipoAbbonamentoRivista.setReadOnly(true);
+
+        invioSpedizione.setReadOnly(true);
 
         ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
         statoStorico.setReadOnly(true);
+
 
         binder.forField(intestatario).asRequired().bind(Storico::getIntestatario,Storico::setIntestatario);
         binder.forField(destinatario).asRequired().bind(Storico::getDestinatario,Storico::setDestinatario);
@@ -81,6 +85,10 @@ public class CampagnaForm extends EntityForm<Storico> {
             }
         });
         getClose().addClickListener(event -> fireEvent(new CloseEvent(this)));
+    }
+
+    @Override
+    public void isNew() {
     }
 
     @Override
@@ -117,10 +125,10 @@ public class CampagnaForm extends EntityForm<Storico> {
 
     }
 
-    public static abstract class FormEvent extends ComponentEvent<CampagnaForm> {
+    public static abstract class FormEvent extends ComponentEvent<StoricoForm> {
         private final Storico t;
 
-        protected FormEvent(CampagnaForm source, Storico t) {
+        protected FormEvent(StoricoForm source, Storico t) {
             super(source, false);
             this.t = t;
         }
@@ -131,20 +139,20 @@ public class CampagnaForm extends EntityForm<Storico> {
     }
 
     public static class SaveEvent extends FormEvent {
-        SaveEvent(CampagnaForm source, Storico t) {
+        SaveEvent(StoricoForm source, Storico t) {
             super(source, t);
         }
     }
 
     public static class DeleteEvent extends FormEvent {
-        DeleteEvent(CampagnaForm source, Storico t) {
+        DeleteEvent(StoricoForm source, Storico t) {
             super(source, t);
         }
 
     }
 
     public static class CloseEvent extends FormEvent {
-        CloseEvent(CampagnaForm source) {
+        CloseEvent(StoricoForm source) {
             super(source,null);
         }
     }

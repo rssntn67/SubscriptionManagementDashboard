@@ -84,10 +84,10 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         RouterLink anagraficaLink = new RouterLink("Anagrafica", AnagraficaView.class);
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        RouterLink campagnaLink = new RouterLink(getCampagnaLinkText(), CampagnaView.class);
+        RouterLink campagnaLink = new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
         campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        RouterLink abbonamentoLink = new RouterLink("Abbonamenti", AbbonamentoView.class);
+        RouterLink abbonamentoLink = new RouterLink("Campagna " + Anno.getAnnoCorrente().getAnnoAsString(), AbbonamentoView.class);
         abbonamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
 
         RouterLink spedizioneLink = new RouterLink("Spedizioni", SpedizioneView.class);
@@ -103,13 +103,5 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,subscriptionLink);
 
         addToDrawer(menu);
-    }
-
-    private String getCampagnaLinkText() {
-        Campagna campagna = campagnaDao.findByAnno(Anno.getAnnoProssimo());
-        if (campagna == null || campagna.getStatoCampagna() == StatoCampagna.Generata) {
-            return "Campagna " + Anno.getAnnoProssimo().getAnno();
-        }
-        return "Campagna " + Anno.getAnnoSuccessivo(Anno.getAnnoProssimo()).getAnno();
     }
 }

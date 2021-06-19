@@ -80,4 +80,8 @@ public class EntityForm<T extends SmdEntity> extends FormLayout {
         getDelete().setEnabled(!readonly);
     }
 
+    public void isNew() {
+
+    }
+
 }
