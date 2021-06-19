@@ -4,22 +4,17 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.api.StoricoService;
-import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.entity.EntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Route(value="adp/abbonamento", layout = MainLayout.class)
-@PageTitle("Campagna Anno Corrente| ADP Portale")
-public class StoricoView extends EntityView<Storico> {
+public abstract class StoricoView extends EntityView<Storico> {
 
     private final StoricoService service;
     public StoricoView(@Autowired StoricoService service) {
