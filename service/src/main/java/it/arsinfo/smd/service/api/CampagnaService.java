@@ -31,5 +31,6 @@ public interface CampagnaService extends SmdServiceBase<Campagna> {
 	List<Campagna> searchBy(Anno anno);
 	List<OperazioneCampagna> getOperazioni(Campagna campagna);
 	List<OperazioneSospendi> getSospensioni(Campagna campagna);
+	Campagna getByAnno(Anno anno);
 
 }
