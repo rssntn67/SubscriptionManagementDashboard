@@ -537,10 +537,6 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         log.info("chiudi Campagna end {}", campagna);
 	}
 
-	public Campagna getByAnno(Anno anno) {
-		return repository.findByAnno(anno);
-	}
-
 	public List<Campagna> searchBy(Anno anno) {
         if (anno != null) {
             Campagna campagna = repository.findByAnno(anno);

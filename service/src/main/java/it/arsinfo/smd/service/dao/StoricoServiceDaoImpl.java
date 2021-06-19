@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.data.Anno;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,7 +168,12 @@ public class StoricoServiceDaoImpl implements StoricoService {
 		return campagnaDao.findByStatoCampagnaNot(StatoCampagna.Chiusa);
 	}
 
-	@Transactional
+    @Override
+    public Campagna getByAnno(Anno anno) {
+        return campagnaDao.findByAnno(anno);
+    }
+
+    @Transactional
 	public void aggiornaCampagna(Campagna campagna, Storico storico, String username) throws Exception {
         if (storico == null) {
         	log.warn("aggiornaCampagna: Lo Storico è nullo");
