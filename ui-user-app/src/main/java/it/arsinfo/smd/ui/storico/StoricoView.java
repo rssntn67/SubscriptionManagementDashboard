@@ -1,14 +1,23 @@
 package it.arsinfo.smd.ui.storico;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
+import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.api.StoricoService;
+import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
+import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
 import it.arsinfo.smd.ui.entity.EntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +30,8 @@ public abstract class StoricoView extends EntityView<Storico> {
 
     private Campagna campagna;
     @Autowired
+    private RivistaAbbonamentoDao raDao;
+
     public StoricoView(@Autowired StoricoService service) {
         super(service);
         this.service=service;
@@ -32,7 +43,6 @@ public abstract class StoricoView extends EntityView<Storico> {
                 new StoricoForm(new BeanValidationBinder<>(Storico.class),getUserSession().getAnagraficaStorico(),service.findPubblicazioni());
         super.init(grid,form);
         configureGrid(
-                "intestazione",
                 "beneficiario",
                 "tipoAbbonamentoRivista");
         setColumnCaption("numero", "Numero");
@@ -53,14 +63,68 @@ public abstract class StoricoView extends EntityView<Storico> {
         getForm().addListener(StoricoForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
         campagna = service.getByAnno(anno);
+        Div helper = new Div();
+        helper.setText("Per modificare gli ordinativi selezionare la riga nella seguente tabella");
+        Button paga = new Button("Paga");
+        if (campagna != null ) {
+            if (campagna.getStatoCampagna() == StatoCampagna.Generata || campagna.getStatoCampagna() == StatoCampagna.Inviata) {
+                toolbar.add(getAddButton());
+            } else {
+                helper.setText("Non è possibile modificare gli ordinativi");
+                paga.setEnabled(false);
+            }
+            final List<Abbonamento> abbonamenti = service.findAbbonamento(campagna, getUserSession().getLoggedInIntestatario(), anno);
+            AbbonamentoGrid abbgrid = new AbbonamentoGrid() {
 
-        toolbar.add(getAddButton());
-        Div campagnaDiv = new Div();
-        if (campagna != null )
-            campagnaDiv.add(campagna.getHeader());
-        else
-            campagnaDiv.add(anno.getAnnoAsString());
-        add(toolbar,campagnaDiv,getContent(getGrid(),getForm()));
+                @Override
+                public List<Abbonamento> filter() {
+                    setFooter(abbonamenti);
+                    return abbonamenti;
+                }
+            };
+            abbgrid.init(new Grid<>(Abbonamento.class));
+            abbgrid.getGrid().setHeightByRows(true);
+
+            RivistaAbbonamentoGrid raGrid = new RivistaAbbonamentoGrid() {
+
+                @Override
+                public List<RivistaAbbonamento> filter() {
+                    List<RivistaAbbonamento> list = new ArrayList<>();
+                    for (Abbonamento abb:abbonamenti) {
+                        list.addAll(raDao.findByAbbonamento(abb));
+                    }
+                    return list;
+                }
+            };
+            raGrid.init(new Grid<>(RivistaAbbonamento.class));
+            raGrid.getGrid().setHeightByRows(true);
+            abbgrid.updateList();
+            raGrid.updateList();
+
+            add(
+                    toolbar,
+                    new H3(campagna.getHeader()),
+                    new H2("Ordini"),
+                    helper,
+                    getContent(getGrid(),getForm()),
+                    new H2("Abbonamenti"),
+                    getContent(abbgrid.getGrid()),
+                    paga,
+                    new H2("Riviste in Abbonamento"),
+                    getContent(raGrid.getGrid())
+            );
+        } else {
+            toolbar.add(getAddButton());
+            paga.setEnabled(false);
+            add(
+                    toolbar,
+                    new H3("La Campagna " + anno.getAnnoAsString() +" non è stata ancora generata"),
+                    new H2("ordini"),
+                    helper,
+                    getContent(getGrid(), getForm())
+            );
+        }
+        getGrid().setHeightByRows(true);
         updateList();
         closeEditor();
 

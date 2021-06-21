@@ -289,4 +289,9 @@ public class StoricoServiceDaoImpl implements StoricoService {
 		return repository.findByDestinatarioOrIntestatario(a,a);
 	}
 
+    @Override
+    public List<Abbonamento> findAbbonamento(Campagna campagna, Anagrafica intestatario, Anno anno) {
+        return abbonamentoDao.findByIntestatarioAndCampagnaAndAnno(intestatario,campagna,anno);
+    }
+
 }

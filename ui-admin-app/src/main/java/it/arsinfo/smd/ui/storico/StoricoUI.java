@@ -2,6 +2,8 @@ package it.arsinfo.smd.ui.storico;
 
 import java.util.List;
 
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.ui.vaadin.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,11 +17,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.service.api.StoricoService;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Nota;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.ui.SmdEditorUI;
 import it.arsinfo.smd.ui.SmdUI;
 
@@ -109,6 +106,11 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		}
 
 		@Override
+		public Campagna getByAnno(Anno anno) {
+			return dao.getByAnno(anno);
+		}
+
+		@Override
 		public void aggiornaCampagna(Campagna campagna, Storico storico,String username) throws Exception {
         	storico.addItem(dao.getNotaOnSave(storico,username));
 			dao.aggiornaCampagna(campagna, storico,username);
@@ -123,7 +125,12 @@ public class StoricoUI extends SmdEditorUI<Storico> {
 		public List<Storico> searchBy(Anagrafica tValue) throws Exception {
 			return dao.searchBy(tValue);
 		}
-		
+
+		@Override
+		public List<Abbonamento> findAbbonamento(Campagna campagna, Anagrafica intestatario, Anno anno) {
+			return dao.findAbbonamento(campagna,intestatario,anno);
+		}
+
 	}
     /**
      * 

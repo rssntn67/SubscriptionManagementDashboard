@@ -1,35 +1,21 @@
 package it.arsinfo.smd.ui;
 
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.ui.renderers.NumberRenderer;
+import it.arsinfo.smd.service.Smd;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
-import com.vaadin.ui.renderers.NumberRenderer;
-
-import it.arsinfo.smd.ui.EuroConverter;
-
 public class EuroConverter extends StringToBigDecimalConverter {
 	
 	public static NumberRenderer getEuroRenderer() {
-		return new NumberRenderer(NumberFormat.getCurrencyInstance(getLocalFromISO("EUR")));
+		return new NumberRenderer(NumberFormat.getCurrencyInstance(Smd.getLocalFromISO("EUR")));
 	}
-
-    public static Locale getLocalFromISO(String iso4217code){
-        Locale toReturn = null;
-        for (Locale locale : NumberFormat.getAvailableLocales()) {
-            String code = NumberFormat.getCurrencyInstance(locale).
-                    getCurrency().getCurrencyCode();
-            if (iso4217code.equals(code)) {
-                toReturn = locale;
-                break;
-            }
-        }
-        return toReturn;
-    }
 
     /**
 	 * 
@@ -71,8 +57,8 @@ public class EuroConverter extends StringToBigDecimalConverter {
         // Always display currency with two decimals
         NumberFormat format = super.getFormat(Locale.ITALIAN);
         if (format instanceof DecimalFormat) {
-            ((DecimalFormat) format).setMaximumFractionDigits(2);
-            ((DecimalFormat) format).setMinimumFractionDigits(2);
+            format.setMaximumFractionDigits(2);
+            format.setMinimumFractionDigits(2);
         }
         return format;
     }

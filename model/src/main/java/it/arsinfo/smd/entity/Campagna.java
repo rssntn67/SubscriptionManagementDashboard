@@ -1,25 +1,12 @@
 package it.arsinfo.smd.entity;
 
+import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
 
 @Entity
 @Table(uniqueConstraints={
@@ -41,7 +28,7 @@ public class Campagna implements SmdEntity {
     private StatoCampagna statoCampagna=StatoCampagna.Generata;
 
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
-    List<CampagnaItem> campagnaItems = new ArrayList<CampagnaItem>();
+    List<CampagnaItem> campagnaItems = new ArrayList<>();
 
     private boolean running = false;
     
@@ -75,17 +62,6 @@ public class Campagna implements SmdEntity {
     
     public void addCampagnaItem(CampagnaItem campagnaItem) {
         campagnaItems.add(campagnaItem);
-    }
-
-    public boolean deleteCampagnaItemByPubblicazione(Pubblicazione pubblicazione) {
-        if (campagnaItems.size() == 0) {
-            return false;
-        }
-        int size = campagnaItems.size();
-        campagnaItems =
-        campagnaItems.stream().filter(item -> item.getPubblicazione().getNome().equals(pubblicazione.getNome())).collect(Collectors.toList());
-        
-        return size != campagnaItems.size();
     }
 
     @Transient

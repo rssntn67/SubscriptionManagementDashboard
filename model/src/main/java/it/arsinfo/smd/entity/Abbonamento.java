@@ -37,6 +37,71 @@ import it.arsinfo.smd.data.StatoAbbonamento;
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
+    public static BigDecimal getPregresso(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getPregresso());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getImporto(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getImporto());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getSpese(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpese());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getSpeseEstero(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpeseEstero());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getSpeseEstrattoConto(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getSpeseEstrattoConto());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getTotale(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamento:abbonamenti) {
+            importo=importo.add(abbonamento.getTotale());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getIncassato(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abb:abbonamenti) {
+            if (abb.getIncassato() != null)
+                importo=importo.add(abb.getIncassato());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getResiduo(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abbonamneto:abbonamenti) {
+            importo=importo.add(abbonamneto.getResiduo());
+        }
+        return importo;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

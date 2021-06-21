@@ -9,12 +9,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.*;
 
 @Configuration
 public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
+
+    public static NumberFormat getEuroCurrency() {
+		return NumberFormat.getCurrencyInstance(Smd.getLocalFromISO("EUR"));
+	}
+
+	public static Locale getLocalFromISO(String iso4217code){
+		Locale toReturn = null;
+		for (Locale locale : NumberFormat.getAvailableLocales()) {
+			String code = NumberFormat.getCurrencyInstance(locale).
+					getCurrency().getCurrencyCode();
+			if (iso4217code.equals(code)) {
+				toReturn = locale;
+				break;
+			}
+		}
+		return toReturn;
+	}
 
 	public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
     	if (statoCampagna == StatoCampagna.Generata ) {

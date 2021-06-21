@@ -13,11 +13,8 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
-import it.arsinfo.smd.dao.CampagnaDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.UserSession;
-import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoView;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.campagna.CampagnaView;
@@ -35,12 +32,8 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     @Autowired
     private UserSession userSession;
 
-    @Autowired
-    private CampagnaDao campagnaDao;
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        // implementation omitted
         if ( userSession.getLoggedIn() == null) {
             event.rerouteTo(NoItemsView.class);
         }
@@ -66,11 +59,13 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         Div div = new Div();
         div.setText("Benvenuto " + userSession.getUser().getFirstName());
 
+        Div idic = new Div();
+        idic.setText("Intestatario: " + userSession.getLoggedInIntestatario().getIntestazione());
         // Spring maps the 'logout' url so we should ignore it
         Anchor logout = new Anchor("/logout", "Logout");
         logout.getElement().setAttribute("router-ignore", true);
 
-        header.add(div,logout);
+        header.add(div,idic,logout);
         addToNavbar(header);
 
     }
