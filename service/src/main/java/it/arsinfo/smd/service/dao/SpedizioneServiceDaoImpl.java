@@ -74,7 +74,16 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 	public SpedizioneDao getRepository() {
 		return repository;
 	}
-	
+
+	@Override
+	public List<Spedizione> searchBy(
+			Anagrafica destinatario,
+			Anno anno,
+			Mese mese
+	) {
+		return repository.findByDestinatarioAndMeseSpedizioneAndAnnoSpedizione(destinatario,mese,anno);
+	}
+
 	@Override
 	public List<Spedizione> searchBy(
 			Anagrafica destinatario,
