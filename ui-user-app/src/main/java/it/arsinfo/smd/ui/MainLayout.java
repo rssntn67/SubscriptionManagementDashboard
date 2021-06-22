@@ -19,6 +19,7 @@ import it.arsinfo.smd.ui.abbonamento.AbbonamentoView;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.campagna.CampagnaView;
 import it.arsinfo.smd.ui.home.HomeView;
+import it.arsinfo.smd.ui.offerta.OffertaView;
 import it.arsinfo.smd.ui.spedizione.SpedizioneView;
 import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import it.arsinfo.smd.ui.versamento.VersamentoView;
@@ -91,11 +92,14 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         RouterLink versamentoLink = new RouterLink("Versamenti", VersamentoView.class);
         versamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
 
+        RouterLink offertaLink = new RouterLink("Offerte", OffertaView.class);
+        offertaLink.setHighlightCondition(HighlightConditions.sameLocation());
+
 
         RouterLink subscriptionLink = new RouterLink("Subscription", SubscriptionView.class);
         subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
 
-        menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,subscriptionLink);
+        menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,offertaLink,subscriptionLink);
 
         addToDrawer(menu);
     }
