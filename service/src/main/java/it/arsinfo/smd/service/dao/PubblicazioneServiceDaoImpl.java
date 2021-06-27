@@ -45,7 +45,7 @@ public class PubblicazioneServiceDaoImpl implements PubblicazioneService {
 
 	@Override
 	public Pubblicazione add() {
-		return null;
+		return new Pubblicazione();
 	}
 
 	public PubblicazioneDao getRepository() {

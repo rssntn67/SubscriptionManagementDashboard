@@ -96,7 +96,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         offertaLink.setHighlightCondition(HighlightConditions.sameLocation());
 
 
-        RouterLink subscriptionLink = new RouterLink("Subscription", SubscriptionView.class);
+        RouterLink subscriptionLink = new RouterLink("Iscrizione al portale", SubscriptionView.class);
         subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
 
         menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,offertaLink,subscriptionLink);

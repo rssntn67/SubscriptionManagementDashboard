@@ -65,7 +65,7 @@ public abstract class StoricoView extends EntityView<Storico> {
         campagna = service.getByAnno(anno);
         Div helper = new Div();
         helper.setText("Per modificare gli ordinativi selezionare la riga nella seguente tabella");
-        Button paga = new Button("Paga");
+        Button paga = new Button("Paga -> https://retepreghierapapa.it/pagamento");
         if (campagna != null ) {
             if (campagna.getStatoCampagna() == StatoCampagna.Generata || campagna.getStatoCampagna() == StatoCampagna.Inviata) {
                 toolbar.add(getAddButton());
