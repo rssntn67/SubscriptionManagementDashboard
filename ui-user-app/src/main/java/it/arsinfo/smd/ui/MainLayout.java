@@ -40,7 +40,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             createDrawer();
         }
     }
-    
+
     private void createHeader() {
         H1 logo = new H1("Portale Riviste ADP");
         logo.addClassName("logo");
