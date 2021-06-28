@@ -98,13 +98,14 @@ public class UserSession implements Serializable {
     }
 
     public void add(String code) {
-        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        User user = getUser();
+        UserInfo remote = userInfoService.findByUsernameAndProvider(user.getEmail(),user.getProvider());
         userInfoService.add(remote,code);
     }
 
     public void save(String code) throws Exception {
         User user = getUser();
-        UserInfo remote = userInfoService.findByUsername(user.getEmail());
+        UserInfo remote = userInfoService.findByUsernameAndProvider(user.getEmail(),user.getProvider());
         if (remote == null) {
             remote = new UserInfo();
             remote.setUsername(getUser().getEmail());
