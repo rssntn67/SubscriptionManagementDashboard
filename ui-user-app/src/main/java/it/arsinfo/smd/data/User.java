@@ -1,5 +1,7 @@
 package it.arsinfo.smd.data;
 
+import it.arsinfo.smd.entity.UserInfo;
+
 public class User {
 
     private String firstName;
@@ -7,11 +9,22 @@ public class User {
     private String email;
     private String picture;
 
-    public User(String firstName, String lastName, String email, String picture) {
+    private UserInfo.Provider provider;
+
+    public UserInfo.Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(UserInfo.Provider provider) {
+        this.provider = provider;
+    }
+
+    public User(String firstName, String lastName, String email, String picture, UserInfo.Provider provider) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.picture = picture;
+        this.provider= provider;
     }
 
     public String getPicture() {

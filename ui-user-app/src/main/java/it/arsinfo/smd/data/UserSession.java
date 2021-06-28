@@ -44,7 +44,8 @@ public class UserSession implements Serializable {
     private static final Logger log = LoggerFactory.getLogger(UserSession.class);
 
     public UserInfo getLoggedIn() {
-        UserInfo userInfo = userInfoService.findByUsername(getUser().getEmail());
+        User user = getUser();
+        UserInfo userInfo = userInfoService.findByUsernameAndProvider(user.getEmail(),user.getProvider());
         if (userInfo == null  || userInfo.getRole() != UserInfo.Role.SUBSCRIBED ) {
             log.info("getLoggedIn: not Subscribed");
             return null;
@@ -102,18 +103,21 @@ public class UserSession implements Serializable {
     }
 
     public void save(String code) throws Exception {
-        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        User user = getUser();
+        UserInfo remote = userInfoService.findByUsername(user.getEmail());
         if (remote == null) {
             remote = new UserInfo();
             remote.setUsername(getUser().getEmail());
         }
         remote.setPasswordHash(code);
         remote.setRole(UserInfo.Role.SUBSCRIBED);
+        remote.setProvider(user.getProvider());
         userInfoService.save(remote);
     }
 
     public void unsubscribe() throws Exception {
-        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        User user = getUser();
+        UserInfo remote = userInfoService.findByUsernameAndProvider(user.getEmail(),user.getProvider());
         userInfoService.delete(remote);
     }
 
@@ -127,18 +131,10 @@ public class UserSession implements Serializable {
         log.info("getUser: attributes: {}",principal.getAttributes());
 
         if (principal.getAttribute("iss") != null) {
-            log.info("getUser: g provider: {}",principal.getAttribute("iss").toString());
-            log.info("getUser: g email: {}",principal.getAttribute("email").toString());
-            log.info("getUser: g name: {}",principal.getAttribute("given_name").toString());
-            log.info("getUser: g family: {}",principal.getAttribute("family_name").toString());
-            log.info("getUser: g picture: {}",principal.getAttribute("picture").toString());
-
             return new User(principal.getAttribute("given_name"), principal.getAttribute("family_name"), principal.getAttribute("email"),
-                    principal.getAttribute("picture"));
+                    principal.getAttribute("picture"), UserInfo.Provider.GOOGLE);
         }
-        log.info("getUser: f email: {}",principal.getAttribute("email").toString());
-        log.info("getUser: f name: {}",principal.getAttribute("name").toString());
-        return new User(principal.getAttribute("name"), "",principal.getAttribute("email"),"");
+        return new User(principal.getAttribute("name"), "",principal.getAttribute("email"),"", UserInfo.Provider.FACEBOOK);
     }
 
     public boolean isLoggedIn() {

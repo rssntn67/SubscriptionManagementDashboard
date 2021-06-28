@@ -56,7 +56,7 @@ public class SubscriptionView extends VerticalLayout {
         Button confirmButton = new Button("Confirm", event -> {
             try {
                 userSession.unsubscribe();
-                UI.getCurrent().navigate("/logout");
+                UI.getCurrent().getPage().setLocation("/logout");
             } catch (Exception e) {
                 Notification.show("Error: " +e.getLocalizedMessage());
                 dialog.close();

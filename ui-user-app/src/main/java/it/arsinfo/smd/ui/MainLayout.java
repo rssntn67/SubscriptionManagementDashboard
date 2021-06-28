@@ -25,19 +25,24 @@ import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import it.arsinfo.smd.ui.versamento.VersamentoView;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
+
 @CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Autowired
     private UserSession userSession;
 
+    private boolean doinit = true;
+
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if ( userSession.getLoggedIn() == null) {
             event.rerouteTo(NoItemsView.class);
-        } else {
+        } else if (doinit){
             createHeader();
             createDrawer();
+            doinit=false;
         }
     }
 
