@@ -6,6 +6,8 @@ import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
 import it.arsinfo.smd.dao.StoricoDao;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.UserInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,10 +41,15 @@ public class UserSession implements Serializable {
     @Autowired
     private RivistaAbbonamentoDao rivistaAbbonamentoDao;
 
+    private static final Logger log = LoggerFactory.getLogger(UserSession.class);
+
     public UserInfo getLoggedIn() {
         UserInfo userInfo = userInfoService.findByUsername(getUser().getEmail());
-        if (userInfo == null  || userInfo.getRole() != UserInfo.Role.SUBSCRIBED )
+        if (userInfo == null  || userInfo.getRole() != UserInfo.Role.SUBSCRIBED ) {
+            log.info("getLoggedIn: not Subscribed");
             return null;
+        }
+        log.info("getLoggedIn: {} Role {}",userInfo.getUsername(),userInfo.getRole());
         return userInfo;
     }
 
@@ -51,6 +58,9 @@ public class UserSession implements Serializable {
     }
 
     public Anagrafica getLoggedInIntestatario() {
+        if (getLoggedIn() == null) {
+            return null;
+        }
         return anagraficaDao.findByCodeLineBase(getLoggedIn().getPasswordHash());
     }
 
@@ -106,10 +116,26 @@ public class UserSession implements Serializable {
 
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert(authentication != null);
+        log.info("getUser: provider: {}",authentication.getAuthorities());
         OAuth2AuthenticatedPrincipal principal = (OAuth2AuthenticatedPrincipal) authentication.getPrincipal();
+        assert(principal != null);
 
-        return new User(principal.getAttribute("given_name"), principal.getAttribute("family_name"), principal.getAttribute("email"),
-                principal.getAttribute("picture"));
+        log.info("getUser: attributes: {}",principal.getAttributes());
+
+        if (principal.getAttribute("iss") != null) {
+            log.info("getUser: g provider: {}",principal.getAttribute("iss").toString());
+            log.info("getUser: g email: {}",principal.getAttribute("email").toString());
+            log.info("getUser: g name: {}",principal.getAttribute("given_name").toString());
+            log.info("getUser: g family: {}",principal.getAttribute("family_name").toString());
+            log.info("getUser: g picture: {}",principal.getAttribute("picture").toString());
+
+            return new User(principal.getAttribute("given_name"), principal.getAttribute("family_name"), principal.getAttribute("email"),
+                    principal.getAttribute("picture"));
+        }
+        log.info("getUser: f email: {}",principal.getAttribute("email").toString());
+        log.info("getUser: f name: {}",principal.getAttribute("name").toString());
+        return new User(principal.getAttribute("name"), "",principal.getAttribute("email"),"");
     }
 
     public boolean isLoggedIn() {

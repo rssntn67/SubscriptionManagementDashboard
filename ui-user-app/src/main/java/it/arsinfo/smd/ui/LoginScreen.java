@@ -18,24 +18,34 @@ import com.vaadin.flow.router.Route;
 @PageTitle("Login")
 public class LoginScreen extends FlexLayout {
 
-    private static final String URL = "/oauth2/authorization/google";
+    private static final String GOOGLE_URL = "/oauth2/authorization/google";
+    private static final String FACEBOOK_URL = "/oauth2/authorization/facebook";
 
     /**
      * This methods gets the user into google sign in page.
      */
     public LoginScreen() {
+        HorizontalLayout gl = new HorizontalLayout();
+        gl.setSpacing(true);
+        gl.setMargin(true);
+        Icon gicon = new Icon(VaadinIcon.GOOGLE_PLUS);
+        Anchor googleLoginButton = new Anchor(GOOGLE_URL, "Login with Google");
+        gl.add(gicon,googleLoginButton);
+
+        HorizontalLayout fl = new HorizontalLayout();
+        fl.setSpacing(true);
+        fl.setMargin(true);
+        Icon ficon = new Icon(VaadinIcon.FACEBOOK);
+        Anchor facebookLoginButton = new Anchor(FACEBOOK_URL, "Login with Facebook");
+        fl.add(ficon,facebookLoginButton);
+
         VerticalLayout vl =  new VerticalLayout();
         vl.setSpacing(true);
         vl.setMargin(true);
         vl.add(new H3("Portale ADP - Scegliere un provider di autenticazione"));
         vl.add(new H1(""));
-        HorizontalLayout gl = new HorizontalLayout();
-        gl.setSpacing(true);
-        gl.setMargin(true);
-        Icon gicon = new Icon(VaadinIcon.GOOGLE_PLUS);
-        Anchor googleLoginButton = new Anchor(URL, "Login with Google");
-        gl.add(gicon,googleLoginButton);
-        vl.add(gl);
+        vl.add(gl,fl);
+        vl.setAlignItems(Alignment.CENTER);
 
         add(vl);
     }

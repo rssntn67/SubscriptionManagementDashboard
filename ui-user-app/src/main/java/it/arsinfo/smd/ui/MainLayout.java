@@ -25,8 +25,6 @@ import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import it.arsinfo.smd.ui.versamento.VersamentoView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-
 @CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
@@ -37,15 +35,12 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         if ( userSession.getLoggedIn() == null) {
             event.rerouteTo(NoItemsView.class);
+        } else {
+            createHeader();
+            createDrawer();
         }
     }
-
-    @PostConstruct
-    public void init() {
-        createHeader();
-        createDrawer();
-    }
-
+    
     private void createHeader() {
         H1 logo = new H1("Portale Riviste ADP");
         logo.addClassName("logo");
