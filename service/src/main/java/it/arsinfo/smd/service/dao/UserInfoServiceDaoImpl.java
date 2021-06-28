@@ -86,8 +86,13 @@ public class UserInfoServiceDaoImpl implements UserInfoService {
 	}
 
 	@Override
+	public UserInfo findByUsernameAndProvider(String name, UserInfo.Provider provider) {
+		return repository.findByUsernameAndProvider(name,provider);
+	}
+
+	@Override
 	public UserInfo findByUsername(String name) {
-		return repository.findByUsername(name);
+		return repository.findByUsernameAndProvider(name, UserInfo.Provider.LOCAL);
 	}
 
 	@Override

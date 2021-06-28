@@ -6,11 +6,22 @@ import javax.persistence.*;
 
 
 @Entity
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"username","provider"})
+})
 public class UserInfo implements SmdEntity {
 
     public static String[] getRoleNames() {
         return Arrays.stream(Role.values()).map(Enum::name).toArray(String[]::new);
-    }    
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
 
     public enum Role {
         ADMIN,
@@ -19,18 +30,26 @@ public class UserInfo implements SmdEntity {
         SUBSCRIBED,
         UNSUBSCRIBED
     }
-    
+
+    public enum Provider {
+        FACEBOOK,
+        GOOGLE,
+        LOCAL
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String passwordHash;
 
-    @Column(unique=true)
     private String username;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider=Provider.LOCAL;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();

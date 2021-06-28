@@ -102,8 +102,11 @@ public class UserSession implements Serializable {
     }
 
     public void save(String code) throws Exception {
-        UserInfo remote = new UserInfo();
-        remote.setUsername(getUser().getEmail());
+        UserInfo remote = userInfoService.findByUsername(getUser().getEmail());
+        if (remote == null) {
+            remote = new UserInfo();
+            remote.setUsername(getUser().getEmail());
+        }
         remote.setPasswordHash(code);
         remote.setRole(UserInfo.Role.SUBSCRIBED);
         userInfoService.save(remote);

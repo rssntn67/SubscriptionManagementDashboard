@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
-        UserInfo user = userInfoDao.findByUsername(username);
+        UserInfo user = userInfoDao.findByUsernameAndProvider(username, UserInfo.Provider.LOCAL);
         if (null == user) {
             log.info("login: '{}' not found, access is denied.", username);
             throw new UsernameNotFoundException("No user found with username: "

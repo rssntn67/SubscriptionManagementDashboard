@@ -38,7 +38,7 @@ public class SecurityUtils {
 	 * @return the user object
 	 */
 	public static UserInfo getCurrentUser(UserInfoDao userInfoDao) {
-		return userInfoDao.findByUsername(SecurityUtils.getUsername());
+		return userInfoDao.findByUsernameAndProvider(SecurityUtils.getUsername(), UserInfo.Provider.LOCAL);
 	}
 
 	public static boolean verify(String password) {

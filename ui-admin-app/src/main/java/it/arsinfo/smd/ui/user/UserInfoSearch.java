@@ -30,7 +30,7 @@ public class UserInfoSearch extends SmdSearch<UserInfo> {
             onChange();
         });
 
-        ComboBox<Role> filterRole = new ComboBox<Role>(null,
+        ComboBox<Role> filterRole = new ComboBox<>(null,
                 EnumSet.allOf(Role.class));
         filterRole.setPlaceholder("Cerca per ROLE");
 
@@ -38,7 +38,7 @@ public class UserInfoSearch extends SmdSearch<UserInfo> {
             if (e.getValue() == null) {
                 role = null;
             } else {
-                role = e.getSelectedItem().get();
+                role = e.getSelectedItem().orElse(null);
             }
             onChange();
         });

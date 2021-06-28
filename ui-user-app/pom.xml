@@ -9,7 +9,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <vaadin.version>14.6.4</vaadin.version>
+        <vaadin.version>14.6.3</vaadin.version>
     </properties>
 
     <parent>
@@ -188,6 +188,7 @@
                     <execution>
                         <goals>
                             <goal>prepare-frontend</goal>
+                            <goal>build-frontend</goal>
                         </goals>
                     </execution>
                 </executions>

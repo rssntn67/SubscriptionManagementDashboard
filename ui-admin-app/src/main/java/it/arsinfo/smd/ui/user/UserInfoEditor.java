@@ -31,12 +31,15 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
     public UserInfoEditor(UserInfoService dao, PasswordEncoder passwordEncoder) {
         super(dao, new Binder<>(UserInfo.class));
         this.dao=dao;
+        ComboBox<UserInfo.Provider> provider = new ComboBox<>("Provider",EnumSet.allOf(UserInfo.Provider.class));
+        provider.setReadOnly(true);
         setComponents(getActions(),
-                      new HorizontalLayout(username,role),
+                      new HorizontalLayout(username,role,provider),
                       new HorizontalLayout(password,confirm));
         
         getBinder().forField(username).asRequired().bind("username");
         getBinder().forField(role).asRequired().bind("role");
+        getBinder().forField(provider).asRequired().bind("provider");
 
         Validator<String> passwordValidator = new Validator<String>() {
 
@@ -78,7 +81,7 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         }
         
         if (!persisted &&
-            dao.findByUsername(username.getValue()) != null) {
+            dao.findByUsernameAndProvider(username.getValue(), UserInfo.Provider.LOCAL) != null) {
             Notification.show("Utente non salvato",
                               "username esiste",
                               Notification.Type.HUMANIZED_MESSAGE);
@@ -121,6 +124,19 @@ public class UserInfoEditor extends SmdEntityEditor<UserInfo> {
         username.setReadOnly(persisted);
         role.setReadOnly(persisted && obj.getUsername().equals("admin"));
         password.setRequiredIndicatorVisible(!persisted);
+        if (obj.getProvider() != UserInfo.Provider.LOCAL) {
+            getSave().setEnabled(false);
+            getDelete().setEnabled(false);
+            password.setVisible(false);
+            confirm.setVisible(false);
+            role.setReadOnly(true);
+        } else {
+            getSave().setEnabled(true);
+            getDelete().setEnabled(true);
+            password.setVisible(true);
+            confirm.setVisible(true);
+            role.setReadOnly(false);
+        }
     }
 
 

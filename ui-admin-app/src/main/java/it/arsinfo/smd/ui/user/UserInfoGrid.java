@@ -12,7 +12,7 @@ public class UserInfoGrid extends SmdGrid<UserInfo> {
     public UserInfoGrid(String gridname) {
         super(new Grid<>(UserInfo.class),gridname);
 
-        setColumns("username","role","data");
+        setColumns("username","role","data","provider");
 
     }
     
