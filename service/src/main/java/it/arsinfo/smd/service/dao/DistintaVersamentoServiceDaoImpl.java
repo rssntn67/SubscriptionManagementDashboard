@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.dto.IncassoGiornaliero;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,7 +201,24 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
     	return new ArrayList<>(versamentoMap.values());
 	}
 
-	@Override
+    @Override
+    public List<IncassoGiornaliero> getIncassiGiornaliero(LocalDate from, LocalDate to) {
+	    final Map<Integer,IncassoGiornaliero> incassimap = new HashMap<>();
+	    repository.findByDataContabileBetween(SmdEntity.getStandardDate(from),SmdEntity.getStandardDate(to)).forEach(distinta -> {
+	        IncassoGiornaliero ig = new IncassoGiornaliero(distinta.getDataContabile(),distinta.getCassa(),distinta.getCcp());
+	        if (incassimap.containsKey(ig.hashCode())) {
+	            ig = incassimap.get(ig.hashCode());
+            } else {
+	            incassimap.put(ig.hashCode(),ig);
+            }
+	        ig.setImporto(ig.getImporto().add(distinta.getImporto()));
+	        ig.setIncassato(ig.getIncassato().add(distinta.getIncassato()));
+	        ig.setResiduo(ig.getResiduo().add(distinta.getResiduo()));
+        });
+        return incassimap.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
 	public List<Versamento> getItems(DistintaVersamento t) {
         List<Versamento> versamenti = versamentoDao.findByDistintaVersamento(t);
       	Set<Long> ids = new HashSet<>();

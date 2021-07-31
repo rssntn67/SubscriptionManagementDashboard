@@ -37,6 +37,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -2075,6 +2076,39 @@ public class SmdApplicationTests {
         	assertEquals(StatoOperazioneIncasso.Incasso, op.getStatoOperazioneIncasso());
         	assertEquals("adp", op.getOperatore());
         }
+    }
+
+    @Test
+    public void testIncassoGiornaliero() throws Exception {
+        DistintaVersamento a = new DistintaVersamento();
+        a.setDataContabile(SmdEntity.getStandardDate(LocalDate.of(2021,6,16)));
+        a.setImporto(new BigDecimal("100"));
+        a.setIncassato(new BigDecimal("100"));
+        incassoDao.save(a);
+
+        DistintaVersamento b = new DistintaVersamento();
+        b.setDataContabile(SmdEntity.getStandardDate(LocalDate.of(2021,6,17)));
+        b.setImporto(new BigDecimal("300"));
+        b.setIncassato(new BigDecimal("300"));
+        incassoDao.save(b);
+
+        DistintaVersamento c = new DistintaVersamento();
+        c.setDataContabile(SmdEntity.getStandardDate(LocalDate.of(2021,6,18)));
+        c.setImporto(new BigDecimal("500"));
+        c.setIncassato(new BigDecimal("500"));
+        incassoDao.save(c);
+
+        assertEquals(0, incassoDao.findByDataContabileBetween(SmdEntity.getStandardDate("210610"),
+                SmdEntity.getStandardDate("210611")).size());
+        assertEquals(1, incassoDao.findByDataContabileBetween(SmdEntity.getStandardDate("210616"),
+                SmdEntity.getStandardDate("210616")).size());
+        assertEquals(2, incassoDao.findByDataContabileBetween(SmdEntity.getStandardDate("210616"),
+                SmdEntity.getStandardDate("210617")).size());
+        assertEquals(3, incassoDao.findByDataContabileBetween(SmdEntity.getStandardDate("210616"),
+                SmdEntity.getStandardDate("210618")).size());
+        assertEquals(2, incassoDao.findByDataContabileBetween(SmdEntity.getStandardDate("210610"),
+                SmdEntity.getStandardDate("210617")).size());
+
     }
 
 }

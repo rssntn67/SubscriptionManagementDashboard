@@ -416,7 +416,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(numeroRiviste*messaggio.getCostoUnitario().doubleValue(), ec1.getImporto().doubleValue(),0);
         Assertions.assertEquals(numeroSpedizioni, spedizioniwithitems.size());
         Assertions.assertEquals(numeroRiviste, items.size());
-        Assertions.assertEquals(3.0, abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(2.0, abb.getSpese().doubleValue(),0);
 
         for (SpedizioneWithItems spedw:spedizioniwithitems) {
             Spedizione sped = spedw.getSpedizione();

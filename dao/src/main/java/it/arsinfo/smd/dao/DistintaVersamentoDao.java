@@ -16,6 +16,7 @@ public interface DistintaVersamentoDao extends JpaRepository<DistintaVersamento,
 	    List<DistintaVersamento> findByCuas(Cuas cuas);
 	    List<DistintaVersamento> findByCcp(Ccp ccp);
         List<DistintaVersamento> findByDataContabile(Date data);
+        List<DistintaVersamento> findByDataContabileBetween(Date startdate, Date enddate);
         List<DistintaVersamento> findByCassa(Cassa cassa);
 
 	
