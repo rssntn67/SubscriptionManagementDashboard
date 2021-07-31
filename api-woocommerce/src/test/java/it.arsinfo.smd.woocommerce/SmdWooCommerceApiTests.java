@@ -25,7 +25,7 @@ public class SmdWooCommerceApiTests {
         params.put("per_page","100");
         params.put("offset","0");
         List products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
-
+        products.forEach(p -> System.out.println(p));
         System.out.println(products.size());
     }
 
