@@ -42,7 +42,7 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     private Ccp ccp = Ccp.UNO;
             
     @OneToMany(mappedBy="distintaVersamento", orphanRemoval=true, fetch=FetchType.LAZY)
-    private List<Versamento> versamenti = new ArrayList<Versamento>();
+    private List<Versamento> versamenti = new ArrayList<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataContabile = SmdEntity.getStandardDate(new Date());
@@ -120,7 +120,7 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     
     @Transient
     public String getDettagli() {
-        StringBuffer sb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer();
         sb.append(cassa.name());
         sb.append(", ");
         sb.append(ccp.getCcp());
@@ -139,9 +139,7 @@ public class DistintaVersamento implements SmdEntityItems<Versamento> {
     }
     @Override
     public boolean addItem(Versamento versamento) {
-        if (versamenti.contains(versamento)) {
-            versamenti.remove(versamento);
-        }
+        versamenti.remove(versamento);
         return versamenti.add(versamento);
     }
     @Override
