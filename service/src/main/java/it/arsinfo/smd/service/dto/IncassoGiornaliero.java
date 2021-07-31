@@ -30,7 +30,7 @@ public class IncassoGiornaliero {
     private BigDecimal incassato=BigDecimal.ZERO;
     private BigDecimal messaggio=BigDecimal.ZERO;
     private BigDecimal blocchetti=BigDecimal.ZERO;
-    private BigDecimal estratti=BigDecimal.ZERO;
+    private BigDecimal manifesti=BigDecimal.ZERO;
     private BigDecimal lodare=BigDecimal.ZERO;
     private BigDecimal nonAssociati=BigDecimal.ZERO;
     private BigDecimal residuo=BigDecimal.ZERO;
@@ -75,12 +75,12 @@ public class IncassoGiornaliero {
         this.blocchetti = blocchetti;
     }
 
-    public BigDecimal getEstratti() {
-        return estratti;
+    public BigDecimal getManifesti() {
+        return manifesti;
     }
 
-    public void setEstratti(BigDecimal estratti) {
-        this.estratti = estratti;
+    public void setManifesti(BigDecimal manifesti) {
+        this.manifesti = manifesti;
     }
 
     public BigDecimal getLodare() {

@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.dao.*;
+import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.dto.IncassoGiornaliero;
@@ -15,13 +17,6 @@ import org.springframework.stereotype.Service;
 
 import it.arsinfo.smd.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.DistintaVersamentoDao;
-import it.arsinfo.smd.dao.VersamentoDao;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
 
 @Service
 public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoService {
@@ -38,8 +33,13 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
     private AbbonamentoDao abbonamentoDao;
 
     @Autowired
+    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+
+    @Autowired
     private AnagraficaDao anagraficaDao;
 
+    @Autowired
+    private OperazioneIncassoDao operazioneIncassoDao;
 
     @Autowired
     private SmdService smdService;
@@ -203,9 +203,15 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 
     @Override
     public List<IncassoGiornaliero> getIncassiGiornaliero(LocalDate from, LocalDate to) {
+        log.info("getIncassiGiornaliero: start");
 	    final Map<Integer,IncassoGiornaliero> incassimap = new HashMap<>();
+        final Map<Long,Integer> incassoToHashMap = new HashMap<>();
+	    final Set<Long> incassoids = new HashSet<>();
+        log.info("getIncassiGiornaliero: start find distinta");
 	    repository.findByDataContabileBetween(SmdEntity.getStandardDate(from),SmdEntity.getStandardDate(to)).forEach(distinta -> {
+	        incassoids.add(distinta.getId());
 	        IncassoGiornaliero ig = new IncassoGiornaliero(distinta.getDataContabile(),distinta.getCassa(),distinta.getCcp());
+            incassoToHashMap.put(distinta.getId(),ig.hashCode());
 	        if (incassimap.containsKey(ig.hashCode())) {
 	            ig = incassimap.get(ig.hashCode());
             } else {
@@ -215,7 +221,50 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	        ig.setIncassato(ig.getIncassato().add(distinta.getIncassato()));
 	        ig.setResiduo(ig.getResiduo().add(distinta.getResiduo()));
         });
-        return incassimap.values().stream().collect(Collectors.toList());
+        log.info("getIncassiGiornaliero: find {} distinta", incassoids.size());
+	    if (incassoids.size() == 0) {
+	        return new ArrayList<>();
+        }
+        log.info("getIncassiGiornaliero: end find distinta");
+	    final Set<Long> abbonamentoids = new HashSet<>();
+        log.info("getIncassiGiornaliero: start find abbonamento");
+	    operazioneIncassoDao.
+                findAll().
+                stream().
+                filter(operazione -> incassoids.contains(operazione.getVersamento().getDistintaVersamento().getId())
+                                    && operazione.getAbbonamento().getStatoAbbonamento() == StatoAbbonamento.Valido).
+                forEach(op -> {
+                    IncassoGiornaliero ig = incassimap.get(incassoToHashMap.get(op.getVersamento().getDistintaVersamento().getId()));
+                    log.info("getIncassiGiornaliero: {}", ig);
+                    Abbonamento abb = op.getAbbonamento();
+                    if (!abbonamentoids.contains(abb.getId())) {
+                        for (RivistaAbbonamento ec: rivistaAbbonamentoDao.findByAbbonamento(abb)) {
+                            log.info("getIncassiGiornaliero: {}", ec);
+                            switch (ec.getPubblicazione().getNome()) {
+                                case "Messaggio":
+                                    ig.setMessaggio(ig.getMessaggio().add(ec.getImporto()));
+                                    break;
+                                case "Lodare":
+                                    ig.setLodare(ig.getLodare().add(ec.getImporto()));
+                                    break;
+                                case "Blocchetti":
+                                    ig.setBlocchetti(ig.getBlocchetti().add(ec.getImporto()));
+                                    break;
+                                case "Estratti":
+                                    ig.setManifesti(ig.getManifesti().add(ec.getImporto()));
+                                    break;
+                            }
+
+                        }
+                        abbonamentoids.add(abb.getId());
+                    }
+                });
+        log.info("getIncassiGiornaliero: end find abbonamento");
+
+        incassimap.values()
+                .forEach(incasso -> incasso.setNonAssociati(incasso.getIncassato().subtract(incasso.getManifesti()).subtract(incasso.getMessaggio()).subtract(incasso.getBlocchetti()).subtract(incasso.getLodare())));
+        log.info("getIncassiGiornaliero: end");
+        return new ArrayList<>(incassimap.values());
     }
 
     @Override
