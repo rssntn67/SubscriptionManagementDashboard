@@ -229,7 +229,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	    final Set<Long> abbonamentoids = new HashSet<>();
         log.info("getIncassiGiornaliero: start find abbonamento");
 	    operazioneIncassoDao.
-                findAll().
+                findByDataAfter(SmdEntity.getStandardDate(from)).
                 stream().
                 filter(operazione -> incassoids.contains(operazione.getVersamento().getDistintaVersamento().getId())
                                     && operazione.getAbbonamento().getStatoAbbonamento() == StatoAbbonamento.Valido).
