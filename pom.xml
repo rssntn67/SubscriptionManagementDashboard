@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo</groupId>
 	<artifactId>smd</artifactId>
-	<version>5.0.2-SNAPSHOT</version>
+	<version>5.0.2</version>
 	<packaging>pom</packaging>
 
 	<name>SMD</name>
