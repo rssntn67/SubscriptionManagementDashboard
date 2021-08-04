@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo.smd</groupId>
 	<artifactId>it.arsinfo.smd.model</artifactId>
-	<version>5.0.2</version>
+	<version>5.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
         <name>SMD::Model</name>
