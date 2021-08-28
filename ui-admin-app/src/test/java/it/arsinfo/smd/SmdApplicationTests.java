@@ -7,6 +7,8 @@ import it.arsinfo.smd.config.CampagnaConfigImpl;
 import it.arsinfo.smd.config.CcpConfigImpl;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
+import it.arsinfo.smd.service.api.WooCommerceProductService;
+import it.arsinfo.smd.service.dao.WooCommerceProductServiceDaoImpl;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
@@ -89,6 +91,8 @@ public class SmdApplicationTests {
     private OfferteCumulateDao offerteCumulateDao;
     @Autowired
     private OffertaDao offertaDao;
+    @Autowired
+    private WooCommerceProductDao wooCommerceProductDao;
 
     @Autowired
     private SecurityConfig securityConfig;
@@ -99,6 +103,9 @@ public class SmdApplicationTests {
     private CampagnaConfigImpl campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private WooCommerceProductService wooCommerceProductService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -115,6 +122,7 @@ public class SmdApplicationTests {
     @Autowired
     private BancoPostaService bancoPostaService;
 
+    @Autowired
     private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
 
     @BeforeEach
@@ -140,8 +148,14 @@ public class SmdApplicationTests {
         assertThat(offerteCumulateDao).isNotNull();
         assertThat(offertaDao).isNotNull();
 
+        assertThat(wooCommerceProductDao).isNotNull();
+        assertThat(wooCommerceProductService).isNotNull();
+        assertThat(wooCommerceProductService instanceof WooCommerceProductServiceDaoImpl).isTrue();
+
         assertThat(smdService).isNotNull();
         assertThat(smdService instanceof SmdServiceImpl).isTrue();
+
+
 
         assertThat(securityConfig).isNotNull();
         assertThat(userDetailsService).isNotNull();
@@ -2079,7 +2093,7 @@ public class SmdApplicationTests {
     }
 
     @Test
-    public void testIncassoGiornaliero() throws Exception {
+    public void testIncassoGiornaliero() {
         DistintaVersamento a = new DistintaVersamento();
         a.setDataContabile(SmdEntity.getStandardDate(LocalDate.of(2021,6,16)));
         a.setImporto(new BigDecimal("100"));

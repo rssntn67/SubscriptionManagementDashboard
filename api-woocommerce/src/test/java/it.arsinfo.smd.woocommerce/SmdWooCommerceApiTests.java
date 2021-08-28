@@ -1,18 +1,20 @@
 package it.arsinfo.smd.woocommerce;
 
 
-import com.icoderman.woocommerce.ApiVersionType;
 import com.icoderman.woocommerce.EndpointBaseType;
 import com.icoderman.woocommerce.WooCommerce;
-import com.icoderman.woocommerce.WooCommerceAPI;
-import com.icoderman.woocommerce.oauth.OAuthConfig;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.woocommerce.api.WooCommerceService;
 import it.arsinfo.smd.woocommerce.impl.WooCommerceServiceImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -21,18 +23,18 @@ import java.util.Map;
 
 public class SmdWooCommerceApiTests {
 
+    private WooCommerce wooCommerce;
+
+    private static final Logger log = LoggerFactory.getLogger(SmdWooCommerceApiTests.class);
+
+    @BeforeEach
+    public void onSetUp() {
+        WooCommerceServiceImpl impl = new WooCommerceServiceImpl();
+        wooCommerce= impl.getWooCommerce();
+    }
+
     @Test
     public void productsTest() {
-
-        OAuthConfig config = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
-        WooCommerce wooCommerce = new WooCommerceAPI(config, ApiVersionType.V3);
-
-        // Get all with request parameters
-        Map<String, String> params = new HashMap<>();
-        params.put("per_page","10");
-        params.put("offset","0");
-        params.put("search","AbbonamentiAdp");
-        List products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
 
         Abbonamento abb = new Abbonamento();
         Anagrafica intestatario = new Anagrafica();
@@ -41,11 +43,20 @@ public class SmdWooCommerceApiTests {
         abb.setAnno(Anno.ANNO2022);
         abb.setCodeLine(Abbonamento.generaCodeLine(Anno.ANNO2022));
         abb.setIntestatario(intestatario);
-        abb.setImporto(new BigDecimal("6.00"));
+        abb.setImporto(new BigDecimal("1.00"));
+
+        // Get all with request parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("per_page","10");
+        params.put("offset","0");
+        params.put("search","Abbonamento-"+abb.getCodeLine());
+        List<Map> products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
+        Assertions.assertEquals(0,products.size());
+
 
         Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(),WooCommerceServiceImpl.getCreateMapFromAbbonamento(abb));
         Product created = WooCommerceServiceImpl.getProductFromMap(result);
-        System.out.println(created);
+        log.info("{}",created);
         products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
         Assertions.assertEquals(1,products.size());
         products.forEach(p -> {
@@ -57,24 +68,25 @@ public class SmdWooCommerceApiTests {
             Assertions.assertNotNull(product.getDescription());
             Assertions.assertNotNull(product.getShortDescription());
             Assertions.assertNotNull(product.getRegularPrice());
-            System.out.println(product);
+            log.info("{}",product);
         });
 
-        for (Object p : products) {
+        for (Map p : products) {
             Product prod = WooCommerceServiceImpl.getProduct(p);
             wooCommerce.delete(EndpointBaseType.PRODUCTS.getValue(),prod.getId());
         }
 
         Assertions.assertEquals(0, wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params).size());
+    }
 
-
+    @Test
+    public void getProductTest() {
+        Map product = wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),9043);
+        log.info("{}",WooCommerceServiceImpl.getProductFromMap(product));
     }
 
     @Test
     public void getCustomersTest() {
-
-        OAuthConfig config = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
-        WooCommerce wooCommerce = new WooCommerceAPI(config, ApiVersionType.V3);
 
         // Get all with request parameters
         Map<String, String> params = new HashMap<>();
@@ -87,17 +99,16 @@ public class SmdWooCommerceApiTests {
 
     @Test
     public void getOrdersTest() {
-
-        OAuthConfig config = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
-        WooCommerce wooCommerce = new WooCommerceAPI(config, ApiVersionType.V3);
-
         // Get all with request parameters
         Map<String, String> params = new HashMap<>();
         params.put("per_page","10");
         params.put("offset","0");
+        params.put("search","puddu.serenella@yahoo.it");
+
         List orders = wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params);
         orders.forEach(p -> System.out.println(p));
         System.out.println(orders.size());
+
     }
 
 }

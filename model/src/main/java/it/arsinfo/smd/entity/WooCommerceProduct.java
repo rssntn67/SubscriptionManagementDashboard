@@ -1,42 +1,75 @@
-package it.arsinfo.smd.woocommerce;
+package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.WooCommerceProduct;
-
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.util.Date;
 
-public class Product {
+@Entity
+public class WooCommerceProduct implements SmdEntity {
 
-    public static WooCommerceProduct createFromProduct(Product p, Abbonamento abb) {
-        WooCommerceProduct product = new WooCommerceProduct();
-        product.setProductId(p.getId());
-        product.setDescription(p.getDescription());
-        product.setRegularPrice(p.getRegularPrice());
-        product.setPermalink(p.getPermalink());
-        product.setName(p.getName());
-        product.setAbbonamento(abb);
-        return product;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Abbonamento abbonamento;
+
+    @Column(nullable=false)
+    private Integer productId;
+    @Column(nullable=false)
+    private String name;
+    @Column(nullable=false)
+    private String permalink;
+    @Column(nullable=false)
+    private String description;
+    @Column(nullable=false)
+    private String shortDescription;
+    @Column(nullable=false)
+    private BigDecimal regularPrice;
+    @Column(nullable=false)
+    private boolean pagato=false;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date data = new Date();
+
+    public Date getData() {
+        return data;
     }
 
-    private int id;
-    private String name;
-    private String slug;
-    private String permalink;
-    private String description;
-    private String shortDescription;
-    private BigDecimal regularPrice;
+    public void setData(Date data) {
+        this.data = data;
+    }
 
-    public int getId() {
+    public boolean isPagato() {
+        return pagato;
+    }
+
+    public void setPagato(boolean pagato) {
+        this.pagato = pagato;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    public Long getId() {
         return id;
+    }
+
+    @Override
+    public String getHeader() {
+        return name;
     }
 
     @Override
     public String toString() {
         return "Product{" +
                 "id=" + id +
+                "productId=" + productId +
                 ", name='" + name + '\'' +
-                ", slug='" + slug + '\'' +
                 ", permalink='" + permalink + '\'' +
                 ", description='" + description + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
@@ -68,7 +101,7 @@ public class Product {
         this.regularPrice = regularPrice;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -80,14 +113,6 @@ public class Product {
         this.name = name;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
     public String getPermalink() {
         return permalink;
     }
@@ -96,17 +121,12 @@ public class Product {
         this.permalink = permalink;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return id == product.id;
+    public Abbonamento getAbbonamento() {
+        return abbonamento;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public void setAbbonamento(Abbonamento abbonamento) {
+        this.abbonamento = abbonamento;
     }
 }
 
