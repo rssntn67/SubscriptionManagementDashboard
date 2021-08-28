@@ -7,14 +7,12 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.woocommerce.api.WooCommerceService;
 import it.arsinfo.smd.woocommerce.impl.WooCommerceServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -27,6 +25,7 @@ public class SmdWooCommerceApiTests {
 
     private static final Logger log = LoggerFactory.getLogger(SmdWooCommerceApiTests.class);
 
+    private final static String prefix = "TestAbbonamento";
     @BeforeEach
     public void onSetUp() {
         WooCommerceServiceImpl impl = new WooCommerceServiceImpl();
@@ -34,8 +33,32 @@ public class SmdWooCommerceApiTests {
     }
 
     @Test
-    public void productsTest() {
+    public void getAllProductTest() {
+        Map<String, String> params = new HashMap<>();
+        params.put("per_page","10");
+        params.put("offset","0");
+        params.put("search",prefix+"-");
+        List<Map> products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
+        log.info(" find: {}", products.size());
 
+        products.forEach(p -> {
+            log.info("id: {}",p.get("id"));
+            log.info("virtual: {}",p.get("virtual"));
+            log.info("status: {}",p.get("status"));
+            log.info("catalog_visibility: {}",p.get("catalog_visibility"));
+            log.info("purchasable: {}",p.get("purchasable"));
+            log.info("total_sales {}",p.get("total_sales"));
+
+        });
+    }
+
+    @Test
+    public void updateTest() {
+        wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(),11300,WooCommerceServiceImpl.getUpdateMap());
+    }
+
+    @Test
+    public void productsTest() {
         Abbonamento abb = new Abbonamento();
         Anagrafica intestatario = new Anagrafica();
         intestatario.setDenominazione("Antonio Russo");
@@ -49,13 +72,19 @@ public class SmdWooCommerceApiTests {
         Map<String, String> params = new HashMap<>();
         params.put("per_page","10");
         params.put("offset","0");
-        params.put("search","Abbonamento-"+abb.getCodeLine());
+        params.put("search",prefix+"-"+abb.getCodeLine());
         List<Map> products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
         Assertions.assertEquals(0,products.size());
 
 
-        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(),WooCommerceServiceImpl.getCreateMapFromAbbonamento(abb));
-        Product created = WooCommerceServiceImpl.getProductFromMap(result);
+        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(),WooCommerceServiceImpl.getCreateMapFromAbbonamento(abb,prefix));
+        log.info("{}",result);
+        Assertions.assertEquals("true",result.get("virtual").toString());
+        Assertions.assertEquals("false",result.get("reviews_allowed").toString());
+        Assertions.assertEquals("false",result.get("shipping_required").toString());
+        Assertions.assertEquals("false",result.get("shipping_taxable").toString());
+
+        Product created = WooCommerceServiceImpl.getProduct(result);
         log.info("{}",created);
         products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
         Assertions.assertEquals(1,products.size());
@@ -68,9 +97,19 @@ public class SmdWooCommerceApiTests {
             Assertions.assertNotNull(product.getDescription());
             Assertions.assertNotNull(product.getShortDescription());
             Assertions.assertNotNull(product.getRegularPrice());
-            log.info("{}",product);
+            Assertions.assertNotNull(product.getTotalSales());
+            Assertions.assertNotNull(product.isPurchasable());
         });
 
+    }
+
+    @Test
+    public void deleteAllTestProducts() {
+        Map<String, String> params = new HashMap<>();
+        params.put("per_page","10");
+        params.put("offset","0");
+        params.put("search",prefix+"-");
+        List<Map> products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
         for (Map p : products) {
             Product prod = WooCommerceServiceImpl.getProduct(p);
             wooCommerce.delete(EndpointBaseType.PRODUCTS.getValue(),prod.getId());
@@ -81,20 +120,20 @@ public class SmdWooCommerceApiTests {
 
     @Test
     public void getProductTest() {
-        Map product = wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),9043);
-        log.info("{}",WooCommerceServiceImpl.getProductFromMap(product));
+        Map map = wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),9043);
+        log.info("{}", map);
+        log.info("{}",WooCommerceServiceImpl.getProduct(map));
     }
 
     @Test
     public void getCustomersTest() {
-
         // Get all with request parameters
         Map<String, String> params = new HashMap<>();
         params.put("per_page","10");
         params.put("offset","0");
         List customers = wooCommerce.getAll(EndpointBaseType.CUSTOMERS.getValue(), params);
-        customers.forEach(p -> System.out.println(p));
-        System.out.println(customers.size());
+        customers.forEach(p -> log.info("{}", p));
+        log.info("{}",customers.size());
     }
 
     @Test
@@ -103,11 +142,32 @@ public class SmdWooCommerceApiTests {
         Map<String, String> params = new HashMap<>();
         params.put("per_page","10");
         params.put("offset","0");
-        params.put("search","puddu.serenella@yahoo.it");
+        params.put("search","TestAbbonamento-227434336667029313");
 
-        List orders = wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params);
-        orders.forEach(p -> System.out.println(p));
-        System.out.println(orders.size());
+        List<Map> orders = wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params);
+        log.info("---------> order size {}" , orders.size());
+        orders.forEach(p -> {
+            log.info("id {}",p.get("id"));
+            log.info("number {}",p.get("number"));
+            log.info("status {}",p.get("status")); //processing/completed
+            log.info("payment_method {}",p.get("payment_method"));
+            log.info("transaction_id {}",p.get("transaction_id"));
+            log.info("date_completed {}",p.get("date_completed"));
+            log.info("date_paid {}",p.get("date_paid"));
+            log.info("cart_hash {}",p.get("cart_hash"));
+            log.info("total_tax {}",p.get("total_tax"));
+            log.info("total {}",p.get("total"));
+            List<Map> lineItems = (List) p.get("line_items");
+            for (Map lineItem: lineItems) {
+                log.info("line_item id {}",lineItem.get("id"));
+                log.info("line_item product_id {}",lineItem.get("product_id"));
+                log.info("line_item total {}",lineItem.get("total"));
+                log.info("line_item total_tax {}",lineItem.get("total_tax"));
+            }
+            log.info("billing {}",p.get("billing"));
+
+
+        });
 
     }
 

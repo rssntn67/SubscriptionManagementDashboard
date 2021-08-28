@@ -26,6 +26,24 @@ public class Product {
     private String description;
     private String shortDescription;
     private BigDecimal regularPrice;
+    private int totalSales;
+    private boolean purchasable;
+
+    public boolean isPurchasable() {
+        return purchasable;
+    }
+
+    public void setPurchasable(boolean purchasable) {
+        this.purchasable = purchasable;
+    }
+
+    public int getTotalSales() {
+        return totalSales;
+    }
+
+    public void setTotalSales(int totalSales) {
+        this.totalSales = totalSales;
+    }
 
     public int getId() {
         return id;
@@ -40,7 +58,9 @@ public class Product {
                 ", permalink='" + permalink + '\'' +
                 ", description='" + description + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
+                ", purchasable=" + purchasable +
                 ", regularPrice=" + regularPrice +
+                ", totalSales=" + totalSales +
                 '}';
     }
 

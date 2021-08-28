@@ -32,29 +32,22 @@ public class WooCommerceServiceImpl implements WooCommerceService {
         return wooCommerce;
     }
 
-    public static Map<String,Object> getCreateMapFromAbbonamento(Abbonamento abb) {
+    public static Map<String,Object> getUpdateMap() {
         Map<String,Object> create = new HashMap<>();
-        create.put("name","Abbonamento-"+ abb.getCodeLine());
-        create.put("regular_price",abb.getResiduo().toString());
-        create.put("description", "Importo Abbonamento Riviste ADP anno "+abb.getAnno().getAnnoAsString()+ "intestatario " +abb.getIntestatario().getDenominazione());
-        create.put("short_description","Abbonamento ADP");
+        create.put("status","private");
+        create.put("catalog_visibility", "hidden");
         return create;
     }
 
-    public static Product getProductFromMap(Map map) {
-        Product product = new Product();
-        log.debug("getProductFromMap: {}", map);
-        Object id = map.get("id");
-        if (id instanceof Integer) {
-            product.setId((Integer) id);
-        }
-        product.setName(map.get("name").toString());
-        product.setSlug(map.get("slug").toString());
-        product.setPermalink((map.get("permalink")).toString());
-        product.setDescription(map.get("description").toString());
-        product.setShortDescription(map.get("short_description").toString());
-        product.setRegularPrice(new BigDecimal(map.get("regular_price").toString()));
-        return product;
+    public static Map<String,Object> getCreateMapFromAbbonamento(Abbonamento abb, String prefix) {
+        Map<String,Object> create = new HashMap<>();
+        create.put("name",prefix+"-"+ abb.getCodeLine());
+        create.put("regular_price",abb.getResiduo().toString());
+        create.put("description", "Importo Abbonamento Riviste ADP anno "+abb.getAnno().getAnnoAsString()+ " intestatario " +abb.getIntestatario().getDenominazione());
+        create.put("short_description","Abbonamento ADP");
+        create.put("reviews_allowed","false");
+        create.put("virtual","true");
+        return create;
     }
 
     public static Product getProduct(Map map) {
@@ -67,18 +60,22 @@ public class WooCommerceServiceImpl implements WooCommerceService {
         product.setDescription(map.get("description").toString());
         product.setShortDescription(map.get("short_description").toString());
         product.setRegularPrice(new BigDecimal(map.get("regular_price").toString()));
+        product.setTotalSales(Integer.parseInt(map.get("total_sales").toString()));
+        product.setPurchasable(Boolean.parseBoolean(map.get("purchasable").toString()));
         return product;
     }
 
     @Override
-    public WooCommerceProduct creaProdotto(Abbonamento abb) {
-        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(),WooCommerceServiceImpl.getCreateMapFromAbbonamento(abb));
-        Product created = getProductFromMap(result);
-        return Product.createFromProduct(created,abb);
+    public WooCommerceProduct create(Abbonamento abb) {
+        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(), getCreateMapFromAbbonamento(abb,"Abbonamento"));
+        Product created = getProduct(result);
+        return Product.createFromProduct(created, abb);
     }
 
     @Override
-    public List<DistintaVersamento> getFromProduct(List<WooCommerceProduct> wooCommerceProducts) {
+    public List<DistintaVersamento> getAll(List<WooCommerceProduct> wooCommerceProducts) {
+        //se ordine pagato:
+        getUpdateMap();
         return null;
     }
 

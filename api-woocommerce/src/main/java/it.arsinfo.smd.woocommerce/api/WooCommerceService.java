@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface WooCommerceService {
-    WooCommerceProduct creaProdotto(Abbonamento abb);
-
-    List<DistintaVersamento> getFromProduct(List<WooCommerceProduct> wooCommerceProducts);
+    WooCommerceProduct create(Abbonamento abb);
+    List<DistintaVersamento> getAll(List<WooCommerceProduct> wooCommerceProducts);
  }
