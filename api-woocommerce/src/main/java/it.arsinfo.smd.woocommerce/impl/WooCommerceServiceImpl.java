@@ -8,7 +8,7 @@ import com.icoderman.woocommerce.WooCommerceAPI;
 import com.icoderman.woocommerce.oauth.OAuthConfig;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.WooCommerceProduct;
+import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.woocommerce.Product;
 import it.arsinfo.smd.woocommerce.api.WooCommerceService;
 import org.slf4j.Logger;
@@ -66,14 +66,14 @@ public class WooCommerceServiceImpl implements WooCommerceService {
     }
 
     @Override
-    public WooCommerceProduct create(Abbonamento abb) {
+    public WooCommerceOrder create(Abbonamento abb) {
         Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(), getCreateMapFromAbbonamento(abb,"Abbonamento"));
         Product created = getProduct(result);
         return Product.createFromProduct(created, abb);
     }
 
     @Override
-    public List<DistintaVersamento> getAll(List<WooCommerceProduct> wooCommerceProducts) {
+    public List<DistintaVersamento> getAll(List<WooCommerceOrder> wooCommerceProducts) {
         //se ordine pagato:
         getUpdateMap();
         return null;

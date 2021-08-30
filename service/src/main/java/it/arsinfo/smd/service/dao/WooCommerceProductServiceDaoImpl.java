@@ -1,7 +1,7 @@
 package it.arsinfo.smd.service.dao;
 
-import it.arsinfo.smd.dao.WooCommerceProductDao;
-import it.arsinfo.smd.entity.WooCommerceProduct;
+import it.arsinfo.smd.dao.WooCommerceOrderDao;
+import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.service.api.WooCommerceProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,36 +12,36 @@ import java.util.List;
 public class WooCommerceProductServiceDaoImpl implements WooCommerceProductService {
 
     @Autowired
-    private WooCommerceProductDao repository;
+    private WooCommerceOrderDao repository;
 
 	@Override
-	public WooCommerceProduct save(WooCommerceProduct entity) throws Exception {
+	public WooCommerceOrder save(WooCommerceOrder entity) throws Exception {
 		return repository.save(entity);
 	}
 
 	@Override
-	public void delete(WooCommerceProduct entity) throws Exception {
+	public void delete(WooCommerceOrder entity) throws Exception {
 		throw new UnsupportedOperationException("Cannot delete WooCommerceProduct");
 	}
 
 	@Override
-	public WooCommerceProduct findById(Long id) {
+	public WooCommerceOrder findById(Long id) {
 		return repository.findById(id).orElse(null);
 	}
 
 	@Override
-	public List<WooCommerceProduct> findAll() {
+	public List<WooCommerceOrder> findAll() {
 		return repository.findAll();
 	}
 
 	@Override
-	public List<WooCommerceProduct> searchByDefault() {
+	public List<WooCommerceOrder> searchByDefault() {
 		return repository.findByPagato(false);
 	}
 
 	@Override
-	public WooCommerceProduct add() {
-		return new WooCommerceProduct();
+	public WooCommerceOrder add() {
+		return new WooCommerceOrder();
 	}
 
 }

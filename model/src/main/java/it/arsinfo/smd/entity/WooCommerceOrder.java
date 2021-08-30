@@ -1,11 +1,13 @@
 package it.arsinfo.smd.entity;
 
+import it.arsinfo.smd.data.StatoWooCommerceOrder;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-public class WooCommerceProduct implements SmdEntity {
+public class WooCommerceOrder implements SmdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,9 +27,10 @@ public class WooCommerceProduct implements SmdEntity {
     @Column(nullable=false)
     private String shortDescription;
     @Column(nullable=false)
-    private BigDecimal regularPrice;
+    private BigDecimal price;
     @Column(nullable=false)
-    private boolean pagato=false;
+    @Enumerated(EnumType.STRING)
+    private StatoWooCommerceOrder status=StatoWooCommerceOrder.Generated;
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
 
@@ -37,14 +40,6 @@ public class WooCommerceProduct implements SmdEntity {
 
     public void setData(Date data) {
         this.data = data;
-    }
-
-    public boolean isPagato() {
-        return pagato;
-    }
-
-    public void setPagato(boolean pagato) {
-        this.pagato = pagato;
     }
 
     public Integer getProductId() {
@@ -64,19 +59,6 @@ public class WooCommerceProduct implements SmdEntity {
         return name;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                "productId=" + productId +
-                ", name='" + name + '\'' +
-                ", permalink='" + permalink + '\'' +
-                ", description='" + description + '\'' +
-                ", shortDescription='" + shortDescription + '\'' +
-                ", regularPrice=" + regularPrice +
-                '}';
-    }
-
     public String getDescription() {
         return description;
     }
@@ -93,12 +75,12 @@ public class WooCommerceProduct implements SmdEntity {
         this.shortDescription = shortDescription;
     }
 
-    public BigDecimal getRegularPrice() {
-        return regularPrice;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setRegularPrice(BigDecimal regularPrice) {
-        this.regularPrice = regularPrice;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public void setId(Long id) {
@@ -127,6 +109,30 @@ public class WooCommerceProduct implements SmdEntity {
 
     public void setAbbonamento(Abbonamento abbonamento) {
         this.abbonamento = abbonamento;
+    }
+
+    @Override
+    public String toString() {
+        return "WooCommerceOrder{" +
+                "id=" + id +
+                ", abbonamento=" + abbonamento +
+                ", productId=" + productId +
+                ", name='" + name + '\'' +
+                ", permalink='" + permalink + '\'' +
+                ", description='" + description + '\'' +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", data=" + data +
+                '}';
+    }
+
+    public StatoWooCommerceOrder getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatoWooCommerceOrder status) {
+        this.status = status;
     }
 }
 

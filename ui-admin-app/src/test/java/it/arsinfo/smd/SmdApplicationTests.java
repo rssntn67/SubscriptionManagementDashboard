@@ -92,7 +92,7 @@ public class SmdApplicationTests {
     @Autowired
     private OffertaDao offertaDao;
     @Autowired
-    private WooCommerceProductDao wooCommerceProductDao;
+    private WooCommerceOrderDao wooCommerceProductDao;
 
     @Autowired
     private SecurityConfig securityConfig;

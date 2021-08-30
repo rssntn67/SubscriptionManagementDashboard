@@ -1,18 +1,18 @@
 package it.arsinfo.smd.woocommerce;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.WooCommerceProduct;
+import it.arsinfo.smd.entity.WooCommerceOrder;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Product {
 
-    public static WooCommerceProduct createFromProduct(Product p, Abbonamento abb) {
-        WooCommerceProduct product = new WooCommerceProduct();
+    public static WooCommerceOrder createFromProduct(Product p, Abbonamento abb) {
+        WooCommerceOrder product = new WooCommerceOrder();
         product.setProductId(p.getId());
         product.setDescription(p.getDescription());
-        product.setRegularPrice(p.getRegularPrice());
+        product.setPrice(p.getRegularPrice());
         product.setPermalink(p.getPermalink());
         product.setName(p.getName());
         product.setAbbonamento(abb);
