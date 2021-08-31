@@ -42,7 +42,7 @@ public class Order {
         order.setCartHash(m.get("cart_hash").toString());
         order.setTotalTax(new BigDecimal(m.get("total_tax").toString()));
         order.setTotal(new BigDecimal(m.get("total").toString()));
-        List<Map> line_items = (List)m.get("line_items");
+        List<Map> line_items = (List<Map>)m.get("line_items");
         for (Map line_item: line_items) {
             order.getOrderItems().add(OrderItem.getFromMap(line_item));
         }
@@ -54,12 +54,6 @@ public class Order {
     public static Map<String,Object> getStatusCompletedMap() {
         Map<String,Object> update = new HashMap<>();
         update.put("status","completed");
-        return update;
-    }
-
-    public static Map<String,Object> getStatusProcessingMap() {
-        Map<String,Object> update = new HashMap<>();
-        update.put("status","processing");
         return update;
     }
 

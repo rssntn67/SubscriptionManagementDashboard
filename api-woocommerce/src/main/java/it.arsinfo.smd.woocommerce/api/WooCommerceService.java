@@ -7,6 +7,7 @@ import it.arsinfo.smd.entity.WooCommerceOrder;
 import java.util.List;
 
 public interface WooCommerceService {
-    WooCommerceOrder create(Abbonamento abb);
-    List<DistintaVersamento> getAll(List<WooCommerceOrder> wooCommerceProducts);
+    WooCommerceOrder create(Abbonamento abb, int progressivo);
+    List<WooCommerceOrder> updateGenerated(List<WooCommerceOrder> wooCommerceProducts);
+    List<WooCommerceOrder> updateProcessing(List<WooCommerceOrder> wooCommerceProducts);
  }

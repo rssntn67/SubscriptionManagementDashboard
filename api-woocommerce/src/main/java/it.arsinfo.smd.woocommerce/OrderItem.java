@@ -7,7 +7,6 @@ public class OrderItem {
 
     public static OrderItem getFromMap(Map m) {
         OrderItem orderitem = new OrderItem();
-        orderitem.setId(Integer.parseInt(m.get("id").toString()));
         orderitem.setProductId(Integer.parseInt(m.get("product_id").toString()));
         orderitem.setName(m.get("name").toString());
         orderitem.setTotalTax(new BigDecimal(m.get("total_tax").toString()));
@@ -18,20 +17,11 @@ public class OrderItem {
     @Override
     public String toString() {
         return "OrderItem{" +
-                "id=" + id +
                 ", productId=" + productId +
                 ", name='" + name + '\'' +
                 ", totalTax=" + totalTax +
                 ", total=" + total +
                 '}';
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getProductId() {
@@ -66,7 +56,6 @@ public class OrderItem {
         this.total = total;
     }
 
-    private int id;
     private int productId;
     private String name;
     private BigDecimal totalTax;

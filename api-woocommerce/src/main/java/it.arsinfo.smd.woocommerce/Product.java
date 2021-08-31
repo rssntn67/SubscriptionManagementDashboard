@@ -28,9 +28,9 @@ public class Product {
         return create;
     }
 
-    public static Map<String,Object> getCreateMapFromAbbonamento(Abbonamento abb, String prefix) {
+    public static Map<String,Object> getCreateMapFromAbbonamento(Abbonamento abb, String name) {
         Map<String,Object> create = new HashMap<>();
-        create.put("name",prefix+"-"+ abb.getCodeLine());
+        create.put("name",name);
         create.put("regular_price",abb.getResiduo().toString());
         create.put("description", "Importo Abbonamento Riviste ADP anno "+abb.getAnno().getAnnoAsString()+ " intestatario " +abb.getIntestatario().getDenominazione());
         create.put("short_description","Abbonamento ADP");

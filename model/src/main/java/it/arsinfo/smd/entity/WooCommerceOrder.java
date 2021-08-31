@@ -18,6 +18,17 @@ public class WooCommerceOrder implements SmdEntity {
 
     @Column(nullable=false)
     private Integer productId;
+
+    private Integer orderId;
+
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
+
     @Column(nullable=false)
     private String name;
     @Column(nullable=false)
@@ -117,6 +128,7 @@ public class WooCommerceOrder implements SmdEntity {
                 "id=" + id +
                 ", abbonamento=" + abbonamento +
                 ", productId=" + productId +
+                ", orderId=" + orderId +
                 ", name='" + name + '\'' +
                 ", permalink='" + permalink + '\'' +
                 ", description='" + description + '\'' +
