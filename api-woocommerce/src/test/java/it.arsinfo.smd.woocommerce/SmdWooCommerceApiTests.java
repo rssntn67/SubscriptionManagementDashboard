@@ -137,7 +137,7 @@ public class SmdWooCommerceApiTests {
     }
 
     @Test
-    public void getOrdersTest() {
+    public void getAndUpdateOrdersTest() {
         // Get all with request parameters
         Map<String, String> params = new HashMap<>();
         params.put("per_page","10");
@@ -159,16 +159,30 @@ public class SmdWooCommerceApiTests {
             log.info("total {}",p.get("total"));
             List<Map> lineItems = (List) p.get("line_items");
             for (Map lineItem: lineItems) {
-                log.info("line_item id {}",lineItem.get("id"));
+                log.info("line_item product_id {}",lineItem.get("product_id"));
+                log.info("line_item name {}",lineItem.get("name"));
                 log.info("line_item product_id {}",lineItem.get("product_id"));
                 log.info("line_item total {}",lineItem.get("total"));
                 log.info("line_item total_tax {}",lineItem.get("total_tax"));
             }
             log.info("billing {}",p.get("billing"));
 
+            int id = Integer.parseInt(p.get("id").toString());
+            Map<String,Object> updateMap = new HashMap<>();
+            updateMap.put("status","processing");
+            Map updated = wooCommerce.update(EndpointBaseType.ORDERS.getValue(),id,updateMap);
+            log.info("updated id {}", updated.get("id"));
+            log.info("updated number {}", updated.get("number"));
+            log.info("updated status {}", updated.get("status")); //processing/completed
+
+            Map<String,Object> update = new HashMap<>();
+            update.put("status","completed");
+            Map completed = wooCommerce.update(EndpointBaseType.ORDERS.getValue(),id,update);
+            log.info("completed id {}", completed.get("id"));
+            log.info("completed number {}", completed.get("number"));
+            log.info("completed status {}", completed.get("status")); //processing/completed
 
         });
-
     }
 
 }

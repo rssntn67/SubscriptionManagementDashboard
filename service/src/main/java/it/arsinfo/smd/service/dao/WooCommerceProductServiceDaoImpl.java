@@ -1,6 +1,7 @@
 package it.arsinfo.smd.service.dao;
 
 import it.arsinfo.smd.dao.WooCommerceOrderDao;
+import it.arsinfo.smd.data.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.service.api.WooCommerceProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class WooCommerceProductServiceDaoImpl implements WooCommerceProductServi
 
 	@Override
 	public List<WooCommerceOrder> searchByDefault() {
-		return repository.findByPagato(false);
+		return repository.findByStatus(StatoWooCommerceOrder.Generated);
 	}
 
 	@Override
