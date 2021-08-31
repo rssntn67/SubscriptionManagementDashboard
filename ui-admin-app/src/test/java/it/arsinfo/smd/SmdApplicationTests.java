@@ -7,8 +7,8 @@ import it.arsinfo.smd.config.CampagnaConfigImpl;
 import it.arsinfo.smd.config.CcpConfigImpl;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.service.api.WooCommerceProductService;
-import it.arsinfo.smd.service.dao.WooCommerceProductServiceDaoImpl;
+import it.arsinfo.smd.service.api.WooCommerceOrderService;
+import it.arsinfo.smd.service.dao.WooCommerceOrderServiceDaoImpl;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
@@ -105,7 +105,7 @@ public class SmdApplicationTests {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private WooCommerceProductService wooCommerceProductService;
+    private WooCommerceOrderService wooCommerceProductService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -150,7 +150,7 @@ public class SmdApplicationTests {
 
         assertThat(wooCommerceProductDao).isNotNull();
         assertThat(wooCommerceProductService).isNotNull();
-        assertThat(wooCommerceProductService instanceof WooCommerceProductServiceDaoImpl).isTrue();
+        assertThat(wooCommerceProductService instanceof WooCommerceOrderServiceDaoImpl).isTrue();
 
         assertThat(smdService).isNotNull();
         assertThat(smdService instanceof SmdServiceImpl).isTrue();
