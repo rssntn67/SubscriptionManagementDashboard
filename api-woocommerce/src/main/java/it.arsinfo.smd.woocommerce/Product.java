@@ -4,6 +4,8 @@ import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Product {
@@ -19,13 +21,50 @@ public class Product {
         return product;
     }
 
+    public static Map<String,Object> getUpdateProcessingMap() {
+        Map<String,Object> create = new HashMap<>();
+        create.put("status","private");
+        create.put("catalog_visibility", "hidden");
+        return create;
+    }
+
+    public static Map<String,Object> getCreateMapFromAbbonamento(Abbonamento abb, String prefix) {
+        Map<String,Object> create = new HashMap<>();
+        create.put("name",prefix+"-"+ abb.getCodeLine());
+        create.put("regular_price",abb.getResiduo().toString());
+        create.put("description", "Importo Abbonamento Riviste ADP anno "+abb.getAnno().getAnnoAsString()+ " intestatario " +abb.getIntestatario().getDenominazione());
+        create.put("short_description","Abbonamento ADP");
+        create.put("reviews_allowed","false");
+        create.put("virtual","true");
+        create.put("tax_class","nessuna-tariffa");
+        return create;
+    }
+
+    public static Product getFromMap(Map map) {
+        int id = Integer.parseInt(map.get("id").toString());
+        Product product = new Product();
+        product.setId(id);
+        product.setName(map.get("name").toString());
+        product.setSlug(map.get("slug").toString());
+        product.setPermalink((map.get("permalink")).toString());
+        product.setDescription(map.get("description").toString());
+        product.setShortDescription(map.get("short_description").toString());
+        product.setRegularPrice(new BigDecimal(map.get("regular_price").toString()));
+        product.setTotalSales(Integer.parseInt(map.get("total_sales").toString()));
+        product.setPurchasable(Boolean.parseBoolean(map.get("purchasable").toString()));
+        product.setTaxClass(map.get("tax_class").toString());
+        return product;
+    }
+
     private int id;
     private String name;
     private String slug;
     private String permalink;
     private String description;
     private String shortDescription;
+    private String taxClass;
     private BigDecimal regularPrice;
+
     private int totalSales;
     private boolean purchasable;
 
@@ -59,6 +98,7 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", shortDescription='" + shortDescription + '\'' +
                 ", purchasable=" + purchasable +
+                ", taxClass=" + taxClass +
                 ", regularPrice=" + regularPrice +
                 ", totalSales=" + totalSales +
                 '}';
@@ -114,6 +154,14 @@ public class Product {
 
     public void setPermalink(String permalink) {
         this.permalink = permalink;
+    }
+
+    public String getTaxClass() {
+        return taxClass;
+    }
+
+    public void setTaxClass(String taxClass) {
+        this.taxClass = taxClass;
     }
 
     @Override
