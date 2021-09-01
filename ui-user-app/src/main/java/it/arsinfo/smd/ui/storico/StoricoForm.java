@@ -21,11 +21,9 @@ import java.util.List;
 public class StoricoForm extends EntityForm<Storico> {
 
     private final ComboBox<Anagrafica> destinatario = new ComboBox<>("Destinatario");
-    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<>("Pubblicazioni");
-    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
-            new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
+    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<>("Pubblicazione");
 
     private final Checkbox contrassegno = new Checkbox("Contrassegno");
     private final TextField numero = new TextField("Numero");
@@ -49,7 +47,9 @@ public class StoricoForm extends EntityForm<Storico> {
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
         pubblicazione.setItemLabelGenerator(Pubblicazione::getNome);
-
+        pubblicazione.setReadOnly(true);
+        ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
+                new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
         tipoAbbonamentoRivista.isRequired();
         tipoAbbonamentoRivista.setReadOnly(true);
 
@@ -89,6 +89,7 @@ public class StoricoForm extends EntityForm<Storico> {
 
     @Override
     public void isNew() {
+        pubblicazione.setReadOnly(false);
     }
 
     @Override
@@ -101,17 +102,14 @@ public class StoricoForm extends EntityForm<Storico> {
             case OmaggioGesuiti:
             case Scontato:
                 destinatario.setReadOnly(true);
-                pubblicazione.setReadOnly(true);
-                tipoAbbonamentoRivista.setReadOnly(true);
                 contrassegno.setReadOnly(true);
                 invioSpedizione.setReadOnly(true);
+                pubblicazione.setReadOnly(true);
                 numero.setReadOnly(true);
                 super.setReadOnly(true);
                 break;
             default:
                 destinatario.setReadOnly(readonly);
-                pubblicazione.setReadOnly(readonly);
-                tipoAbbonamentoRivista.setReadOnly(readonly);
                 contrassegno.setReadOnly(readonly);
                 invioSpedizione.setReadOnly(readonly);
                 numero.setReadOnly(readonly);

@@ -36,13 +36,11 @@ public abstract class EntityView<T extends SmdEntity> extends EntityGridView<T> 
 
     public void save(T entity) throws Exception {
         service.save(entity);
-        updateList();
         closeEditor();
     }
 
     public void delete(T entity) throws Exception {
         service.delete(entity);
-        updateList();
         closeEditor();
     }
 
@@ -62,6 +60,7 @@ public abstract class EntityView<T extends SmdEntity> extends EntityGridView<T> 
         form.setVisible(false);
         removeClassName("editing");
         getGrid().setVisible(true);
+        updateList();
     }
 
     public Button getAddButton() {

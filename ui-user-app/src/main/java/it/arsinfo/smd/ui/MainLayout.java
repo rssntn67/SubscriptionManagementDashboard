@@ -15,23 +15,29 @@ import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.UserSession;
+import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoView;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
 import it.arsinfo.smd.ui.campagna.CampagnaView;
 import it.arsinfo.smd.ui.home.HomeView;
 import it.arsinfo.smd.ui.offerta.OffertaView;
 import it.arsinfo.smd.ui.spedizione.SpedizioneView;
+import it.arsinfo.smd.ui.storico.StoricoView;
 import it.arsinfo.smd.ui.subscription.SubscriptionView;
 import it.arsinfo.smd.ui.versamento.VersamentoView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 @CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     @Autowired
     private UserSession userSession;
+
+    @Autowired
+    private StoricoService storicoService;
 
     private boolean doinit = true;
 
@@ -72,34 +78,50 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private void createDrawer() {
+        List<RouterLink> components = new ArrayList<>();
         VerticalLayout menu = new VerticalLayout();
+        int i = 0;
 
         RouterLink homeLink = new RouterLink("Home", HomeView.class);
         homeLink.setHighlightCondition(HighlightConditions.sameLocation());
-
+        components.add(i++,homeLink);
         RouterLink anagraficaLink = new RouterLink("Anagrafica", AnagraficaView.class);
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
+        components.add(i++,anagraficaLink);
 
-        RouterLink campagnaLink = new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
-        campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
+        RouterLink storicoLink = new RouterLink("Storico", StoricoView.class);
+        storicoLink.setHighlightCondition(HighlightConditions.sameLocation());
+        components.add(i++,storicoLink);
 
-        RouterLink abbonamentoLink = new RouterLink("Campagna " + Anno.getAnnoCorrente().getAnnoAsString(), AbbonamentoView.class);
-        abbonamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+        if (storicoService.getByAnno(Anno.getAnnoProssimo()) != null) {
+            RouterLink campagnaLink= new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
+            campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
+            components.add(i++,campagnaLink);
+        }
+        if (storicoService.getByAnno(Anno.getAnnoCorrente()) != null) {
+            RouterLink abbonamentoLink = new RouterLink("Campagna " + Anno.getAnnoCorrente().getAnnoAsString(), AbbonamentoView.class);
+            abbonamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+            abbonamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+            components.add(i++,abbonamentoLink);
+        }
 
         RouterLink spedizioneLink = new RouterLink("Spedizioni", SpedizioneView.class);
         spedizioneLink.setHighlightCondition(HighlightConditions.sameLocation());
+        components.add(i++,spedizioneLink);
 
         RouterLink versamentoLink = new RouterLink("Versamenti", VersamentoView.class);
         versamentoLink.setHighlightCondition(HighlightConditions.sameLocation());
+        components.add(i++,versamentoLink);
 
         RouterLink offertaLink = new RouterLink("Offerte", OffertaView.class);
         offertaLink.setHighlightCondition(HighlightConditions.sameLocation());
-
+        components.add(i++,offertaLink);
 
         RouterLink subscriptionLink = new RouterLink("Iscrizione al portale", SubscriptionView.class);
         subscriptionLink.setHighlightCondition(HighlightConditions.sameLocation());
+        components.add(i,subscriptionLink);
 
-        menu.add(homeLink,anagraficaLink,campagnaLink,abbonamentoLink,spedizioneLink,versamentoLink,offertaLink,subscriptionLink);
+        menu.add(components.toArray(new RouterLink[0]));
 
         addToDrawer(menu);
     }

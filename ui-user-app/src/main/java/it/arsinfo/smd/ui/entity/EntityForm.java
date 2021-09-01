@@ -18,7 +18,7 @@ public class EntityForm<T extends SmdEntity> extends FormLayout {
 
    Button save = new Button("Save");
    Button delete = new Button("Delete");
-   Button close = new Button("Cancel");
+   Button close = new Button("Indietro");
 
 
     public EntityForm(Binder<T> binder) {

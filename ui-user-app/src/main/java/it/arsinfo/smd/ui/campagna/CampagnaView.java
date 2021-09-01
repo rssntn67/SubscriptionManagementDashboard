@@ -7,11 +7,9 @@ import it.arsinfo.smd.data.StatoStorico;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.ui.MainLayout;
-import it.arsinfo.smd.ui.storico.StoricoView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
