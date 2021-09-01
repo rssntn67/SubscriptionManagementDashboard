@@ -89,14 +89,14 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
         components.add(i++,anagraficaLink);
 
-        RouterLink storicoLink = new RouterLink("Storico", StoricoView.class);
-        storicoLink.setHighlightCondition(HighlightConditions.sameLocation());
-        components.add(i++,storicoLink);
-
         if (storicoService.getByAnno(Anno.getAnnoProssimo()) != null) {
             RouterLink campagnaLink= new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
             campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
             components.add(i++,campagnaLink);
+        } else {
+            RouterLink storicoLink = new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), StoricoView.class);
+            storicoLink.setHighlightCondition(HighlightConditions.sameLocation());
+            components.add(i++,storicoLink);
         }
         if (storicoService.getByAnno(Anno.getAnnoCorrente()) != null) {
             RouterLink abbonamentoLink = new RouterLink("Campagna " + Anno.getAnnoCorrente().getAnnoAsString(), AbbonamentoView.class);
