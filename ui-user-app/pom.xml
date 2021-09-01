@@ -63,6 +63,7 @@
         </dependencies>
     </dependencyManagement>
 
+
     <dependencies>
         <dependency>
             <groupId>it.arsinfo.smd</groupId>
@@ -200,6 +201,10 @@
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>prod</id>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+                <activatedProperties>prod</activatedProperties>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -267,6 +272,14 @@
                 </plugins>
             </build>
         </profile>
-
+        <profile>
+            <id>dev</id>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
     </profiles>
 </project>
