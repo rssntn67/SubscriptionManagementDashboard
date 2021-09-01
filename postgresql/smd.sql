@@ -501,6 +501,7 @@ CREATE TABLE public.woo_commerce_order (
     data timestamp without time zone,
     description character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
+    order_id integer,
     permalink character varying(255) NOT NULL,
     price numeric(19,2) NOT NULL,
     product_id integer NOT NULL,
@@ -509,6 +510,8 @@ CREATE TABLE public.woo_commerce_order (
     abbonamento_id bigint NOT NULL
 );
 
+
+ALTER TABLE public.woo_commerce_order OWNER TO postgres;
 
 --
 -- Name: abbonamento abbonamento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
