@@ -2,9 +2,7 @@ package it.arsinfo.smd.ui.campagna;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
@@ -12,7 +10,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
@@ -39,6 +36,10 @@ public class CampagnaStoricoView extends EntityView<Storico> {
     private Campagna campagna;
     @Autowired
     private RivistaAbbonamentoDao raDao;
+
+    private RivistaAbbonamentoGrid raGrid;
+    private AbbonamentoGrid abbgrid;
+    private List<Abbonamento> abbonamenti = new ArrayList<>();
 
     public CampagnaStoricoView(@Autowired StoricoService service) {
         super(service);
@@ -72,75 +73,70 @@ public class CampagnaStoricoView extends EntityView<Storico> {
         getForm().addListener(StoricoForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
         campagna = service.getByAnno(Anno.getAnnoProssimo());
-        Div helper = new Div();
-        helper.setText("Per modificare gli ordinativi selezionare la riga nella seguente tabella");
         Button paga = new Button("Paga -> https://retepreghierapapa.it/pagamento");
-        if (campagna != null ) {
-            if (campagna.getStatoCampagna() == StatoCampagna.Generata || campagna.getStatoCampagna() == StatoCampagna.Inviata) {
-                toolbar.add(getAddButton());
-            } else {
-                helper.setText("Non è possibile modificare gli ordinativi");
-                paga.setEnabled(false);
+        toolbar.add(paga);
+        toolbar.add(getAddButton());
+        abbgrid = new AbbonamentoGrid() {
+            @Override
+            public List<Abbonamento> filter() {
+                setFooter(abbonamenti);
+                return abbonamenti;
             }
-            final List<Abbonamento> abbonamenti = service.findAbbonamento(campagna, getUserSession().getLoggedInIntestatario(), Anno.getAnnoProssimo());
-            AbbonamentoGrid abbgrid = new AbbonamentoGrid() {
+        };
+        abbgrid.init(new Grid<>(Abbonamento.class));
+        abbgrid.getGrid().setHeightByRows(true);
 
-                @Override
-                public List<Abbonamento> filter() {
-                    setFooter(abbonamenti);
-                    return abbonamenti;
+        raGrid = new RivistaAbbonamentoGrid() {
+            @Override
+            public List<RivistaAbbonamento> filter() {
+                List<RivistaAbbonamento> list = new ArrayList<>();
+                for (Abbonamento abb:abbonamenti) {
+                    list.addAll(raDao.findByAbbonamento(abb));
                 }
-            };
-            abbgrid.init(new Grid<>(Abbonamento.class));
-            abbgrid.getGrid().setHeightByRows(true);
+                return list;
+            }
+        };
+        raGrid.init(new Grid<>(RivistaAbbonamento.class));
+        raGrid.getGrid().setHeightByRows(true);
 
-            RivistaAbbonamentoGrid raGrid = new RivistaAbbonamentoGrid() {
-
-                @Override
-                public List<RivistaAbbonamento> filter() {
-                    List<RivistaAbbonamento> list = new ArrayList<>();
-                    for (Abbonamento abb:abbonamenti) {
-                        list.addAll(raDao.findByAbbonamento(abb));
-                    }
-                    return list;
-                }
-            };
-            raGrid.init(new Grid<>(RivistaAbbonamento.class));
-            raGrid.getGrid().setHeightByRows(true);
-            abbgrid.updateList();
-            raGrid.updateList();
-
-            add(
-                    toolbar,
-                    new H2(" Campagna Abbonamenti"  + campagna.getHeader()),
-                    new H5("Ordini"),
-                    helper,
-                    getContent(getGrid(),getForm()),
-                    new H5("Abbonamenti"),
-                    getContent(abbgrid.getGrid()),
-                    paga,
-                    new H5("Riviste in Abbonamento"),
-                    getContent(raGrid.getGrid())
-            );
-        }
+        add(
+            toolbar,
+            new H2(" Campagna Abbonamenti"  + campagna.getHeader()),
+            new H5("Ordini - Per modificare gli ordinativi selezionare la riga nella tabella"),
+            getContent(getGrid(),getForm()),
+            new H5("Abbonamenti"),
+            getContent(abbgrid.getGrid()),
+            new H5("Riviste in Abbonamento"),
+            getContent(raGrid.getGrid())
+        );
         getGrid().setHeightByRows(true);
         closeEditor();
 
     }
 
+    @Override
+    public void updateList() {
+        abbonamenti = service.findAbbonamento(campagna, getUserSession().getLoggedInIntestatario(), Anno.getAnnoProssimo());
+        abbgrid.updateList();
+        raGrid.updateList();
+        super.updateList();
+    }
 
     @Override
     public void save(Storico entity) {
         try {
-                service.aggiornaCampagna(campagna,entity,getUserSession().getUser().getEmail());
+            service.aggiornaCampagna(campagna,entity,getUserSession().getUser().getEmail());
+            closeEditor();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-
     }
+
     @Override
     public void edit(Storico t) {
-        assert t != null;
+        super.edit(t);
+        if (t == null)
+            return;
         if (t.getId() == null) {
             t.setIntestatario(getUserSession().getLoggedInIntestatario());
             t.setDestinatario(getUserSession().getLoggedInIntestatario());
