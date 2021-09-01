@@ -5,8 +5,11 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
 import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.StatoCampagna;
@@ -16,16 +19,20 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.api.StoricoService;
+import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
 import it.arsinfo.smd.ui.entity.EntityView;
 import it.arsinfo.smd.ui.storico.StoricoForm;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class StoricoView extends EntityView<Storico> {
+@Route(value="adp/campagna/edit", layout = MainLayout.class)
+@PageTitle("Campagna | ADP Portale")
+public class CampagnaStoricoView extends EntityView<Storico> {
 
     private final StoricoService service;
 
@@ -33,12 +40,13 @@ public abstract class StoricoView extends EntityView<Storico> {
     @Autowired
     private RivistaAbbonamentoDao raDao;
 
-    public StoricoView(@Autowired StoricoService service) {
+    public CampagnaStoricoView(@Autowired StoricoService service) {
         super(service);
         this.service=service;
     }
 
-    public void init(Anno anno) {
+    @PostConstruct
+    public void init() {
         Grid<Storico> grid =new Grid<>(Storico.class);
         StoricoForm form =
                 new StoricoForm(new BeanValidationBinder<>(Storico.class),getUserSession().getAnagraficaStorico(),service.findPubblicazioni());
@@ -63,7 +71,7 @@ public abstract class StoricoView extends EntityView<Storico> {
         });
         getForm().addListener(StoricoForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
-        campagna = service.getByAnno(anno);
+        campagna = service.getByAnno(Anno.getAnnoProssimo());
         Div helper = new Div();
         helper.setText("Per modificare gli ordinativi selezionare la riga nella seguente tabella");
         Button paga = new Button("Paga -> https://retepreghierapapa.it/pagamento");
@@ -74,7 +82,7 @@ public abstract class StoricoView extends EntityView<Storico> {
                 helper.setText("Non è possibile modificare gli ordinativi");
                 paga.setEnabled(false);
             }
-            final List<Abbonamento> abbonamenti = service.findAbbonamento(campagna, getUserSession().getLoggedInIntestatario(), anno);
+            final List<Abbonamento> abbonamenti = service.findAbbonamento(campagna, getUserSession().getLoggedInIntestatario(), Anno.getAnnoProssimo());
             AbbonamentoGrid abbgrid = new AbbonamentoGrid() {
 
                 @Override
@@ -104,29 +112,18 @@ public abstract class StoricoView extends EntityView<Storico> {
 
             add(
                     toolbar,
-                    new H3(campagna.getHeader()),
-                    new H2("Ordini"),
+                    new H2(" Campagna Abbonamenti"  + campagna.getHeader()),
+                    new H5("Ordini"),
                     helper,
                     getContent(getGrid(),getForm()),
-                    new H2("Abbonamenti"),
+                    new H5("Abbonamenti"),
                     getContent(abbgrid.getGrid()),
                     paga,
-                    new H2("Riviste in Abbonamento"),
+                    new H5("Riviste in Abbonamento"),
                     getContent(raGrid.getGrid())
-            );
-        } else {
-            toolbar.add(getAddButton());
-            paga.setEnabled(false);
-            add(
-                    toolbar,
-                    new H3("La Campagna " + anno.getAnnoAsString() +" non è stata ancora generata"),
-                    new H2("ordini"),
-                    helper,
-                    getContent(getGrid(), getForm())
             );
         }
         getGrid().setHeightByRows(true);
-        updateList();
         closeEditor();
 
     }
@@ -135,11 +132,7 @@ public abstract class StoricoView extends EntityView<Storico> {
     @Override
     public void save(Storico entity) {
         try {
-            if (campagna == null) {
-                super.save(entity);
-            } else {
                 service.aggiornaCampagna(campagna,entity,getUserSession().getUser().getEmail());
-            }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -152,11 +145,7 @@ public abstract class StoricoView extends EntityView<Storico> {
             t.setIntestatario(getUserSession().getLoggedInIntestatario());
             t.setDestinatario(getUserSession().getLoggedInIntestatario());
             t.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.Ordinario);
-        }
-        super.edit(t);
-        if (t.getId() == null) {
             getForm().isNew();
-            return;
         }
         switch (t.getTipoAbbonamentoRivista()) {
             case OmaggioCuriaDiocesiana:

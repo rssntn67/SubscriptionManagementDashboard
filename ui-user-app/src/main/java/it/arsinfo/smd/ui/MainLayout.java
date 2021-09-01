@@ -14,10 +14,13 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
 import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.data.StatoCampagna;
 import it.arsinfo.smd.data.UserSession;
+import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoView;
 import it.arsinfo.smd.ui.anagrafica.AnagraficaView;
+import it.arsinfo.smd.ui.campagna.CampagnaStoricoView;
 import it.arsinfo.smd.ui.campagna.CampagnaView;
 import it.arsinfo.smd.ui.home.HomeView;
 import it.arsinfo.smd.ui.offerta.OffertaView;
@@ -89,10 +92,17 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         anagraficaLink.setHighlightCondition(HighlightConditions.sameLocation());
         components.add(i++,anagraficaLink);
 
-        if (storicoService.getByAnno(Anno.getAnnoProssimo()) != null) {
-            RouterLink campagnaLink= new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
-            campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
-            components.add(i++,campagnaLink);
+        Campagna futureC = storicoService.getByAnno(Anno.getAnnoProssimo());
+        if (futureC != null) {
+            if (futureC.getStatoCampagna() == StatoCampagna.Generata || futureC.getStatoCampagna() == StatoCampagna.Inviata) {
+                RouterLink campagnaStoricoLink= new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaStoricoView.class);
+                campagnaStoricoLink.setHighlightCondition(HighlightConditions.sameLocation());
+                components.add(i++,campagnaStoricoLink);
+            } else {
+                RouterLink campagnaLink = new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), CampagnaView.class);
+                campagnaLink.setHighlightCondition(HighlightConditions.sameLocation());
+                components.add(i++, campagnaLink);
+            }
         } else {
             RouterLink storicoLink = new RouterLink("Campagna " + Anno.getAnnoProssimo().getAnnoAsString(), StoricoView.class);
             storicoLink.setHighlightCondition(HighlightConditions.sameLocation());
