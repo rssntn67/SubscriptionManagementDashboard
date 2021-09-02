@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface WooCommerceService {
     WooCommerceOrder create(Abbonamento abb, int progressivo);
-    List<WooCommerceOrder> updateGenerated(List<WooCommerceOrder> wooCommerceProducts);
-    List<WooCommerceOrder> updateProcessing(List<WooCommerceOrder> wooCommerceProducts);
+    List<WooCommerceOrder> update(List<WooCommerceOrder> wooCommerceProducts);
  }

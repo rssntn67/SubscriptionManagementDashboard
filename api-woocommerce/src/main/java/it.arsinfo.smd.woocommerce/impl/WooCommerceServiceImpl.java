@@ -17,10 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -42,59 +41,56 @@ public class WooCommerceServiceImpl implements WooCommerceService {
     }
 
     @Override
-    public List<WooCommerceOrder> updateProcessing(List<WooCommerceOrder> worders) {
+    public List<WooCommerceOrder> update(List<WooCommerceOrder> worders) {
         final List<WooCommerceOrder> updates = new ArrayList<>();
-        worders.stream().filter(wo -> wo.getStatus() == StatoWooCommerceOrder.Processing && wo.getOrderId() != null).forEach(wo -> {
-            Map p = wooCommerce.get(EndpointBaseType.ORDERS.getValue(), wo.getOrderId());
-            Order o = Order.getFromMap(p);
-            if (o.getStatus() == Order.OrderStatus.Completed) {
-                wo.setStatus(StatoWooCommerceOrder.Completed);
-                updates.add(wo);
-            }
-        });
-        return updates;
-    }
+        final Map<String,Integer> nameToOrderMap = new HashMap<>();
+        final Map<String, WooCommerceOrder> valid =
+            worders
+            .stream()
+            .filter(wo -> wo.getStatus() == StatoWooCommerceOrder.Generated)
+            .collect(Collectors.toMap(WooCommerceOrder::getName, Function.identity()));
 
-    @Override
-    public List<WooCommerceOrder> updateGenerated(List<WooCommerceOrder> worders) {
-        //se ordine pagato:
-        final List<WooCommerceOrder> updates = new ArrayList<>();
-        worders.stream().filter(wo -> wo.getStatus() == StatoWooCommerceOrder.Generated).forEach(wo -> {
+        final Set<String> names = valid.values().stream().map(wo -> wo.getName()).collect(Collectors.toSet());
+        names.forEach(name -> {
+            if (nameToOrderMap.containsKey(name)) {
+                return;
+            }
             Map<String, String> params = new HashMap<>();
             params.put("per_page","10");
             params.put("offset","0");
-            params.put("search",wo.getName());
-            List<Map> ordersof = wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params);
-            log.info("updateGenerated: order size {}" , ordersof.size());
-            for (Map p:  ordersof )
-            {
-                Order o =Order.getFromMap(p);
+            params.put("search",name);
+            for (Map orderM:  (List<Map>)wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params) ) {
+                Order o = Order.getFromMap(orderM);
+                log.info("update: parsing {}",o);
                 if (o.getStatus() != Order.OrderStatus.Processing)
                     continue;
-
-                for (OrderItem item: o.getOrderItems()) {
-                    if (!item.getName().equals(wo.getName()))
-                            continue;
-                    if (wo.getPrice().subtract(item.getTotal()).signum() != 0)
+                boolean wooOrderCompleted = true;
+                for (OrderItem item : o.getOrderItems()) {
+                    if (!valid.containsKey(item.getName())) {
+                        wooOrderCompleted = false;
                         continue;
-                    if (item.getTotalTax().signum() != 0 )
-                        continue;
-
-                    wo.setOrderId(o.getId());
-                    if (o.getOrderItems().size() == 1) {
-                        wo.setStatus(StatoWooCommerceOrder.Completed);
-                        wooCommerce.update(EndpointBaseType.ORDERS.getValue(), o.getId(),Order.getStatusCompletedMap());
-                    } else {
-                        wo.setStatus(StatoWooCommerceOrder.Processing);
                     }
+                    WooCommerceOrder wo = valid.get(item.getName());
+                    if (wo.getPrice().subtract(item.getTotal()).signum() != 0 || item.getTotalTax().signum() != 0) {
+                        wooOrderCompleted = false;
+                        continue;
+                    }
+                    wo.setOrderId(o.getId());
+                    wo.setStatus(StatoWooCommerceOrder.Completed);
                     updates.add(wo);
+                    nameToOrderMap.put(item.getName(), o.getId());
                     Product product = Product.getFromMap(wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),item.getProductId()));
                     if (product != null) {
-                        log.info("update: {}",product);
+                        log.info("update: hiding {}",product);
                         wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(), product.getId(),Product.getUpdateProcessingMap());
                     }
                 }
+                if (wooOrderCompleted) {
+                    Map updatetordermap = wooCommerce.update(EndpointBaseType.ORDERS.getValue(), o.getId(),Order.getStatusCompletedMap());
+                    log.info("update: completed {}",Order.getFromMap(updatetordermap));
+                }
             }
+
         });
         return updates;
     }
