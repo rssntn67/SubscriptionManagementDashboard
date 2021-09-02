@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.campagna;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
@@ -80,8 +79,6 @@ public class CampagnaStoricoView extends EntityView<Storico> {
         getForm().addListener(StoricoForm.CloseEvent.class, e -> closeEditor());
         HorizontalLayout toolbar = getToolBar();
         campagna = service.getByAnno(Anno.getAnnoProssimo());
-        Button paga = new Button("Paga -> https://retepreghierapapa.it/pagamento");
-        toolbar.add(paga);
         toolbar.add(getAddButton());
         abbgrid = new AbbonamentoGrid() {
             @Override
@@ -91,7 +88,11 @@ public class CampagnaStoricoView extends EntityView<Storico> {
             }
         };
         abbgrid.init(new Grid<>(Abbonamento.class));
-        abbgrid.getGrid().addColumn(new ComponentRenderer<>(abbonamento -> new CampagnaPaga(abbonamento,wooCommerceOrderService,wooCommerceApi)));
+        abbgrid.getGrid()
+                .addColumn(new ComponentRenderer<>(
+                        abbonamento ->
+                                new CampagnaPaga(abbonamento,wooCommerceOrderService,wooCommerceApi)))
+                .setHeader("Pagamento");
         abbgrid.getGrid().setHeightByRows(true);
 
 
@@ -113,7 +114,7 @@ public class CampagnaStoricoView extends EntityView<Storico> {
             new H2(" Campagna Abbonamenti"  + campagna.getHeader()),
             new H5("Ordini - Per modificare gli ordinativi selezionare la riga nella tabella"),
             getContent(getGrid(),getForm()),
-            new H5("Abbonamenti"),
+            new H5("Abbonamenti - Per pagare online selezionare paga (redirect su Ecommerce ADP)"),
             getContent(abbgrid.getGrid()),
             new H5("Riviste in Abbonamento"),
             getContent(raGrid.getGrid())

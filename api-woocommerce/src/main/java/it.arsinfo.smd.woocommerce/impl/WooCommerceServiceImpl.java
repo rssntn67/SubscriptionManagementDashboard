@@ -35,7 +35,7 @@ public class WooCommerceServiceImpl implements WooCommerceService {
 
     @Override
     public WooCommerceOrder create(Abbonamento abb, int id) {
-        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(), Product.getCreateMapFromAbbonamento(abb,"Abbonamento-"+id));
+        Map result = wooCommerce.create(EndpointBaseType.PRODUCTS.getValue(), Product.getCreateMapFromAbbonamento(abb,"Abbonamento-"+abb.getCodeLine()+"-"+id));
         Product created = Product.getFromMap(result);
         return Product.createFromProduct(created, abb);
     }

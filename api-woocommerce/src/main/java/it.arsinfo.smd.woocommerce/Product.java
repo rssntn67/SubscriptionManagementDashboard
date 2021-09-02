@@ -14,6 +14,7 @@ public class Product {
         WooCommerceOrder product = new WooCommerceOrder();
         product.setProductId(p.getId());
         product.setDescription(p.getDescription());
+        product.setShortDescription(p.getShortDescription());
         product.setPrice(p.getRegularPrice());
         product.setPermalink(p.getPermalink());
         product.setName(p.getName());

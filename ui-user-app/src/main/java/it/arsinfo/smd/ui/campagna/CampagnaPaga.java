@@ -3,6 +3,8 @@ package it.arsinfo.smd.ui.campagna;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import it.arsinfo.smd.data.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
@@ -17,10 +19,13 @@ public class CampagnaPaga extends Button {
     private final Abbonamento abbonamento;
 
     public CampagnaPaga(Abbonamento abbonamento, WooCommerceOrderService service, WooCommerceService api) {
-        super("Crea Prodotto");
+        super("Paga");
         this.service=service;
         this.abbonamento=abbonamento;
         this.api=api;
+        this.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        this.setEnabled(abbonamento.getResiduo().signum() >0);
+        this.setIcon(VaadinIcon.EURO.create());
         this.addClickListener(this::create);
     }
 
@@ -55,7 +60,7 @@ public class CampagnaPaga extends Button {
             }
         }
         if (forder!=null)
-            UI.getCurrent().getPage().executeJs("window.open("+forder.getPermalink()+",'_blank')");
+            UI.getCurrent().getPage().executeJs("window.open('"+forder.getPermalink()+"','_blank')");
 
     }
 
