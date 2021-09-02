@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
@@ -16,11 +17,13 @@ import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.service.api.StoricoService;
+import it.arsinfo.smd.service.api.WooCommerceOrderService;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
 import it.arsinfo.smd.ui.entity.EntityView;
 import it.arsinfo.smd.ui.storico.StoricoForm;
+import it.arsinfo.smd.woocommerce.api.WooCommerceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +39,10 @@ public class CampagnaStoricoView extends EntityView<Storico> {
     private Campagna campagna;
     @Autowired
     private RivistaAbbonamentoDao raDao;
+    @Autowired
+    private WooCommerceOrderService wooCommerceOrderService;
+    @Autowired
+    private WooCommerceService wooCommerceApi;
 
     private RivistaAbbonamentoGrid raGrid;
     private AbbonamentoGrid abbgrid;
@@ -84,7 +91,9 @@ public class CampagnaStoricoView extends EntityView<Storico> {
             }
         };
         abbgrid.init(new Grid<>(Abbonamento.class));
+        abbgrid.getGrid().addColumn(new ComponentRenderer<>(abbonamento -> new CampagnaPaga(abbonamento,wooCommerceOrderService,wooCommerceApi)));
         abbgrid.getGrid().setHeightByRows(true);
+
 
         raGrid = new RivistaAbbonamentoGrid() {
             @Override

@@ -21,7 +21,7 @@ public class Product {
         return product;
     }
 
-    public static Map<String,Object> getUpdateProcessingMap() {
+    public static Map<String,Object> getHideMap() {
         Map<String,Object> create = new HashMap<>();
         create.put("status","private");
         create.put("catalog_visibility", "hidden");

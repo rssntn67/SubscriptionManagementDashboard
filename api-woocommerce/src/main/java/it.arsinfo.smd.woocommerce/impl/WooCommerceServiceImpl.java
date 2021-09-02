@@ -82,7 +82,7 @@ public class WooCommerceServiceImpl implements WooCommerceService {
                     Product product = Product.getFromMap(wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),item.getProductId()));
                     if (product != null) {
                         log.info("update: hiding {}",product);
-                        wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(), product.getId(),Product.getUpdateProcessingMap());
+                        wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(), product.getId(),Product.getHideMap());
                     }
                 }
                 if (wooOrderCompleted) {
@@ -93,5 +93,14 @@ public class WooCommerceServiceImpl implements WooCommerceService {
 
         });
         return updates;
+    }
+
+    @Override
+    public void delete(WooCommerceOrder wo) {
+        Product product = Product.getFromMap(wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),wo.getProductId()));
+        if (product != null) {
+            log.info("update: hiding {}", product);
+            wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(), product.getId(), Product.getHideMap());
+        }
     }
 }

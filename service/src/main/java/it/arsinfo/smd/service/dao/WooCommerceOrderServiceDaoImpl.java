@@ -2,6 +2,7 @@ package it.arsinfo.smd.service.dao;
 
 import it.arsinfo.smd.dao.WooCommerceOrderDao;
 import it.arsinfo.smd.data.StatoWooCommerceOrder;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,4 +46,8 @@ public class WooCommerceOrderServiceDaoImpl implements WooCommerceOrderService {
 		return new WooCommerceOrder();
 	}
 
+	@Override
+	public List<WooCommerceOrder> findByAbbonamento(Abbonamento abbonamento) {
+		return repository.findByAbbonamento(abbonamento);
+	}
 }

@@ -98,7 +98,7 @@ public class SmdWooCommerceApiTests {
             Assertions.assertNotNull(product.isPurchasable());
             Assertions.assertNotNull(product.getTaxClass());
             Assertions.assertEquals("nessuna-tariffa", product.getTaxClass());
-            wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(),product.getId(),Product.getUpdateProcessingMap());
+            wooCommerce.update(EndpointBaseType.PRODUCTS.getValue(),product.getId(),Product.getHideMap());
         });
 
 
