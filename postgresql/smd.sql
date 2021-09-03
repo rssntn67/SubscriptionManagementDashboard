@@ -498,6 +498,7 @@ ALTER TABLE public.versamento OWNER TO postgres;
 
 CREATE TABLE public.woo_commerce_order (
     id bigint NOT NULL,
+    cassa character varying(255),
     data timestamp without time zone,
     description character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
@@ -507,7 +508,8 @@ CREATE TABLE public.woo_commerce_order (
     product_id integer NOT NULL,
     short_description character varying(255) NOT NULL,
     status character varying(255) NOT NULL,
-    abbonamento_id bigint NOT NULL
+    abbonamento_id bigint NOT NULL,
+    user_info_id bigint NOT NULL
 );
 
 
@@ -1007,6 +1009,14 @@ ALTER TABLE ONLY public.offerta
 
 ALTER TABLE ONLY public.spedizione_item
     ADD CONSTRAINT fkm83bn6owi6gs2kcy09fqy9iij FOREIGN KEY (rivista_abbonamento_id) REFERENCES public.rivista_abbonamento(id);
+
+
+--
+-- Name: woo_commerce_order fkmctmjiv033xslyasq10it9eq4; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.woo_commerce_order
+    ADD CONSTRAINT fkmctmjiv033xslyasq10it9eq4 FOREIGN KEY (user_info_id) REFERENCES public.user_info(id);
 
 
 --

@@ -84,7 +84,6 @@ public class SmdWooCommerceApiTests {
         Product created = Product.getFromMap(result);
         log.info("{}",created);
         products = wooCommerce.getAll(EndpointBaseType.PRODUCTS.getValue(), params);
-        Assertions.assertEquals(1,products.size());
         products.forEach(p -> {
             Product product = Product.getFromMap(p);
             Assertions.assertNotNull(product);
@@ -207,7 +206,8 @@ public class SmdWooCommerceApiTests {
                 log.info("completed date_completed {}", completed.get("date_completed")); //processing/completed
             }
             for (OrderItem item: o.getOrderItems()) {
-                if (item.getName().equals("TestAbbonamento-228334146025438973")) {
+                log.info("{}", item);
+                if (item.getName().equals("TestAbbonamento-228334146025438973") && item.getProductId() != 0) {
                     Product product = Product.getFromMap(wooCommerce.get(EndpointBaseType.PRODUCTS.getValue(),item.getProductId()));
                     log.info("{}",product);
                     Assertions.assertEquals(1,product.getTotalSales());

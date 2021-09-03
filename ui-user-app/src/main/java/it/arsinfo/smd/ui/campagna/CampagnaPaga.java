@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import it.arsinfo.smd.data.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
+import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
 import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
@@ -17,9 +18,11 @@ public class CampagnaPaga extends Button {
     private final WooCommerceApiService api;
     private final WooCommerceOrderService service;
     private final Abbonamento abbonamento;
+    private final UserInfo user;
 
-    public CampagnaPaga(Abbonamento abbonamento, WooCommerceOrderService service, WooCommerceApiService api) {
+    public CampagnaPaga(UserInfo user, Abbonamento abbonamento, WooCommerceOrderService service, WooCommerceApiService api) {
         super("Paga");
+        this.user=user;
         this.service=service;
         this.abbonamento=abbonamento;
         this.api=api;
@@ -54,6 +57,7 @@ public class CampagnaPaga extends Button {
         if (forder == null) {
             try {
                 forder = api.create(abbonamento,wooCommerceOrders.size());
+                forder.setUserInfo(user);
                 service.save(forder);
             } catch (Exception e) {
                 e.printStackTrace();

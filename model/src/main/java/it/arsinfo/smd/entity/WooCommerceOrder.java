@@ -17,7 +17,7 @@ public class WooCommerceOrder implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Abbonamento abbonamento;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private UserInfo userInfo;
 
     @Column(nullable=false)

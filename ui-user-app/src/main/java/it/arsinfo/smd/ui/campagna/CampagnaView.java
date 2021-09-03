@@ -53,7 +53,7 @@ public class CampagnaView extends AbbonamentoGrid {
         grid
                 .addColumn(new ComponentRenderer<>(
                         abbonamento ->
-                                new CampagnaPaga(abbonamento,wooCommerceOrderService,wooCommerceApi)))
+                                new CampagnaPaga(getUserSession().getLoggedIn(),abbonamento,wooCommerceOrderService,wooCommerceApi)))
                 .setHeader("Pagamento");
 
         HorizontalLayout toolbar = getToolBar();

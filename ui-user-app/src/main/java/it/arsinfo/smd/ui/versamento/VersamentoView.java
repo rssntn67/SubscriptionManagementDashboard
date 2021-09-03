@@ -49,7 +49,7 @@ public class VersamentoView extends EntityGridView<Versamento> {
         getGrid().addColumn(new NumberRenderer<>(Versamento::getResiduo, Smd.getEuroCurrency())).setHeader("Residuo");
 
         add(
-            new H2("Versamenti Effettuati dal 01/01/"+Anno.getAnnoPassato().getAnnoAsString()),
+            new H2("Versamenti Effettuati"),
             getContent(getGrid())
         );
         getGrid().setHeightByRows(true);

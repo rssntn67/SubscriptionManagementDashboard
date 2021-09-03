@@ -45,11 +45,13 @@ public class ScheduleTask {
                     dv.setCcp(Ccp.CINQUE);
                 else
                     dv.setCcp(Ccp.QUATTRO);
+
                 dv.setImporto(wo.getPrice());
                 Versamento v = new Versamento();
                 v.setCodeLine(wo.getAbbonamento().getCodeLine());
                 v.setImporto(wo.getPrice());
                 v.setDistintaVersamento(dv);
+                v.setDataContabile(v.getDataPagamento());
                 dv.addItem(v);
                 List<DistintaVersamento> update= new ArrayList<>();
                 update.add(dvservice.save(dv));

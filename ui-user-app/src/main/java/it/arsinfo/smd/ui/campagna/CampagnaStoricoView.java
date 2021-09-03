@@ -91,7 +91,7 @@ public class CampagnaStoricoView extends EntityView<Storico> {
         abbgrid.getGrid()
                 .addColumn(new ComponentRenderer<>(
                         abbonamento ->
-                                new CampagnaPaga(abbonamento,wooCommerceOrderService,wooCommerceApi)))
+                                new CampagnaPaga(getUserSession().getLoggedIn(), abbonamento,wooCommerceOrderService,wooCommerceApi)))
                 .setHeader("Pagamento");
         abbgrid.getGrid().setHeightByRows(true);
 

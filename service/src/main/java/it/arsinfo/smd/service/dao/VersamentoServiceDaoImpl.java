@@ -370,6 +370,11 @@ public class VersamentoServiceDaoImpl implements VersamentoService {
 	}
 
 	@Override
+	public List<Versamento> findBy(Anagrafica tValue) throws Exception {
+		return repository.findByCommittente(tValue);
+	}
+
+	@Override
 	public List<DocumentoTrasporto> getDocumentiTrasporto(Versamento selected) {
 		return documentoTrasportoDao.findByVersamento(selected);
 	}	

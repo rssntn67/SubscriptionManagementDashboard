@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.offerta;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.data.renderer.NumberRenderer;
@@ -35,11 +34,9 @@ public class OffertaView extends EntityGridView<Offerta> {
         configureGrid("statoOperazioneIncasso","offerteCumulate.anno","versamento.codeLine","versamento.dataPagamento");
         getGrid().addColumn(new NumberRenderer<>(Offerta::getImporto, Smd.getEuroCurrency())).setHeader("Importo");
 
-        Button paga = new Button("Esegui una donazione");
         add(
             new H2("Offerte Effettuate dal 01/01/"+Anno.getAnnoPassato().getAnnoAsString()),
-            getContent(getGrid()),
-            paga
+            getContent(getGrid())
         );
         getGrid().setHeightByRows(true);
 

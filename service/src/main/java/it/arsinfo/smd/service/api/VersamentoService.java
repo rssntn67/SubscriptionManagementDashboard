@@ -33,5 +33,6 @@ public interface VersamentoService extends SmdServiceBase<Versamento> {
 	List<Offerta> getOfferte(Versamento selected);
 	List<DocumentoTrasporto> getDocumentiTrasporto(Versamento selected);
 	List<Versamento> searchBy(Anagrafica tValue, Anno sValue) throws Exception;
+	List<Versamento> findBy(Anagrafica tValue) throws Exception;
 
 }
