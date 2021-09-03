@@ -97,7 +97,7 @@ public class StoricoEditor
         contrassegno.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
-        invioSpedizione.setReadOnly(persisted);
+        invioSpedizione.setReadOnly(obj.getNumero() > 0);
         
         if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
             getSave().setEnabled(false);
