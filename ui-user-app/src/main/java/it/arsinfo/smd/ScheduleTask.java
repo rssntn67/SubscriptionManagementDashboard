@@ -1,6 +1,5 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.Ccp;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Versamento;
@@ -41,12 +40,9 @@ public class ScheduleTask {
                 log.info("incassa; {}", wo);
                 DistintaVersamento dv = new DistintaVersamento();
                 dv.setCassa(wo.getCassa());
-                if (wo.getCassa() == Cassa.Paypal)
-                    dv.setCcp(Ccp.CINQUE);
-                else
-                    dv.setCcp(Ccp.QUATTRO);
-
+                dv.setCcp(Ccp.QUATTRO);
                 dv.setImporto(wo.getPrice());
+
                 Versamento v = new Versamento();
                 v.setCodeLine(wo.getAbbonamento().getCodeLine());
                 v.setImporto(wo.getPrice());
