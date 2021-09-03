@@ -5,7 +5,8 @@ public enum Ccp {
     UNO("000063470009","Poste","IT90C0760103200000063470009"),
     DUE("NA","Mps","NA"),
     TRE("NA","Cassa","NA"),
-    QUATTRO("NA","BPER","IT93U0538703222000000001920");
+    QUATTRO("NA","BPER","IT93U0538703222000000001920"),
+    CINQUE("AdpPayPal11299","Paypal","NA");
     private final String ccp;
     private final String cc;
     private final String iban;

@@ -6,8 +6,8 @@ import it.arsinfo.smd.entity.WooCommerceOrder;
 
 import java.util.List;
 
-public interface WooCommerceService {
+public interface WooCommerceApiService {
     WooCommerceOrder create(Abbonamento abb, int progressivo);
-    List<WooCommerceOrder> update(List<WooCommerceOrder> wooCommerceOrder);
+    List<WooCommerceOrder> update(List<WooCommerceOrder> wooCommerceOrders);
     void delete(WooCommerceOrder wo);
  }

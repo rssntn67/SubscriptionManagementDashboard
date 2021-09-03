@@ -1,6 +1,5 @@
 package it.arsinfo.smd.ui.campagna;
 
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H5;
@@ -18,7 +17,7 @@ import it.arsinfo.smd.service.api.WooCommerceOrderService;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
-import it.arsinfo.smd.woocommerce.api.WooCommerceService;
+import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +37,7 @@ public class CampagnaView extends AbbonamentoGrid {
     @Autowired
     private WooCommerceOrderService wooCommerceOrderService;
     @Autowired
-    private WooCommerceService wooCommerceApi;
+    private WooCommerceApiService wooCommerceApi;
 
 
     public CampagnaView(@Autowired StoricoService service) {

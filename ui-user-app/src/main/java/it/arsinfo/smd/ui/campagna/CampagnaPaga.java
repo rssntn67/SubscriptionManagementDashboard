@@ -9,16 +9,16 @@ import it.arsinfo.smd.data.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
-import it.arsinfo.smd.woocommerce.api.WooCommerceService;
+import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
 
 import java.util.List;
 
 public class CampagnaPaga extends Button {
-    private final WooCommerceService api;
+    private final WooCommerceApiService api;
     private final WooCommerceOrderService service;
     private final Abbonamento abbonamento;
 
-    public CampagnaPaga(Abbonamento abbonamento, WooCommerceOrderService service, WooCommerceService api) {
+    public CampagnaPaga(Abbonamento abbonamento, WooCommerceOrderService service, WooCommerceApiService api) {
         super("Paga");
         this.service=service;
         this.abbonamento=abbonamento;

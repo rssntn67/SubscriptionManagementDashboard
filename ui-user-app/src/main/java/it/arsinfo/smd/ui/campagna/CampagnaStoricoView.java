@@ -22,7 +22,7 @@ import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
 import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
 import it.arsinfo.smd.ui.entity.EntityView;
 import it.arsinfo.smd.ui.storico.StoricoForm;
-import it.arsinfo.smd.woocommerce.api.WooCommerceService;
+import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +41,7 @@ public class CampagnaStoricoView extends EntityView<Storico> {
     @Autowired
     private WooCommerceOrderService wooCommerceOrderService;
     @Autowired
-    private WooCommerceService wooCommerceApi;
+    private WooCommerceApiService wooCommerceApi;
 
     private RivistaAbbonamentoGrid raGrid;
     private AbbonamentoGrid abbgrid;

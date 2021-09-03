@@ -50,4 +50,9 @@ public class WooCommerceOrderServiceDaoImpl implements WooCommerceOrderService {
 	public List<WooCommerceOrder> findByAbbonamento(Abbonamento abbonamento) {
 		return repository.findByAbbonamento(abbonamento);
 	}
+
+	@Override
+	public List<WooCommerceOrder> findGenerated() {
+		return repository.findByStatus(StatoWooCommerceOrder.Generated);
+	}
 }

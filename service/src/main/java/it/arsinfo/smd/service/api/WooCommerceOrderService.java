@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface WooCommerceOrderService extends SmdServiceBase<WooCommerceOrder> {
     List<WooCommerceOrder> findByAbbonamento(Abbonamento abbonamento);
-
+    List<WooCommerceOrder> findGenerated();
 }

@@ -6,13 +6,14 @@ import com.icoderman.woocommerce.EndpointBaseType;
 import com.icoderman.woocommerce.WooCommerce;
 import com.icoderman.woocommerce.WooCommerceAPI;
 import com.icoderman.woocommerce.oauth.OAuthConfig;
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.woocommerce.Order;
 import it.arsinfo.smd.woocommerce.OrderItem;
 import it.arsinfo.smd.woocommerce.Product;
-import it.arsinfo.smd.woocommerce.api.WooCommerceService;
+import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,9 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class WooCommerceServiceImpl implements WooCommerceService {
+public class WooCommerceApiServiceImpl implements WooCommerceApiService {
 
-    private static final Logger log = LoggerFactory.getLogger(WooCommerceService.class);
+    private static final Logger log = LoggerFactory.getLogger(WooCommerceApiService.class);
     private final OAuthConfig config = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
     private final WooCommerce wooCommerce = new WooCommerceAPI(config, ApiVersionType.V3);
 
@@ -50,7 +51,7 @@ public class WooCommerceServiceImpl implements WooCommerceService {
             .filter(wo -> wo.getStatus() == StatoWooCommerceOrder.Generated)
             .collect(Collectors.toMap(WooCommerceOrder::getName, Function.identity()));
 
-        final Set<String> names = valid.values().stream().map(wo -> wo.getName()).collect(Collectors.toSet());
+        final Set<String> names = valid.values().stream().map(WooCommerceOrder::getName).collect(Collectors.toSet());
         names.forEach(name -> {
             if (nameToOrderMap.containsKey(name)) {
                 return;
@@ -61,6 +62,10 @@ public class WooCommerceServiceImpl implements WooCommerceService {
             params.put("search",name);
             for (Map orderM:  (List<Map>)wooCommerce.getAll(EndpointBaseType.ORDERS.getValue(), params) ) {
                 Order o = Order.getFromMap(orderM);
+                Cassa cassa= Cassa.Carte;
+                if (o.getPaymentMethod().equals("paypal")) {
+                    cassa=Cassa.Paypal;
+                }
                 log.info("update: parsing {}",o);
                 if (o.getStatus() != Order.OrderStatus.Processing)
                     continue;
@@ -76,6 +81,7 @@ public class WooCommerceServiceImpl implements WooCommerceService {
                         continue;
                     }
                     wo.setOrderId(o.getId());
+                    wo.setCassa(cassa);
                     wo.setStatus(StatoWooCommerceOrder.Completed);
                     updates.add(wo);
                     nameToOrderMap.put(item.getName(), o.getId());

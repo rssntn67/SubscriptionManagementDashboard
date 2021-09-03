@@ -7,7 +7,7 @@ import it.arsinfo.smd.data.Anno;
 import it.arsinfo.smd.data.Diocesi;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.woocommerce.impl.WooCommerceServiceImpl;
+import it.arsinfo.smd.woocommerce.impl.WooCommerceApiServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class SmdWooCommerceApiTests {
     private final static String prefix = "TestAbbonamento";
     @BeforeEach
     public void onSetUp() {
-        WooCommerceServiceImpl impl = new WooCommerceServiceImpl();
+        WooCommerceApiServiceImpl impl = new WooCommerceApiServiceImpl();
         wooCommerce= impl.getWooCommerce();
     }
 

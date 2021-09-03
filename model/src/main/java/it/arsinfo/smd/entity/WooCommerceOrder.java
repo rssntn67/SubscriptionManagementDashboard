@@ -1,5 +1,6 @@
 package it.arsinfo.smd.entity;
 
+import it.arsinfo.smd.data.Cassa;
 import it.arsinfo.smd.data.StatoWooCommerceOrder;
 
 import javax.persistence.*;
@@ -16,18 +17,16 @@ public class WooCommerceOrder implements SmdEntity {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Abbonamento abbonamento;
 
+    @ManyToOne(fetch=FetchType.EAGER)
+    private UserInfo userInfo;
+
     @Column(nullable=false)
     private Integer productId;
 
     private Integer orderId;
 
-    public Integer getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
-    }
+    @Enumerated(EnumType.STRING)
+    private Cassa cassa;
 
     @Column(nullable=false)
     private String name;
@@ -44,6 +43,14 @@ public class WooCommerceOrder implements SmdEntity {
     private StatoWooCommerceOrder status=StatoWooCommerceOrder.Generated;
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
+
+    public Integer getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderId = orderId;
+    }
 
     public Date getData() {
         return data;
@@ -63,11 +70,6 @@ public class WooCommerceOrder implements SmdEntity {
 
     public Long getId() {
         return id;
-    }
-
-    @Override
-    public String getHeader() {
-        return name;
     }
 
     public String getDescription() {
@@ -122,6 +124,30 @@ public class WooCommerceOrder implements SmdEntity {
         this.abbonamento = abbonamento;
     }
 
+    public Cassa getCassa() {
+        return cassa;
+    }
+
+    public void setCassa(Cassa cassa) {
+        this.cassa = cassa;
+    }
+
+    public StatoWooCommerceOrder getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatoWooCommerceOrder status) {
+        this.status = status;
+    }
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+
     @Override
     public String toString() {
         return "WooCommerceOrder{" +
@@ -129,6 +155,7 @@ public class WooCommerceOrder implements SmdEntity {
                 ", abbonamento=" + abbonamento +
                 ", productId=" + productId +
                 ", orderId=" + orderId +
+                ", cassa=" + cassa +
                 ", name='" + name + '\'' +
                 ", permalink='" + permalink + '\'' +
                 ", description='" + description + '\'' +
@@ -139,12 +166,10 @@ public class WooCommerceOrder implements SmdEntity {
                 '}';
     }
 
-    public StatoWooCommerceOrder getStatus() {
-        return status;
+    @Override
+    public String getHeader() {
+        return name;
     }
 
-    public void setStatus(StatoWooCommerceOrder status) {
-        this.status = status;
-    }
 }
 
