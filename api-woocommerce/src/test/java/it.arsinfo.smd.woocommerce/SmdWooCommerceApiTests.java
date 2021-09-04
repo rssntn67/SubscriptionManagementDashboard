@@ -23,7 +23,8 @@ import java.util.Map;
 
 public class SmdWooCommerceApiTests {
 
-    private WooCommerce wooCommerce;
+    private final OAuthConfig oAuthConfig = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
+    private final WooCommerce wooCommerce = new WooCommerceAPI(oAuthConfig, ApiVersionType.V3);
 
     private static final Logger log = LoggerFactory.getLogger(SmdWooCommerceApiTests.class);
 
@@ -31,8 +32,6 @@ public class SmdWooCommerceApiTests {
 
     @BeforeEach
     public void onSetUp() {
-        final OAuthConfig oAuthConfigconfig = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
-        final WooCommerce wooCommerce = new WooCommerceAPI(oAuthConfigconfig, ApiVersionType.V3);
     }
 
     @Test

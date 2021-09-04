@@ -6,9 +6,9 @@ import com.icoderman.woocommerce.EndpointBaseType;
 import com.icoderman.woocommerce.WooCommerce;
 import com.icoderman.woocommerce.WooCommerceAPI;
 import com.icoderman.woocommerce.oauth.OAuthConfig;
+import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Cassa;
 import it.arsinfo.smd.entity.StatoWooCommerceOrder;
-import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import it.arsinfo.smd.woocommerce.Order;
 import it.arsinfo.smd.woocommerce.OrderItem;
@@ -30,14 +30,11 @@ public class WooCommerceApiServiceImpl implements WooCommerceApiService {
 
 
     private static final Logger log = LoggerFactory.getLogger(WooCommerceApiService.class);
-    @Autowired
-    WooCommerceApiConfig config;
 
-    private final OAuthConfig oAuthConfigconfig = new OAuthConfig(config.getUrl(), config.getConsumerKey(), config.getConsumerSecret());
-    private final WooCommerce wooCommerce = new WooCommerceAPI(oAuthConfigconfig, ApiVersionType.V3);
+    private final WooCommerce wooCommerce;
 
-    public WooCommerce getWooCommerce() {
-        return wooCommerce;
+    public WooCommerceApiServiceImpl(@Autowired WooCommerceApiConfig config) {
+        wooCommerce = new WooCommerceAPI(new OAuthConfig(config.getUrl(), config.getConsumerKey(), config.getConsumerSecret()), ApiVersionType.V3);
     }
 
     @Override

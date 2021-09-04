@@ -165,12 +165,6 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>it.arsinfo.smd</groupId>
-            <artifactId>it.arsinfo.smd.service.test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
