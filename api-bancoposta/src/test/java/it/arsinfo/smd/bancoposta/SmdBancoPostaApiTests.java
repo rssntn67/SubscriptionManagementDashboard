@@ -1,6 +1,6 @@
 package it.arsinfo.smd.bancoposta;
 
-import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
+import it.arsinfo.smd.bancoposta.impl.BancoPostaApiServiceImpl;
 import it.arsinfo.smd.entity.Cassa;
 import it.arsinfo.smd.entity.Ccp;
 import it.arsinfo.smd.entity.Cuas;
@@ -18,7 +18,7 @@ public class SmdBancoPostaApiTests {
         String riepilogo1="4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1= new HashSet<>();
         versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
-        DistintaVersamento dv =  BancoPostaServiceImpl.generaIncasso(versamenti1, riepilogo1);
+        DistintaVersamento dv =  BancoPostaApiServiceImpl.generaIncasso(versamenti1, riepilogo1);
         Assertions.assertNotNull(dv);
         Assertions.assertEquals(Cassa.Ccp,dv.getCassa());
         Assertions.assertEquals(Ccp.UNO,dv.getCcp());
@@ -41,7 +41,7 @@ public class SmdBancoPostaApiTests {
         versamenti2.add("0856588699999990000634700091710041230000001500038124062171006727703812406007375DIN                                                                                                                      \n");
         versamenti2.add("0858313299999990000634700091710041230000005000098101062171006727709810106010156DIN                                                                                                                      \n");
 
-        DistintaVersamento dv =BancoPostaServiceImpl.generaIncasso(versamenti2, riepilogo2);
+        DistintaVersamento dv = BancoPostaApiServiceImpl.generaIncasso(versamenti2, riepilogo2);
 
         Assertions.assertNotNull(dv);
         Assertions.assertEquals(Cassa.Ccp,dv.getCassa());
@@ -62,7 +62,7 @@ public class SmdBancoPostaApiTests {
         versamenti3.add("0860565700000130000634700091710056740000010800055917062171006000000018000196500DIN                                                                                                                      \n");
         versamenti3.add("0855941199999990000634700091710041230000002000055681052171006727705568105003308DIN                                                                                                                      \n");
 
-        DistintaVersamento dv =BancoPostaServiceImpl.generaIncasso(versamenti3, riepilogo3);
+        DistintaVersamento dv = BancoPostaApiServiceImpl.generaIncasso(versamenti3, riepilogo3);
 
         Assertions.assertNotNull(dv);
         Assertions.assertEquals(Cassa.Ccp,dv.getCassa());
@@ -84,7 +84,7 @@ public class SmdBancoPostaApiTests {
         versamenti4.add("0857504199999990000634700091710034510000004000040016062171006727604001606035576DIN                                                                                                                      \n");
         versamenti4.add("0866089199999990000634700091710044510000022500018160052171006727701816005010892DIN                                                                                                                      \n");
 
-        DistintaVersamento dv =BancoPostaServiceImpl.generaIncasso(versamenti4, riepilogo4);
+        DistintaVersamento dv = BancoPostaApiServiceImpl.generaIncasso(versamenti4, riepilogo4);
 
         Assertions.assertNotNull(dv);
         Assertions.assertEquals(Cassa.Ccp,dv.getCassa());

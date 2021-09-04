@@ -1,8 +1,8 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.bancoposta.config.BancoPostaServiceConfig;
-import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
+import it.arsinfo.smd.bancoposta.api.BancoPostaApiService;
+import it.arsinfo.smd.bancoposta.config.BancoPostaApiServiceConfig;
+import it.arsinfo.smd.bancoposta.impl.BancoPostaApiServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import it.arsinfo.smd.dao.*;
@@ -100,7 +100,7 @@ public class UIAdminTests {
     @Autowired
     private BollettinoApiServiceConfig bollettinoServiceConfig;
     @Autowired
-    private BancoPostaServiceConfig bancoPostaServiceConfig;
+    private BancoPostaApiServiceConfig bancoPostaServiceConfig;
     @Autowired
     private CampagnaServiceConfig campagnaConfig;
     @Autowired
@@ -122,7 +122,7 @@ public class UIAdminTests {
     private BollettinoApiService bollettinoService;
 
     @Autowired
-    private BancoPostaService bancoPostaService;
+    private BancoPostaApiService bancoPostaService;
 
     @Autowired
     private static final Logger log = LoggerFactory.getLogger(UIAdminTests.class);
@@ -1778,7 +1778,7 @@ public class UIAdminTests {
         String riepilogo1 = "4000063470009171006              999000000010000000015000000000100000000150000000000000000000000                                                                                                        \n";
         Set<String> versamenti1 = new HashSet<>();
         versamenti1.add("0000000000000010000634700091710046740000001500055111092171006000000018000792609CCN                                                                                                                      \n");
-        return BancoPostaServiceImpl.generaIncasso(versamenti1, riepilogo1);
+        return BancoPostaApiServiceImpl.generaIncasso(versamenti1, riepilogo1);
     }
 
     @Test

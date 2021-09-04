@@ -1,5 +1,5 @@
 package it.arsinfo.smd.bancoposta.config;
 
-public interface BancoPostaServiceConfig {
+public interface BancoPostaApiServiceConfig {
     String getUploadFilePath();
 }

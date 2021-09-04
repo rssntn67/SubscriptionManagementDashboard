@@ -1,7 +1,7 @@
 package it.arsinfo.smd.bancoposta.impl;
 
-import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.bancoposta.config.BancoPostaServiceConfig;
+import it.arsinfo.smd.bancoposta.api.BancoPostaApiService;
+import it.arsinfo.smd.bancoposta.config.BancoPostaApiServiceConfig;
 import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class BancoPostaServiceImpl implements BancoPostaService {
+public class BancoPostaApiServiceImpl implements BancoPostaApiService {
 
-    private static final Logger log = LoggerFactory.getLogger(BancoPostaService.class);
+    private static final Logger log = LoggerFactory.getLogger(BancoPostaApiService.class);
     @Autowired
-    private BancoPostaServiceConfig config;
+    private BancoPostaApiServiceConfig config;
 
     @Override
     public File getFile(String filename) {

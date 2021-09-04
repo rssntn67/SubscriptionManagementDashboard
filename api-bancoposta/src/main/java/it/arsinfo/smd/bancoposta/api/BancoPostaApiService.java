@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-public interface BancoPostaService {
+public interface BancoPostaApiService {
 
     File getFile(String filename);
 
