@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class SmdApplicationTests {
+public class UIAdminTests {
 
     @Autowired
     private SmdService smdService;
@@ -125,7 +125,7 @@ public class SmdApplicationTests {
     private BancoPostaService bancoPostaService;
 
     @Autowired
-    private static final Logger log = LoggerFactory.getLogger(SmdApplicationTests.class);
+    private static final Logger log = LoggerFactory.getLogger(UIAdminTests.class);
 
     @BeforeEach
     public void onSetUp() {
