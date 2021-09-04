@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo.smd</groupId>
 	<artifactId>it.arsinfo.smd.service</artifactId>
-	<version>5.0.3-SNAPSHOT</version>
+	<version>5.0.3</version>
 	<packaging>jar</packaging>
 
         <name>SMD::Service</name>
@@ -19,11 +19,6 @@
 	</parent>
 
 	<dependencies>
-		<dependency>
-			<groupId>it.arsinfo.smd</groupId>
-			<artifactId>it.arsinfo.smd.config</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 				<groupId>it.arsinfo.smd</groupId>
 				<artifactId>it.arsinfo.smd.dao</artifactId>

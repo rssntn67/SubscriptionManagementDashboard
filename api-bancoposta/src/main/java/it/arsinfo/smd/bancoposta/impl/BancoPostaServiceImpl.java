@@ -1,10 +1,11 @@
 package it.arsinfo.smd.bancoposta.impl;
 
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.config.CcpConfig;
+import it.arsinfo.smd.bancoposta.config.BancoPostaServiceConfig;
 import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -18,10 +19,12 @@ import java.util.Set;
 public class BancoPostaServiceImpl implements BancoPostaService {
 
     private static final Logger log = LoggerFactory.getLogger(BancoPostaService.class);
+    @Autowired
+    private BancoPostaServiceConfig config;
 
     @Override
-    public File getFile(CcpConfig ccpconfig, String filename) {
-        return new File(ccpconfig.getCcpFilePath() +"/"+ filename);
+    public File getFile(String filename) {
+        return new File(config.getUploadFilePath() +"/"+ filename);
     }
 
     @Override

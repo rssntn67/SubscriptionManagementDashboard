@@ -6,7 +6,7 @@
 
 	<groupId>it.arsinfo.smd</groupId>
 	<artifactId>it.arsinfo.smd.ui.admin.app</artifactId>
-	<version>5.0.3-SNAPSHOT</version>
+	<version>5.0.3</version>
 	<packaging>jar</packaging>
 
         <name>SMD::Administrators UI</name>

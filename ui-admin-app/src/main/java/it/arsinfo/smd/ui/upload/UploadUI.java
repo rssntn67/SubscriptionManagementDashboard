@@ -1,20 +1,17 @@
 package it.arsinfo.smd.ui.upload;
 
-import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.bollettino.impl.BollettinoServiceConfigImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.annotations.Title;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
-
+import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.service.api.DistintaVersamentoService;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.distinta.DistintaVersamentoGrid;
 import it.arsinfo.smd.ui.vaadin.SmdButton;
 import it.arsinfo.smd.ui.versamento.VersamentoGrid;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringUI(path = SmdUI.URL_UPLOAD_POSTE)
 @Title(SmdUI.TITLE_UPLOAD_POSTE)
@@ -30,12 +27,10 @@ public class UploadUI extends SmdUI {
     @Autowired
     private BancoPostaService bancoPostaService;
 
-    @Autowired
-    private BollettinoServiceConfigImpl ccpConfig;
     @Override
     protected void init(VaadinRequest request) {
         super.init(request,"Incassi");
-        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste",bancoPostaService,ccpConfig);
+        IncassoUpload upload = new IncassoUpload("Importa Incassi da File Poste",bancoPostaService);
         DistintaVersamentoGrid grid = new DistintaVersamentoGrid("Distinte Versamenti Importate");
 
         VersamentoGrid versGrid = new VersamentoGrid("Versamenti Importati");

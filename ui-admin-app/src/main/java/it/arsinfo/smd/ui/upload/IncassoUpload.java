@@ -8,7 +8,6 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
-import it.arsinfo.smd.bollettino.impl.BollettinoServiceConfigImpl;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 import org.slf4j.Logger;
@@ -32,13 +31,11 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
     private File file;
 
     private final BancoPostaService bancoPostaService;
-    private final BollettinoServiceConfigImpl ccpConfig;
     private final List<DistintaVersamento> incassi = new ArrayList<>();
 
-    public IncassoUpload(String caption, BancoPostaService bancoPostaService, BollettinoServiceConfigImpl ccpConfig) {
+    public IncassoUpload(String caption, BancoPostaService bancoPostaService) {
         super();
         this.bancoPostaService=bancoPostaService;
-        this.ccpConfig=ccpConfig;
         Upload upload = new Upload(caption,this);
         upload.setImmediateMode(true);
         upload.setButtonCaption("Upload File Poste");
@@ -65,7 +62,7 @@ public class IncassoUpload extends SmdChangeHandler implements Receiver, Succeed
     public OutputStream receiveUpload(String filename, String mimeType) {
         Notification.show("Uploading......",Notification.Type.HUMANIZED_MESSAGE);
         
-        file = bancoPostaService.getFile(ccpConfig,filename);
+        file = bancoPostaService.getFile(filename);
         try {
             log.info("Loading file: {}" , file.getName());
             return new FileOutputStream(file);

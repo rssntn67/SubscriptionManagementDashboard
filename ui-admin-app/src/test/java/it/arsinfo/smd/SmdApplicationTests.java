@@ -1,26 +1,27 @@
 package it.arsinfo.smd;
 
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
+import it.arsinfo.smd.bancoposta.config.BancoPostaServiceConfig;
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.service.impl.CampagnaServiceConfigImpl;
-import it.arsinfo.smd.bollettino.impl.BollettinoServiceConfigImpl;
+import it.arsinfo.smd.bollettino.config.BollettinoServiceConfig;
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.service.api.WooCommerceOrderService;
-import it.arsinfo.smd.service.impl.WooCommerceOrderServiceDaoImpl;
-import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.api.AbbonamentoService;
+import it.arsinfo.smd.service.api.SmdService;
+import it.arsinfo.smd.service.api.WooCommerceOrderService;
+import it.arsinfo.smd.service.config.CampagnaServiceConfig;
+import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.service.dto.SpedizioneWithItems;
+import it.arsinfo.smd.service.impl.SmdServiceImpl;
+import it.arsinfo.smd.service.impl.WooCommerceOrderServiceDaoImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
 import it.arsinfo.smd.ui.security.RedirectAuthenticationSuccessHandler;
 import it.arsinfo.smd.ui.security.SecurityConfig;
 import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
-import it.arsinfo.smd.service.api.AbbonamentoService;
-import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.impl.SmdServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,9 +98,11 @@ public class SmdApplicationTests {
     private SecurityConfig securityConfig;
 
     @Autowired
-    private BollettinoServiceConfigImpl ccpConfig;
+    private BollettinoServiceConfig bollettinoServiceConfig;
     @Autowired
-    private CampagnaServiceConfigImpl campagnaConfig;
+    private BancoPostaServiceConfig bancoPostaServiceConfig;
+    @Autowired
+    private CampagnaServiceConfig campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -169,6 +172,9 @@ public class SmdApplicationTests {
         assertNotNull(bancoPostaService);
         assertNotNull(bollettinoService);
 
+        assertNotNull(bancoPostaServiceConfig);
+        assertNotNull(bollettinoServiceConfig);
+
         log.info("----------------->EnteringSetUp<----------------");
         assertEquals(0, anagraficaDao.findAll().size());
         assertEquals(0, notaDao.findAll().size());
@@ -237,14 +243,15 @@ public class SmdApplicationTests {
 
     @Test
     public void testConfiguration() {
-        assertNotNull(ccpConfig);
+        assertNotNull(bollettinoServiceConfig);
         assertNotNull(campagnaConfig);
         assertEquals(7.00,campagnaConfig.getLimiteInvioEstratto().doubleValue());
         assertEquals(7.00,campagnaConfig.getLimiteInvioSollecito().doubleValue());
-        assertEquals("https://api.stampabollettini.com/api/td674",ccpConfig.getCcpApiUrl());
-        assertEquals("druslcruwaw2up5swexospl6awruphut",ccpConfig.getCcpApiKey());
-        assertEquals("adp-289020",ccpConfig.getCcpApiUser());
-        assertEquals("/Users/antonio/Downloads",ccpConfig.getCcpFilePath());
+        assertEquals("https://api.stampabollettini.com/api/td674",bollettinoServiceConfig.getCcpApiUrl());
+        assertEquals("druslcruwaw2up5swexospl6awruphut",bollettinoServiceConfig.getCcpApiKey());
+        assertEquals("adp-289020",bollettinoServiceConfig.getCcpApiUser());
+        assertEquals("/Users/antonio/Downloads",bollettinoServiceConfig.getCcpFilePath());
+        assertEquals("/Users/antonio/Downloads",bancoPostaServiceConfig.getUploadFilePath());
     }
 
     @Test
