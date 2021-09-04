@@ -1,7 +1,7 @@
 package it.arsinfo.smd.service.dto;
 
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
 import it.arsinfo.smd.entity.SmdEntity;
 
 import java.math.BigDecimal;

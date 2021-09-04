@@ -15,8 +15,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.VersamentoService;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoOperazioneIncasso;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.SmdUI;
 import it.arsinfo.smd.ui.offerta.OfferteGrid;

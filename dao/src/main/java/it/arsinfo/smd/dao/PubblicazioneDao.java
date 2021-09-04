@@ -1,6 +1,6 @@
 package it.arsinfo.smd.dao;
 
-import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 
 import java.util.List;

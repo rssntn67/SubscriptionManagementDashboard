@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Offerta;
 

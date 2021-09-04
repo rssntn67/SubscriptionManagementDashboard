@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 
 public interface CampagnaDao extends JpaRepository<Campagna, Long> {

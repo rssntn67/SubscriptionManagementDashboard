@@ -1,8 +1,5 @@
 package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.StatoWooCommerceOrder;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;

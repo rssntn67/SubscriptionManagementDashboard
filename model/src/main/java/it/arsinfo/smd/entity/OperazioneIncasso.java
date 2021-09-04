@@ -14,8 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import it.arsinfo.smd.data.StatoOperazioneIncasso;
-
 @Entity
 public class OperazioneIncasso implements SmdEntity {
 

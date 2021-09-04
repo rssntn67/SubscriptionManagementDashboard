@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.entity.Diocesi;
 import it.arsinfo.smd.entity.Anagrafica;
 
 public interface AnagraficaDao extends JpaRepository<Anagrafica, Long> {

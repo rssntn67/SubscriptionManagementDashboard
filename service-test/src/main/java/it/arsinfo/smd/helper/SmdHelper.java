@@ -1,6 +1,5 @@
 package it.arsinfo.smd.helper;
 
-import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 
 import java.math.BigDecimal;

@@ -2,8 +2,8 @@ package it.arsinfo.smd.service.dto;
 
 import org.springframework.util.Assert;
 
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.entity.Paese;
+import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Anagrafica;
 import org.springframework.util.StringUtils;
 

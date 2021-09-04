@@ -12,7 +12,7 @@ import com.vaadin.ui.Notification;
 
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.VersamentoService;
-import it.arsinfo.smd.data.StatoOperazioneIncasso;
+import it.arsinfo.smd.entity.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.SmdUI;

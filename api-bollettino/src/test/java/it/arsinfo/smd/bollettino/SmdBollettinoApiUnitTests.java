@@ -2,8 +2,7 @@ package it.arsinfo.smd.bollettino;
 
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.bollettino.impl.BollettinoServiceImpl;
-import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;

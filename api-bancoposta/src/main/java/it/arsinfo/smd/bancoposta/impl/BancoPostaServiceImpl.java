@@ -2,10 +2,7 @@ package it.arsinfo.smd.bancoposta.impl;
 
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.config.CcpConfig;
-import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.entity.DistintaVersamento;
-import it.arsinfo.smd.entity.SmdEntity;
-import it.arsinfo.smd.entity.Versamento;
+import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

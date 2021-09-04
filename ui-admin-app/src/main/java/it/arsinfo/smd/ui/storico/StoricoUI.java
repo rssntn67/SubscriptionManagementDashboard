@@ -2,7 +2,7 @@ package it.arsinfo.smd.ui.storico;
 
 import java.util.List;
 
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.ui.vaadin.*;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -21,11 +21,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>it.arsinfo.smd</groupId>
-			<artifactId>it.arsinfo.smd.config</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>it.arsinfo.smd</groupId>
 			<artifactId>it.arsinfo.smd.model</artifactId>
 			<version>${project.version}</version>
 		</dependency>

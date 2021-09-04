@@ -16,8 +16,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Mese;
-
 @Entity
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"campagna_id","pubblicazione_id"})

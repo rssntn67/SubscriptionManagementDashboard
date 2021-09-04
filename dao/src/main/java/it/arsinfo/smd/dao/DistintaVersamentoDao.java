@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 
 public interface DistintaVersamentoDao extends JpaRepository<DistintaVersamento, Long> {

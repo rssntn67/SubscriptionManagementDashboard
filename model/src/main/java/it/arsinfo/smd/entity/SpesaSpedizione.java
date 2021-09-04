@@ -11,9 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.RangeSpeseSpedizione;
-
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames = {"rangeSpeseSpedizione" , "areaSpedizione"})})
 public class SpesaSpedizione implements SmdEntity {

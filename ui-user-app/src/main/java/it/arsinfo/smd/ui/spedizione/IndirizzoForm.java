@@ -11,8 +11,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.entity.Paese;
+import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.service.dto.Indirizzo;
 
 import java.util.EnumSet;

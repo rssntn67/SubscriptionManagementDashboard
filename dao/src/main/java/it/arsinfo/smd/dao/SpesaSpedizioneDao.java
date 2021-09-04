@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.RangeSpeseSpedizione;
+import it.arsinfo.smd.entity.AreaSpedizione;
+import it.arsinfo.smd.entity.RangeSpeseSpedizione;
 import it.arsinfo.smd.entity.SpesaSpedizione;
 
 public interface SpesaSpedizioneDao extends JpaRepository<SpesaSpedizione, Long> {

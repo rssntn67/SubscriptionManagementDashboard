@@ -22,8 +22,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.CampagnaItem;
 import it.arsinfo.smd.entity.Pubblicazione;

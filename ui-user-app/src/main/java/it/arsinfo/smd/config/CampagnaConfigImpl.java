@@ -1,11 +1,12 @@
 package it.arsinfo.smd.config;
 
+import it.arsinfo.smd.service.config.CampagnaServiceConfig;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 
 @Configuration
-public class CampagnaConfigImpl implements CampagnaConfig {
+public class CampagnaConfigImpl implements CampagnaServiceConfig {
 
     public BigDecimal getLimiteInvioEstratto() {
         return new BigDecimal("7.00");

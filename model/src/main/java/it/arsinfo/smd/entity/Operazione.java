@@ -12,10 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoOperazione;
-
 @Entity
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"anno","mese","pubblicazione_id"})

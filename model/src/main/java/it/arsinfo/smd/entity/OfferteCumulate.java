@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Anno;
-
 @Entity
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"anno"})

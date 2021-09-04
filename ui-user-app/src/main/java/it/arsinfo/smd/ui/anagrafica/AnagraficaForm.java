@@ -5,8 +5,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.EmailValidator;
-import it.arsinfo.smd.data.*;
-import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.ui.entity.EntityForm;
 
 import java.util.EnumSet;

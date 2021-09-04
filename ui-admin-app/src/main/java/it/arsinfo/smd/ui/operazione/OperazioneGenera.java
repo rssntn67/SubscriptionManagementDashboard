@@ -8,8 +8,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 

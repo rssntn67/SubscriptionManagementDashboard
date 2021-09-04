@@ -15,12 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-
 @Entity
 public class RivistaAbbonamento implements SmdEntity {
 

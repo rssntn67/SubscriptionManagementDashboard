@@ -10,11 +10,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.service.api.AbbonamentoService;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Incassato;
-import it.arsinfo.smd.data.StatoAbbonamento;
-import it.arsinfo.smd.data.StatoRivista;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Incassato;
+import it.arsinfo.smd.entity.StatoAbbonamento;
+import it.arsinfo.smd.entity.StatoRivista;
+import it.arsinfo.smd.entity.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;

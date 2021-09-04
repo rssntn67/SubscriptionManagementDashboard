@@ -1,6 +1,6 @@
 package it.arsinfo.smd.dao;
 
-import it.arsinfo.smd.data.StatoWooCommerceOrder;
+import it.arsinfo.smd.entity.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;
 import org.springframework.data.jpa.repository.JpaRepository;

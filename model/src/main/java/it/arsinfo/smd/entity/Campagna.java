@@ -1,8 +1,5 @@
 package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.StatoCampagna;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;

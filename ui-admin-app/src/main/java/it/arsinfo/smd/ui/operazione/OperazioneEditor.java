@@ -12,9 +12,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.dao.OperazioneDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoOperazione;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Mese;
+import it.arsinfo.smd.entity.StatoOperazione;
 import it.arsinfo.smd.entity.Operazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdRepositoryDaoEditor;

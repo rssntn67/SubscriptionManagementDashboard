@@ -5,7 +5,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Offerta;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.OffertaService;

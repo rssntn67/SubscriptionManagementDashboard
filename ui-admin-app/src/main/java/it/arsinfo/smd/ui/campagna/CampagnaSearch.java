@@ -7,7 +7,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.service.api.CampagnaService;
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 

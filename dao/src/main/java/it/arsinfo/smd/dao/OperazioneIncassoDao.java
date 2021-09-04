@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.StatoOperazioneIncasso;
+import it.arsinfo.smd.entity.StatoOperazioneIncasso;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.OperazioneIncasso;
 import it.arsinfo.smd.entity.Versamento;

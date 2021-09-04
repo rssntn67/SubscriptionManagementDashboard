@@ -2,7 +2,7 @@ package it.arsinfo.smd.ui.spedizione;
 
 import java.util.List;
 
-import it.arsinfo.smd.data.Stampa;
+import it.arsinfo.smd.entity.Stampa;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 
 import it.arsinfo.smd.service.api.SpedizioneService;
-import it.arsinfo.smd.data.InvioSpedizione;
+import it.arsinfo.smd.entity.InvioSpedizione;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;

@@ -4,8 +4,8 @@ import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
-import it.arsinfo.smd.data.Provincia;
-import it.arsinfo.smd.data.Stampa;
+import it.arsinfo.smd.entity.Provincia;
+import it.arsinfo.smd.entity.Stampa;
 import it.arsinfo.smd.service.dto.Indirizzo;
 import org.springframework.util.StringUtils;
 

@@ -1,10 +1,10 @@
 package it.arsinfo.smd.service.api;
 
 import it.arsinfo.smd.dao.SpedizioneDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.StatoSpedizione;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.InvioSpedizione;
+import it.arsinfo.smd.entity.Mese;
+import it.arsinfo.smd.entity.StatoSpedizione;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;

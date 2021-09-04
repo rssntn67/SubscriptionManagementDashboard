@@ -2,10 +2,6 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,10 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-
-import it.arsinfo.smd.data.Accettazione;
-import it.arsinfo.smd.data.Bollettino;
-import it.arsinfo.smd.data.Sostitutivo;
 
 @Entity
 public class Versamento implements SmdEntity {

@@ -10,12 +10,12 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.data.Accettazione;
-import it.arsinfo.smd.data.Bollettino;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
-import it.arsinfo.smd.data.Sostitutivo;
+import it.arsinfo.smd.entity.Accettazione;
+import it.arsinfo.smd.entity.Bollettino;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Cuas;
+import it.arsinfo.smd.entity.Sostitutivo;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 

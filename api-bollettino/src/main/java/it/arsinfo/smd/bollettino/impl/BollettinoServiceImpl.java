@@ -2,9 +2,9 @@ package it.arsinfo.smd.bollettino.impl;
 
 import com.google.common.io.CharStreams;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CcpConfig;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Provincia;
+import it.arsinfo.smd.bollettino.config.BollettinoServiceConfig;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Anagrafica;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -23,7 +23,7 @@ import java.util.Base64;
 public class BollettinoServiceImpl implements BollettinoService {
 
 	@Autowired
-	private CcpConfig ccpConfig;
+	private BollettinoServiceConfig ccpConfig;
 
 	public static String getIntestazioneCcp(Anagrafica anagrafica) {
 		return (anagrafica.getIntestazione().length() > 52 ? anagrafica.getIntestazione().substring(0,52) : anagrafica.getIntestazione());

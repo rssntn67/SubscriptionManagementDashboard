@@ -1,6 +1,5 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.helper.SmdHelper;
 import it.arsinfo.smd.service.Smd;

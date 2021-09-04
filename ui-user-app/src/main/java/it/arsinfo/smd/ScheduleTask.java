@@ -1,6 +1,6 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.data.Ccp;
+import it.arsinfo.smd.entity.Ccp;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.entity.WooCommerceOrder;

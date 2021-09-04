@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-import it.arsinfo.smd.data.StatoStorico;
+import it.arsinfo.smd.entity.InvioSpedizione;
+import it.arsinfo.smd.entity.TipoAbbonamentoRivista;
+import it.arsinfo.smd.entity.StatoStorico;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Storico;
 import it.arsinfo.smd.entity.Pubblicazione;

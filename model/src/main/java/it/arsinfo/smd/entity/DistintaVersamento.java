@@ -19,10 +19,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
-
 @Entity
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"dataContabile","cassa", "cuas","ccp"})

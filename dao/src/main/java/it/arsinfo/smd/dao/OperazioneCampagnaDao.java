@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import it.arsinfo.smd.data.StatoCampagna;
+import it.arsinfo.smd.entity.StatoCampagna;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.OperazioneCampagna;
 

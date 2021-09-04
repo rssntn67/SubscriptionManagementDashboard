@@ -1,6 +1,5 @@
 package it.arsinfo.smd.service;
 
-import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;

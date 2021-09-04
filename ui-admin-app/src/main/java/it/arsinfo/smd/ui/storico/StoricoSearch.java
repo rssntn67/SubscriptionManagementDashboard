@@ -9,9 +9,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.service.api.StoricoService;
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
+import it.arsinfo.smd.entity.InvioSpedizione;
+import it.arsinfo.smd.entity.StatoStorico;
+import it.arsinfo.smd.entity.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Storico;

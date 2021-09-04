@@ -13,10 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Mese;
-import it.arsinfo.smd.data.TipoPubblicazione;
-
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames = {"nome"})})
 public class Pubblicazione implements SmdEntity {

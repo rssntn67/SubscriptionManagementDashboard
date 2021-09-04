@@ -9,7 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.service.api.PubblicazioneService;
-import it.arsinfo.smd.data.TipoPubblicazione;
+import it.arsinfo.smd.entity.TipoPubblicazione;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 

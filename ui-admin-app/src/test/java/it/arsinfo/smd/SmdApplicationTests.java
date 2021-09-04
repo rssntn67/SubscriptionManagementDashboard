@@ -3,12 +3,11 @@ package it.arsinfo.smd;
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.config.CampagnaConfigImpl;
-import it.arsinfo.smd.config.CcpConfigImpl;
+import it.arsinfo.smd.service.impl.CampagnaServiceConfigImpl;
+import it.arsinfo.smd.bollettino.impl.BollettinoServiceConfigImpl;
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
-import it.arsinfo.smd.service.dao.WooCommerceOrderServiceDaoImpl;
+import it.arsinfo.smd.service.impl.WooCommerceOrderServiceDaoImpl;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
@@ -21,7 +20,7 @@ import it.arsinfo.smd.ui.security.SecurityConfig;
 import it.arsinfo.smd.ui.security.UserDetailsServiceImpl;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.dao.SmdServiceImpl;
+import it.arsinfo.smd.service.impl.SmdServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,9 +97,9 @@ public class SmdApplicationTests {
     private SecurityConfig securityConfig;
 
     @Autowired
-    private CcpConfigImpl ccpConfig;
+    private BollettinoServiceConfigImpl ccpConfig;
     @Autowired
-    private CampagnaConfigImpl campagnaConfig;
+    private CampagnaServiceConfigImpl campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
 

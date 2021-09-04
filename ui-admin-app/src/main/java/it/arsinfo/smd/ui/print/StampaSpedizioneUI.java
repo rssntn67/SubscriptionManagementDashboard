@@ -5,7 +5,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 import it.arsinfo.smd.service.api.SpedizioneService;
-import it.arsinfo.smd.data.Stampa;
+import it.arsinfo.smd.entity.Stampa;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.ui.SmdUI;
 import org.slf4j.Logger;

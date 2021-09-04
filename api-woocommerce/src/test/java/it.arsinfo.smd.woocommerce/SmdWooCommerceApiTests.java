@@ -3,8 +3,8 @@ package it.arsinfo.smd.woocommerce;
 
 import com.icoderman.woocommerce.EndpointBaseType;
 import com.icoderman.woocommerce.WooCommerce;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.data.Diocesi;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Diocesi;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.woocommerce.impl.WooCommerceApiServiceImpl;

@@ -9,9 +9,9 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
 import it.arsinfo.smd.service.api.DistintaVersamentoService;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 

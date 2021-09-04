@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 import it.arsinfo.smd.dao.DistintaVersamentoDao;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;

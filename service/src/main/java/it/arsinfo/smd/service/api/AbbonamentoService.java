@@ -1,9 +1,7 @@
 package it.arsinfo.smd.service.api;
 
-import it.arsinfo.smd.data.*;
 import it.arsinfo.smd.entity.*;
 
-import java.io.File;
 import java.util.List;
 
 public interface AbbonamentoService extends SmdServiceItem<Abbonamento,RivistaAbbonamento> {

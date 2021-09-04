@@ -1,9 +1,9 @@
 package it.arsinfo.smd.bancoposta;
 
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
-import it.arsinfo.smd.data.Cassa;
-import it.arsinfo.smd.data.Ccp;
-import it.arsinfo.smd.data.Cuas;
+import it.arsinfo.smd.entity.Cassa;
+import it.arsinfo.smd.entity.Ccp;
+import it.arsinfo.smd.entity.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

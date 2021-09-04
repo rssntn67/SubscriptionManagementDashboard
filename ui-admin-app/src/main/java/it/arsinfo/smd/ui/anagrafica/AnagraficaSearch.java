@@ -10,13 +10,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import it.arsinfo.smd.service.api.AnagraficaService;
-import it.arsinfo.smd.data.AreaSpedizione;
-import it.arsinfo.smd.data.CentroDiocesano;
-import it.arsinfo.smd.data.Diocesi;
-import it.arsinfo.smd.data.Paese;
-import it.arsinfo.smd.data.Provincia;
-import it.arsinfo.smd.data.Regione;
-import it.arsinfo.smd.data.TitoloAnagrafica;
+import it.arsinfo.smd.entity.AreaSpedizione;
+import it.arsinfo.smd.entity.CentroDiocesano;
+import it.arsinfo.smd.entity.Diocesi;
+import it.arsinfo.smd.entity.Paese;
+import it.arsinfo.smd.entity.Provincia;
+import it.arsinfo.smd.entity.Regione;
+import it.arsinfo.smd.entity.TitoloAnagrafica;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.ui.vaadin.SmdSearch;
 

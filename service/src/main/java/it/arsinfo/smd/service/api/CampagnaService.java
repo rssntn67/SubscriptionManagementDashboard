@@ -2,7 +2,7 @@ package it.arsinfo.smd.service.api;
 
 import java.util.List;
 
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.OperazioneCampagna;

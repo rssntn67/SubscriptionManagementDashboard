@@ -3,7 +3,7 @@ package it.arsinfo.smd.service.api;
 import java.time.LocalDate;
 import java.util.List;
 
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.DocumentoTrasporto;

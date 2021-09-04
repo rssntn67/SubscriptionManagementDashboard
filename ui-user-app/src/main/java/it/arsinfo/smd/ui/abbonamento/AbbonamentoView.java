@@ -6,7 +6,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
-import it.arsinfo.smd.data.Anno;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
 import it.arsinfo.smd.entity.RivistaAbbonamento;

@@ -2,22 +2,14 @@ package it.arsinfo.smd.ui.versamento;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
-import it.arsinfo.smd.data.Anno;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Versamento;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.service.api.VersamentoService;
 import it.arsinfo.smd.ui.MainLayout;
-import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
-import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
 import it.arsinfo.smd.ui.entity.EntityGridView;
 import org.springframework.beans.factory.annotation.Autowired;
 

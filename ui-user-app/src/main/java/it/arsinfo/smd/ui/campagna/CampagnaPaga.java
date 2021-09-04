@@ -5,7 +5,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import it.arsinfo.smd.data.StatoWooCommerceOrder;
+import it.arsinfo.smd.entity.StatoWooCommerceOrder;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.WooCommerceOrder;

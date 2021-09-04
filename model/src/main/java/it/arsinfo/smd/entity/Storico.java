@@ -14,10 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import it.arsinfo.smd.data.InvioSpedizione;
-import it.arsinfo.smd.data.StatoStorico;
-import it.arsinfo.smd.data.TipoAbbonamentoRivista;
-
 @Entity
 public class Storico implements SmdEntityItems<Nota> {
 
