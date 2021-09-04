@@ -1,13 +1,15 @@
 package it.arsinfo.smd.woocommerce;
 
 
+import com.icoderman.woocommerce.ApiVersionType;
 import com.icoderman.woocommerce.EndpointBaseType;
 import com.icoderman.woocommerce.WooCommerce;
-import it.arsinfo.smd.entity.Anno;
-import it.arsinfo.smd.entity.Diocesi;
+import com.icoderman.woocommerce.WooCommerceAPI;
+import com.icoderman.woocommerce.oauth.OAuthConfig;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.woocommerce.impl.WooCommerceApiServiceImpl;
+import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.Diocesi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,10 +28,11 @@ public class SmdWooCommerceApiTests {
     private static final Logger log = LoggerFactory.getLogger(SmdWooCommerceApiTests.class);
 
     private final static String prefix = "TestAbbonamento";
+
     @BeforeEach
     public void onSetUp() {
-        WooCommerceApiServiceImpl impl = new WooCommerceApiServiceImpl();
-        wooCommerce= impl.getWooCommerce();
+        final OAuthConfig oAuthConfigconfig = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
+        final WooCommerce wooCommerce = new WooCommerceAPI(oAuthConfigconfig, ApiVersionType.V3);
     }
 
     @Test

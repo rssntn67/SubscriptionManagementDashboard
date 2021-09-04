@@ -14,8 +14,10 @@ import it.arsinfo.smd.woocommerce.Order;
 import it.arsinfo.smd.woocommerce.OrderItem;
 import it.arsinfo.smd.woocommerce.Product;
 import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
+import it.arsinfo.smd.woocommerce.config.WooCommerceApiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,9 +28,13 @@ import java.util.stream.Collectors;
 @Service
 public class WooCommerceApiServiceImpl implements WooCommerceApiService {
 
+
     private static final Logger log = LoggerFactory.getLogger(WooCommerceApiService.class);
-    private final OAuthConfig config = new OAuthConfig("http://www.retepreghierapapa.it", "ck_f70f8d7811e6a176cf58da451df59960d68244b0", "cs_1bacae59ede6f326690e2855f108d844a397327b");
-    private final WooCommerce wooCommerce = new WooCommerceAPI(config, ApiVersionType.V3);
+    @Autowired
+    WooCommerceApiConfig config;
+
+    private final OAuthConfig oAuthConfigconfig = new OAuthConfig(config.getUrl(), config.getConsumerKey(), config.getConsumerSecret());
+    private final WooCommerce wooCommerce = new WooCommerceAPI(oAuthConfigconfig, ApiVersionType.V3);
 
     public WooCommerce getWooCommerce() {
         return wooCommerce;
