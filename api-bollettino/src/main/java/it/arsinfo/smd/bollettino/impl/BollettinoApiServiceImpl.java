@@ -1,8 +1,8 @@
 package it.arsinfo.smd.bollettino.impl;
 
 import com.google.common.io.CharStreams;
-import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.bollettino.config.BollettinoServiceConfig;
+import it.arsinfo.smd.bollettino.api.BollettinoApiService;
+import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import it.arsinfo.smd.entity.Ccp;
 import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Anagrafica;
@@ -20,10 +20,10 @@ import java.io.*;
 import java.util.Base64;
 
 @Service
-public class BollettinoServiceImpl implements BollettinoService {
+public class BollettinoApiServiceImpl implements BollettinoApiService {
 
 	@Autowired
-	private BollettinoServiceConfig ccpConfig;
+	private BollettinoApiServiceConfig ccpConfig;
 
 	public static String getIntestazioneCcp(Anagrafica anagrafica) {
 		return (anagrafica.getIntestazione().length() > 52 ? anagrafica.getIntestazione().substring(0,52) : anagrafica.getIntestazione());
@@ -53,7 +53,7 @@ public class BollettinoServiceImpl implements BollettinoService {
 				"\"dueDate\": \"\"}";
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(BollettinoServiceImpl.class);
+	private static final Logger log = LoggerFactory.getLogger(BollettinoApiServiceImpl.class);
 
 	@Override
 	public void getBollettino(String code, Anagrafica anagrafica, Ccp ccp, String reason) {

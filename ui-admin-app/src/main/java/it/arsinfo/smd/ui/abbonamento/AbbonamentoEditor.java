@@ -5,7 +5,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
 import com.vaadin.ui.*;
-import it.arsinfo.smd.bollettino.api.BollettinoService;
+import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Incassato;
 import it.arsinfo.smd.entity.StatoAbbonamento;
@@ -50,9 +50,9 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
            return "Anno " + abbonamento.getAnno().getAnnoAsString() + " - Importo da versare a Saldo: Euro " + saldo;
     }
 
-    private final BollettinoService bollettinoService;
+    private final BollettinoApiService bollettinoService;
     public AbbonamentoEditor(AbbonamentoService dao,
-                             BollettinoService bollettinoService,
+                             BollettinoApiService bollettinoService,
                              List<Anagrafica> anagrafica,
                              List<Campagna> campagne) {
         super(dao,new Binder<>(Abbonamento.class));

@@ -1,7 +1,7 @@
 package it.arsinfo.smd.bollettino;
 
 import com.google.common.io.CharStreams;
-import it.arsinfo.smd.bollettino.impl.BollettinoServiceImpl;
+import it.arsinfo.smd.bollettino.impl.BollettinoApiServiceImpl;
 import it.arsinfo.smd.entity.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -46,7 +46,7 @@ public class SmdBollettinoApiUnitTests {
         gp.setEmail("gp@arsinfo.it");
         gp.setTelefono("+3902000010");
 
-        StringEntity entity = new StringEntity(BollettinoServiceImpl.getCcpJsonString(ccpApiKey,ccpApiUser,code,gp, Ccp.UNO, "Abbonamenti 2020 - Importo da versare a Saldo: EUR " + saldo));
+        StringEntity entity = new StringEntity(BollettinoApiServiceImpl.getCcpJsonString(ccpApiKey,ccpApiUser,code,gp, Ccp.UNO, "Abbonamenti 2020 - Importo da versare a Saldo: EUR " + saldo));
         httpPost.setEntity(entity);
         httpPost.setHeader("Content-type", "application/json");
 

@@ -3,8 +3,8 @@ package it.arsinfo.smd;
 import it.arsinfo.smd.bancoposta.api.BancoPostaService;
 import it.arsinfo.smd.bancoposta.config.BancoPostaServiceConfig;
 import it.arsinfo.smd.bancoposta.impl.BancoPostaServiceImpl;
-import it.arsinfo.smd.bollettino.api.BollettinoService;
-import it.arsinfo.smd.bollettino.config.BollettinoServiceConfig;
+import it.arsinfo.smd.bollettino.api.BollettinoApiService;
+import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
@@ -98,7 +98,7 @@ public class UIAdminTests {
     private SecurityConfig securityConfig;
 
     @Autowired
-    private BollettinoServiceConfig bollettinoServiceConfig;
+    private BollettinoApiServiceConfig bollettinoServiceConfig;
     @Autowired
     private BancoPostaServiceConfig bancoPostaServiceConfig;
     @Autowired
@@ -119,7 +119,7 @@ public class UIAdminTests {
     private LogoutSuccessHandler logoutSuccessHandler;
 
     @Autowired
-    private BollettinoService bollettinoService;
+    private BollettinoApiService bollettinoService;
 
     @Autowired
     private BancoPostaService bancoPostaService;

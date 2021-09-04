@@ -1,11 +1,11 @@
 package it.arsinfo.smd.bollettino.impl;
 
-import it.arsinfo.smd.bollettino.config.BollettinoServiceConfig;
+import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class BollettinoServiceConfigImpl implements BollettinoServiceConfig {
+public class BollettinoApiServiceConfigImpl implements BollettinoApiServiceConfig {
 
     @Value("${ccp.api.url}")
     private String ccpApiUrl;

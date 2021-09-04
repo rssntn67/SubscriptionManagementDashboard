@@ -5,7 +5,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.themes.ValoTheme;
-import it.arsinfo.smd.bollettino.api.BollettinoService;
+import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.ui.SmdEditorUI;
@@ -31,7 +31,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
     private AbbonamentoService dao;
 
     @Autowired
-    private BollettinoService bollettinoService;
+    private BollettinoApiService bollettinoService;
 
     @Override
     protected void init(VaadinRequest request) {

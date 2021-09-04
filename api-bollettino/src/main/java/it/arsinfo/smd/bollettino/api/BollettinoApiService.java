@@ -5,7 +5,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 
 import java.io.File;
 
-public interface BollettinoService {
+public interface BollettinoApiService {
 	
 	void getBollettino(String code, Anagrafica anagrafica, Ccp ccp, String reason);
 
