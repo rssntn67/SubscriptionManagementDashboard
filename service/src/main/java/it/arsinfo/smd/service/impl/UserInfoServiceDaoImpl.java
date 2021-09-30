@@ -1,5 +1,6 @@
 package it.arsinfo.smd.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,9 @@ public class UserInfoServiceDaoImpl implements UserInfoService {
 		if (entity.getRole() == Role.SUBSCRIBED) {
 			entity.setRole(Role.UNSUBSCRIBED);
 			repository.save(entity);
+			List<RemoteUserInfo> rusers = new ArrayList<>(remoteUserInfoDao.findByUserInfo(entity));
+			for (RemoteUserInfo ru: rusers)
+				remoteUserInfoDao.delete(ru);
 		} else
 			repository.delete(entity);
 	}
