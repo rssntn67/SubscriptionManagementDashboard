@@ -282,16 +282,19 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					pubblicazione.setEnabled(true);
 					break;
 				case InviatoSospeso:
+					buttonVSollecita.setEnabled(true);
 					buttonWSospendi.setEnabled(true);
 					pubblicazione.setEnabled(true);
 					buttonWEstrattoConto.setEnabled(true);
 					break;
 				case InviatoEC:
+					buttonVSollecita.setEnabled(true);
 					buttonVEstrattoConto.setEnabled(true);
 					buttonWChiudi.setEnabled(true);
 					numero.setVisible(true);
 					break;
 				case Chiusa:
+					buttonVSollecita.setEnabled(true);
 					numero.setReadOnly(true);
 					residuo.setReadOnly(true);
 					break;

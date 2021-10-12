@@ -33,7 +33,7 @@ public class Campagna implements SmdEntity {
     private Integer numero = 10;
     
     @Transient
-    private BigDecimal residuo = BigDecimal.ZERO;
+    private BigDecimal residuo = new BigDecimal("8.00");
     
     public Campagna() {}
 
