@@ -242,8 +242,8 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	
 	@Override
 	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna entity) {
-		return smdService.get( abbonamentoDao.findByCampagnaAndSollecitato(entity, true)
-				);
+		return smdService.get( abbonamentoDao.findByCampagnaAndSollecitato(entity, true).stream().filter( abb -> abb.getStatoAbbonamento() == StatoAbbonamento.Sospeso).collect(Collectors.toList())
+		);
 	}
 
 	@Override
