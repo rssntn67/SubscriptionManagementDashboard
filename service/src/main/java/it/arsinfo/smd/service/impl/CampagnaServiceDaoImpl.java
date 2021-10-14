@@ -1,9 +1,9 @@
 package it.arsinfo.smd.service.impl;
 
-import it.arsinfo.smd.service.config.CampagnaServiceConfig;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.service.api.AnagraficaService;
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
@@ -36,7 +36,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	private RivistaAbbonamentoDao rivistaAbbonamentoDao;
 
 	@Autowired
-	private AnagraficaDao anagraficaDao;
+	private AnagraficaService anagraficaService;
 
 	@Autowired
 	private StoricoDao storicoDao;
@@ -55,9 +55,6 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 
 	@Autowired
 	private SmdService smdService;
-
-	@Autowired
-	private CampagnaServiceConfig campagnaConfig;
 
 	private static final Logger log = LoggerFactory.getLogger(CampagnaServiceDaoImpl.class);
 
@@ -146,7 +143,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 			notaDao.save(nota);
 		}
 
-        for (Abbonamento abb: Smd.genera(entity, anagraficaDao.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
+        for (Abbonamento abb: Smd.genera(entity, anagraficaService.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
             storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
                 .forEach(storico -> Smd.genera(abb, storico));
             if (abb.getItems().size() >= 1) {
@@ -336,8 +333,8 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         	} else {
         		abbonamento.setStatoAbbonamento(StatoAbbonamento.Proposto);
         	}
-    		if (sendSollecito(abbonamento,campagnaConfig)) {
-    			abbonamento.setSpeseEstrattoConto(campagnaConfig.getSpeseSollecito());
+    		if (sendSollecito(abbonamento,campagna)) {
+    			abbonamento.setSpeseEstrattoConto(campagna.getSpeseSollecito());
     			abbonamento.setSollecitato(true);
     		}
 			abbonamentoDao.save(abbonamento);    		
@@ -399,14 +396,14 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 
 	}
 	
-	public static boolean sendEC(Abbonamento abb, CampagnaServiceConfig campagnaConfig) {
+	public static boolean sendEC(Abbonamento abb, Campagna campagna) {
 		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
-				abb.getResiduo().subtract(campagnaConfig.getLimiteInvioEstratto()).signum() >= 0;
+				abb.getResiduo().subtract(campagna.getLimiteInvioEstratto()).signum() >= 0;
 	}
 
-	public static boolean sendSollecito(Abbonamento abb, CampagnaServiceConfig campagnaConfig) {
+	public static boolean sendSollecito(Abbonamento abb, Campagna campagna) {
 		return abb.getStatoAbbonamento() != StatoAbbonamento.Valido && 
-				abb.getResiduo().subtract(campagnaConfig.getLimiteInvioSollecito()).signum() >= 0;
+				abb.getResiduo().subtract(campagna.getLimiteInvioSollecito()).signum() >= 0;
 	}
 
 	@Override
@@ -456,8 +453,8 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
             		almenounarivistaattiva=true;
             	}
             }
-			if (sendEC(abbonamento,campagnaConfig) ) {
-				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(campagnaConfig.getSpeseEstrattoConto()));
+			if (sendEC(abbonamento,campagna) ) {
+				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(campagna.getSpeseEstrattoConto()));
 				abbonamento.setInviatoEC(true);
 			}
         	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));
@@ -551,7 +548,8 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 
 	@Override
 	public Campagna save(Campagna entity) throws Exception {
-		throw new UnsupportedOperationException("Campagna non può essere salvata");
+		repository.save(entity);
+		return repository.findByAnno(entity.getAnno());
 	}
 
 	@Override
@@ -563,4 +561,48 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	public List<OperazioneSospendi> getSospensioni(Campagna campagna) {
 		return operazioneSospendiDao.findByCampagna(campagna);
 	}
+
+	@Override
+	public List<AbbonamentoConRiviste> searchBy(
+			Anno anno,
+			Diocesi searchDiocesi,
+			String searchNome,
+			String searchDenominazione,
+			String searchCitta,
+			String searchCap,
+			Paese paese,
+			AreaSpedizione areaSped,
+			Provincia provincia,
+			TitoloAnagrafica titolo,
+			Regione regioneVescovi,
+			CentroDiocesano centroDiocesano,
+			Regione regioneDirettoreDiocesano,
+			boolean filterDirettoreDiocesano,
+			boolean filterPresidenteDiocesano,
+			Regione regionePresidenteDiocesano,
+			boolean filterDirettoreZonaMilano,
+			boolean filterConsiglioNazionaleADP,
+			boolean filterPresidenzaADP,
+			boolean filterDirezioneADP,
+			boolean filterCaricheSocialiADP,
+			boolean filterDelegatiRegionaliADP,
+			boolean filterElencoMarisaBisi,
+			boolean filterPromotoreRegionale)
+
+	{
+		List<Long> intestatarioId =
+				anagraficaService.searchBy(searchDiocesi, searchNome, searchDenominazione, searchCitta, searchCap,
+								paese, areaSped, provincia,
+								titolo, regioneVescovi, centroDiocesano,
+								regioneDirettoreDiocesano, filterDirettoreDiocesano,
+								filterPresidenteDiocesano, regionePresidenteDiocesano,
+								filterDirettoreZonaMilano, filterConsiglioNazionaleADP,
+								filterPresidenzaADP, filterDirezioneADP, filterCaricheSocialiADP,
+								filterDelegatiRegionaliADP, filterElencoMarisaBisi,
+								filterPromotoreRegionale)
+						.stream().map(Anagrafica::getId).collect(Collectors.toList());
+		List<Abbonamento> abbonamenti = abbonamentoDao.findByAnno(anno).stream().filter(abb -> intestatarioId.contains(abb.getIntestatario().getId())).collect(Collectors.toList());
+		return smdService.get(abbonamenti);
+	}
+
 }

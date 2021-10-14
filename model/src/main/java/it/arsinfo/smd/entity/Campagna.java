@@ -29,12 +29,47 @@ public class Campagna implements SmdEntity {
 
     private boolean running = false;
     
-    // numero minimo di riviste per non sospendere lo storico
+    // Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna
     private Integer numero = 10;
-    
-    @Transient
-    private BigDecimal residuo = new BigDecimal("8.00");
-    
+    //Importo Minimo Residuo per Debitori
+    private BigDecimal residuo = BigDecimal.ZERO;
+    private BigDecimal limiteInvioEstratto=BigDecimal.ZERO;
+    private BigDecimal limiteInvioSollecito=BigDecimal.ZERO;
+    private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
+    private BigDecimal speseSollecito=BigDecimal.ZERO;
+
+    public BigDecimal getLimiteInvioEstratto() {
+        return limiteInvioEstratto;
+    }
+
+    public void setLimiteInvioEstratto(BigDecimal limiteInvioEstratto) {
+        this.limiteInvioEstratto = limiteInvioEstratto;
+    }
+
+    public BigDecimal getLimiteInvioSollecito() {
+        return limiteInvioSollecito;
+    }
+
+    public void setLimiteInvioSollecito(BigDecimal limiteInvioSollecito) {
+        this.limiteInvioSollecito = limiteInvioSollecito;
+    }
+
+    public BigDecimal getSpeseEstrattoConto() {
+        return speseEstrattoConto;
+    }
+
+    public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
+        this.speseEstrattoConto = speseEstrattoConto;
+    }
+
+    public BigDecimal getSpeseSollecito() {
+        return speseSollecito;
+    }
+
+    public void setSpeseSollecito(BigDecimal speseSollecito) {
+        this.speseSollecito = speseSollecito;
+    }
+
     public Campagna() {}
 
     public Anno getAnno() {

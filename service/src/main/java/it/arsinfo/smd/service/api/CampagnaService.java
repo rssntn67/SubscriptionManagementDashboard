@@ -2,13 +2,8 @@ package it.arsinfo.smd.service.api;
 
 import java.util.List;
 
-import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.OperazioneCampagna;
-import it.arsinfo.smd.entity.OperazioneSospendi;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.UserInfo;
 
 public interface CampagnaService extends SmdServiceBase<Campagna> {
 
@@ -20,7 +15,33 @@ public interface CampagnaService extends SmdServiceBase<Campagna> {
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna campagna);
 	List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity);
 	List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity);
-	
+	List<AbbonamentoConRiviste> searchBy(
+			Anno anno,
+			Diocesi searchDiocesi,
+			String searchNome,
+			String searchDenominazione,
+			String searchCitta,
+			String searchCap,
+			Paese paese,
+			AreaSpedizione areaSped,
+			Provincia provincia,
+			TitoloAnagrafica titolo,
+			Regione regioneVescovi,
+			CentroDiocesano centroDiocesano,
+			Regione regioneDirettoreDiocesano,
+			boolean filterDirettoreDiocesano,
+			boolean filterPresidenteDiocesano,
+			Regione regionePresidenteDiocesano,
+			boolean filterDirettoreZonaMilano,
+			boolean filterConsiglioNazionaleADP,
+			boolean filterPresidenzaADP,
+			boolean filterDirezioneADP,
+			boolean filterCaricheSocialiADP,
+			boolean filterDelegatiRegionaliADP,
+			boolean filterElencoMarisaBisi,
+			boolean filterPromotoreRegionale
+	);
+
 	void genera(Campagna campagna, UserInfo user) throws Exception;
 	void invia(Campagna campagna, UserInfo user) throws Exception;
 	void sollecita(Campagna c, UserInfo operatore) throws Exception;

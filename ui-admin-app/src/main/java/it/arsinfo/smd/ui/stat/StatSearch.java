@@ -12,7 +12,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import it.arsinfo.smd.service.api.AbbonamentoConRivisteService;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.AreaSpedizione;
 import it.arsinfo.smd.entity.CentroDiocesano;
@@ -21,6 +20,7 @@ import it.arsinfo.smd.entity.Paese;
 import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Regione;
 import it.arsinfo.smd.entity.TitoloAnagrafica;
+import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
@@ -33,27 +33,26 @@ public class StatSearch extends SmdChangeHandler {
     private String searchCap;
     private String searchCitta;
 
-    private final Button searchButton = new Button("Cerca", VaadinIcons.SEARCH);
-    private final ComboBox<Paese> filterPaese = new ComboBox<Paese>("Paese",
+    private final ComboBox<Paese> filterPaese = new ComboBox<>("Paese",
             EnumSet.allOf(Paese.class));
 
-    private final ComboBox<AreaSpedizione> filterAreaSpedizione = new ComboBox<AreaSpedizione>("Area Spedizione",
+    private final ComboBox<AreaSpedizione> filterAreaSpedizione = new ComboBox<>("Area Spedizione",
             EnumSet.allOf(AreaSpedizione.class));
 
-    private final ComboBox<Provincia> filterProvincia = new ComboBox<Provincia>("Provincia",
+    private final ComboBox<Provincia> filterProvincia = new ComboBox<>("Provincia",
             EnumSet.allOf(Provincia.class));
 
-    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<Regione>("Regione Vescovi",
+    private final ComboBox<Regione> filterRegioneVescovi = new ComboBox<>("Regione Vescovi",
             EnumSet.allOf(Regione.class));
 
-    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<CentroDiocesano>("Centro Diocesano",
+    private final ComboBox<CentroDiocesano> filterCentroDiocesano = new ComboBox<>("Centro Diocesano",
                              EnumSet.allOf(CentroDiocesano.class));
 
-    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<TitoloAnagrafica>("Titolo",
+    private final ComboBox<TitoloAnagrafica> filterTitolo = new ComboBox<>("Titolo",
                       EnumSet.allOf(TitoloAnagrafica.class));
 
-    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<Regione>("Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
-    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<Regione>("Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegionePresidenteDiocesano = new ComboBox<>("Regione Pres. Diocesano",EnumSet.allOf(Regione.class));
+    private final ComboBox<Regione> filterRegioneDirettoreDiocesano = new ComboBox<>("Regione Dir. Diocesano",EnumSet.allOf(Regione.class));
     private final CheckBox filterDirettoreDiocesano = new CheckBox("Dir. Diocesano");
     private final CheckBox filterPresidenteDiocesano = new CheckBox("Pres. Diocesano");
     private final CheckBox filterDirettoreZonaMilano = new CheckBox("Dir. Zona Milano");
@@ -64,18 +63,19 @@ public class StatSearch extends SmdChangeHandler {
     private final CheckBox filterDelegatiRegionaliADP = new CheckBox("Del. Reg. ADP");
     private final CheckBox filterElencoMarisaBisi = new CheckBox("Elenco Marisa Bisi");
     private final CheckBox filterPromotoreRegionale = new CheckBox("Prom. Reg.");
-    private final ComboBox<Anno> filterAnno = new ComboBox<Anno>("Selezionare Anno",EnumSet.allOf(Anno.class));
-    
-    private final AbbonamentoConRivisteService dao;
 
-    public StatSearch(AbbonamentoConRivisteService dao) {
+    private final CampagnaService dao;
+
+    public StatSearch(CampagnaService dao) {
         this.dao=dao;
-        
+        Button searchButton = new Button("Cerca", VaadinIcons.SEARCH);
+        ComboBox<Anno> filterAnno = new ComboBox<>("Selezionare Anno",EnumSet.allOf(Anno.class));
+
         TextField filterDenominazione = new TextField("Denominazione");
         TextField filterNome = new TextField("Nome");
         TextField filterCap = new TextField("CAP");
         TextField filterCitta = new TextField("Città");
-        ComboBox<Diocesi> filterDiocesi = new ComboBox<Diocesi>("diocesi",
+        ComboBox<Diocesi> filterDiocesi = new ComboBox<>("diocesi",
                                                                 EnumSet.allOf(Diocesi.class));
 
         setComponents(
@@ -121,9 +121,7 @@ public class StatSearch extends SmdChangeHandler {
         anno=Anno.getAnnoCorrente();
         filterAnno.setValue(anno);
 		
-        filterAnno.addSelectionListener(e -> {
-        		anno = e.getSelectedItem().get();
-        });
+        filterAnno.addSelectionListener(e -> anno = e.getSelectedItem().orElse(Anno.getAnnoCorrente()));
 
         filterDiocesi.setEmptySelectionAllowed(true);
         filterDiocesi.setItemCaptionGenerator(Diocesi::getDetails);
@@ -133,34 +131,26 @@ public class StatSearch extends SmdChangeHandler {
             if (e.getValue() == null) {
                 searchDiocesi = null;
             } else {
-                searchDiocesi = e.getSelectedItem().get();
+                searchDiocesi = e.getSelectedItem().orElse(null);
             }
         });
 
         filterDenominazione.setPlaceholder("Inserisci Denominazione");
         filterDenominazione.setValueChangeMode(ValueChangeMode.EAGER);
-        filterDenominazione.addValueChangeListener(e -> {
-            searchDenominazione = e.getValue();
-        });
+        filterDenominazione.addValueChangeListener(e -> searchDenominazione = e.getValue());
 
         filterNome.setPlaceholder("Inserisci Nome");
         filterNome.setValueChangeMode(ValueChangeMode.EAGER);
-        filterNome.addValueChangeListener(e -> {
-            searchNome = e.getValue();
-        });
+        filterNome.addValueChangeListener(e -> searchNome = e.getValue());
 
 
         filterCap.setPlaceholder("Inserisci CAP");
         filterCap.setValueChangeMode(ValueChangeMode.EAGER);
-        filterCap.addValueChangeListener(e -> {
-            searchCap = e.getValue();
-        });
+        filterCap.addValueChangeListener(e -> searchCap = e.getValue());
         
         filterCitta.setPlaceholder("Inserisci Città");
         filterCitta.setValueChangeMode(ValueChangeMode.EAGER);
-        filterCitta.addValueChangeListener(e -> {
-            searchCitta = e.getValue();
-        });
+        filterCitta.addValueChangeListener(e -> searchCitta = e.getValue());
 
 
         filterTitolo.setPlaceholder("Seleziona Titolo");
@@ -209,7 +199,7 @@ public class StatSearch extends SmdChangeHandler {
 
 
 	public List<AbbonamentoConRiviste> findNone() {
-		return new ArrayList<AbbonamentoConRiviste>();
+		return new ArrayList<>();
 	}
 
 }

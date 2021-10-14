@@ -13,7 +13,6 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
-import it.arsinfo.smd.service.config.CampagnaServiceConfig;
 import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.service.dto.SpedizioneWithItems;
 import it.arsinfo.smd.service.impl.SmdServiceImpl;
@@ -101,8 +100,6 @@ public class UIAdminTests {
     private BollettinoApiServiceConfig bollettinoServiceConfig;
     @Autowired
     private BancoPostaApiServiceConfig bancoPostaServiceConfig;
-    @Autowired
-    private CampagnaServiceConfig campagnaConfig;
     @Autowired
     private UserDetailsService userDetailsService;
 
@@ -244,9 +241,6 @@ public class UIAdminTests {
     @Test
     public void testConfiguration() {
         assertNotNull(bollettinoServiceConfig);
-        assertNotNull(campagnaConfig);
-        assertEquals(7.00,campagnaConfig.getLimiteInvioEstratto().doubleValue());
-        assertEquals(7.00,campagnaConfig.getLimiteInvioSollecito().doubleValue());
         assertEquals("https://api.stampabollettini.com/api/td674",bollettinoServiceConfig.getCcpApiUrl());
         assertEquals("druslcruwaw2up5swexospl6awruphut",bollettinoServiceConfig.getCcpApiKey());
         assertEquals("adp-289020",bollettinoServiceConfig.getCcpApiUser());
