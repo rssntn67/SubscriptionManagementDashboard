@@ -1,8 +1,10 @@
 package it.arsinfo.smd.ui.campagna;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import it.arsinfo.smd.entity.*;
@@ -29,7 +31,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
-    private final TextField numero = new TextField("Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna");
+    private final TextField numero = new TextField("Max num. Riviste");
 	private final TextField limiteInvioEstratto = new TextField("Importo Minimo Debitori");
 	private final TextField limiteInvioSollecito = new TextField("Importo Minimo Debitori");
 	private final TextField speseEstrattoConto = new TextField("Spese");
@@ -169,31 +171,46 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
 
         getActions().addComponents(buttonGenera, buttonInvio, buttonSollecita, buttonSospendi, comboBoxPubblicazioneDaSospendere, buttonEstrattoConto, buttonChiudi);
-		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
-		VerticalLayout sollecito =
-				new VerticalLayout(
-					new Label("Gestione Sollecito: questi valori vengono utilizzati quando si effettua il sollecito."),
-					new Label("Inserire il valore minimo di debito per inviare il sollecito e le eventuali spese aggiuntive"),
-					new HorizontalLayout(limiteInvioSollecito,speseSollecito)
-				);
-		VerticalLayout ec =
-				new VerticalLayout(
-						new Label("Gestione Estratto Conto: questi valori vengono utilizzati quando si effettua Estratto Conto."),
-						new Label("Inserire il valore minimo di debito per inviare EC e le eventuali spese aggiuntive"),
-					new HorizontalLayout(limiteInvioEstratto,speseEstrattoConto)
-				);
-		VerticalLayout close = new VerticalLayout(
-				new Label("Gestione chiusura: questo valore viene utilizzato solo quando si chiude la campagna."),
-				new Label("Inserire il numero minimo di riviste per mantenere attivo lo storico nel caso di abbonati debitori"),
-				new Label("Se il numero di riviste in abbonamento supera il valore di 'numero', lo storico rimane attivo per la prossima campagna"),
-				new HorizontalLayout(numero));
-		VerticalLayout statoincasso =
-				new VerticalLayout(
-					new Label("Gestione Incassato: i seguenti valori servono per determinare se un abbonamento debba essere considerato incassato"),
-					new Label("Gli abbonamenti restano validi se hanno importo >= Soglia Importo & incassato >= importo * Fattore Minimo"),
-					new Label("Gli abbonamenti restano validi se hanno importo < Soglia Importo & debito < Max Debito"),
-					new HorizontalLayout(sogliaImportoTotale,minPercIncassato,maxDebito)
-				);
+
+        HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+		Label sollecitoLabel =
+				new Label( "Questi valori vengono utilizzati quando si invia il sollecito.\n " +
+						        "Inserire il valore minimo di debito e le spese da aggiungere:\n" +
+						        "il sollecito è inviato solo per importi > minimo debito.",
+				ContentMode.PREFORMATTED);
+		Label ecLabel =
+				new Label( "Questi valori vengono utilizzati quando si invia l'Est. Conto.\n" +
+						        "Inserire il valore minimo di debito e le spese da aggiungere: \n" +
+						        "l'EC viene inviato solo per importi > minimo debito",
+						ContentMode.PREFORMATTED);
+
+		Label closeLabel =
+				new Label( "Questo valore viene utilizzato solo quando si chiude la campagna.\n" +
+						         "Inserire il numero minimo di riviste per mantenere attivo lo storico nel caso di abbonati debitori.\n" +
+                                 "Se il numero di riviste in abbonamento supera il valore di 'numero', lo storico rimane attivo per la prossima campagna",
+						ContentMode.PREFORMATTED);
+
+		Label incassoLabel =
+				new Label(
+				 "Gli abbonamenti sono validi se: \n" +
+					  " **** importo >= Soglia Importo & incassato >= importo * Fattore Minimo\n" +
+				      " **** importo < Soglia Importo & debito < Max Debito"
+				,ContentMode.PREFORMATTED);
+		Panel sollecito = new Panel("Gestione Sollecito");
+		sollecito.setContent(new HorizontalLayout(limiteInvioSollecito,speseSollecito,sollecitoLabel));
+		sollecito.setSizeUndefined();
+
+		Panel ec = new Panel("Gestione Estratto Conto");
+		ec.setContent(new HorizontalLayout(limiteInvioEstratto,speseEstrattoConto,ecLabel));
+		ec.setSizeUndefined();
+
+		Panel close = new Panel("Gestione chiusura");
+		close.setContent(new HorizontalLayout(numero,closeLabel));
+		close.setSizeUndefined();
+		Panel statoincasso = new Panel("Gestione Stato Incasso");
+		statoincasso.setContent(new HorizontalLayout(sogliaImportoTotale,minPercIncassato,maxDebito,incassoLabel));
+		statoincasso.setSizeUndefined();
+
 
 		HorizontalLayout riviste = new HorizontalLayout();
 		riviste.addComponent(new Label("riviste in abbonamento"));
@@ -263,7 +280,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
 		getBinder()
 				.forField(minPercIncassato)
-				.withConverter(new EuroConverter("Conversione in Eur"))
+				.withConverter(new StringToBigDecimalConverter("Conversione Decimale"))
 				.withValidator(value-> value.signum() >0 && value.subtract(BigDecimal.ONE).signum()<0,"Deve essere un decimale essere compreso fra 0 e 1" )
 				.bind("minPercIncassato");
 
