@@ -1,36 +1,23 @@
 package it.arsinfo.smd.ui.campagna;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.vaadin.data.Binder;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.api.CampagnaService;
+import it.arsinfo.smd.service.api.SmdService;
+import it.arsinfo.smd.ui.EuroConverter;
+import it.arsinfo.smd.ui.SmdEditorUI;
+import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.Binder;
-import it.arsinfo.smd.ui.EuroConverter;
-import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-
-import it.arsinfo.smd.service.api.CampagnaService;
-import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.entity.Anno;
-import it.arsinfo.smd.entity.StatoCampagna;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.CampagnaItem;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.UserInfo;
-import it.arsinfo.smd.ui.SmdEditorUI;
-import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
+import java.math.BigDecimal;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
@@ -43,11 +30,14 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Label running = new Label("");
     private final CampagnaItemsEditor items;
     private final TextField numero = new TextField("Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna");
-    private final TextField residuo = new TextField("Residuo per Debitori");
 	private final TextField limiteInvioEstratto = new TextField("Importo Minimo Debitori");
 	private final TextField limiteInvioSollecito = new TextField("Importo Minimo Debitori");
 	private final TextField speseEstrattoConto = new TextField("Spese");
 	private final TextField speseSollecito = new TextField("Spese");
+
+	private final TextField sogliaImportoTotale = new TextField("Soglia Importo");
+	private final TextField minPercIncassato = new TextField("Fattore Minimo");
+	private final TextField maxDebito = new TextField("Max Debito");
 
 	private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
@@ -57,7 +47,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     private final Button buttonVisualizzaInviati = new Button("Abb. Proposti",VaadinIcons.ARCHIVE);
     private final Button buttonVisualizzaSollecitati = new Button("Abb. Sollecitati",VaadinIcons.ARCHIVE);
     private final Button buttonVisualizzaEstrattoConto = new Button("Abb. Inviato Estratto Conto",VaadinIcons.ARCHIVE);
-    private final Button buttonVisualizzaDebitori = new Button("Abb. Debitori con Residuo Maggiore",VaadinIcons.ARCHIVE);
+    private final Button buttonVisualizzaDebitori = new Button("Abb. Debitori",VaadinIcons.ARCHIVE);
 
     private final Button buttonGenera = new Button("Genera",VaadinIcons.ENVELOPES);
     private final Button buttonInvio = new Button("Invia",VaadinIcons.ENVELOPES);
@@ -179,9 +169,31 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         });
 
         getActions().addComponents(buttonGenera, buttonInvio, buttonSollecita, buttonSospendi, comboBoxPubblicazioneDaSospendere, buttonEstrattoConto, buttonChiudi);
-		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,residuo, numero);
-		HorizontalLayout sollecito = new HorizontalLayout(new Label("Sollecito"),limiteInvioSollecito,speseSollecito);
-		HorizontalLayout ec = new HorizontalLayout(new Label("Estratto Conto"),limiteInvioEstratto,speseEstrattoConto);
+		HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+		VerticalLayout sollecito =
+				new VerticalLayout(
+					new Label("Gestione Sollecito: questi valori vengono utilizzati quando si effettua il sollecito."),
+					new Label("Inserire il valore minimo di debito per inviare il sollecito e le eventuali spese aggiuntive"),
+					new HorizontalLayout(limiteInvioSollecito,speseSollecito)
+				);
+		VerticalLayout ec =
+				new VerticalLayout(
+						new Label("Gestione Estratto Conto: questi valori vengono utilizzati quando si effettua Estratto Conto."),
+						new Label("Inserire il valore minimo di debito per inviare EC e le eventuali spese aggiuntive"),
+					new HorizontalLayout(limiteInvioEstratto,speseEstrattoConto)
+				);
+		VerticalLayout close = new VerticalLayout(
+				new Label("Gestione chiusura: questo valore viene utilizzato solo quando si chiude la campagna."),
+				new Label("Inserire il numero minimo di riviste per mantenere attivo lo storico nel caso di abbonati debitori"),
+				new Label("Se il numero di riviste in abbonamento supera il valore di 'numero', lo storico rimane attivo per la prossima campagna"),
+				new HorizontalLayout(numero));
+		VerticalLayout statoincasso =
+				new VerticalLayout(
+					new Label("Gestione Incassato: i seguenti valori servono per determinare se un abbonamento debba essere considerato incassato"),
+					new Label("Gli abbonamenti restano validi se hanno importo >= Soglia Importo & incassato >= importo * Fattore Minimo"),
+					new Label("Gli abbonamenti restano validi se hanno importo < Soglia Importo & debito < Max Debito"),
+					new HorizontalLayout(sogliaImportoTotale,minPercIncassato,maxDebito)
+				);
 
 		HorizontalLayout riviste = new HorizontalLayout();
 		riviste.addComponent(new Label("riviste in abbonamento"));
@@ -192,8 +204,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		running,
         		riviste,
         		stato,
+        		statoincasso,
         		sollecito,
         		ec,
+        		close,
         		new HorizontalLayout(buttonVisualizzaGenerati, buttonVisualizzaInviati, buttonVisualizzaSollecitati, buttonVisualizzaEstrattoConto, buttonVisualizzaDebitori),
         	    new VerticalLayout(grid.getComponents()),
         		operazioni.getGrid(),
@@ -222,11 +236,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
         .bind(Campagna::getNumero, Campagna::setNumero);
 
-        getBinder()
-        .forField(residuo)
-        .withConverter(new EuroConverter("Conversione in Eur"))
-        .bind("residuo");
-
 		getBinder()
 				.forField(speseEstrattoConto)
 				.withConverter(new EuroConverter("Conversione in Eur"))
@@ -246,6 +255,23 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				.forField(limiteInvioSollecito)
 				.withConverter(new EuroConverter("Conversione in Eur"))
 				.bind("limiteInvioSollecito");
+
+		getBinder()
+				.forField(sogliaImportoTotale)
+				.withConverter(new EuroConverter("Conversione in Eur"))
+				.bind("sogliaImportoTotale");
+
+		getBinder()
+				.forField(minPercIncassato)
+				.withConverter(new EuroConverter("Conversione in Eur"))
+				.withValidator(value-> value.signum() >0 && value.subtract(BigDecimal.ONE).signum()<0,"Deve essere un decimale essere compreso fra 0 e 1" )
+				.bind("minPercIncassato");
+
+		getBinder()
+				.forField(maxDebito)
+				.withConverter(new EuroConverter("Conversione in Eur"))
+				.bind("maxDebito");
+
 
 		getBinder().bindInstanceFields(this);
     }
@@ -316,11 +342,13 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			break;
 		case Chiusa:
 			numero.setReadOnly(true);
-			residuo.setReadOnly(true);
 			limiteInvioSollecito.setEnabled(false);
 			speseSollecito.setEnabled(false);
 			limiteInvioEstratto.setEnabled(false);
 			speseEstrattoConto.setEnabled(false);
+			sogliaImportoTotale.setEnabled(false);
+			minPercIncassato.setEnabled(false);
+			maxDebito.setEnabled(false);
 			getSave().setEnabled(false);
 			getCancel().setEnabled(false);
 			break;

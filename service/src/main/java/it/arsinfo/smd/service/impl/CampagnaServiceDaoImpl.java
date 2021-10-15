@@ -253,7 +253,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 		return smdService
 				.get(abbonamentoDao.findByCampagna(entity)
 		                .stream()
-		                .filter(a -> a.getResiduo().compareTo(entity.getResiduo()) > 0)
+		                .filter(a -> a.getResiduo().signum() > 0)
 		                .collect(Collectors.toList()));
 	}
 				
