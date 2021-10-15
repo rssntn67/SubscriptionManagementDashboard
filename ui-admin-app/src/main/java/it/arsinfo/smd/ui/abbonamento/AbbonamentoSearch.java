@@ -12,7 +12,6 @@ import com.vaadin.ui.TextField;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Incassato;
-import it.arsinfo.smd.entity.StatoAbbonamento;
 import it.arsinfo.smd.entity.StatoRivista;
 import it.arsinfo.smd.entity.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Abbonamento;
@@ -28,18 +27,17 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private Anagrafica beneficiario;
     private Anno anno;
     private Campagna campagna;
-    private final ComboBox<Incassato> filterIncassato= new ComboBox<Incassato>();
+    private final ComboBox<Incassato> filterIncassato= new ComboBox<>();
     private final CheckBox checkContrassegno = new CheckBox("Contrassegno");
     private final CheckBox checkSollecitato = new CheckBox("Sollecitato");
     private final CheckBox checkInviatoEC = new CheckBox("InviatoEC");
     private final CheckBox checkResiduo = new CheckBox("Residuo > 0");
     private final CheckBox checkNotResiduo = new CheckBox("Residuo < 0");
     private final CheckBox checkResiduoZero = new CheckBox("Residuo = 0");
-    private final ComboBox<StatoAbbonamento> filterStatoAbbonamento= new ComboBox<StatoAbbonamento>();
-    private final ComboBox<StatoRivista> filterStatoRivista= new ComboBox<StatoRivista>();
+    private final ComboBox<StatoRivista> filterStatoRivista= new ComboBox<>();
     // this are used on RivistaAbbonamento
     private Pubblicazione pubblicazione;
-    private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<TipoAbbonamentoRivista>();
+    private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<>();
     
     private final AbbonamentoService dao;
 
@@ -48,18 +46,18 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
         super(dao);
 
         this.dao=dao;
-        ComboBox<Anagrafica> filterIntestatario = new ComboBox<Anagrafica>();
-        ComboBox<Anagrafica> filterBeneficiario = new ComboBox<Anagrafica>();
+        ComboBox<Anagrafica> filterIntestatario = new ComboBox<>();
+        ComboBox<Anagrafica> filterBeneficiario = new ComboBox<>();
         
-        ComboBox<Anno> filterAnno = new ComboBox<Anno>();
-        ComboBox<Campagna> filterCampagna = new ComboBox<Campagna>();
-        ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<Pubblicazione>();
+        ComboBox<Anno> filterAnno = new ComboBox<>();
+        ComboBox<Campagna> filterCampagna = new ComboBox<>();
+        ComboBox<Pubblicazione> filterPubblicazione = new ComboBox<>();
         TextField filterCodeLine = new TextField();
 
         HorizontalLayout anag = new HorizontalLayout(filterCodeLine);
         anag.addComponentsAndExpand(filterIntestatario,filterBeneficiario);
         HorizontalLayout riv = new HorizontalLayout(filterPubblicazione);
-        riv.addComponentsAndExpand(filterStatoAbbonamento,filterTipoAbbonamentoRivista);
+        riv.addComponentsAndExpand(filterTipoAbbonamentoRivista);
         HorizontalLayout tipo = new HorizontalLayout(filterAnno,filterCampagna,filterIncassato);
         HorizontalLayout check = new HorizontalLayout(
         							checkSollecitato,checkInviatoEC,checkContrassegno,
@@ -81,7 +79,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             if (e.getValue() == null) {
                 intestatario = null;
             } else {
-                intestatario = e.getSelectedItem().get();
+                intestatario = e.getSelectedItem().orElse(null);
             }
             onChange();
         });
@@ -94,7 +92,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             if (e.getValue() == null) {
                 beneficiario = null;
             } else {
-                beneficiario = e.getSelectedItem().get();
+                beneficiario = e.getSelectedItem().orElse(null);
             }
             onChange();
         });
@@ -107,14 +105,10 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             if (e.getValue() == null) {
                 pubblicazione = null;
             } else {
-                pubblicazione = e.getSelectedItem().get();
+                pubblicazione = e.getSelectedItem().orElse(null);
             }
             onChange();
         });
-        
-        filterStatoAbbonamento.setPlaceholder("Cerca per Stato");
-        filterStatoAbbonamento.setItems(EnumSet.allOf(StatoAbbonamento.class));
-        filterStatoAbbonamento.addSelectionListener(e ->onChange());
 
         filterStatoRivista.setPlaceholder("Cerca Abb. Stato Riviste");
         filterStatoRivista.setItems(EnumSet.allOf(StatoRivista.class));
@@ -132,7 +126,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             if (e.getValue() == null) {
                 anno = null;
             } else {
-                anno=e.getSelectedItem().get();
+                anno=e.getSelectedItem().orElse(null);
             }
             onChange();
         });
@@ -145,7 +139,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
             if (e.getValue() == null) {
                 campagna = null;
             } else {
-                campagna=e.getSelectedItem().get();
+                campagna=e.getSelectedItem().orElse(null);
             }
             onChange();
         });
@@ -172,7 +166,6 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     					anno,
     					pubblicazione,
     					filterTipoAbbonamentoRivista.getValue(),
-    					filterStatoAbbonamento.getValue(),
     					filterStatoRivista.getValue(),
     					filterIncassato.getValue(),
     					searchCodeLine,

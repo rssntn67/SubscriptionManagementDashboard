@@ -37,13 +37,15 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 	private final TextField speseEstrattoConto = new TextField("Spese");
 	private final TextField speseSollecito = new TextField("Spese");
 
+	private final TextField contrassegno = new TextField("Spese Contrassegno");
+
 	private final TextField sogliaImportoTotale = new TextField("Soglia Importo");
 	private final TextField minPercIncassato = new TextField("Fattore Minimo");
 	private final TextField maxDebito = new TextField("Max Debito");
 
 	private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
-    private final OperazioneSospendiGrid sospensioni =  new OperazioneSospendiGrid("Sospensioni");    
+    private final OperazioneSospendiGrid sospensioni =  new OperazioneSospendiGrid("Sospensioni");
    
     private final Button buttonVisualizzaGenerati = new Button("Abb. Generati",VaadinIcons.ARCHIVE);
     private final Button buttonVisualizzaInviati = new Button("Abb. Proposti",VaadinIcons.ARCHIVE);
@@ -172,7 +174,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         getActions().addComponents(buttonGenera, buttonInvio, buttonSollecita, buttonSospendi, comboBoxPubblicazioneDaSospendere, buttonEstrattoConto, buttonChiudi);
 
-        HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+        HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,contrassegno);
 		Label sollecitoLabel =
 				new Label( "Questi valori vengono utilizzati quando si invia il sollecito.\n " +
 						        "Inserire il valore minimo di debito e le spese da aggiungere:\n" +
@@ -274,6 +276,11 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				.bind("limiteInvioSollecito");
 
 		getBinder()
+				.forField(contrassegno)
+				.withConverter(new EuroConverter("Conversione in Eur"))
+				.bind("contrassegno");
+
+		getBinder()
 				.forField(sogliaImportoTotale)
 				.withConverter(new EuroConverter("Conversione in Eur"))
 				.bind("sogliaImportoTotale");
@@ -341,6 +348,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			break;
 		case Inviata:
 			buttonSollecita.setVisible(true);
+			contrassegno.setEnabled(false);
 			break;
 		case InviatoSollecito:
 		case InviatoSospeso:
@@ -349,6 +357,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			buttonEstrattoConto.setVisible(true);
 			limiteInvioSollecito.setEnabled(false);
 			speseSollecito.setEnabled(false);
+			contrassegno.setEnabled(false);
 			break;
 		case InviatoEC:
 			buttonChiudi.setVisible(true);
@@ -356,6 +365,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			speseSollecito.setEnabled(false);
 			limiteInvioEstratto.setEnabled(false);
 			speseEstrattoConto.setEnabled(false);
+			contrassegno.setEnabled(false);
 			break;
 		case Chiusa:
 			numero.setReadOnly(true);
@@ -366,6 +376,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			sogliaImportoTotale.setEnabled(false);
 			minPercIncassato.setEnabled(false);
 			maxDebito.setEnabled(false);
+			contrassegno.setEnabled(false);
 			getSave().setEnabled(false);
 			getCancel().setEnabled(false);
 			break;

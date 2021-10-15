@@ -230,8 +230,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	    operazioneIncassoDao.
                 findByDataAfter(SmdEntity.getStandardDate(from)).
                 stream().
-                filter(operazione -> incassoids.contains(operazione.getVersamento().getDistintaVersamento().getId())
-                                    && operazione.getAbbonamento().getStatoAbbonamento() == StatoAbbonamento.Valido).
+                filter(operazione -> incassoids.contains(operazione.getVersamento().getDistintaVersamento().getId())).
                 forEach(op -> {
                     IncassoGiornaliero ig = incassimap.get(incassoToHashMap.get(op.getVersamento().getDistintaVersamento().getId()));
                     log.info("getIncassiGiornaliero: {}", ig);

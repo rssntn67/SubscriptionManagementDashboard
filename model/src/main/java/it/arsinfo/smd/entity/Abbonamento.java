@@ -29,6 +29,79 @@ import javax.persistence.UniqueConstraint;
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
+    public static boolean checkCodeLine(String codeline) {
+        if (codeline == null || codeline.length() != 18) {
+            return false;
+
+        }
+
+        String codice = codeline.substring(0, 16);
+
+        long valorecodice = (Long.parseLong(codice) % 93);
+        int codicecontrollo = Integer.parseInt(codeline.substring(16,18));
+        return codicecontrollo == valorecodice;
+    }
+
+    /*
+     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
+     * riservati al correntista che intende utilizzare tale codeLine 2 caratteri
+     * numerici di controcodice pari al resto della divisione dei primi 16
+     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
+     * controcodice: 00 - 92)
+     */
+    public static String generaCodeLine(Anno anno, Anagrafica anagrafica) {
+        // primi 2 caratteri anno
+        String codeline = anno.getAnnoAsString().substring(2, 4);
+        // 3-16
+        codeline += anagrafica.getCodeLineBase();
+        codeline += String.format("%02d", Long.parseLong(codeline) % 93);
+        return codeline;
+    }
+
+    public static String generaCodeLine(Anno anno) {
+        // primi 2 caratteri anno
+        String codeLine = anno.getAnnoAsString().substring(2, 4);
+        // 3-16
+        codeLine += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999L));
+        codeLine += String.format("%02d", Long.parseLong(codeLine) % 93);
+        return codeLine;
+    }
+
+    public static Incassato getStatoIncasso(Abbonamento abbonamento, BigDecimal sogliaImportoTotale, BigDecimal minPercIncassato, BigDecimal maxDebito ) {
+        if (abbonamento.getResiduo().signum() == 0) {
+            log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
+            return Incassato.Si;
+        }
+        if (abbonamento.getIncassato().signum() == 0) {
+            log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
+            return Incassato.No;
+        }
+        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) >= 0 && abbonamento.getTotale().multiply(minPercIncassato).compareTo(abbonamento.getIncassato()) < 0 ){
+            log.info("getStatoIncasso: {} {} maggiore {} debito inferiore al {}", abbonamento, Incassato.SiConDebito,sogliaImportoTotale, minPercIncassato);
+            return Incassato.SiConDebito;
+        }
+        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) < 0 && abbonamento.getTotale().subtract(maxDebito).compareTo(abbonamento.getIncassato()) < 0) {
+            log.info("getStatoIncasso: {} {} minore {} ma debito inferiore al {}", abbonamento, Incassato.SiConDebito, sogliaImportoTotale, maxDebito);
+            return Incassato.SiConDebito;
+        }
+        log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
+        return Incassato.Parzialmente;
+    }
+
+    public static boolean isAbbonamentoValid(Abbonamento abbonamento, Campagna campagna) {
+        if (campagna == null)
+            return true;
+        boolean valid=false;
+        switch (abbonamento.getStatoIncasso(campagna)) {
+            case Si:
+            case SiConDebito:
+                valid=true;
+                break;
+            default:
+                break;
+        }
+        return valid;
+    }
 
     public static BigDecimal getPregresso(List<Abbonamento> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
@@ -105,9 +178,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     @Enumerated(EnumType.STRING)
     private Anno anno = Anno.getAnnoCorrente();
 
-    @Enumerated(EnumType.STRING)
-    private StatoAbbonamento statoAbbonamento = StatoAbbonamento.Nuovo;
-
     @ManyToOne
     private Campagna campagna;
     
@@ -122,8 +192,12 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date data = new Date();
+
     @Column(nullable=false)
-    private boolean contrassegno = false;
+    private boolean contrassegno=false;
+
+    @Column(nullable=false)
+    private BigDecimal speseContrassegno=BigDecimal.ZERO;
 
     @Column(nullable=false)
     private boolean sollecitato = false;
@@ -156,26 +230,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     public Abbonamento() {
     }
 
-    public static Incassato getStatoIncasso(Abbonamento abbonamento, BigDecimal sogliaImportoTotale, BigDecimal minPercIncassato, BigDecimal maxDebito ) {
-        if (abbonamento.getResiduo().signum() == 0) {
-            log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
-            return Incassato.Si;
-        }
-        if (abbonamento.getIncassato().signum() == 0) {
-            log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
-            return Incassato.No;
-        }
-        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) >= 0 && abbonamento.getTotale().multiply(minPercIncassato).compareTo(abbonamento.getIncassato()) < 0 ){
-            log.info("getStatoIncasso: {} {} maggiore {} debito inferiore al {}", abbonamento, Incassato.SiConDebito,sogliaImportoTotale, minPercIncassato);
-            return Incassato.SiConDebito;
-        }
-        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) < 0 && abbonamento.getTotale().subtract(maxDebito).compareTo(abbonamento.getIncassato()) < 0) {
-            log.info("getStatoIncasso: {} {} minore {} ma debito inferiore al {}", abbonamento, Incassato.SiConDebito, sogliaImportoTotale, maxDebito);
-            return Incassato.SiConDebito;
-        }
-        log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
-        return Incassato.Parzialmente;
-    }
 
     public Anagrafica getIntestatario() {
         return intestatario;
@@ -197,28 +251,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f','Inc.to:'%.2f',CL:'%s', Anno=%s, St.=%s",
-                                   id, 
-                                   importo,
-                                   spese,
-                                   speseEstero,
-                                   pregresso,
-                                   incassato,
-                                   codeLine,
-                                   anno.getAnnoAsString(),
-                                   statoAbbonamento);
-    }
-
-	public StatoAbbonamento getStatoAbbonamento() {
-		return statoAbbonamento;
-	}
-
-	public void setStatoAbbonamento(StatoAbbonamento statoAbbonamento) {
-		this.statoAbbonamento = statoAbbonamento;
-	}
-    
     public Anno getAnno() {
         return anno;
     }
@@ -259,28 +291,10 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
             Ccp ccp) {
         this.ccp = ccp;
     }
-        
-    @Transient
-    public String getHeader() {
-        return String.format("%s:%s", anno.getAnnoAsString(),getIntestazione());
-    }
-    
-    @Transient
-    public BigDecimal getResiduo() {
-        return getTotale().subtract(incassato);
-    }
+
 
     public BigDecimal getIncassato() {
         return incassato;
-    }
-    
-    @Transient
-    public String getIntestazione() {
-        return Anagrafica.generaIntestazione(intestatario);
-    }
-
-    public BigDecimal getTotale() {
-        return importo.add(pregresso).add(spese).add(speseEstero).add(speseEstrattoConto);
     }
 
     public BigDecimal getImporto() {
@@ -299,44 +313,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         this.spese = spese;
     }
 
-    public static boolean checkCodeLine(String codeline) {
-        if (codeline == null || codeline.length() != 18) {
-            return false;
-            
-        }
-        
-        String codice = codeline.substring(0, 16);
-        
-        long valorecodice = (Long.parseLong(codice) % 93);
-        int codicecontrollo = Integer.parseInt(codeline.substring(16,18));
-        return codicecontrollo == valorecodice;
-    }
-
-    /*
-     * Codice Cliente (TD 674/896) si compone di 16 caratteri numerici
-     * riservati al correntista che intende utilizzare tale codeLine 2 caratteri
-     * numerici di controcodice pari al resto della divisione dei primi 16
-     * caratteri per 93 (Modulo 93. Valori possibili dei caratteri di
-     * controcodice: 00 - 92)
-     */
-    public static String generaCodeLine(Anno anno, Anagrafica anagrafica) {
-        // primi 2 caratteri anno
-        String codeline = anno.getAnnoAsString().substring(2, 4);
-        // 3-16
-        codeline += anagrafica.getCodeLineBase();
-        codeline += String.format("%02d", Long.parseLong(codeline) % 93);
-        return codeline;
-    }
-    
-    public static String generaCodeLine(Anno anno) {
-        // primi 2 caratteri anno
-        String codeLine = anno.getAnnoAsString().substring(2, 4);
-        // 3-16
-        codeLine += String.format("%014d", ThreadLocalRandom.current().nextLong(99999999999999L));
-        codeLine += String.format("%02d", Long.parseLong(codeLine) % 93);
-        return codeLine;
-    }
-
     public void setIncassato(BigDecimal incassato) {
         this.incassato = incassato;
     }
@@ -347,6 +323,70 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     public void setPregresso(BigDecimal pregresso) {
         this.pregresso = pregresso;
+    }
+
+    public BigDecimal getSpeseEstero() {
+        return speseEstero;
+    }
+
+    public void setSpeseEstero(BigDecimal speseEstero) {
+        this.speseEstero = speseEstero;
+    }
+
+    public BigDecimal getSpeseEstrattoConto() {
+        return speseEstrattoConto;
+    }
+
+    public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
+        this.speseEstrattoConto = speseEstrattoConto;
+    }
+
+    public List<RivistaAbbonamento> getItems() {
+        return items;
+    }
+
+    public void setItems(List<RivistaAbbonamento> estrattiConto) {
+        this.items = estrattiConto;
+    }
+
+    public boolean addItem(RivistaAbbonamento ec) {
+        return items.add(ec);
+    }
+
+    public boolean removeItem(RivistaAbbonamento ec) {
+        return items.remove(ec);
+    }
+
+    public boolean isSollecitato() {
+        return sollecitato;
+    }
+
+    public void setSollecitato(boolean sollecitato) {
+        this.sollecitato = sollecitato;
+    }
+
+    public boolean isInviatoEC() {
+        return inviatoEC;
+    }
+
+    public void setInviatoEC(boolean inviatoEC) {
+        this.inviatoEC = inviatoEC;
+    }
+
+    public boolean isContrassegno() {
+        return contrassegno;
+    }
+
+    public void setContrassegno(boolean contrassegno) {
+        this.contrassegno = contrassegno;
+    }
+
+    public BigDecimal getSpeseContrassegno() {
+        return speseContrassegno;
+    }
+
+    public void setSpeseContrassegno(BigDecimal speseContrassegno) {
+        this.speseContrassegno = speseContrassegno;
     }
 
     @Transient
@@ -390,8 +430,37 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     }
 
     @Transient
+    public boolean isAbbonamentoValid(Campagna campagna) {
+        return isAbbonamentoValid(this,campagna);
+    }
+    @Transient
     public Incassato getStatoIncasso(Campagna campagna) {
+        if (getResiduo().signum() == 0) {
+            return Incassato.Si;
+        } else if (campagna == null) {
+            return Incassato.No;
+        }
         return getStatoIncasso(this, campagna.getSogliaImportoTotale(),campagna.getMinPercIncassato(),campagna.getMaxDebito());
+    }
+
+    @Transient
+    public String getHeader() {
+        return String.format("%s:%s", anno.getAnnoAsString(),getIntestazione());
+    }
+
+    @Transient
+    public BigDecimal getResiduo() {
+        return getTotale().subtract(incassato);
+    }
+
+    @Transient
+    public BigDecimal getTotale() {
+        return importo.add(pregresso).add(spese).add(speseEstero).add(speseEstrattoConto).add(speseContrassegno);
+    }
+
+    @Transient
+    public String getIntestazione() {
+        return Anagrafica.generaIntestazione(intestatario);
     }
 
 	@Override
@@ -405,7 +474,20 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 		return result;
 	}
 
-	@Override
+    @Override
+    public String toString() {
+        return String.format("Abbonamento[id=%d, Imp:'%.2f', Spese:'%.2f', Estero:'%.2f', 'Preg:'%.2f','Inc.to:'%.2f',CL:'%s', Anno=%s",
+                id,
+                importo,
+                spese,
+                speseEstero,
+                pregresso,
+                incassato,
+                codeLine,
+                anno.getAnnoAsString());
+    }
+
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -420,63 +502,5 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 		if (codeLine == null) return other.codeLine == null;
         else return codeLine.equals(other.codeLine);
     }
-
-	public BigDecimal getSpeseEstero() {
-		return speseEstero;
-	}
-
-	public void setSpeseEstero(BigDecimal speseEstero) {
-		this.speseEstero = speseEstero;
-	}
-
-	public BigDecimal getSpeseEstrattoConto() {
-		return speseEstrattoConto;
-	}
-
-	public void setSpeseEstrattoConto(BigDecimal speseEstrattoConto) {
-		this.speseEstrattoConto = speseEstrattoConto;
-	}
-
-	public List<RivistaAbbonamento> getItems() {
-		return items;
-	}
-
-	public void setItems(List<RivistaAbbonamento> estrattiConto) {
-		this.items = estrattiConto;
-	}
-	
-	public boolean addItem(RivistaAbbonamento ec) {
-		return items.add(ec);
-	}
-    
-	public boolean removeItem(RivistaAbbonamento ec) {
-		return items.remove(ec);
-	}
-
-	public boolean isContrassegno() {
-		return contrassegno;
-	}
-
-	public void setContrassegno(boolean contrassegno) {
-		this.contrassegno = contrassegno;
-	}
-
-	public boolean isSollecitato() {
-		return sollecitato;
-	}
-
-	public void setSollecitato(boolean sollecitato) {
-		this.sollecitato = sollecitato;
-	}
-
-	public boolean isInviatoEC() {
-		return inviatoEC;
-	}
-
-	public void setInviatoEC(boolean inviatoEC) {
-		this.inviatoEC = inviatoEC;
-	}
-
-	
 
 }

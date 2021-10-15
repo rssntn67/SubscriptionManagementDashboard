@@ -306,8 +306,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 			Anno anno, 
 			Pubblicazione p, 
 			TipoAbbonamentoRivista t, 
-			StatoAbbonamento s, 
-			StatoRivista sr, 
+			StatoRivista sr,
 			Incassato inc,
 			String searchCodeLine,
 			boolean checkContrassegno,
@@ -335,9 +334,6 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
         	abbonamenti = repository.findByCampagnaAndAnno(campagna,anno);
         } else {
         	abbonamenti = repository.findByIntestatarioAndCampagnaAndAnno(intestatario, campagna, anno);
-        }
-        if (s != null) {
-        	abbonamenti = abbonamenti.stream().filter(a -> s == a.getStatoAbbonamento() ).collect(Collectors.toList());        	
         }
         if (inc != null && campagna != null) {
         	abbonamenti = abbonamenti.stream().filter(a -> inc == a.getStatoIncasso(campagna)).collect(Collectors.toList());

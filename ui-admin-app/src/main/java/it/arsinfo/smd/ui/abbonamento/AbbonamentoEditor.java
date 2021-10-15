@@ -8,7 +8,6 @@ import com.vaadin.ui.*;
 import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Incassato;
-import it.arsinfo.smd.entity.StatoAbbonamento;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Campagna;
@@ -34,6 +33,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
     private final TextField spese = new TextField("Spese");
     private final TextField speseEstero = new TextField("Spese Estero");
     private final TextField speseEstrattoConto = new TextField("Spese Estratto Conto");
+    private final TextField speseContrassegno = new TextField("Spese Contrassegno");
     private final TextField pregresso = new TextField("Pregresso");
     private final TextField totale = new TextField("Totale");
     private final TextField residuo = new TextField("Residuo");
@@ -59,17 +59,15 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         this.bollettinoService=bollettinoService;
         CheckBox sollecitato = new CheckBox("Sollecitato");
         CheckBox inviatoEC = new CheckBox("InviatoEC");
-        ComboBox<StatoAbbonamento> statoAbbonamento = new ComboBox<>("Stato",
-                EnumSet.allOf(StatoAbbonamento.class));
 
         HorizontalLayout anag = new HorizontalLayout(campagna,
                 anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
         HorizontalLayout status = 
-        		new HorizontalLayout(contrassegno,sollecitato,inviatoEC,statoIncasso,statoAbbonamento);
+        		new HorizontalLayout(contrassegno,sollecitato,inviatoEC,statoIncasso);
         
-        HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto);
+        HorizontalLayout imp = new HorizontalLayout(importo,speseEstero,spese,pregresso,speseEstrattoConto,speseContrassegno);
         HorizontalLayout res =	new HorizontalLayout(totale,incassato,residuo);
 
         setComponents(getActions(),anag, status,imp,res);
@@ -80,6 +78,7 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
         codeLine.setReadOnly(true);
 
+        contrassegno.addValueChangeListener(event -> speseContrassegno.setEnabled(contrassegno.getValue()));
         campagna.setItems(campagne);
         campagna.setItemCaptionGenerator(Campagna::getCaption);
         campagna.setReadOnly(true);
@@ -114,8 +113,6 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
         getBinder().forField(statoIncasso).bind("statoIncasso");
-        getBinder().forField(statoAbbonamento)
-        .asRequired().bind(Abbonamento::getStatoAbbonamento,Abbonamento::setStatoAbbonamento);
 
 
         getBinder()
@@ -137,6 +134,11 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         .withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(Objects::nonNull, "Spese Estratto conto non può essere null")
         .bind("speseEstrattoConto");
+        getBinder()
+                .forField(speseContrassegno)
+                .withConverter(new EuroConverter("Conversione in Eur"))
+                .withValidator(Objects::nonNull, "Spese Contrassegno non può essere null")
+                .bind("speseContrassegno");
         getBinder()
         .forField(pregresso)
         .withConverter(new EuroConverter("Conversione in Eur"))
@@ -184,8 +186,9 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         incassato.setVisible(persisted);
         residuo.setVisible(persisted);
         
-        contrassegno.setVisible(persisted);
-        contrassegno.setEnabled(!persisted);
+        contrassegno.setEnabled(abbonamento.getCampagna() == null);
+        speseContrassegno.setVisible(abbonamento.isContrassegno());
+        speseContrassegno.setEnabled(false);
         stampaBollettino.setVisible(persisted);
 
         if (persisted) {

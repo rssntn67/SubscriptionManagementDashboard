@@ -1044,7 +1044,7 @@ public class SmdUnitTests {
         	Assertions.assertEquals(0, sped.getSpedizioniPosticipate().size());
         });
         Assertions.assertEquals(10*blocchetti.getAbbonamentoConSconto().doubleValue()+10*messaggio.getAbbonamento().doubleValue()+lodare.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
-        Assertions.assertEquals(Smd.contrassegno.doubleValue(),abb.getSpese().doubleValue(),0);
+        Assertions.assertEquals(campagna.getContrassegno().doubleValue(),abb.getSpeseContrassegno().doubleValue(),0);
         
     }
     @Test 

@@ -45,8 +45,8 @@ public interface SmdService {
 	void incassa(String ddt, BigDecimal bigDecimal, DocumentiTrasportoCumulati ddtAnno, Versamento selected,
 			UserInfo loggedInUser, Anagrafica committente);
 
-	List<RivistaAbbonamento> getNotValid(Abbonamento abbonamento, Campagna campagna);
-
+	List<RivistaAbbonamento> getRivisteNotValid(Abbonamento abbonamento, Campagna campagna);
+    StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista);
 
 
 }

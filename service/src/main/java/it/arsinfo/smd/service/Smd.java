@@ -33,112 +33,6 @@ public class Smd {
 		return toReturn;
 	}
 
-	public static StatoAbbonamento getStatoAbbonamento(boolean almenounarivistaattiva, boolean almenounarivistasospesa, Incassato incassato, StatoCampagna statoCampagna) {
-    	if (statoCampagna == StatoCampagna.Generata ) {
-    		return StatoAbbonamento.Nuovo;
-    	}
-    	
-    	if (incassato == Incassato.Si || incassato == Incassato.SiConDebito) {
-    		return StatoAbbonamento.Valido;
-    	}
-    	
-    	if (statoCampagna == StatoCampagna.Inviata || statoCampagna == StatoCampagna.InviatoSollecito) {
-    		return StatoAbbonamento.Proposto;
-    	}
-
-    	if (almenounarivistaattiva && !almenounarivistasospesa) {
-    		return StatoAbbonamento.Proposto;
-    	} 
-    	if (almenounarivistaattiva){
-    		return StatoAbbonamento.ParzialmenteSospeso;        		
-    	}
-    	
-    	return StatoAbbonamento.Sospeso;
-
-    }
-    public static StatoAbbonamento getStatoAbbonamento(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista, boolean rivistasospesa) {
-    	
-    	if (Smd.isOmaggio(rivista)) {
-			return StatoAbbonamento.Valido;
-		}
-
-        StatoAbbonamento stato = StatoAbbonamento.Nuovo;
-        
-        if (campagna != null) {
-        	switch (campagna.getStatoCampagna()) {
-
-			case Inviata:
-			case InviatoSollecito:
-				stato=StatoAbbonamento.Proposto;
-				break;
-
-			case InviatoSospeso:
-				if (rivistasospesa) {
-					stato = StatoAbbonamento.Sospeso;
-				} else {
-					stato = StatoAbbonamento.Proposto;
-				}
-				break;
-
-			case Chiusa:
-			case InviatoEC:
-				stato=StatoAbbonamento.Sospeso;
-				break;
-
-			default:
-				break;
-			}
-        }
-
-    	switch (abbonamento.getStatoIncasso(campagna)) {
-			case Si:
-			case SiConDebito:
-				stato = StatoAbbonamento.Valido;
-				break;
-			default:
-				break;
-        }
-    	
-    	return stato;
-
-    }
-
-    public static StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista) {
-
-    	if (Smd.isOmaggio(rivista)) {
-			return StatoRivista.Attiva;
-		}
-
-        StatoRivista stato = StatoRivista.Sospesa;
-    	switch (abbonamento.getStatoIncasso(campagna)) {
-			case Si:
-			case SiConDebito:
-				stato = StatoRivista.Attiva;
-				break;
-			default:
-				break;
-        }
-
-    	return stato;
-
-    }
-
-    public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
-    	boolean isOmaggio=false;
-    	switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
-	    	case Duplicato:
-			case OmaggioCuriaDiocesiana:
-			case OmaggioCuriaGeneralizia:
-			case OmaggioDirettoreAdp:
-			case OmaggioEditore:
-			case OmaggioGesuiti:
-    			isOmaggio=true;
-				break;
-			default:
-				break;
-    	}
-    	return isOmaggio;
-    }
     public static boolean isAbbonamentoAnnuale(RivistaAbbonamento rivistaAbbonamento) {
         if (rivistaAbbonamento.getAnnoInizio() != rivistaAbbonamento.getAnnoFine()) {
             return false;
@@ -148,9 +42,6 @@ public class Smd {
         }
 		return rivistaAbbonamento.getMeseFine() == Mese.DICEMBRE;
 	}
-
-    
-    public static final BigDecimal contrassegno=new BigDecimal("4.50");
 
     public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
 	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
@@ -693,10 +584,6 @@ public class Smd {
                 	break;
             }
         }
-        if (abb.isContrassegno()) {
-            abb.setSpese(abb.getSpese().add(contrassegno));                
-        }
-
     }
     
     public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
@@ -778,6 +665,9 @@ public class Smd {
         abbonamento.setCampagna(campagna);
         abbonamento.setAnno(campagna.getAnno());
         abbonamento.setContrassegno(contrassegno);
+        if (contrassegno) {
+        	abbonamento.setSpeseContrassegno(campagna.getContrassegno());
+		}
         abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
         return abbonamento;
     }

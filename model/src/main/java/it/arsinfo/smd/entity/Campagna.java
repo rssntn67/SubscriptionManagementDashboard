@@ -38,9 +38,13 @@ public class Campagna implements SmdEntity {
     private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
     private BigDecimal speseSollecito=BigDecimal.ZERO;
 
+    private BigDecimal contrassegno=new BigDecimal("4.50");
+
     private BigDecimal sogliaImportoTotale = new BigDecimal("70.00");
     private BigDecimal minPercIncassato = new BigDecimal("0.8");
     private BigDecimal maxDebito = new BigDecimal("7");
+
+    public Campagna() {}
 
     public BigDecimal getSogliaImportoTotale() {
         return sogliaImportoTotale;
@@ -98,8 +102,6 @@ public class Campagna implements SmdEntity {
         this.speseSollecito = speseSollecito;
     }
 
-    public Campagna() {}
-
     public Anno getAnno() {
         return anno;
     }
@@ -124,16 +126,6 @@ public class Campagna implements SmdEntity {
         campagnaItems.add(campagnaItem);
     }
 
-    @Transient
-    public String getCaption() {
-        return String.format("Camp.%s", anno.getAnnoAsString());
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("Campagna[id=%d, '%d' %s]", id,anno.getAnno(),statoCampagna);
-    }
-
     public StatoCampagna getStatoCampagna() {
         return statoCampagna;
     }
@@ -141,21 +133,6 @@ public class Campagna implements SmdEntity {
     public void setStatoCampagna(StatoCampagna statoCampagna) {
         this.statoCampagna = statoCampagna;
     }
-
-   @Transient
-   public boolean hasPubblicazione(Pubblicazione p) {
-	   for (CampagnaItem item:campagnaItems ) {
-		   if (item.getPubblicazione().equals(p)) {
-			   return true;
-		   }
-	   }
-       return false;
-   }
-
-	@Override
-	public String getHeader() {
-        return String.format("'%s' %s", anno.getAnno(),statoCampagna);
-	}
 
 	public boolean isRunning() {
 		return running;
@@ -172,5 +149,39 @@ public class Campagna implements SmdEntity {
 	public void setNumero(Integer numero) {
 		this.numero = numero;
 	}
+
+    public BigDecimal getContrassegno() {
+        return contrassegno;
+    }
+
+    public void setContrassegno(BigDecimal contrassegno) {
+        this.contrassegno = contrassegno;
+    }
+
+    @Override
+    public String getHeader() {
+        return String.format("'%s' %s", anno.getAnno(),statoCampagna);
+    }
+
+
+    @Transient
+    public boolean hasPubblicazione(Pubblicazione p) {
+        for (CampagnaItem item:campagnaItems ) {
+            if (item.getPubblicazione().equals(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    @Transient
+    public String getCaption() {
+        return String.format("Camp.%s", anno.getAnnoAsString());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Campagna[id=%d, '%d' %s]", id,anno.getAnno(),statoCampagna);
+    }
+
 
 }
