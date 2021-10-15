@@ -767,7 +767,7 @@ switch (rivista.getStatoRivista()) {
 	        		break;
 	        	
 	        	case InviatoEC:	
-	        		abbonamento.setStatoAbbonamento(aggiornaCampagnaInviatoEC(abbonamento));
+	        		abbonamento.setStatoAbbonamento(aggiornaCampagnaInviatoEC(abbonamento,campagna));
 	        		break;
 	        	
 	        	case Chiusa:
@@ -778,12 +778,12 @@ switch (rivista.getStatoRivista()) {
         abbonamentoDao.save(abbonamento);
 	}
 
-	private StatoAbbonamento aggiornaCampagnaInviatoEC(Abbonamento abbonamento) {
+	private StatoAbbonamento aggiornaCampagnaInviatoEC(Abbonamento abbonamento, Campagna campagna) {
     	boolean almenounarivistasospesa=false;
     	boolean almenounarivistaattiva=false;
     	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
     			findByAbbonamento(abbonamento)) {
-    		StatoRivista stato = Smd.getStatoRivista(abbonamento, ra);
+    		StatoRivista stato = Smd.getStatoRivista(campagna,abbonamento, ra);
         	if (stato != StatoRivista.Attiva) {
         		almenounarivistasospesa=true;
 				ra.setStatoRivista(StatoRivista.Sospesa);
@@ -796,7 +796,7 @@ switch (rivista.getStatoRivista()) {
 				programmaSpedizioniSospese(abbonamento,ra);
         	}
         }
-    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso);
+    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(campagna),StatoCampagna.InviatoSospeso);
 	}
 
 	private StatoAbbonamento aggiornaCampagnaInviatoSospeso(Abbonamento abbonamento, Campagna campagna) {
@@ -810,7 +810,7 @@ switch (rivista.getStatoRivista()) {
     	boolean almenounarivistaattiva=false;
     	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
     			findByAbbonamento(abbonamento)) {
-    		StatoRivista stato = Smd.getStatoRivista(abbonamento, ra);
+    		StatoRivista stato = Smd.getStatoRivista(campagna,abbonamento, ra);
         	boolean sospesa = rivisteSospese.contains(ra.getPubblicazione().getId());
         	if (stato != StatoRivista.Attiva && sospesa) {
         		almenounarivistasospesa=true;
@@ -824,7 +824,7 @@ switch (rivista.getStatoRivista()) {
 				programmaSpedizioniSospese(abbonamento,ra);
         	}
         }
-    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso);		
+    	return Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(campagna),StatoCampagna.InviatoSospeso);
 	}
 	
 	@Override
@@ -833,7 +833,7 @@ switch (rivista.getStatoRivista()) {
 				.findByAbbonamento(abbonamento)
 				.stream()
 				.filter(ra ->  
-					Smd.getStatoAbbonamento(abbonamento, ra, campagna,false) != StatoAbbonamento.Valido)
+					Smd.getStatoAbbonamento(campagna, abbonamento, ra, false) != StatoAbbonamento.Valido)
 				.collect(Collectors.toList());
 	}
 

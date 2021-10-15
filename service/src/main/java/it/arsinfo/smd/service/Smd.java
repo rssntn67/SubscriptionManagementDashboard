@@ -56,7 +56,7 @@ public class Smd {
     	return StatoAbbonamento.Sospeso;
 
     }
-    public static StatoAbbonamento getStatoAbbonamento(Abbonamento abbonamento, RivistaAbbonamento rivista, Campagna campagna, boolean rivistasospesa) {
+    public static StatoAbbonamento getStatoAbbonamento(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista, boolean rivistasospesa) {
     	
     	if (Smd.isOmaggio(rivista)) {
 			return StatoAbbonamento.Valido;
@@ -90,7 +90,7 @@ public class Smd {
 			}
         }
 
-    	switch (abbonamento.getStatoIncasso()) {
+    	switch (abbonamento.getStatoIncasso(campagna)) {
 			case Si:
 			case SiConDebito:
 				stato = StatoAbbonamento.Valido;
@@ -103,14 +103,14 @@ public class Smd {
 
     }
 
-    public static StatoRivista getStatoRivista(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public static StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista) {
 
     	if (Smd.isOmaggio(rivista)) {
 			return StatoRivista.Attiva;
 		}
 
         StatoRivista stato = StatoRivista.Sospesa;
-    	switch (abbonamento.getStatoIncasso()) {
+    	switch (abbonamento.getStatoIncasso(campagna)) {
 			case Si:
 			case SiConDebito:
 				stato = StatoRivista.Attiva;

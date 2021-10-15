@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -337,9 +339,12 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
         if (s != null) {
         	abbonamenti = abbonamenti.stream().filter(a -> s == a.getStatoAbbonamento() ).collect(Collectors.toList());        	
         }
-        if (inc != null) {
-        	abbonamenti = abbonamenti.stream().filter(a -> inc == Abbonamento.getStatoIncasso(a)).collect(Collectors.toList());
-        }
+        if (inc != null && campagna != null) {
+        	abbonamenti = abbonamenti.stream().filter(a -> inc == a.getStatoIncasso(campagna)).collect(Collectors.toList());
+        } else if (inc != null) {
+        	final Map<Anno,Campagna> campagnaMap = campagnaDao.findAll().stream().collect(Collectors.toMap(Campagna::getAnno, Function.identity()));
+			abbonamenti = abbonamenti.stream().filter(a -> inc == a.getStatoIncasso(campagnaMap.get(a.getAnno()))).collect(Collectors.toList());
+		}
         if (StringUtils.hasLength(searchCodeLine)) {
             abbonamenti=abbonamenti.stream().filter(a -> a.getCodeLine().toLowerCase().contains(searchCodeLine.toLowerCase())).collect(Collectors.toList());                  
         }

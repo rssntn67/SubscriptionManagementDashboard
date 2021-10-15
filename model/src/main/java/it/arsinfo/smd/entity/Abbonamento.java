@@ -156,7 +156,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     public Abbonamento() {
     }
 
-    public static Incassato getStatoIncasso(Abbonamento abbonamento) {
+    public static Incassato getStatoIncasso(Abbonamento abbonamento, BigDecimal sogliaImportoTotale, BigDecimal minPercIncassato, BigDecimal maxDebito ) {
         if (abbonamento.getResiduo().signum() == 0) {
             log.info("getStatoIncasso: {} {}", Incassato.Si,abbonamento);
             return Incassato.Si;
@@ -165,12 +165,12 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
             log.info("getStatoIncasso: {} {}", Incassato.No,abbonamento);
             return Incassato.No;
         }
-        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) >= 0 && abbonamento.getTotale().multiply(new BigDecimal("0.8")).compareTo(abbonamento.getIncassato()) < 0 ){
-            log.info("getStatoIncasso: {} maggiore di 70 ma debito inferiore al 20% {}", Incassato.SiConDebito,abbonamento);
+        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) >= 0 && abbonamento.getTotale().multiply(minPercIncassato).compareTo(abbonamento.getIncassato()) < 0 ){
+            log.info("getStatoIncasso: {} {} maggiore {} debito inferiore al {}", abbonamento, Incassato.SiConDebito,sogliaImportoTotale, minPercIncassato);
             return Incassato.SiConDebito;
         }
-        if (abbonamento.getTotale().compareTo(new BigDecimal("70.00")) < 0 && abbonamento.getTotale().subtract(new BigDecimal("7.00")).compareTo(abbonamento.getIncassato()) < 0) {
-            log.info("getStatoIncasso: {} minore di 70 ma debito inferiore a 7 {}", Incassato.SiConDebito,abbonamento);
+        if (abbonamento.getTotale().compareTo(sogliaImportoTotale) < 0 && abbonamento.getTotale().subtract(maxDebito).compareTo(abbonamento.getIncassato()) < 0) {
+            log.info("getStatoIncasso: {} {} minore {} ma debito inferiore al {}", abbonamento, Incassato.SiConDebito, sogliaImportoTotale, maxDebito);
             return Incassato.SiConDebito;
         }
         log.info("getStatoIncasso: {} {}", Incassato.Parzialmente,abbonamento);
@@ -390,8 +390,8 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     }
 
     @Transient
-    public Incassato getStatoIncasso() {
-        return getStatoIncasso(this);
+    public Incassato getStatoIncasso(Campagna campagna) {
+        return getStatoIncasso(this, campagna.getSogliaImportoTotale(),campagna.getMinPercIncassato(),campagna.getMaxDebito());
     }
 
 	@Override

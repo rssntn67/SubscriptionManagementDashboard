@@ -380,7 +380,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
             boolean almenounarivistaattiva=false;
         	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
             findByAbbonamentoAndPubblicazione(abbonamento, p)) {
-            	StatoRivista stato = Smd.getStatoRivista(abbonamento, ra);
+            	StatoRivista stato = Smd.getStatoRivista(campagna,abbonamento, ra);
             	if (stato != StatoRivista.Attiva) {
             		almenounarivistasospesa=true;
 					ra.setStatoRivista(StatoRivista.Sospesa);
@@ -390,7 +390,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
             		almenounarivistaattiva=true;
             	}
             }
-        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));
+        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(campagna),StatoCampagna.InviatoSospeso));
         	abbonamentoDao.save(abbonamento);
         });
 
@@ -443,7 +443,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
             boolean almenounarivistasospesa=false;
             boolean almenounarivistaattiva=false;
         	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
-            	StatoRivista stato = Smd.getStatoRivista(abbonamento, ra);
+            	StatoRivista stato = Smd.getStatoRivista(campagna,abbonamento, ra);
             	if (stato != StatoRivista.Attiva) {
             		almenounarivistasospesa=true;
 					ra.setStatoRivista(StatoRivista.Sospesa);
@@ -457,7 +457,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 				abbonamento.setSpeseEstrattoConto(abbonamento.getSpeseEstrattoConto().add(campagna.getSpeseEstrattoConto()));
 				abbonamento.setInviatoEC(true);
 			}
-        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(),StatoCampagna.InviatoSospeso));
+        	abbonamento.setStatoAbbonamento(Smd.getStatoAbbonamento(almenounarivistaattiva, almenounarivistasospesa, abbonamento.getStatoIncasso(campagna),StatoCampagna.InviatoSospeso));
         	abbonamentoDao.save(abbonamento);
 
         });

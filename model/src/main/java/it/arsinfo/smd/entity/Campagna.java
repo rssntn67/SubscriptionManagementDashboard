@@ -30,6 +30,7 @@ public class Campagna implements SmdEntity {
     private boolean running = false;
     
     // Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna
+    // Chi ha un abbonamento superiore a 10 riviste non va sospeso
     private Integer numero = 10;
     //Importo Minimo Residuo per Debitori
     private BigDecimal residuo = BigDecimal.ZERO;
@@ -37,6 +38,34 @@ public class Campagna implements SmdEntity {
     private BigDecimal limiteInvioSollecito=BigDecimal.ZERO;
     private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
     private BigDecimal speseSollecito=BigDecimal.ZERO;
+
+    private BigDecimal sogliaImportoTotale = new BigDecimal("70.00");
+    private BigDecimal minPercIncassato = new BigDecimal("0.8");
+    private BigDecimal maxDebito = new BigDecimal("7");
+
+    public BigDecimal getSogliaImportoTotale() {
+        return sogliaImportoTotale;
+    }
+
+    public void setSogliaImportoTotale(BigDecimal sogliaImportoTotale) {
+        this.sogliaImportoTotale = sogliaImportoTotale;
+    }
+
+    public BigDecimal getMinPercIncassato() {
+        return minPercIncassato;
+    }
+
+    public void setMinPercIncassato(BigDecimal minPercIncassato) {
+        this.minPercIncassato = minPercIncassato;
+    }
+
+    public BigDecimal getMaxDebito() {
+        return maxDebito;
+    }
+
+    public void setMaxDebito(BigDecimal maxDebito) {
+        this.maxDebito = maxDebito;
+    }
 
     public BigDecimal getLimiteInvioEstratto() {
         return limiteInvioEstratto;

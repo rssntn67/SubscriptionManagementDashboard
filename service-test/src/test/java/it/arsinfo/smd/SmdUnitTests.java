@@ -1073,10 +1073,10 @@ public class SmdUnitTests {
         Assertions.assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
         
         abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(13)));
-        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb, new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         abb.setIncassato(blocchetti.getAbbonamento().multiply(new BigDecimal(11)));
-        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
 		Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue(), costoUno,0);
@@ -1110,10 +1110,10 @@ public class SmdUnitTests {
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
         
         abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(12)));
-        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         abb.setIncassato(messaggio.getAbbonamento().multiply(new BigDecimal(10)));
-        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
 		double costoUno = ec1.getImporto().doubleValue()/(ec1.getNumero());
 		
@@ -1181,31 +1181,31 @@ public class SmdUnitTests {
     @Test
     public void testStatoIncassato() {
         Abbonamento abb = new Abbonamento();
-        Assertions.assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
         
         abb.setImporto(new BigDecimal(10));
-        Assertions.assertEquals(Incassato.No, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.No, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
         
         abb.setIncassato(new BigDecimal(10));
-        Assertions.assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         abb.setIncassato(new BigDecimal(7));
-        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         abb.setSpese(new BigDecimal(3));
         abb.setIncassato(new BigDecimal(10));
-        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         abb.setIncassato(new BigDecimal(6));
-        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
         
         abb.setImporto(new BigDecimal(70));
         abb.setIncassato(new BigDecimal(60));
         abb.setSpese(BigDecimal.ZERO);
-        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.SiConDebito, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
         
         abb.setIncassato(new BigDecimal(54));
-        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb));
+        Assertions.assertEquals(Incassato.Parzialmente, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         
     }

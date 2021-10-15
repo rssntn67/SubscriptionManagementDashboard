@@ -1978,13 +1978,13 @@ public class UIAdminTests {
         assertEquals(0, abb.getResiduo().doubleValue(),0);
         assertEquals(0, incasso.getResiduo().doubleValue(),0);
         assertEquals(incassato.doubleValue(), abb.getIncassato().doubleValue(),0);
-        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb));
+        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abb,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
 
         Versamento versamento = versamentoDao.findAll().iterator().next();        
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(versamento.getCodeLine());
         assertNotNull(abbonamento);
         assertEquals(versamento.getCodeLine(), abbonamento.getCodeLine());
-        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abbonamento));
+        assertEquals(Incassato.Si, Abbonamento.getStatoIncasso(abbonamento,new BigDecimal("70.0"), new BigDecimal("0.8"),new BigDecimal("7.0")));
         assertEquals(incassato.doubleValue(), versamento.getIncassato().doubleValue(),0);
         assertEquals(0, versamento.getResiduo().doubleValue(),0);
    
