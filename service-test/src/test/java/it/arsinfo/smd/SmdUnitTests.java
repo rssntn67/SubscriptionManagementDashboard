@@ -395,7 +395,7 @@ public class SmdUnitTests {
             log.info("Non Esiste {} {} {}: ",messaggio.getNome(),meseD.getNomeBreve(),annof.getAnnoAsString());        	
         }
 
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(77L);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(meseA);
         ec1.setAnnoInizio(annoi);
@@ -510,7 +510,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(17L);
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -518,7 +518,7 @@ public class SmdUnitTests {
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        RivistaAbbonamento ec2 = new RivistaAbbonamento(18L);
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
         ec2.setMeseInizio(Mese.GENNAIO);
@@ -526,7 +526,7 @@ public class SmdUnitTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
         ec2.setDestinatario(tizio);
-        RivistaAbbonamento ec3 = new RivistaAbbonamento();
+        RivistaAbbonamento ec3 = new RivistaAbbonamento(19L);
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
         ec3.setMeseInizio(Mese.GENNAIO);
@@ -795,7 +795,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(1L);
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -822,7 +822,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(8, items.size());
         Assertions.assertEquals(8, spedizioni.size());
 
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        RivistaAbbonamento ec2 = new RivistaAbbonamento(2L);
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
         ec2.setMeseInizio(Mese.GENNAIO);
@@ -874,7 +874,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(5L);
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -899,10 +899,6 @@ public class SmdUnitTests {
         Assertions.assertEquals(0, abb.getSpese().doubleValue(),0);
         Assertions.assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
         Assertions.assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
-        RivistaAbbonamento ec2 = ec1.clone();
-        ec2.setTipoAbbonamentoRivista(ec1.getTipoAbbonamentoRivista());
-        ec2.setNumero(10);
-        Assertions.assertEquals(ec2, ec1);
 
         RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,10,ec1.getTipoAbbonamentoRivista());
         
@@ -937,7 +933,7 @@ public class SmdUnitTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(),false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(56L);
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -961,17 +957,6 @@ public class SmdUnitTests {
         Assertions.assertEquals(11, spedizioni.size());
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
-        ec2.setAbbonamento(abb);
-        ec2.setPubblicazione(messaggio);
-        ec2.setMeseInizio(Mese.GENNAIO);
-        ec2.setAnnoInizio(anno);
-        ec2.setMeseFine(Mese.DICEMBRE);
-        ec2.setAnnoFine(anno);
-        ec2.setDestinatario(tizio);
-        ec2.setNumero(1);
-        ec2.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
-        Assertions.assertEquals(ec2, ec1);
 
         RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
         Assertions.assertEquals(0, aggiorna.getSpedizioniToSave().size());
