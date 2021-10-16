@@ -2,7 +2,6 @@ package it.arsinfo.smd.service.impl;
 
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.AnagraficaService;
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
@@ -143,7 +142,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 			notaDao.save(nota);
 		}
 
-        for (Abbonamento abb: Smd.genera(entity, anagraficaService.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
+        for (Abbonamento abb: Storico.genera(entity, anagraficaService.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
             storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
                 .forEach(storico ->
                 	abb.addItem(RivistaAbbonamento.genera(storico,abb)

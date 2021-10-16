@@ -481,46 +481,6 @@ public class Smd {
         return new ArrayList<>(spedMap.values());
     }
 
-    public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici) {
-        final List<Abbonamento> abbonamenti = new ArrayList<>();
-        anagrafiche.forEach(a -> abbonamenti.addAll(genera(campagna, a, storici)));
-        return abbonamenti;
-
-    }
-    
-    public static List<Abbonamento> genera(Campagna campagna,Anagrafica a, List<Storico> storici) {
-        final List<Abbonamento> abbonamenti = new ArrayList<>();
-        for (Storico storico: storici) {
-        	if (
-            	campagna.hasPubblicazione(storico.getPubblicazione()) 
-            	&& storico.getIntestatario().equals(a) 
-                && storico.isContrassegno()
-            ) {
-    		    try {
-    	            abbonamenti.add(Abbonamento.genera(campagna, a,true));
-    	            break;
-    	        } catch (Exception e) {
-    	            e.printStackTrace();
-    	        }        	
-        	}
-        }
-        for (Storico storico: storici) {
-        	if (
-            	campagna.hasPubblicazione(storico.getPubblicazione()) 
-            	&& storico.getIntestatario().equals(a) 
-                && !storico.isContrassegno()
-            ) {
-    		    try {
-    	            abbonamenti.add(Abbonamento.genera(campagna, a,false));
-    	            break;
-    	        } catch (Exception e) {
-    	            e.printStackTrace();
-    	        }        	
-        	}
-        }
-        return abbonamenti;
-    }
-
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione, 
             List<SpedizioneWithItems> spedizioni,Mese mese, Anno anno) {

@@ -1011,7 +1011,7 @@ public class SmdUnitTests {
         cimessaggio.setPubblicazione(messaggio);
         campagna.addCampagnaItem(cimessaggio);
         
-        List<Abbonamento> abbonamenti = Smd.genera(campagna, anagrafiche, storici);
+        List<Abbonamento> abbonamenti = Storico.genera(campagna, anagrafiche, storici);
         Assertions.assertEquals(1, abbonamenti.size());
         for (Abbonamento abb: abbonamenti) {
             log.info(abb.getIntestatario().toString());
@@ -1136,7 +1136,7 @@ public class SmdUnitTests {
             ci.setPubblicazione(p);
             campagna.addCampagnaItem(ci);
         }
-        List<Abbonamento> abbonamenti = Smd.genera(campagna, diocesiMilano, storici);
+        List<Abbonamento> abbonamenti = Storico.genera(campagna, diocesiMilano, storici);
         Assertions.assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
