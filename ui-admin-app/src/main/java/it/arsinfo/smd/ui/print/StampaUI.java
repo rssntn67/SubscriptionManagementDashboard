@@ -6,7 +6,7 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
 import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Stampa;
-import it.arsinfo.smd.service.dto.Indirizzo;
+import it.arsinfo.smd.dto.Indirizzo;
 import org.springframework.util.StringUtils;
 
 public abstract class StampaUI extends UI{

@@ -9,7 +9,7 @@ import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.service.dto.Indirizzo;
+import it.arsinfo.smd.dto.Indirizzo;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@ import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.AnagraficaDao;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.SpedizioneService;
-import it.arsinfo.smd.service.dto.Indirizzo;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.entity.EntityGridView;
 import org.springframework.beans.factory.annotation.Autowired;

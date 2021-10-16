@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
-import it.arsinfo.smd.service.dto.IncassoGiornaliero;
+import it.arsinfo.smd.dto.IncassoGiornaliero;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

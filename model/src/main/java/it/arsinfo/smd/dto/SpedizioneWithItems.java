@@ -1,6 +1,8 @@
-package it.arsinfo.smd.service.dto;
+package it.arsinfo.smd.dto;
 
 import it.arsinfo.smd.entity.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class SpedizioneWithItems {
 
+    private static final Logger log = LoggerFactory.getLogger(SpedizioneWithItems.class);
     private final Spedizione spedizione;
     private List<SpedizioneItem> spedizioneItems = new ArrayList<>();
 

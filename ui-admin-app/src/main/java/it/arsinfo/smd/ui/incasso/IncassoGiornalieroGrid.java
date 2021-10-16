@@ -1,7 +1,7 @@
 package it.arsinfo.smd.ui.incasso;
 
 import com.vaadin.ui.Grid;
-import it.arsinfo.smd.service.dto.IncassoGiornaliero;
+import it.arsinfo.smd.dto.IncassoGiornaliero;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 

@@ -6,7 +6,7 @@ import java.util.List;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 

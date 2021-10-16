@@ -1,16 +1,9 @@
 package it.arsinfo.smd.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import it.arsinfo.smd.dto.SpedizioneWithItems;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints={
@@ -18,6 +11,52 @@ import javax.persistence.UniqueConstraint;
         })
 //create unique index operazione_idx_key on operazione (anno,mese,pubblicazione_id);
 public class Operazione implements SmdEntity {
+
+    public static Operazione generaOperazione(
+            Pubblicazione pubblicazione,
+            List<SpedizioneWithItems> spedizioni, Mese mese, Anno anno) {
+        log.info("generaOperazione {}, {}, {}", pubblicazione,mese,anno);
+        final Operazione op = new Operazione(pubblicazione, anno, mese);
+        int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
+        Mese mesePubblicazione;
+        Anno annoPubblicazione;
+        if (posizioneMese > 12) {
+            mesePubblicazione = Mese.getByPosizione(posizioneMese-12);
+            annoPubblicazione = Anno.getAnnoSuccessivo(anno);
+        } else {
+            annoPubblicazione=anno;
+            mesePubblicazione=Mese.getByPosizione(posizioneMese);
+        }
+
+        if (!pubblicazione.getMesiPubblicazione().contains(mesePubblicazione)) {
+            return op;
+        }
+        op.setMesePubblicazione(mesePubblicazione);
+        op.setAnnoPubblicazione(annoPubblicazione);
+        spedizioni
+                .stream()
+                .filter( sped ->
+                        sped.getSpedizione().getAnnoSpedizione() == anno
+                                && sped.getSpedizione().getMeseSpedizione() == mese)
+                .forEach( sped ->
+                        sped
+                                .getSpedizioneItems()
+                                .stream()
+                                .filter(item ->
+                                        item.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA
+                                                && !item.isPosticipata()
+                                                && item.getPubblicazione().hashCode() == pubblicazione.hashCode())
+                                .forEach(item ->
+                                {
+                                    if (sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+                                        op.setStimatoSped(op.getStimatoSped() + item.getNumero());
+                                    } else {
+                                        op.setStimatoSede(op.getStimatoSede() + item.getNumero());
+                                    }
+                                })
+                );
+        return op;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

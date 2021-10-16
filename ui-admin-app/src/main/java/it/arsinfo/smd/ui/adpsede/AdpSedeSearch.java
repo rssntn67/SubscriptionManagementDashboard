@@ -7,7 +7,7 @@ import it.arsinfo.smd.entity.InvioSpedizione;
 import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.StatoSpedizione;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.dto.SpedizioneDto;
+import it.arsinfo.smd.dto.SpedizioneDto;
 import it.arsinfo.smd.ui.vaadin.SmdBaseSearch;
 
 import java.util.EnumSet;

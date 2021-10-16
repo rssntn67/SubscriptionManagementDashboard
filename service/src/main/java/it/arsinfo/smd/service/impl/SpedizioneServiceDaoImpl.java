@@ -17,7 +17,7 @@ import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.InvioSpedizione;
 import it.arsinfo.smd.entity.Mese;
 import it.arsinfo.smd.entity.StatoSpedizione;
-import it.arsinfo.smd.service.dto.Indirizzo;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;

@@ -10,7 +10,7 @@ import it.arsinfo.smd.entity.Cuas;
 import it.arsinfo.smd.entity.DistintaVersamento;
 import it.arsinfo.smd.entity.UserInfo;
 import it.arsinfo.smd.entity.Versamento;
-import it.arsinfo.smd.service.dto.IncassoGiornaliero;
+import it.arsinfo.smd.dto.IncassoGiornaliero;
 
 public interface DistintaVersamentoService extends SmdServiceItem<DistintaVersamento,Versamento> {
 

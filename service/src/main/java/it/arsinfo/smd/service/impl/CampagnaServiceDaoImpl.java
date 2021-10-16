@@ -5,7 +5,7 @@ import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.AnagraficaService;
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

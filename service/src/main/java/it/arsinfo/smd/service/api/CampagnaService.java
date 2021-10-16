@@ -3,7 +3,7 @@ package it.arsinfo.smd.service.api;
 import java.util.List;
 
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 
 public interface CampagnaService extends SmdServiceBase<Campagna> {
 

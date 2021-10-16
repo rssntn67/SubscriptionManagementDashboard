@@ -1,4 +1,4 @@
-package it.arsinfo.smd.service.dto;
+package it.arsinfo.smd.dto;
 
 import it.arsinfo.smd.entity.Cassa;
 import it.arsinfo.smd.entity.Ccp;

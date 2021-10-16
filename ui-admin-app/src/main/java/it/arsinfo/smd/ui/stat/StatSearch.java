@@ -21,7 +21,7 @@ import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Regione;
 import it.arsinfo.smd.entity.TitoloAnagrafica;
 import it.arsinfo.smd.service.api.CampagnaService;
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 public class StatSearch extends SmdChangeHandler {

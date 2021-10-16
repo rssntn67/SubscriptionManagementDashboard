@@ -1,10 +1,10 @@
 package it.arsinfo.smd.service.impl;
 
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.service.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.service.dto.SpedizioneDto;
-import it.arsinfo.smd.service.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.dto.SpedizioneDto;
+import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.SmdService;
@@ -235,7 +235,7 @@ public class SmdServiceImpl implements SmdService {
         if (saved != null) {
             operazioneDao.deleteById(saved.getId());
         }
-        Operazione op = Smd.generaOperazione(p,
+        Operazione op = Operazione.generaOperazione(p,
         		findByMeseSpedizioneAndAnnoSpedizione(mese, anno,p), 
                                              mese, 
                                              anno);

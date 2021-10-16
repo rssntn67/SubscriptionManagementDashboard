@@ -1,8 +1,8 @@
 package it.arsinfo.smd.service;
 
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.service.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.dto.SpedizioneWithItems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -481,52 +481,6 @@ public class Smd {
         return new ArrayList<>(spedMap.values());
     }
 
-    public static Operazione generaOperazione(
-            Pubblicazione pubblicazione, 
-            List<SpedizioneWithItems> spedizioni,Mese mese, Anno anno) {
-    	log.info("generaOperazione {}, {}, {}", pubblicazione,mese,anno);
-        final Operazione op = new Operazione(pubblicazione, anno, mese);
-        int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();
-        Mese mesePubblicazione;
-        Anno annoPubblicazione;
-        if (posizioneMese > 12) {
-            mesePubblicazione = Mese.getByPosizione(posizioneMese-12);
-            annoPubblicazione = Anno.getAnnoSuccessivo(anno);
-        } else {
-            annoPubblicazione=anno;
-            mesePubblicazione=Mese.getByPosizione(posizioneMese);
-        }
-
-        if (!pubblicazione.getMesiPubblicazione().contains(mesePubblicazione)) {
-            return op;
-        }
-        op.setMesePubblicazione(mesePubblicazione);
-        op.setAnnoPubblicazione(annoPubblicazione);
-        spedizioni
-            .stream()
-            .filter( sped -> 
-                   sped.getSpedizione().getAnnoSpedizione() == anno 
-                && sped.getSpedizione().getMeseSpedizione() == mese) 
-            .forEach( sped -> 
-                  sped
-                  .getSpedizioneItems()
-                  .stream()
-                  .filter(item -> 
-                  	item.getStatoSpedizione() == StatoSpedizione.PROGRAMMATA 
-                  	&& !item.isPosticipata() 
-                  	&& item.getPubblicazione().hashCode() == pubblicazione.hashCode())
-                  .forEach(item -> 
-                  {
-					  if (sped.getSpedizione().getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
-						  op.setStimatoSped(op.getStimatoSped() + item.getNumero());
-					  } else {
-						  op.setStimatoSede(op.getStimatoSede() + item.getNumero());
-					  }
-                  })
-              );                        
-        return op;        
-    }
- 
     public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, DocumentiTrasportoCumulati ddtAnno, BigDecimal importo) throws UnsupportedOperationException {
         if (incasso == null ) {
             log.error("incassa: Incasso null");
