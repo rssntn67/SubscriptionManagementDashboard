@@ -49,11 +49,11 @@ public interface SmdEntity {
         return "no";
     }
 
-    public static NumberFormat getEuroCurrency() {
+    static NumberFormat getEuroCurrency() {
         return NumberFormat.getCurrencyInstance(getLocalFromISO("EUR"));
     }
 
-    public static Locale getLocalFromISO(String iso4217code){
+    static Locale getLocalFromISO(String iso4217code){
         Locale toReturn = null;
         for (Locale locale : NumberFormat.getAvailableLocales()) {
             String code = NumberFormat.getCurrencyInstance(locale).

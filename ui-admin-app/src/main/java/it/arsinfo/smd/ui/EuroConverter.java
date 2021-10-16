@@ -14,7 +14,7 @@ import java.util.Locale;
 public class EuroConverter extends StringToBigDecimalConverter {
 	
 	public static NumberRenderer getEuroRenderer() {
-		return new NumberRenderer(NumberFormat.getCurrencyInstance(SmdEntity.getLocalFromISO("EUR")));
+		return new NumberRenderer(SmdEntity.getEuroCurrency());
 	}
 
     /**
