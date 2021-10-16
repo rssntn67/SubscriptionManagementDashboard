@@ -49,14 +49,14 @@ public class SmdApplication {
         return (args) -> {
             UserInfo administrator = userInfoDao.findByUsernameAndProvider("admin", UserInfo.Provider.LOCAL);
             if (administrator == null) {
-                administrator = new UserInfo("admin", passwordEncoder.encode("admin"), Role.ADMIN);
+                administrator = new UserInfo("admin", passwordEncoder.encode("admin000!!!"), Role.ADMIN);
                 userInfoDao.save(administrator);
                 log.info("creato user admin/admin");
             }
 
             UserInfo adp = userInfoDao.findByUsernameAndProvider("adp", UserInfo.Provider.LOCAL);
             if (adp == null) {
-               adp = new UserInfo("adp", passwordEncoder.encode("adp"), Role.LOCKED);
+               adp = new UserInfo("adp", passwordEncoder.encode("adp111!!"), Role.LOCKED);
                userInfoDao.save(adp);
                log.info("creato user adp/adp");
             }
