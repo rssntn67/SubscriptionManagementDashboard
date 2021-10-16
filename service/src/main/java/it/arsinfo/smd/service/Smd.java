@@ -1,19 +1,16 @@
 package it.arsinfo.smd.service;
 
-import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-@Configuration
 public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
@@ -142,7 +139,7 @@ public class Smd {
         	
         	original.calcolaImporto();
         	abbonamento.setImporto(abbonamento.getImporto().add(original.getImporto()));
-        	SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        	Abbonamento.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
 
         	output.setAbbonamentoToSave(abbonamento);
             output.setSpedizioniToSave(spedizioni);
@@ -197,7 +194,7 @@ public class Smd {
         	}
 
         	original.setNumeroTotaleRiviste(numeroTotaleRiviste);
-        	SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        	Abbonamento.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
         	
             output.setAbbonamentoToSave(abbonamento);
             output.setSpedizioniToSave(spedizioni);
@@ -265,7 +262,7 @@ public class Smd {
     	r.setNumeroTotaleRiviste(itemsupdated*numero);
     	r.calcolaImporto();
     	abbonamento.setImporto(abbonamento.getImporto().add(r.getImporto()));
-        SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        Abbonamento.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
         output.setAbbonamentoToSave(abbonamento);
         output.setSpedizioniToSave(spedizioni);
         output.getRivisteToSave().add(original);
@@ -328,7 +325,7 @@ public class Smd {
     				}
         		}
         	}
-        	SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedizioni, spese);
+        	Abbonamento.calcolaPesoESpesePostali(abb, spedizioni, spese);
             original.setNumero(0);
             original.setNumeroTotaleRiviste(0);
             original.setImporto(BigDecimal.ZERO);
@@ -358,7 +355,7 @@ public class Smd {
             	}        		
         	}        	
         }
-        SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedizioni, spese);
+        Abbonamento.calcolaPesoESpesePostali(abb, spedizioni, spese);
        	original.calcolaImporto();
     	abb.setImporto(abb.getImporto().add(original.getImporto()));
         aggiorna.setAbbonamentoToSave(abb);
@@ -369,29 +366,6 @@ public class Smd {
 
     	return aggiorna;
 
-    }
-
-    public static List<SpedizioneItem> generaSpedizioneItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
-        log.info("generaSpedizioneItems: {}", ec);
-        List<SpedizioneItem> items = new ArrayList<>();
-        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
-        for (Anno anno: mappaPubblicazioni.keySet()) {
-            mappaPubblicazioni.get(anno).forEach(mese -> {
-                SpedizioneItem item = new SpedizioneItem();
-                item.setRivistaAbbonamento(ec);
-                item.setAnnoPubblicazione(anno);
-                item.setMesePubblicazione(mese);
-                item.setNumero(ec.getNumero());
-                item.setPubblicazione(ec.getPubblicazione());
-                items.add(item);
-                log.info("generaSpedizioneItems: {} ", item);
-            });
-        }
-      if (items.isEmpty()) {
-          throw new UnsupportedOperationException("Nessuna spedizione per rivista in Abbonamento");
-      }
-      log.info("generaSpedizioneItems: generati {} items", items.size());
-      return items; 
     }
 
     public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
@@ -457,8 +431,7 @@ public class Smd {
                  spedizioni, 
                  spese, Mese.getMeseCorrente(), Anno.getAnnoCorrente());
     }
-    
-    
+
     public static List<SpedizioneWithItems> genera(Abbonamento abb,
             RivistaAbbonamento ec, 
             List<SpedizioneWithItems> spedizioni, 
@@ -466,7 +439,7 @@ public class Smd {
 
     	
         ec.setAbbonamento(abb);
-        List<SpedizioneItem> items = generaSpedizioneItems(ec);
+        List<SpedizioneItem> items = SpedizioneItem.generaSpedizioneItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         ec.calcolaImporto();
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
@@ -477,7 +450,7 @@ public class Smd {
 	            aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
 	        }
     	}
-        SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedMap.values(), spese);
+        Abbonamento.calcolaPesoESpesePostali(abb, spedMap.values(), spese);
         return new ArrayList<>(spedMap.values());
     }
 

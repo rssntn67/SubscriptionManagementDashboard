@@ -2,10 +2,20 @@ package it.arsinfo.smd.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames = {"rangeSpeseSpedizione" , "areaSpedizione"})})
 public class SpesaSpedizione implements SmdEntity {
+
+	public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss, AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
+		for (SpesaSpedizione s: ss) {
+			if (s.getAreaSpedizione() == area && s.getRangeSpeseSpedizione() == range) {
+				return s;
+			}
+		}
+		throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
+	}
 
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)

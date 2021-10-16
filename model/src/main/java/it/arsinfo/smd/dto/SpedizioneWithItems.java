@@ -56,44 +56,6 @@ public class SpedizioneWithItems {
         return spedizione.hashCode();
     }
 
-    public static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
-        abb.setSpese(BigDecimal.ZERO);
-        abb.setSpeseEstero(BigDecimal.ZERO);
-        for (SpedizioneWithItems sped: spedizioni) {
-            int pesoStimato=0;
-            for (SpedizioneItem item: sped.getSpedizioneItems()) {
-                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
-            }
-            sped.getSpedizione().setPesoStimato(pesoStimato);
-
-            sped.getSpedizione().setSpesePostali(getSpesaSpedizione(
-                    spese,
-                    sped.getSpedizione().getDestinatario().getAreaSpedizione(),
-                    RangeSpeseSpedizione.getByPeso(pesoStimato)
-            ).calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione()));
-            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
-                case Italia:
-                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
-                    break;
-                case EuropaBacinoMediterraneo:
-                case AmericaAfricaAsia:
-                    abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss, AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
-        for (SpesaSpedizione s: ss) {
-            if (s.getAreaSpedizione() == area && s.getRangeSpeseSpedizione() == range) {
-                return s;
-            }
-        }
-        throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
-    }
-
     public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
         final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
         for (SpedizioneWithItems spedizione:spedizioni) {

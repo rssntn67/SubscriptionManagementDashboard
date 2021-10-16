@@ -253,7 +253,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(Anno.getAnnoCorrente(), spedwi.getSpedizione().getAnnoSpedizione());
         Assertions.assertEquals(ec.getNumeroTotaleRiviste()*messaggio.getGrammi(), spedwi.getSpedizione().getPesoStimato().intValue());
         
-        SpesaSpedizione ss = SpedizioneWithItems.getSpesaSpedizione(spese, AreaSpedizione.Italia, RangeSpeseSpedizione.getByPeso(spedwi.getSpedizione().getPesoStimato()));
+        SpesaSpedizione ss = SpesaSpedizione.getSpesaSpedizione(spese, AreaSpedizione.Italia, RangeSpeseSpedizione.getByPeso(spedwi.getSpedizione().getPesoStimato()));
         Assertions.assertEquals(ss.getSpese().doubleValue(), spedwi.getSpedizione().getSpesePostali().doubleValue(),0);
        
         Assertions.assertEquals(items.size(), spedwi.getSpedizioneItems().size());
@@ -770,7 +770,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(p.getMesiPubblicazione().size(), spedizioni.size());
         
         SpesaSpedizione spesa = 
-                SpedizioneWithItems.getSpesaSpedizione(
+                SpesaSpedizione.getSpesaSpedizione(
                            spese, 
                            AreaSpedizione.AmericaAfricaAsia, 
                            RangeSpeseSpedizione.getByPeso(p.getGrammi())

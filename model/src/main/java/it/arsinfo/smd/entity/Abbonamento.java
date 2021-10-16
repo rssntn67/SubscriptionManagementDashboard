@@ -1,7 +1,10 @@
 package it.arsinfo.smd.entity;
 
+import it.arsinfo.smd.dto.SpedizioneWithItems;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,6 +32,35 @@ import javax.persistence.UniqueConstraint;
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
+
+    public static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
+        abb.setSpese(BigDecimal.ZERO);
+        abb.setSpeseEstero(BigDecimal.ZERO);
+        for (SpedizioneWithItems sped: spedizioni) {
+            int pesoStimato=0;
+            for (SpedizioneItem item: sped.getSpedizioneItems()) {
+                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
+            }
+            sped.getSpedizione().setPesoStimato(pesoStimato);
+
+            sped.getSpedizione().setSpesePostali(SpesaSpedizione.getSpesaSpedizione(
+                    spese,
+                    sped.getSpedizione().getDestinatario().getAreaSpedizione(),
+                    RangeSpeseSpedizione.getByPeso(pesoStimato)
+            ).calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione()));
+            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
+                case Italia:
+                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
+                    break;
+                case EuropaBacinoMediterraneo:
+                case AmericaAfricaAsia:
+                    abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     public static Abbonamento genera(Campagna campagna, Anagrafica a,boolean contrassegno) throws Exception {
         if (campagna == null) {

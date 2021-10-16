@@ -9,9 +9,36 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 @Entity
 public class SpedizioneItem implements SmdEntity {
+
+    public static List<SpedizioneItem> generaSpedizioneItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
+        log.info("generaSpedizioneItems: {}", ec);
+        List<SpedizioneItem> items = new ArrayList<>();
+        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
+        for (Anno anno: mappaPubblicazioni.keySet()) {
+            mappaPubblicazioni.get(anno).forEach(mese -> {
+                SpedizioneItem item = new SpedizioneItem();
+                item.setRivistaAbbonamento(ec);
+                item.setAnnoPubblicazione(anno);
+                item.setMesePubblicazione(mese);
+                item.setNumero(ec.getNumero());
+                item.setPubblicazione(ec.getPubblicazione());
+                items.add(item);
+                log.info("generaSpedizioneItems: {} ", item);
+            });
+        }
+        if (items.isEmpty()) {
+            throw new UnsupportedOperationException("Nessuna spedizione per rivista in Abbonamento");
+        }
+        log.info("generaSpedizioneItems: generati {} items", items.size());
+        return items;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
