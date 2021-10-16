@@ -252,7 +252,7 @@ public class UIAdminTests {
     public void testLoginAdmin() {
         log.info("----------------->testLoginAdmin<----------------");
         Authentication auth =
-                new UsernamePasswordAuthenticationToken("admin", "admin");
+                new UsernamePasswordAuthenticationToken("admin", "admin000!!!");
         try {
             securityConfig.authenticationManagerBean().authenticate(auth);
         } catch (Exception e) {
