@@ -1,15 +1,10 @@
 package it.arsinfo.smd.service.dto;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import it.arsinfo.smd.entity.*;
 
-import it.arsinfo.smd.entity.InvioSpedizione;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpedizioneWithItems {
 
@@ -56,6 +51,44 @@ public class SpedizioneWithItems {
     @Override
     public int hashCode() {
         return spedizione.hashCode();
+    }
+
+    public static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
+        abb.setSpese(BigDecimal.ZERO);
+        abb.setSpeseEstero(BigDecimal.ZERO);
+        for (SpedizioneWithItems sped: spedizioni) {
+            int pesoStimato=0;
+            for (SpedizioneItem item: sped.getSpedizioneItems()) {
+                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
+            }
+            sped.getSpedizione().setPesoStimato(pesoStimato);
+
+            sped.getSpedizione().setSpesePostali(getSpesaSpedizione(
+                    spese,
+                    sped.getSpedizione().getDestinatario().getAreaSpedizione(),
+                    RangeSpeseSpedizione.getByPeso(pesoStimato)
+            ).calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione()));
+            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
+                case Italia:
+                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
+                    break;
+                case EuropaBacinoMediterraneo:
+                case AmericaAfricaAsia:
+                    abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss, AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
+        for (SpesaSpedizione s: ss) {
+            if (s.getAreaSpedizione() == area && s.getRangeSpeseSpedizione() == range) {
+                return s;
+            }
+        }
+        throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
     }
 
     public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {

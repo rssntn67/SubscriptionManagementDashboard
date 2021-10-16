@@ -1,21 +1,13 @@
 package it.arsinfo.smd.entity;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
-
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames = {"rangeSpeseSpedizione" , "areaSpedizione"})})
 public class SpesaSpedizione implements SmdEntity {
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -85,6 +77,25 @@ public class SpesaSpedizione implements SmdEntity {
 	public String getHeader() {
         return String.format("%s - %s]",
                 rangeSpeseSpedizione,areaSpedizione);
+	}
+
+	@Transient
+	public BigDecimal calcolaSpesePostali(InvioSpedizione invioSpedizione)  {
+		BigDecimal spesePostali = BigDecimal.ZERO;
+		switch (invioSpedizione) {
+			case AdpSede:
+				spesePostali = spese;
+				break;
+			case AdpSedeCorriere24hh:
+				spesePostali = cor24h;
+				break;
+			case AdpSedeCorriere3gg:
+				spesePostali = cor3gg;
+				break;
+			default:
+				break;
+		}
+		return spesePostali;
 	}
 
 }

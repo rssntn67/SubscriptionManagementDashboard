@@ -1052,7 +1052,7 @@ public class UIAdminTests {
                     assertEquals(0, sped.getSpesePostali().doubleValue(),0);
         			break;
                 default:
-        	        SpesaSpedizione ss = Smd.getSpesaSpedizione(spesaSpedizioneDao.findAll(), tizio.getAreaSpedizione(), RangeSpeseSpedizione.getByPeso(numero*blocchetti.getGrammi()));
+        	        SpesaSpedizione ss = SpedizioneWithItems.getSpesaSpedizione(spesaSpedizioneDao.findAll(), tizio.getAreaSpedizione(), RangeSpeseSpedizione.getByPeso(numero*blocchetti.getGrammi()));
         	        log.info(ss.toString());
         			double spesaSped =  ss.getSpese().doubleValue();
         			int nrSped = blocchetti.getMesiPubblicazione().size();

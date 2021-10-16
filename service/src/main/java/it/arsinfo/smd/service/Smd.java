@@ -156,7 +156,7 @@ public class Smd {
         	
         	original.calcolaImporto();
         	abbonamento.setImporto(abbonamento.getImporto().add(original.getImporto()));
-        	calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        	SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
 
         	output.setAbbonamentoToSave(abbonamento);
             output.setSpedizioniToSave(spedizioni);
@@ -211,7 +211,7 @@ public class Smd {
         	}
 
         	original.setNumeroTotaleRiviste(numeroTotaleRiviste);
-        	calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        	SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
         	
             output.setAbbonamentoToSave(abbonamento);
             output.setSpedizioniToSave(spedizioni);
@@ -279,7 +279,7 @@ public class Smd {
     	r.setNumeroTotaleRiviste(itemsupdated*numero);
     	r.calcolaImporto();
     	abbonamento.setImporto(abbonamento.getImporto().add(r.getImporto()));
-        calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
+        SpedizioneWithItems.calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
         output.setAbbonamentoToSave(abbonamento);
         output.setSpedizioniToSave(spedizioni);
         output.getRivisteToSave().add(original);
@@ -342,7 +342,7 @@ public class Smd {
     				}
         		}
         	}
-        	calcolaPesoESpesePostali(abb, spedizioni, spese);
+        	SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedizioni, spese);
             original.setNumero(0);
             original.setNumeroTotaleRiviste(0);
             original.setImporto(BigDecimal.ZERO);
@@ -372,7 +372,7 @@ public class Smd {
             	}        		
         	}        	
         }
-        calcolaPesoESpesePostali(abb, spedizioni, spese);
+        SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedizioni, spese);
        	original.calcolaImporto();
     	abb.setImporto(abb.getImporto().add(original.getImporto()));
         aggiorna.setAbbonamentoToSave(abb);
@@ -491,67 +491,8 @@ public class Smd {
 	            aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
 	        }
     	}
-        calcolaPesoESpesePostali(abb, spedMap.values(), spese);
+        SpedizioneWithItems.calcolaPesoESpesePostali(abb, spedMap.values(), spese);
         return new ArrayList<>(spedMap.values());
-    }
-
-    private static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
-        abb.setSpese(BigDecimal.ZERO);
-        abb.setSpeseEstero(BigDecimal.ZERO);
-        for (SpedizioneWithItems sped: spedizioni) {
-            int pesoStimato=0;
-            for (SpedizioneItem item: sped.getSpedizioneItems()) {
-                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
-            }
-            SpesaSpedizione spesa = 
-                    getSpesaSpedizione(
-                               spese, 
-                               sped.getSpedizione().getDestinatario().getAreaSpedizione(), 
-                               RangeSpeseSpedizione.getByPeso(pesoStimato)
-                    		);
-            
-            sped.getSpedizione().setPesoStimato(pesoStimato);
-            sped.getSpedizione().setSpesePostali(calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione(),spesa));
-            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
-            	case Italia:
-                	abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
-                	break;
-
-				case EuropaBacinoMediterraneo:
-				case AmericaAfricaAsia:
-					abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
-                	break;
-				default:
-                	break;
-            }
-        }
-    }
-    
-    public static SpesaSpedizione getSpesaSpedizione(List<SpesaSpedizione> ss,AreaSpedizione area, RangeSpeseSpedizione range) throws UnsupportedOperationException {
-        for (SpesaSpedizione s: ss) {
-            if (s.getAreaSpedizione() == area && s.getRangeSpeseSpedizione() == range) {
-                return s;
-            }
-        }
-        throw new UnsupportedOperationException("cannot get spese di spedizione per Area: " + area.name() + ", range: " + range.name());
-    }
-    
-    public static BigDecimal calcolaSpesePostali(InvioSpedizione sped, SpesaSpedizione spesa) throws UnsupportedOperationException {
-    	BigDecimal spesePostali = BigDecimal.ZERO;
-        switch (sped) {
-        case AdpSede:
-            spesePostali = spesa.getSpese();
-        	break;
-        case AdpSedeCorriere24hh:
-            spesePostali = spesa.getCor24h();
-        	break;
-        case AdpSedeCorriere3gg:
-            spesePostali = spesa.getCor3gg();
-        	break;
-        default:
-        	break;        	
-        }
-        return spesePostali;
     }
 
     public static List<Abbonamento> genera(final Campagna campagna, List<Anagrafica> anagrafiche, List<Storico> storici) {
