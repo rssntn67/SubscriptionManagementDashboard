@@ -26,6 +26,182 @@ import javax.persistence.UniqueConstraint;
 //create unique index ukh0do4klnqwq54yhlvtj5hjcbe on incasso (data_contabile, cassa, cuas, ccp);
 public class DistintaVersamento implements SmdEntityItems<Versamento> {
 
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, DocumentiTrasportoCumulati ddtAnno, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (ddtAnno == null ) {
+            log.error("incassa: Ddt Anno null");
+            throw new UnsupportedOperationException("incassa: Ddt Anno null");
+        }
+
+        BigDecimal incassato = importo;
+        if (importo.compareTo(versamento.getResiduo()) > 0) {
+            incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
+        }
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        ddtAnno.setImporto(ddtAnno.getImporto().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("incassa: Offerte null");
+            throw new UnsupportedOperationException("incassa: Abbonamento null");
+        }
+
+        BigDecimal incassato = importo;
+        if (importo.compareTo(versamento.getResiduo()) > 0) {
+            incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
+        }
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        offerte.setImporto(offerte.getImporto().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+
+    public static void storna(DistintaVersamento incasso, Versamento versamento, OfferteCumulate offerte, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (offerte == null ) {
+            log.error("storna: Offerte null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (offerte.getImporto().compareTo(importo) < 0) {
+            log.error("storna: incassato Offerte minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale Offerte minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        offerte.setImporto(offerte.getImporto().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+    public static void storna(DistintaVersamento incasso, Versamento versamento,DocumentiTrasportoCumulati ddts, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (ddts == null ) {
+            log.error("storna: DDT null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (ddts.getImporto().compareTo(importo) < 0) {
+            log.error("storna: incassato DDT minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale DDT minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        ddts.setImporto(ddts.getImporto().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+
+    public static BigDecimal incassa(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("incassa: Incasso null");
+            throw new UnsupportedOperationException("incassa: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("incassa: Versamento null");
+            throw new UnsupportedOperationException("incassa: Versamento null");
+        }
+        if (abbonamento == null ) {
+            log.error("incassa: Abbonamento null");
+            throw new UnsupportedOperationException("incassa: Abbonamento null");
+        }
+
+        BigDecimal incassato;
+        if ((versamento.getResiduo()).compareTo(abbonamento.getResiduo()) < 0) {
+            incassato = BigDecimal.valueOf(versamento.getResiduo().doubleValue());
+        } else {
+            incassato = BigDecimal.valueOf(abbonamento.getResiduo().doubleValue());
+        }
+
+        versamento.setIncassato(versamento.getIncassato().add(incassato));
+        abbonamento.setIncassato(abbonamento.getIncassato().add(incassato));
+        incasso.setIncassato(incasso.getIncassato().add(incassato));
+        return incassato;
+    }
+
+    public static void storna(DistintaVersamento incasso, Versamento versamento, Abbonamento abbonamento, BigDecimal importo) throws UnsupportedOperationException {
+        if (incasso == null ) {
+            log.error("storna: Incasso null");
+            throw new UnsupportedOperationException("storna: Incasso null");
+        }
+        if (versamento == null ) {
+            log.error("storna: Versamento null");
+            throw new UnsupportedOperationException("storna: Versamento null");
+        }
+        if (abbonamento == null ) {
+            log.error("storna: Abbonamento null");
+            throw new UnsupportedOperationException("storna: Abbonamento null");
+        }
+        if (versamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Versamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: importo Versamento minore importo da stornare");
+        }
+        if (abbonamento.getIncassato().compareTo(importo) < 0) {
+            log.error("storna: incassato Abbonamento minore importo da stornare");
+            throw new UnsupportedOperationException("storna: totale Abbonamento minore importo da stornare");
+        }
+        versamento.setIncassato(versamento.getIncassato().subtract(importo));
+        abbonamento.setIncassato(abbonamento.getIncassato().subtract(importo));
+        incasso.setIncassato(incasso.getIncassato().subtract(importo));
+    }
+
+    public static void calcoloImportoIncasso(DistintaVersamento incasso) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Versamento versamento: incasso.getItems()) {
+            importo=importo.add(versamento.getImporto());
+        }
+        incasso.setImporto(importo);
+        incasso.setDocumenti(incasso.getItems().size());
+        incasso.setErrati(0);
+        incasso.setEsatti(incasso.getDocumenti());
+        incasso.setImportoErrati(BigDecimal.ZERO);
+        incasso.setImportoEsatti(incasso.getImporto());
+    }
+
+    public static void calcoloImportoIncasso(DistintaVersamento incasso, List<Versamento> versamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Versamento versamento: versamenti) {
+            importo=importo.add(versamento.getImporto());
+        }
+        incasso.setImporto(importo);
+        incasso.setImportoEsatti(incasso.getImporto().subtract(incasso.getImportoErrati()));
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

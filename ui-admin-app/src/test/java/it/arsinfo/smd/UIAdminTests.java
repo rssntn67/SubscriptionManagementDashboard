@@ -1820,7 +1820,7 @@ public class UIAdminTests {
         
         assertEquals(0.00, offerte.getImporto().doubleValue(),0);
         
-        BigDecimal incassato = Smd.incassa(incasso, versamento, offerte,new BigDecimal(10));
+        BigDecimal incassato = DistintaVersamento.incassa(incasso, versamento, offerte,new BigDecimal(10));
         assertEquals(10.00, offerte.getImporto().doubleValue(),0);
         assertEquals(10.00, incassato.doubleValue(),0);
         assertEquals(10.00, versamento.getIncassato().doubleValue(),0);
@@ -1912,7 +1912,7 @@ public class UIAdminTests {
          versamentoIncasso5.setCodeLine(codeLine);
          versamentoIncasso5.setDataPagamento(incasso5.getDataContabile());
          incasso5.addItem(versamentoIncasso5);
-         Smd.calcoloImportoIncasso(incasso5);
+         DistintaVersamento.calcoloImportoIncasso(incasso5);
          return incasso5;
      }
     
@@ -1956,7 +1956,7 @@ public class UIAdminTests {
         BigDecimal incassato = BigDecimal.ZERO;
         for (Versamento v: incasso.getItems()) {
         	assertEquals(abb.getCodeLine(), v.getCodeLine());
-            incassato = incassato.add(Smd.incassa(incasso,v, abb));
+            incassato = incassato.add(DistintaVersamento.incassa(incasso,v, abb));
             versamentoDao.save(v);
             incassoDao.save(incasso);
             abbonamentoDao.save(abb);

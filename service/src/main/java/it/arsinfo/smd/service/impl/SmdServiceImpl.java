@@ -443,7 +443,7 @@ public class SmdServiceImpl implements SmdService {
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, abbonamento);
+        BigDecimal incassato = DistintaVersamento.incassa(incasso,versamento, abbonamento);
         if (versamento.getCommittente() == null) {
         	versamento.setCommittente(abbonamento.getIntestatario());
         }
@@ -481,7 +481,7 @@ public class SmdServiceImpl implements SmdService {
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, ddtAnno,importo);    
+        BigDecimal incassato = DistintaVersamento.incassa(incasso,versamento, ddtAnno,importo);
         if (versamento.getCommittente() == null) {
         	versamento.setCommittente(committente);
         }
@@ -519,7 +519,7 @@ public class SmdServiceImpl implements SmdService {
         }
         
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        BigDecimal incassato = Smd.incassa(incasso,versamento, offerte,importo);    
+        BigDecimal incassato = DistintaVersamento.incassa(incasso,versamento, offerte,importo);
         if (versamento.getCommittente() == null) {
         	versamento.setCommittente(committente);
         }
@@ -551,7 +551,7 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
         DistintaVersamento distinta = versamento.getDistintaVersamento();
-        Smd.storna(distinta, versamento, cumulati, ddt.getImporto());
+        DistintaVersamento.storna(distinta, versamento, cumulati, ddt.getImporto());
         ddt.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         ddtDao.save(ddt);
 
@@ -589,7 +589,7 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
         DistintaVersamento distinta = versamento.getDistintaVersamento();
-        Smd.storna(distinta, versamento, offerte, offerta.getImporto());
+        DistintaVersamento.storna(distinta, versamento, offerte, offerta.getImporto());
         offerta.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         offertaDao.save(offerta);
 
@@ -624,7 +624,7 @@ public class SmdServiceImpl implements SmdService {
             throw new UnsupportedOperationException("dissocia: Versamento con Incasso 0, non dissociabile");            
         }
         DistintaVersamento incasso = versamento.getDistintaVersamento();
-        Smd.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
+        DistintaVersamento.storna(incasso, versamento, abbonamento, operazioneIncasso.getImporto());
         operazioneIncasso.setStatoOperazioneIncasso(StatoOperazioneIncasso.IncassoStornato);
         operazioneIncassoDao.save(operazioneIncasso);
         versamentoDao.save(versamento);

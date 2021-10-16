@@ -1,21 +1,19 @@
 package it.arsinfo.smd.service.impl;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.dto.IncassoGiornaliero;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.api.DistintaVersamentoService;
+import it.arsinfo.smd.service.api.SmdService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.arsinfo.smd.service.api.DistintaVersamentoService;
-import it.arsinfo.smd.service.api.SmdService;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoService {
@@ -281,7 +279,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
 	public DistintaVersamento deleteItem(DistintaVersamento t, Versamento item) throws UnsupportedOperationException {
         if (t.getId() == null) {
             t.removeItem(item);
-            Smd.calcoloImportoIncasso(t);
+            DistintaVersamento.calcoloImportoIncasso(t);
             return t;
         } 
         log.info("deleteItem: {}", item);
@@ -300,7 +298,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         if (versamenti.size() == 0) {
             repository.delete(incasso);
         } else {
-            Smd.calcoloImportoIncasso(incasso,versamenti);
+            DistintaVersamento.calcoloImportoIncasso(incasso,versamenti);
             repository.save(incasso);
         }                
 		return t;
@@ -316,7 +314,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         }
         if (t.getId() == null) {
             t.addItem(item);
-            Smd.calcoloImportoIncasso(t);
+            DistintaVersamento.calcoloImportoIncasso(t);
             return t;
         } 
         log.info("saveItem: {}", item);
@@ -331,7 +329,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
         }
         versamentoDao.save(item);
         DistintaVersamento incasso = findById(item.getDistintaVersamento().getId());
-        Smd.calcoloImportoIncasso(incasso, versamentoDao.findByDistintaVersamento(incasso));
+        DistintaVersamento.calcoloImportoIncasso(incasso, versamentoDao.findByDistintaVersamento(incasso));
         repository.save(incasso);        
         return t;
     }

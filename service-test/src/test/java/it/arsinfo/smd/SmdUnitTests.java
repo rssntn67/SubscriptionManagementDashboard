@@ -1236,13 +1236,13 @@ public class SmdUnitTests {
     	Versamento versamento1 = new Versamento(incasso);
     	versamento1.setImporto(new BigDecimal("200.00"));
     	
-    	BigDecimal incassato = Smd.incassa(incasso, versamento1, abbonamento);
+    	BigDecimal incassato = DistintaVersamento.incassa(incasso, versamento1, abbonamento);
     	Assertions.assertEquals(200.00,incassato.doubleValue(),0);
     	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(200.00,versamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
-    	Smd.storna(incasso, versamento1, abbonamento, incassato);
+        DistintaVersamento.storna(incasso, versamento1, abbonamento, incassato);
     	Assertions.assertEquals(0.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(0.00,incasso.getIncassato().doubleValue(),0);
@@ -1262,20 +1262,20 @@ public class SmdUnitTests {
     	Versamento versamento2 = new Versamento(incasso);
     	versamento2.setImporto(new BigDecimal("35.00"));
     	
-    	BigDecimal incasso1 = Smd.incassa(incasso, versamento1, abbonamento);
+    	BigDecimal incasso1 = DistintaVersamento.incassa(incasso, versamento1, abbonamento);
     	Assertions.assertEquals(180.00,incasso1.doubleValue(),0);
     	Assertions.assertEquals(180.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(180.00,versamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(180.00,incasso.getIncassato().doubleValue(),0);
            	
-    	BigDecimal incasso2 = Smd.incassa(incasso, versamento2, abbonamento);
+    	BigDecimal incasso2 = DistintaVersamento.incassa(incasso, versamento2, abbonamento);
     	Assertions.assertEquals(20.00,incasso2.doubleValue(),0);
     	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
       	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
     	
-    	BigDecimal incasso3 = Smd.incassa(incasso, versamento1, abbonamento);
-    	BigDecimal incasso4 = Smd.incassa(incasso, versamento2, abbonamento);
+    	BigDecimal incasso3 = DistintaVersamento.incassa(incasso, versamento1, abbonamento);
+    	BigDecimal incasso4 = DistintaVersamento.incassa(incasso, versamento2, abbonamento);
     	Assertions.assertEquals(0.00,incasso3.doubleValue(),0);
        	Assertions.assertEquals(0.00,incasso4.doubleValue(),0);
        	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
@@ -1283,20 +1283,20 @@ public class SmdUnitTests {
       	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(200.00,incasso.getIncassato().doubleValue(),0);
 
-    	Smd.storna(incasso, versamento1, abbonamento,versamento1.getImporto());
+        DistintaVersamento.storna(incasso, versamento1, abbonamento,versamento1.getImporto());
        	Assertions.assertEquals(20.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
       	Assertions.assertEquals(20.00, versamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(20.00,incasso.getIncassato().doubleValue(),0);
     	
-    	BigDecimal incasso5 = Smd.incassa(incasso, versamento2, abbonamento);
+    	BigDecimal incasso5 = DistintaVersamento.incassa(incasso, versamento2, abbonamento);
        	Assertions.assertEquals(15.00,incasso5.doubleValue(),0);
        	Assertions.assertEquals(35.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(0.00,versamento1.getIncassato().doubleValue(),0);
       	Assertions.assertEquals(35.00, versamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(35.00,incasso.getIncassato().doubleValue(),0);
     	
-    	BigDecimal incasso6 = Smd.incassa(incasso, versamento1, abbonamento);
+    	BigDecimal incasso6 = DistintaVersamento.incassa(incasso, versamento1, abbonamento);
        	Assertions.assertEquals(165.00,incasso6.doubleValue(),0);
        	Assertions.assertEquals(200.00,abbonamento.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(165.00,versamento1.getIncassato().doubleValue(),0);
@@ -1322,7 +1322,7 @@ public class SmdUnitTests {
     	versamento3.setImporto(new BigDecimal("170.00"));
        	incasso.setImporto(new BigDecimal("405.00"));
            	
-    	BigDecimal incassato1 = Smd.incassa(incasso, versamento1, abbonamento1);
+    	BigDecimal incassato1 = DistintaVersamento.incassa(incasso, versamento1, abbonamento1);
     	Assertions.assertEquals(100.00,incassato1.doubleValue(),0);
     	Assertions.assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(0.00,abbonamento2.getIncassato().doubleValue(),0);
@@ -1331,7 +1331,7 @@ public class SmdUnitTests {
     	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(100.00,incasso.getIncassato().doubleValue(),0);
            	
-    	BigDecimal incassato2=  Smd.incassa(incasso, versamento2, abbonamento2);
+    	BigDecimal incassato2=  DistintaVersamento.incassa(incasso, versamento2, abbonamento2);
     	Assertions.assertEquals(135.00,incassato2.doubleValue(),0);
     	Assertions.assertEquals(100.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
@@ -1340,7 +1340,7 @@ public class SmdUnitTests {
     	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
     	
-    	BigDecimal incassato3 =  Smd.incassa(incasso, versamento3, abbonamento1);
+    	BigDecimal incassato3 =  DistintaVersamento.incassa(incasso, versamento3, abbonamento1);
     	Assertions.assertEquals(80.00,incassato3.doubleValue(),0);
     	Assertions.assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(135.00,abbonamento2.getIncassato().doubleValue(),0);
@@ -1349,7 +1349,7 @@ public class SmdUnitTests {
     	Assertions.assertEquals(80.00,versamento3.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(315.00,incasso.getIncassato().doubleValue(),0);
 
-    	BigDecimal incassato4 =  Smd.incassa(incasso, versamento3, abbonamento2);
+    	BigDecimal incassato4 =  DistintaVersamento.incassa(incasso, versamento3, abbonamento2);
     	Assertions.assertEquals(90.00,incassato4.doubleValue(),0);
     	Assertions.assertEquals(180.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
@@ -1358,7 +1358,7 @@ public class SmdUnitTests {
     	Assertions.assertEquals(170.00,versamento3.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(405.00,incasso.getIncassato().doubleValue(),0);
 
-    	Smd.storna(incasso, versamento3, abbonamento1, new BigDecimal("170.00"));
+        DistintaVersamento.storna(incasso, versamento3, abbonamento1, new BigDecimal("170.00"));
     	Assertions.assertEquals(10.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);
@@ -1366,7 +1366,7 @@ public class SmdUnitTests {
     	Assertions.assertEquals(0.00,versamento3.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(235.00,incasso.getIncassato().doubleValue(),0);
 
-    	Smd.storna(incasso, versamento2, abbonamento1,new BigDecimal("10.00"));
+        DistintaVersamento.storna(incasso, versamento2, abbonamento1,new BigDecimal("10.00"));
     	Assertions.assertEquals(0.00,abbonamento1.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(225.00,abbonamento2.getIncassato().doubleValue(),0);
     	Assertions.assertEquals(100.00,versamento1.getIncassato().doubleValue(),0);

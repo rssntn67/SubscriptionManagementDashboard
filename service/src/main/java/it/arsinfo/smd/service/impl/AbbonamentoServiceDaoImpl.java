@@ -2,7 +2,6 @@ package it.arsinfo.smd.service.impl;
 
 import it.arsinfo.smd.dao.*;
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.SmdService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,7 +204,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
         versamento.setProgressivo(entity.getProgressivo());
         versamento.setDataPagamento(entity.getDataPagamento());
         versamentoDao.save(versamento);
-        Smd.calcoloImportoIncasso(incasso,
+        DistintaVersamento.calcoloImportoIncasso(incasso,
                                   versamentoDao.findByDistintaVersamento(incasso));
         incassoDao.save(incasso);
         smdService.incassa(entity, versamento,user,"Incassato da Abbonamento");
