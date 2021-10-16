@@ -3,7 +3,7 @@ package it.arsinfo.smd.ui.abbonamento;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.ui.entity.EntityGridView;
 
 public abstract class RivistaAbbonamentoGrid extends EntityGridView<RivistaAbbonamento> {
@@ -20,7 +20,7 @@ public abstract class RivistaAbbonamentoGrid extends EntityGridView<RivistaAbbon
         grid.addColumn("statoRivista").setHeader("Stato");
         grid.addColumn("numero");
         grid.addColumn("numeroTotaleRiviste");
-        grid.addColumn(new NumberRenderer<>(RivistaAbbonamento::getImporto, Smd.getEuroCurrency())).setHeader("Importo");
+        grid.addColumn(new NumberRenderer<>(RivistaAbbonamento::getImporto, SmdEntity.getEuroCurrency())).setHeader("Importo");
 
     }
 

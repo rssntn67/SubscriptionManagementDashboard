@@ -16,23 +16,6 @@ public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
 
-    public static NumberFormat getEuroCurrency() {
-		return NumberFormat.getCurrencyInstance(Smd.getLocalFromISO("EUR"));
-	}
-
-	public static Locale getLocalFromISO(String iso4217code){
-		Locale toReturn = null;
-		for (Locale locale : NumberFormat.getAvailableLocales()) {
-			String code = NumberFormat.getCurrencyInstance(locale).
-					getCurrency().getCurrencyCode();
-			if (iso4217code.equals(code)) {
-				toReturn = locale;
-				break;
-			}
-		}
-		return toReturn;
-	}
-
     public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
 	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
 	    for (SpedizioneWithItems spedizione:spedizioni) {
@@ -104,7 +87,7 @@ public class Smd {
         if (numero == original.getNumero()) {
             log.info("aggiorna: only type are different: originario: {}", original);        	
            	original.setTipoAbbonamentoRivista(tipo);
-           	calcoloImporto(original);
+           	original.calcolaImporto();
         	abbonamento.setImporto(abbonamento.getImporto().add(original.getImporto()));
             output.setAbbonamentoToSave(abbonamento);
             output.getRivisteToSave().add(original);
@@ -196,7 +179,7 @@ public class Smd {
         	original.setNumero(numero);
         	original.setNumeroTotaleRiviste(numeroTotaleRiviste);
         	
-        	calcoloImporto(original);
+        	original.calcolaImporto();
         	abbonamento.setImporto(abbonamento.getImporto().add(original.getImporto()));
         	calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
 
@@ -294,7 +277,7 @@ public class Smd {
         	}
         }
         original.setNumeroTotaleRiviste(original.getNumero()*itemsoriginal);
-    	calcoloImporto(original);
+    	original.calcolaImporto();
     	abbonamento.setImporto(abbonamento.getImporto().add(original.getImporto()));
 
         final List<SpedizioneItem> rimItems = new ArrayList<>();
@@ -319,7 +302,7 @@ public class Smd {
         	}        	
         }
     	r.setNumeroTotaleRiviste(itemsupdated*numero);
-    	calcoloImporto(r);
+    	r.calcolaImporto();
     	abbonamento.setImporto(abbonamento.getImporto().add(r.getImporto()));
         calcolaPesoESpesePostali(abbonamento, spedizioni, spese);
         output.setAbbonamentoToSave(abbonamento);
@@ -415,7 +398,7 @@ public class Smd {
         	}        	
         }
         calcolaPesoESpesePostali(abb, spedizioni, spese);
-       	calcoloImporto(original);
+       	original.calcolaImporto();
     	abb.setImporto(abb.getImporto().add(original.getImporto()));
         aggiorna.setAbbonamentoToSave(abb);
         aggiorna.setSpedizioniToSave(spedizioni);
@@ -531,7 +514,7 @@ public class Smd {
         ec.setAbbonamento(abb);
         List<SpedizioneItem> items = generaSpedizioneItems(ec);
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
-        calcoloImporto(ec);
+        ec.calcolaImporto();
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
         Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
 
@@ -660,44 +643,6 @@ public class Smd {
 		}
         abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
         return abbonamento;
-    }
-
-    public static void calcoloImporto(RivistaAbbonamento ec) throws UnsupportedOperationException {
-        BigDecimal importo=BigDecimal.ZERO;
-        switch (ec.getTipoAbbonamentoRivista()) {
-        case Ordinario:
-            importo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
-            if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
-                importo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
-            }
-            break;
-
-        case Web:
-            if (!ec.isAbbonamentoAnnuale()) {
-                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
-            }
-            importo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
-            break;
-
-        case Scontato:
-            if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
-            }
-            importo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
-            break;
-
-        case Sostenitore:
-            if (!ec.isAbbonamentoAnnuale()) {
-                throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
-            }
-            importo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));
-            break;
-                
-        default:
-            break;
-
-        }          
-        ec.setImporto(importo);
     }
 
     public static Operazione generaOperazione(

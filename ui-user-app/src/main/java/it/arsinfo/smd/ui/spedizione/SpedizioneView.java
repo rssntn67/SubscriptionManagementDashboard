@@ -8,12 +8,7 @@ import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.entity.Anno;
-import it.arsinfo.smd.entity.Mese;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Spedizione;
-import it.arsinfo.smd.entity.SpedizioneItem;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.SpedizioneService;
 import it.arsinfo.smd.service.dto.Indirizzo;
 import it.arsinfo.smd.ui.MainLayout;
@@ -45,7 +40,7 @@ public class SpedizioneView extends EntityGridView<SpedizioneItem> {
         setColumnCaption("spedizione.destinazione","Destinatario");
         setColumnCaption("spedizione.pesoStimato","Peso");
         setColumnCaption("spedizione.invioSpedizione","Invio");
-        getGrid().addColumn(new NumberRenderer<>(item-> item.getSpedizione().getSpesePostali(), Smd.getEuroCurrency())).setHeader("Spese Postali");
+        getGrid().addColumn(new NumberRenderer<>(item-> item.getSpedizione().getSpesePostali(), SmdEntity.getEuroCurrency())).setHeader("Spese Postali");
 
 
         getGrid().asSingleSelect().addValueChangeListener(event ->

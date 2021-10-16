@@ -7,7 +7,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Offerta;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.service.api.OffertaService;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.entity.EntityGridView;
@@ -32,7 +32,7 @@ public class OffertaView extends EntityGridView<Offerta> {
         super.init(new Grid<>(Offerta.class));
 
         configureGrid("statoOperazioneIncasso","offerteCumulate.anno","versamento.codeLine","versamento.dataPagamento");
-        getGrid().addColumn(new NumberRenderer<>(Offerta::getImporto, Smd.getEuroCurrency())).setHeader("Importo");
+        getGrid().addColumn(new NumberRenderer<>(Offerta::getImporto, SmdEntity.getEuroCurrency())).setHeader("Importo");
 
         add(
             new H2("Offerte Effettuate dal 01/01/"+Anno.getAnnoPassato().getAnnoAsString()),

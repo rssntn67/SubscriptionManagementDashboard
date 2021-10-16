@@ -5,11 +5,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.Transient;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 
 public interface SmdEntity {
 
@@ -46,4 +48,22 @@ public interface SmdEntity {
         }
         return "no";
     }
+
+    public static NumberFormat getEuroCurrency() {
+        return NumberFormat.getCurrencyInstance(getLocalFromISO("EUR"));
+    }
+
+    public static Locale getLocalFromISO(String iso4217code){
+        Locale toReturn = null;
+        for (Locale locale : NumberFormat.getAvailableLocales()) {
+            String code = NumberFormat.getCurrencyInstance(locale).
+                    getCurrency().getCurrencyCode();
+            if (iso4217code.equals(code)) {
+                toReturn = locale;
+                break;
+            }
+        }
+        return toReturn;
+    }
+
 }

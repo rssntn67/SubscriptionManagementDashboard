@@ -162,6 +162,45 @@ public class RivistaAbbonamento implements SmdEntity {
         return meseFine == Mese.DICEMBRE;
 
     }
+
+    @Transient
+    public void calcolaImporto() {
+        importo=BigDecimal.ZERO;
+        switch (tipoAbbonamentoRivista) {
+            case Ordinario:
+                importo = pubblicazione.getAbbonamento().multiply(new BigDecimal(numero));
+                if (!isAbbonamentoAnnuale() || numero == 0) {
+                    importo = pubblicazione.getCostoUnitario().multiply(new BigDecimal(getNumeroTotaleRiviste()));
+                }
+                break;
+
+            case Web:
+                if (!isAbbonamentoAnnuale()) {
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
+                }
+                importo = pubblicazione.getAbbonamentoWeb().multiply(new BigDecimal(numero));
+                break;
+
+            case Scontato:
+                if (!isAbbonamentoAnnuale()) {
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
+                }
+                importo = pubblicazione.getAbbonamentoConSconto().multiply(new BigDecimal(numero));
+                break;
+
+            case Sostenitore:
+                if (!isAbbonamentoAnnuale()) {
+                    throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
+                }
+                importo = pubblicazione.getAbbonamentoSostenitore().multiply(new BigDecimal(numero));
+                break;
+
+            default:
+                break;
+
+        }
+    }
+
     public BigDecimal getImporto() {
         return importo;
     }

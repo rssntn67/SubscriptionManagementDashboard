@@ -4,7 +4,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.entity.SmdEntity;
 import it.arsinfo.smd.ui.entity.EntityGridView;
 
 import java.util.List;
@@ -26,14 +26,14 @@ public abstract class AbbonamentoGrid extends EntityGridView<Abbonamento> {
         super.init(grid);
         configureGrid("statoAbbonamento");
         stato = grid.getColumnByKey("statoAbbonamento");
-        importo= grid.addColumn(new NumberRenderer<>(Abbonamento::getImporto, Smd.getEuroCurrency())).setHeader("Importo");
-        spese = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpese, Smd.getEuroCurrency())).setHeader("Spese");
-        speseEstero = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpeseEstero, Smd.getEuroCurrency())).setHeader("Spese Estero");
-        speseEstrattoConto = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpeseEstrattoConto, Smd.getEuroCurrency())).setHeader("Spese EC");
-        pregresso = grid.addColumn(new NumberRenderer<>(Abbonamento::getPregresso, Smd.getEuroCurrency())).setHeader("Pregresso");
-        totale = grid.addColumn(new NumberRenderer<>(Abbonamento::getTotale, Smd.getEuroCurrency())).setHeader("Totale");
-        incassato = grid.addColumn(new NumberRenderer<>(Abbonamento::getIncassato, Smd.getEuroCurrency())).setHeader("Incassato");
-        saldo = grid.addColumn(new NumberRenderer<>(Abbonamento::getResiduo, Smd.getEuroCurrency())).setHeader("Saldo");
+        importo= grid.addColumn(new NumberRenderer<>(Abbonamento::getImporto, SmdEntity.getEuroCurrency())).setHeader("Importo");
+        spese = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpese, SmdEntity.getEuroCurrency())).setHeader("Spese");
+        speseEstero = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpeseEstero, SmdEntity.getEuroCurrency())).setHeader("Spese Estero");
+        speseEstrattoConto = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpeseEstrattoConto, SmdEntity.getEuroCurrency())).setHeader("Spese EC");
+        pregresso = grid.addColumn(new NumberRenderer<>(Abbonamento::getPregresso, SmdEntity.getEuroCurrency())).setHeader("Pregresso");
+        totale = grid.addColumn(new NumberRenderer<>(Abbonamento::getTotale, SmdEntity.getEuroCurrency())).setHeader("Totale");
+        incassato = grid.addColumn(new NumberRenderer<>(Abbonamento::getIncassato, SmdEntity.getEuroCurrency())).setHeader("Incassato");
+        saldo = grid.addColumn(new NumberRenderer<>(Abbonamento::getResiduo, SmdEntity.getEuroCurrency())).setHeader("Saldo");
     }
 
     public void setFooter(List<Abbonamento> items) {

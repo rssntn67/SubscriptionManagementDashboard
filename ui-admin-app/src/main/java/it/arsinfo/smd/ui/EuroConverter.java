@@ -4,7 +4,7 @@ import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToBigDecimalConverter;
 import com.vaadin.ui.renderers.NumberRenderer;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.entity.SmdEntity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -14,7 +14,7 @@ import java.util.Locale;
 public class EuroConverter extends StringToBigDecimalConverter {
 	
 	public static NumberRenderer getEuroRenderer() {
-		return new NumberRenderer(NumberFormat.getCurrencyInstance(Smd.getLocalFromISO("EUR")));
+		return new NumberRenderer(NumberFormat.getCurrencyInstance(SmdEntity.getLocalFromISO("EUR")));
 	}
 
     /**
