@@ -33,16 +33,6 @@ public class Smd {
 		return toReturn;
 	}
 
-    public static boolean isAbbonamentoAnnuale(RivistaAbbonamento rivistaAbbonamento) {
-        if (rivistaAbbonamento.getAnnoInizio() != rivistaAbbonamento.getAnnoFine()) {
-            return false;
-        }
-        if (rivistaAbbonamento.getMeseInizio() != Mese.GENNAIO) {
-            return false;
-        }
-		return rivistaAbbonamento.getMeseFine() == Mese.DICEMBRE;
-	}
-
     public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
 	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
 	    for (SpedizioneWithItems spedizione:spedizioni) {
@@ -677,27 +667,27 @@ public class Smd {
         switch (ec.getTipoAbbonamentoRivista()) {
         case Ordinario:
             importo = ec.getPubblicazione().getAbbonamento().multiply(new BigDecimal(ec.getNumero()));
-            if (!isAbbonamentoAnnuale(ec) || ec.getNumero() == 0) {
+            if (!ec.isAbbonamentoAnnuale() || ec.getNumero() == 0) {
                 importo = ec.getPubblicazione().getCostoUnitario().multiply(new BigDecimal(ec.getNumeroTotaleRiviste()));
             }
             break;
 
         case Web:
-            if (!isAbbonamentoAnnuale(ec)) {
+            if (!ec.isAbbonamentoAnnuale()) {
                     throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoWeb().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Scontato:
-            if (!isAbbonamentoAnnuale(ec)) {
+            if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoConSconto().multiply(new BigDecimal(ec.getNumero()));
             break;
 
         case Sostenitore:
-            if (!isAbbonamentoAnnuale(ec)) {
+            if (!ec.isAbbonamentoAnnuale()) {
                 throw new UnsupportedOperationException("Valori mesi inizio e fine non ammissibili per " + TipoAbbonamentoRivista.Web);
             }
             importo = ec.getPubblicazione().getAbbonamentoSostenitore().multiply(new BigDecimal(ec.getNumero()));

@@ -122,7 +122,7 @@ public class SmdUnitTests {
     
     private void verificaImportoAbbonamentoAnnuale(Abbonamento abb, RivistaAbbonamento ec) {
         Assertions.assertEquals(0.0,abb.getSpese().doubleValue(),0);
-        Assertions.assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        Assertions.assertTrue(ec.isAbbonamentoAnnuale());
         Assertions.assertEquals(abb, ec.getAbbonamento());
         switch (ec.getTipoAbbonamentoRivista()) {
             case OmaggioCuriaDiocesiana:
@@ -763,7 +763,7 @@ public class SmdUnitTests {
         	speseSped = speseSped.add(sped.getSpedizione().getSpesePostali());
     	}
         Assertions.assertEquals(p.getMesiPubblicazione().size(), items.size());
-        Assertions.assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        Assertions.assertTrue(ec.isAbbonamentoAnnuale());
         
         Assertions.assertEquals(p.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
         Assertions.assertEquals(speseSped.doubleValue(), abb.getSpeseEstero().doubleValue(),0);

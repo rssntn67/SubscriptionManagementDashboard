@@ -150,7 +150,18 @@ public class RivistaAbbonamento implements SmdEntity {
                              id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista, 
                              meseInizio,annoInizio,meseFine,annoFine);
     }
-        
+
+    @Transient
+    public boolean isAbbonamentoAnnuale() {
+        if (annoInizio != annoFine) {
+            return false;
+        }
+        if (meseInizio != Mese.GENNAIO) {
+            return false;
+        }
+        return meseFine == Mese.DICEMBRE;
+
+    }
     public BigDecimal getImporto() {
         return importo;
     }

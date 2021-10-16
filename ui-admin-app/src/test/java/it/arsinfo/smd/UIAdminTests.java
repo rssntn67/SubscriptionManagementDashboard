@@ -921,7 +921,7 @@ public class UIAdminTests {
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
         
-        assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
@@ -979,7 +979,7 @@ public class UIAdminTests {
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
         
-        assertTrue(Smd.isAbbonamentoAnnuale(ec));
+        assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
@@ -1509,7 +1509,7 @@ public class UIAdminTests {
                                            SmdHelper.getSpeseSpedizione()
                                            );
         spedizioni.forEach(s -> log.info("{}",s.getSpedizione()));
-        assertTrue(Smd.isAbbonamentoAnnuale(ec1));
+        assertTrue(ec1.isAbbonamentoAnnuale());
         // gen -> 1 sped post gen feb - 10 sped normale    -> 11 tot  -> tot riviste inv 3
         // feb -> 1 sped post ....... -  9 sped normale    -> 10 tot  -> tot riviste inv 4
         // mar -> 1 sped post ....... -  8 normale         ->  9 tot  -> tot riviste inv 5
@@ -1640,7 +1640,7 @@ public class UIAdminTests {
                      ec1,
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());        
-        assertTrue(Smd.isAbbonamentoAnnuale(ec1));
+        assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
         spedizioni.forEach(sped -> {
