@@ -1,9 +1,13 @@
 package it.arsinfo.smd.service.dto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import it.arsinfo.smd.entity.InvioSpedizione;
+import it.arsinfo.smd.entity.Pubblicazione;
 import it.arsinfo.smd.entity.Spedizione;
 import it.arsinfo.smd.entity.SpedizioneItem;
 
@@ -54,6 +58,20 @@ public class SpedizioneWithItems {
         return spedizione.hashCode();
     }
 
+    public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
+        final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
+        for (SpedizioneWithItems spedizione:spedizioni) {
+            spedMap.put(getHashCode(spedizione.getSpedizione(), spedizione.getSpedizioneItems().iterator().next().getPubblicazione()), spedizione);
+        }
+        return spedMap;
+    }
+
+    public static int getHashCode(Spedizione sped, Pubblicazione p) {
+        if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
+            return sped.hashCode()+p.hashCode();
+        }
+        return sped.hashCode();
+    }
 
 
     @Override

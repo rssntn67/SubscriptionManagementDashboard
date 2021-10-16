@@ -8,21 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.*;
 
 @Configuration
 public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
-    public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
-	    final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
-	    for (SpedizioneWithItems spedizione:spedizioni) {
-	        spedMap.put(getHashCode(spedizione.getSpedizione(), spedizione.getSpedizioneItems().iterator().next().getPubblicazione()), spedizione);
-	    }
-	    return spedMap;        
-	}
 
 	public static RivistaAbbonamento genera(Abbonamento abb, Storico storico) {
         final RivistaAbbonamento ec = new RivistaAbbonamento();
@@ -433,13 +424,6 @@ public class Smd {
       return items; 
     }
 
-    private static int getHashCode(Spedizione sped, Pubblicazione p) {
-    	if (sped.getInvioSpedizione() == InvioSpedizione.Spedizioniere) {
-    		return sped.hashCode()+p.hashCode();
-    	}
-    	return sped.hashCode();
-    }
-
     public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
         Anagrafica destinatario = ec.getDestinatario();
         InvioSpedizione isped = ec.getInvioSpedizione();
@@ -483,7 +467,7 @@ public class Smd {
         spedizione.setInvioSpedizione(isped);
         spedizione.setAbbonamento(abb);
         spedizione.setDestinatario(destinatario);
-        int hash = getHashCode(spedizione, item.getPubblicazione());
+        int hash = SpedizioneWithItems.getHashCode(spedizione, item.getPubblicazione());
         if (!spedMap.containsKey(hash)) {
             spedMap.put(hash, new SpedizioneWithItems(spedizione));
         }
@@ -516,7 +500,7 @@ public class Smd {
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         ec.calcolaImporto();
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        Map<Integer, SpedizioneWithItems> spedMap = getSpedizioneMap(spedizioni);
+        Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
 
         if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
 	        for (SpedizioneItem item : items) {
