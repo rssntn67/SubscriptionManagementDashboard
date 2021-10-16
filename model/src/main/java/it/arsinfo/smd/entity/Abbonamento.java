@@ -29,6 +29,26 @@ import javax.persistence.UniqueConstraint;
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
+
+    public static Abbonamento genera(Campagna campagna, Anagrafica a,boolean contrassegno) throws Exception {
+        if (campagna == null) {
+            throw new Exception("genera: Null Campagna");
+        }
+        if (a == null) {
+            throw new Exception("genera: Null Intestatario");
+        }
+        Abbonamento abbonamento = new Abbonamento();
+        abbonamento.setIntestatario(a);
+        abbonamento.setCampagna(campagna);
+        abbonamento.setAnno(campagna.getAnno());
+        abbonamento.setContrassegno(contrassegno);
+        if (contrassegno) {
+            abbonamento.setSpeseContrassegno(campagna.getContrassegno());
+        }
+        abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
+        return abbonamento;
+    }
+
     public static boolean checkCodeLine(String codeline) {
         if (codeline == null || codeline.length() != 18) {
             return false;

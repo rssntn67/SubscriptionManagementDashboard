@@ -8,29 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class Smd {
 
     private static final Logger log = LoggerFactory.getLogger(Smd.class);
-
-	public static RivistaAbbonamento genera(Abbonamento abb, Storico storico) {
-        final RivistaAbbonamento ec = new RivistaAbbonamento();
-        ec.setStorico(storico);
-        ec.setAbbonamento(abb);
-        ec.setPubblicazione(storico.getPubblicazione());
-        ec.setNumero(storico.getNumero());
-        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
-        ec.setMeseInizio(Mese.GENNAIO);
-        ec.setAnnoInizio(abb.getAnno());
-        ec.setMeseFine(Mese.DICEMBRE);
-        ec.setAnnoFine(abb.getAnno());
-        ec.setInvioSpedizione(storico.getInvioSpedizione());
-        ec.setDestinatario(storico.getDestinatario());
-        abb.addItem(ec);
-		return ec;
-	}
 
     public static RivistaAbbonamentoAggiorna aggiorna (
     		Abbonamento abbonamento,
@@ -511,7 +497,7 @@ public class Smd {
                 && storico.isContrassegno()
             ) {
     		    try {
-    	            abbonamenti.add(genera(campagna, a,true));
+    	            abbonamenti.add(Abbonamento.genera(campagna, a,true));
     	            break;
     	        } catch (Exception e) {
     	            e.printStackTrace();
@@ -525,7 +511,7 @@ public class Smd {
                 && !storico.isContrassegno()
             ) {
     		    try {
-    	            abbonamenti.add(genera(campagna, a,false));
+    	            abbonamenti.add(Abbonamento.genera(campagna, a,false));
     	            break;
     	        } catch (Exception e) {
     	            e.printStackTrace();
@@ -533,25 +519,6 @@ public class Smd {
         	}
         }
         return abbonamenti;
-    }
-
-    public static Abbonamento genera(Campagna campagna, Anagrafica a,boolean contrassegno) throws Exception {
-        if (campagna == null) {
-            throw new Exception("genera: Null Campagna");
-        }
-        if (a == null) {
-            throw new Exception("genera: Null Intestatario");
-        }
-        Abbonamento abbonamento = new Abbonamento();
-        abbonamento.setIntestatario(a);
-        abbonamento.setCampagna(campagna);
-        abbonamento.setAnno(campagna.getAnno());
-        abbonamento.setContrassegno(contrassegno);
-        if (contrassegno) {
-        	abbonamento.setSpeseContrassegno(campagna.getContrassegno());
-		}
-        abbonamento.setCodeLine(Abbonamento.generaCodeLine(abbonamento.getAnno(),a));
-        return abbonamento;
     }
 
     public static Operazione generaOperazione(

@@ -1020,7 +1020,8 @@ public class SmdUnitTests {
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
-            RivistaAbbonamento ec = Smd.genera(abb, storico);
+            RivistaAbbonamento ec = RivistaAbbonamento.genera(storico,abb);
+            abb.addItem(ec);
             spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         }                
         Assertions.assertEquals(25, spedizioni.size());
@@ -1141,7 +1142,8 @@ public class SmdUnitTests {
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
         	log.info("testGeneraCampagnaAR: genera Rivista abbonamento from Storico {}", storico);
-            RivistaAbbonamento ec = Smd.genera(abb, storico);
+            RivistaAbbonamento ec = RivistaAbbonamento.genera(storico,abb);
+            abb.addItem(ec);
             Assertions.assertEquals(1, ec.getNumero().intValue());
             Assertions.assertEquals(0, ec.getImporto().doubleValue(),0);
             Assertions.assertEquals(0, abb.getImporto().doubleValue(),0);

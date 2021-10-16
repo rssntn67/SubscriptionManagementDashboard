@@ -145,7 +145,9 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 
         for (Abbonamento abb: Smd.genera(entity, anagraficaService.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
             storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
-                .forEach(storico -> Smd.genera(abb, storico));
+                .forEach(storico ->
+                	abb.addItem(RivistaAbbonamento.genera(storico,abb)
+				));
             if (abb.getItems().size() >= 1) {
                 smdService.genera(abb);
             }

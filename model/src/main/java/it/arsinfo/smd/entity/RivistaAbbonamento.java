@@ -9,6 +9,22 @@ import java.util.Map;
 @Entity
 public class RivistaAbbonamento implements SmdEntity {
 
+    public static RivistaAbbonamento genera(Storico storico, Abbonamento abbonamento) {
+        final RivistaAbbonamento ec = new RivistaAbbonamento();
+        ec.setStorico(storico);
+        ec.setAbbonamento(abbonamento);
+        ec.setPubblicazione(storico.getPubblicazione());
+        ec.setNumero(storico.getNumero());
+        ec.setTipoAbbonamentoRivista(storico.getTipoAbbonamentoRivista());
+        ec.setMeseInizio(Mese.GENNAIO);
+        ec.setAnnoInizio(abbonamento.getAnno());
+        ec.setMeseFine(Mese.DICEMBRE);
+        ec.setAnnoFine(abbonamento.getAnno());
+        ec.setInvioSpedizione(storico.getInvioSpedizione());
+        ec.setDestinatario(storico.getDestinatario());
+        return ec;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
