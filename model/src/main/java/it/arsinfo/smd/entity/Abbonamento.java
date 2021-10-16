@@ -3,10 +3,7 @@ package it.arsinfo.smd.entity;
 import it.arsinfo.smd.dto.SpedizioneWithItems;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.persistence.Column;
@@ -32,6 +29,92 @@ import javax.persistence.UniqueConstraint;
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
 public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
+
+    public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
+        Anagrafica destinatario = ec.getDestinatario();
+        InvioSpedizione isped = ec.getInvioSpedizione();
+        Mese mesePubblicazione = item.getMesePubblicazione();
+        Anno annoPubblicazione = item.getAnnoPubblicazione();
+        boolean posticipata=false;
+        int anticipoSpedizione = ec.getPubblicazione().getAnticipoSpedizione();
+        Mese spedMese;
+        Anno spedAnno;
+
+        if (mesePubblicazione.getPosizione() - anticipoSpedizione <= 0) {
+            spedMese = Mese.getByPosizione(12
+                    + mesePubblicazione.getPosizione()
+                    - anticipoSpedizione);
+            spedAnno = Anno.getAnnoPrecedente(annoPubblicazione);
+        } else {
+            spedMese = Mese.getByPosizione(mesePubblicazione.getPosizione()
+                    - anticipoSpedizione);
+            spedAnno = annoPubblicazione;
+        }
+        assert spedMese != null;
+        log.info("aggiungiItemSpedizione: teorico: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+
+        if (spedAnno.getAnno() < annoPost.getAnno()
+                || (spedAnno == annoPost
+                && spedMese.getPosizione() < mesePost.getPosizione())) {
+            spedMese = Mese.getMeseCorrente();
+            spedAnno = Anno.getAnnoCorrente();
+            isped = InvioSpedizione.AdpSede;
+            posticipata=true;
+            log.info("aggiungiItemSpedizione: posticipata: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+
+        }
+        if (destinatario.getAreaSpedizione() != AreaSpedizione.Italia) {
+            isped = InvioSpedizione.AdpSede;
+            log.info("aggiungiItemSpedizione: estero: {}, {}, {}",spedMese.getNomeBreve(),spedAnno.getAnnoAsString(),isped);
+        }
+        Spedizione spedizione = new Spedizione();
+        spedizione.setMeseSpedizione(spedMese);
+        spedizione.setAnnoSpedizione(spedAnno);
+        spedizione.setInvioSpedizione(isped);
+        spedizione.setAbbonamento(abb);
+        spedizione.setDestinatario(destinatario);
+        int hash = SpedizioneWithItems.getHashCode(spedizione, item.getPubblicazione());
+        if (!spedMap.containsKey(hash)) {
+            spedMap.put(hash, new SpedizioneWithItems(spedizione));
+        }
+        SpedizioneWithItems sped = spedMap.get(hash);
+        item.setPosticipata(posticipata);
+        item.setSpedizione(sped.getSpedizione());
+        sped.addSpedizioneItem(item);
+        log.info("aggiungiItemSpedizione: aggiunto {}, a spedizione {}, size {}",item,spedizione,spedMap.size());
+    }
+
+    public static List<SpedizioneWithItems> genera(Abbonamento abb,
+                                                   RivistaAbbonamento ec,
+                                                   List<SpedizioneWithItems> spedizioni,
+                                                   List<SpesaSpedizione> spese) throws UnsupportedOperationException {
+        return genera(abb,
+                ec,
+                spedizioni,
+                spese, Mese.getMeseCorrente(), Anno.getAnnoCorrente());
+    }
+
+    public static List<SpedizioneWithItems> genera(Abbonamento abb,
+                                                   RivistaAbbonamento ec,
+                                                   List<SpedizioneWithItems> spedizioni,
+                                                   List<SpesaSpedizione> spese, Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
+
+
+        ec.setAbbonamento(abb);
+        List<SpedizioneItem> items = SpedizioneItem.generaSpedizioneItems(ec);
+        ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
+        ec.calcolaImporto();
+        abb.setImporto(abb.getImporto().add(ec.getImporto()));
+        Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
+
+        if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
+            for (SpedizioneItem item : items) {
+                aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
+            }
+        }
+        Abbonamento.calcolaPesoESpesePostali(abb, spedMap.values(), spese);
+        return new ArrayList<>(spedMap.values());
+    }
 
     public static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
         abb.setSpese(BigDecimal.ZERO);

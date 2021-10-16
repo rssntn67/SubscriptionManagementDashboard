@@ -34,7 +34,7 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(abb.getIntestatario());
-        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
+        Abbonamento.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
 
         return ec;
     }
@@ -175,7 +175,7 @@ public class SmdUnitTests {
         ec.setDestinatario(SmdHelper.getAnagraficaBy("AAAA", "BBBBB"));
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         List<SpedizioneWithItems> spedizioni =
-                Smd.genera(
+                Abbonamento.genera(
                          abb, 
                          ec,
                         new ArrayList<>(),spese);
@@ -225,7 +225,7 @@ public class SmdUnitTests {
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(abb, 
+                Abbonamento.genera(abb,
                                      ec,
                                      new ArrayList<>(),
                                      spese);
@@ -405,7 +405,7 @@ public class SmdUnitTests {
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
 
         List<SpedizioneWithItems> spedizioniwithitems = 
-                Smd.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione());
+                Abbonamento.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioniwithitems.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
         
@@ -536,21 +536,21 @@ public class SmdUnitTests {
         ec3.setDestinatario(tizio);
 
         List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+                Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());        
         
-        spedizioni = 
-                Smd.genera(
+        spedizioni =
+                Abbonamento.genera(
                      abb, 
                      ec2,
                      spedizioni,
                      SmdHelper.getSpeseSpedizione());
        
-       spedizioni = 
-               Smd.genera(
+       spedizioni =
+               Abbonamento.genera(
                     abb, 
                     ec3,
                     spedizioni,
@@ -744,8 +744,8 @@ public class SmdUnitTests {
 
         List<SpesaSpedizione> spese = SmdHelper.getSpeseSpedizione();
 
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(abb, 
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(abb,
                                      ec,
                                      new ArrayList<>(), 
                                      spese
@@ -804,8 +804,8 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -883,8 +883,8 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -942,8 +942,8 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(1);
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -1022,7 +1022,7 @@ public class SmdUnitTests {
         for (Storico storico:storici) {
             RivistaAbbonamento ec = RivistaAbbonamento.genera(storico,abb);
             abb.addItem(ec);
-            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
+            spedizioni = Abbonamento.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         }                
         Assertions.assertEquals(25, spedizioni.size());
         spedizioni.forEach(sped -> {
@@ -1049,7 +1049,7 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
-        Smd.genera(
+        Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -1087,7 +1087,7 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(14);
-        Smd.genera(
+        Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -1149,7 +1149,7 @@ public class SmdUnitTests {
             Assertions.assertEquals(0, abb.getImporto().doubleValue(),0);
             Assertions.assertEquals(0,abb.getSpese().doubleValue(),0);
         	log.info("testGeneraCampagnaAR: Rivista abbonamento {}", ec);
-            spedizioni = Smd.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
+            spedizioni = Abbonamento.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
         	log.info("testGeneraCampagnaAR: spedizioni {}", spedizioni.size());
         }      
         Assertions.assertEquals(26, spedizioni.size());

@@ -131,7 +131,7 @@ public class SmdServiceImpl implements SmdService {
     public void genera(Abbonamento abbonamento) {
         List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
-            spedizioni = Smd.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
+            spedizioni = Abbonamento.genera(abbonamento, ec, spedizioni,spesaSpedizioneDao.findAll());
         }
         abbonamentoDao.save(abbonamento);
         for (RivistaAbbonamento ec: abbonamento.getItems()) {
@@ -756,17 +756,16 @@ switch (rivista.getStatoRivista()) {
 		    return;
 		}
         switch (campagna.getStatoCampagna()) {
-            case Generata:
-            case Inviata:
-            case InviatoSollecito:
-            case Chiusa:
-                break;
             case InviatoSospeso:
                 aggiornaCampagnaInviatoSospeso(abbonamento,campagna);
                 break;
             case InviatoEC:
                 aggiornaCampagnaInviatoEC(abbonamento,campagna);
                 break;
+            case Generata:
+            case Inviata:
+            case InviatoSollecito:
+            case Chiusa:
             default:
                 break;
 		}
@@ -774,18 +773,14 @@ switch (rivista.getStatoRivista()) {
 	}
 
 	private void aggiornaCampagnaInviatoEC(Abbonamento abbonamento, Campagna campagna) {
-    	boolean almenounarivistasospesa=false;
-    	boolean almenounarivistaattiva=false;
     	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
     			findByAbbonamento(abbonamento)) {
     		StatoRivista stato = getStatoRivista(campagna,abbonamento, ra);
         	if (stato != StatoRivista.Attiva) {
-        		almenounarivistasospesa=true;
 				ra.setStatoRivista(StatoRivista.Sospesa);
 				rivistaAbbonamentoDao.save(ra);
 				sospendiSpedizioniProgrammate(abbonamento,ra);
         	} else {
-        		almenounarivistaattiva=true;
 				ra.setStatoRivista(StatoRivista.Attiva);
 				rivistaAbbonamentoDao.save(ra);
 				programmaSpedizioniSospese(abbonamento,ra);
@@ -800,19 +795,15 @@ switch (rivista.getStatoRivista()) {
         		.stream()
         		.map(opsos -> opsos.getPubblicazione().getId())
         		.collect(Collectors.toList());
-    	boolean almenounarivistasospesa=false;
-    	boolean almenounarivistaattiva=false;
     	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
     			findByAbbonamento(abbonamento)) {
     		StatoRivista stato = getStatoRivista(campagna,abbonamento, ra);
         	boolean sospesa = rivisteSospese.contains(ra.getPubblicazione().getId());
         	if (stato != StatoRivista.Attiva && sospesa) {
-        		almenounarivistasospesa=true;
 				ra.setStatoRivista(StatoRivista.Sospesa);
 				rivistaAbbonamentoDao.save(ra);
 				sospendiSpedizioniProgrammate(abbonamento,ra);
         	} else {
-        		almenounarivistaattiva=true;
 				ra.setStatoRivista(StatoRivista.Attiva);
 				rivistaAbbonamentoDao.save(ra);
 				programmaSpedizioniSospese(abbonamento,ra);
@@ -883,10 +874,6 @@ switch (rivista.getStatoRivista()) {
         }
         boolean value=true;
         switch (campagna.getStatoCampagna()) {
-            case Inviata:
-            case InviatoSollecito:
-            case Chiusa:
-                break;
             case InviatoSospeso:
                 if (isRivistaSospesa) {
                     value = abbonamento.isAbbonamentoValid(campagna);
@@ -894,6 +881,9 @@ switch (rivista.getStatoRivista()) {
                 break;
             case InviatoEC:
                 value = abbonamento.isAbbonamentoValid(campagna);
+            case Inviata:
+            case InviatoSollecito:
+            case Chiusa:
             default:
                 break;
         }

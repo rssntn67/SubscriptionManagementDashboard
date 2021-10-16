@@ -916,7 +916,7 @@ public class UIAdminTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni 
-            = Smd.genera(abb,
+            = Abbonamento.genera(abb,
                                ec,
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
@@ -974,7 +974,7 @@ public class UIAdminTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni 
-            = Smd.genera(abb, 
+            = Abbonamento.genera(abb,
                                ec,
                                new ArrayList<>(),
                                spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
@@ -1288,7 +1288,7 @@ public class UIAdminTests {
         ec3.setAnnoFine(anno);     
         ec3.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni = smdService.findByAbbonamento(abb);
-        spedizioni = Smd.genera(abb,
+        spedizioni = Abbonamento.genera(abb,
                                           ec3,
                                           spedizioni,
                                           SmdHelper.getSpeseSpedizione());
@@ -1345,21 +1345,21 @@ public class UIAdminTests {
         ec3.setAnnoFine(anno);
         ec3.setDestinatario(tizio);
 
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(
                      abb,
                      ec1,
                      new ArrayList<>(),
                      SmdHelper.getSpeseSpedizione());
-        spedizioni = 
-                Smd.genera(
+        spedizioni =
+                Abbonamento.genera(
                      abb,
                      ec2,
                     spedizioni,
                      SmdHelper.getSpeseSpedizione());        
 
-        spedizioni = 
-                Smd.genera(
+        spedizioni =
+                Abbonamento.genera(
                      abb,
                      ec3,
                     spedizioni,
@@ -1502,7 +1502,7 @@ public class UIAdminTests {
         ec1.setDestinatario(tizio);
         
 
-        List<SpedizioneWithItems> spedizioni = Smd.genera(
+        List<SpedizioneWithItems> spedizioni = Abbonamento.genera(
                                            abb,
                                            ec1,
                                            new ArrayList<>(), 
@@ -1634,8 +1634,8 @@ public class UIAdminTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
-        List<SpedizioneWithItems> spedizioni = 
-                Smd.genera(
+        List<SpedizioneWithItems> spedizioni =
+                Abbonamento.genera(
                      abb, 
                      ec1,
                      new ArrayList<>(),
@@ -1941,7 +1941,7 @@ public class UIAdminTests {
         ec.setAnnoFine(Anno.getAnnoProssimo());
         ec.setDestinatario(davidePalma);
 
-        Smd.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
+        Abbonamento.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         
