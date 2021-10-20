@@ -3,15 +3,7 @@ package it.arsinfo.smd.entity;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 @Entity
 @Table(uniqueConstraints={@UniqueConstraint(columnNames = {"nome"})})
@@ -21,6 +13,7 @@ public class Pubblicazione implements SmdEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable=false)
     private String nome;
 
     private String descrizione;
@@ -28,35 +21,57 @@ public class Pubblicazione implements SmdEntity {
     private String autore;
 
     private String editore;
-    
+
+    @Column(nullable=false)
     private int grammi=100;
 
+    @Column(nullable=false)
     private boolean active = true;
-    
+
+    @Column(nullable=false)
     private BigDecimal costoUnitario=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal abbonamento=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal abbonamentoWeb=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal abbonamentoSostenitore=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal abbonamentoConSconto=BigDecimal.ZERO;
 
+    @Column(nullable=false)
     private boolean gen = false;
+    @Column(nullable=false)
     private boolean feb = false;
+    @Column(nullable=false)
     private boolean mar = false;
+    @Column(nullable=false)
     private boolean apr = false;
+    @Column(nullable=false)
     private boolean mag = false;
+    @Column(nullable=false)
     private boolean giu = false;
+    @Column(nullable=false)
     private boolean lug = false;
+    @Column(nullable=false)
     private boolean ago = false;
+    @Column(nullable=false)
     private boolean set = false;
+    @Column(nullable=false)
     private boolean ott = false;
+    @Column(nullable=false)
     private boolean nov = false;
+    @Column(nullable=false)
     private boolean dic = false;
 
+    @Column(nullable=false)
     private int anticipoSpedizione=2;
     
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private Anno anno=Anno.getAnnoCorrente();
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private TipoPubblicazione tipo=TipoPubblicazione.UNICO;
 
     public Long getId() {

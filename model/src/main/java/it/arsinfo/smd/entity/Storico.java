@@ -67,7 +67,8 @@ public class Storico implements SmdEntityItems<Nota> {
     @ManyToOne(optional=false,fetch=FetchType.EAGER)
     private Pubblicazione pubblicazione;
 
-    private Integer numero = 1;
+    @Column(nullable=false)
+    private Integer numero = 10;
 
     @Column(nullable=false)
     private boolean contrassegno = false;

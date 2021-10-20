@@ -311,6 +311,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private Anagrafica intestatario;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private Anno anno = Anno.getAnnoCorrente();
 
     @ManyToOne
