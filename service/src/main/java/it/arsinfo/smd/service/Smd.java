@@ -202,21 +202,26 @@ public class Smd {
             return output;
     	}
     	log.info("aggiorna: {}, spedizioni inviate e decremento: prima {} {}, ultima {} {}", original,meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
-    	original.setTipoAbbonamentoRivista(tipo);
+		original.setTipoAbbonamentoRivista(tipo);
+
+		RivistaAbbonamento r = original.clone();
+		r.setNumero(numero);
+		r.setTipoAbbonamentoRivista(tipo);
+		log.info("aggiorna: new {}", r);
+
     	original.setMeseInizio(meseInizioInv);
     	original.setMeseFine(meseFineInv);
     	original.setAnnoInizio(annoInizioInv);
     	original.setAnnoFine(annoFineInv);
     	original.setNumero(original.getNumero()-numero);
+		log.info("aggiorna: updated {}", original);
 
-    	RivistaAbbonamento r = original.clone();
-    	r.setNumero(numero);
-    	r.setTipoAbbonamentoRivista(tipo);
 
     	int itemsoriginal=0;
     	int itemsupdated=0;
         for (SpedizioneWithItems spedwith: spedinviate) {
-        	for (SpedizioneItem originitem: spedwith.getSpedizioneItems()) {
+        	List<SpedizioneItem> listitem = new ArrayList<>(spedwith.getSpedizioneItems());
+        	for (SpedizioneItem originitem: listitem) {
 				if ( original.getId().equals(originitem.getRivistaAbbonamento().getId())) {
         			originitem.setNumero(original.getNumero());
         			itemsoriginal++;

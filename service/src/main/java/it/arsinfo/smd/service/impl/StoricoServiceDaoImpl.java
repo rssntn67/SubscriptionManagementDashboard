@@ -1,36 +1,19 @@
 package it.arsinfo.smd.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import it.arsinfo.smd.entity.Anno;
+import it.arsinfo.smd.dao.*;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.service.api.SmdService;
+import it.arsinfo.smd.service.api.StoricoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.service.api.StoricoService;
-import it.arsinfo.smd.dao.AbbonamentoDao;
-import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.CampagnaDao;
-import it.arsinfo.smd.dao.NotaDao;
-import it.arsinfo.smd.dao.PubblicazioneDao;
-import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
-import it.arsinfo.smd.dao.StoricoDao;
-import it.arsinfo.smd.entity.StatoCampagna;
-import it.arsinfo.smd.entity.StatoStorico;
-import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.Anagrafica;
-import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.Nota;
-import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
-import it.arsinfo.smd.entity.Storico;
-import it.arsinfo.smd.service.Smd;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class StoricoServiceDaoImpl implements StoricoService {
@@ -226,7 +209,12 @@ public class StoricoServiceDaoImpl implements StoricoService {
         storico.addItem(getNotaOnUpdate(storico, campagna, "aggiorna",username));
         storico.setStatoStorico(StatoStorico.Valido);
         save(storico);
-        smdService.aggiornaRivistaAbbonamento(ec,storico.getNumero(),storico.getTipoAbbonamentoRivista());
+        try {
+            smdService.aggiornaRivistaAbbonamento(ec, storico.getNumero(), storico.getTipoAbbonamentoRivista());
+        } catch (Exception e) {
+            log.error("aggiornaCampagna: {}", ec, e);
+            throw new UnsupportedOperationException("aggiornaRivistaAbbonamento failed");
+        }
     }
 	
     private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
