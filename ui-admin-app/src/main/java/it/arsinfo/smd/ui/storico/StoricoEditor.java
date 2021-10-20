@@ -22,26 +22,25 @@ import it.arsinfo.smd.ui.vaadin.SmdEntityEditor;
 public class StoricoEditor
         extends SmdEntityEditor<Storico> {
 
-    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
-    private final ComboBox<Anagrafica> destinatario = new ComboBox<Anagrafica>("Destinatario");
-    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazioni");
-    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista = 
-    		new ComboBox<TipoAbbonamentoRivista>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
-    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
+    private final ComboBox<Anagrafica> intestatario = new ComboBox<>("Intestatario");
+    private final ComboBox<Anagrafica> destinatario = new ComboBox<>("Destinatario");
+    private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<>("Pubblicazioni");
+    private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
     private final TextField numero = new TextField("Numero");
-    
-    private final CheckBox contrassegno = new CheckBox("Contrassegno");
 
-    private final ComboBox<StatoStorico> statoStorico = new ComboBox<StatoStorico>("Stato", EnumSet.allOf(StatoStorico.class));
-    
     public StoricoEditor(
             StoricoService dao,
             List<Pubblicazione> pubblicazioni, 
             List<Anagrafica> anagrafiche) {
 
         super(dao, new Binder<>(Storico.class) );
-        
+        final CheckBox contrassegno = new CheckBox("Contrassegno");
+
+        final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
+                new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
+        final ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
+
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");
         intestatario.setItems(anagrafiche);
@@ -94,16 +93,11 @@ public class StoricoEditor
     @Override
     public void focus(boolean persisted, Storico obj) {
         intestatario.setReadOnly(persisted);
-        contrassegno.setReadOnly(persisted);
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
         invioSpedizione.setReadOnly(obj.getNumero() > 0);
-        
-        if (persisted && obj.getPubblicazione() != null && !obj.getPubblicazione().isActive()) {
-            getSave().setEnabled(false);
-        } else {
-            getSave().setEnabled(true);
-        }
+
+        getSave().setEnabled(!persisted || obj.getPubblicazione() == null || obj.getPubblicazione().isActive());
         getDelete().setEnabled(persisted && obj.getStatoStorico() == StatoStorico.Nuovo);
         if (persisted) {
         	numero.focus();
