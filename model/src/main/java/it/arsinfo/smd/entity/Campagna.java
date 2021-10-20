@@ -27,21 +27,31 @@ public class Campagna implements SmdEntity {
     @OneToMany(mappedBy="campagna", orphanRemoval=true, fetch=FetchType.EAGER)
     List<CampagnaItem> campagnaItems = new ArrayList<>();
 
+    @Column(nullable=false)
     private boolean running = false;
     
     // Massimo numero di Riviste in abbonamento per debitori da Sospendere per la prossima campagna
     // Chi ha un abbonamento superiore a 10 riviste non va sospeso
+    @Column(nullable=false)
     private Integer numero = 10;
 
+    @Column(nullable=false)
     private BigDecimal limiteInvioEstratto=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal limiteInvioSollecito=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal speseSollecito=BigDecimal.ZERO;
 
+    @Column(nullable=false)
     private BigDecimal contrassegno=new BigDecimal("4.50");
 
+    @Column(nullable=false)
     private BigDecimal sogliaImportoTotale = new BigDecimal("70.00");
+    @Column(nullable=false)
     private BigDecimal minPercIncassato = new BigDecimal("0.8");
+    @Column(nullable=false)
     private BigDecimal maxDebito = new BigDecimal("7");
 
     public Campagna() {}

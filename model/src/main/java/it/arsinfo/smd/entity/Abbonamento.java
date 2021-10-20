@@ -307,7 +307,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(optional = false,fetch=FetchType.EAGER)
     private Anagrafica intestatario;
 
     @Enumerated(EnumType.STRING)
@@ -315,17 +315,25 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
 
     @ManyToOne
     private Campagna campagna;
-    
+
+    @Column(nullable=false)
     private BigDecimal pregresso=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal importo=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal spese=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal speseEstero=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal speseEstrattoConto=BigDecimal.ZERO;
+    @Column(nullable=false)
     private BigDecimal incassato=BigDecimal.ZERO;
 
+    @Column(nullable=false)
     private String codeLine;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable=false)
     private Date data = new Date();
 
     @Column(nullable=false)
