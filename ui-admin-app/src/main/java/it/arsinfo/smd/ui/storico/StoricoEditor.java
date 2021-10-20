@@ -28,6 +28,11 @@ public class StoricoEditor
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
     private final TextField numero = new TextField("Numero");
+    private final CheckBox contrassegno = new CheckBox("Contrassegno");
+
+    private final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
+            new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
+    private final ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
 
     public StoricoEditor(
             StoricoService dao,
@@ -35,11 +40,6 @@ public class StoricoEditor
             List<Anagrafica> anagrafiche) {
 
         super(dao, new Binder<>(Storico.class) );
-        final CheckBox contrassegno = new CheckBox("Contrassegno");
-
-        final ComboBox<TipoAbbonamentoRivista> tipoAbbonamentoRivista =
-                new ComboBox<>("Tipo",EnumSet.allOf(TipoAbbonamentoRivista.class));
-        final ComboBox<StatoStorico> statoStorico = new ComboBox<>("Stato", EnumSet.allOf(StatoStorico.class));
 
         intestatario.setEmptySelectionAllowed(false);
         intestatario.setPlaceholder("Intestatario");

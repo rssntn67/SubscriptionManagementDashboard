@@ -1,6 +1,7 @@
 package it.arsinfo.smd.ui.abbonamento;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.ReadOnlyHasValue;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.server.FileResource;
@@ -76,6 +77,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
         intestatario.setItemCaptionGenerator(Anagrafica::getCaption);
         intestatario.setEmptySelectionAllowed(false);
 
+        statoIncasso.setReadOnly(true);
+
         codeLine.setReadOnly(true);
 
         contrassegno.addValueChangeListener(event -> speseContrassegno.setEnabled(contrassegno.getValue()));
@@ -112,7 +115,8 @@ public class AbbonamentoEditor extends SmdEntityEditor<Abbonamento> {
 
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(statoIncasso).bind("statoIncasso");
+        ReadOnlyHasValue<Abbonamento> stato = new ReadOnlyHasValue<>(abb->  statoIncasso.setValue(abb.getStatoIncasso(campagna.getValue())));
+        getBinder().forField(stato).bind(abb->abb,null);
 
 
         getBinder()

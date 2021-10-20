@@ -25,47 +25,6 @@ public class RivistaAbbonamento implements SmdEntity {
         return ec;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @ManyToOne(optional=false,fetch=FetchType.LAZY)
-    private Abbonamento abbonamento;
-
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Pubblicazione pubblicazione;
-
-    @ManyToOne
-    private Storico storico;
-
-    @Enumerated(EnumType.STRING)
-    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
-
-    @Enumerated(EnumType.STRING)
-    private StatoRivista statoRivista = StatoRivista.Attiva;
-
-    private Mese meseInizio=Mese.GENNAIO;
-    private Anno annoInizio=Anno.getAnnoCorrente();
-    private Mese meseFine = Mese.DICEMBRE;
-    private Anno annoFine = Anno.getAnnoCorrente();
-    private Integer numero = 1;
-    private Integer numeroTotaleRiviste = 0;
-    
-    private BigDecimal importo = BigDecimal.ZERO;
-
-    @ManyToOne(optional=false,fetch=FetchType.EAGER)
-    private Anagrafica destinatario;
-    
-    @Enumerated(EnumType.STRING)
-    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
-
-    public RivistaAbbonamento() {
-    }
-
-    public RivistaAbbonamento(Long id) {
-        this.id=id;
-    }
-
     public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Mese meseInizio, Anno annoInizio, Mese meseFine, Anno annoFine, Pubblicazione p) throws UnsupportedOperationException {
         if (annoInizio.getAnno() > annoFine.getAnno()) {
             throw new UnsupportedOperationException("data inizio maggiore di data fine");
@@ -103,6 +62,57 @@ public class RivistaAbbonamento implements SmdEntity {
             }
         }
         return map;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @ManyToOne(optional=false,fetch=FetchType.LAZY)
+    private Abbonamento abbonamento;
+
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Pubblicazione pubblicazione;
+
+    @ManyToOne
+    private Storico storico;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
+    private TipoAbbonamentoRivista tipoAbbonamentoRivista = TipoAbbonamentoRivista.Ordinario;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
+    private StatoRivista statoRivista = StatoRivista.Attiva;
+
+    @Column(nullable=false)
+    private Mese meseInizio=Mese.GENNAIO;
+    @Column(nullable=false)
+    private Anno annoInizio=Anno.getAnnoCorrente();
+    @Column(nullable=false)
+    private Mese meseFine = Mese.DICEMBRE;
+    @Column(nullable=false)
+    private Anno annoFine = Anno.getAnnoCorrente();
+    @Column(nullable=false)
+    private Integer numero = 1;
+    @Column(nullable=false)
+    private Integer numeroTotaleRiviste = 0;
+
+    @Column(nullable=false)
+    private BigDecimal importo = BigDecimal.ZERO;
+
+    @ManyToOne(optional=false,fetch=FetchType.EAGER)
+    private Anagrafica destinatario;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
+    private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
+
+    public RivistaAbbonamento() {
+    }
+
+    public RivistaAbbonamento(Long id) {
+        this.id=id;
     }
 
     public Long getId() {

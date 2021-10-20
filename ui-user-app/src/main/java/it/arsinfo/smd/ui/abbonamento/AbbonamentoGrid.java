@@ -24,8 +24,8 @@ public abstract class AbbonamentoGrid extends EntityGridView<Abbonamento> {
     @Override
     public void init(Grid<Abbonamento> grid) {
         super.init(grid);
-        configureGrid("statoAbbonamento");
-        stato = grid.getColumnByKey("statoAbbonamento");
+        configureGrid("statoIncasso");
+        stato = grid.getColumnByKey("statoIncasso");
         importo= grid.addColumn(new NumberRenderer<>(Abbonamento::getImporto, SmdEntity.getEuroCurrency())).setHeader("Importo");
         spese = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpese, SmdEntity.getEuroCurrency())).setHeader("Spese");
         speseEstero = grid.addColumn(new NumberRenderer<>(Abbonamento::getSpeseEstero, SmdEntity.getEuroCurrency())).setHeader("Spese Estero");

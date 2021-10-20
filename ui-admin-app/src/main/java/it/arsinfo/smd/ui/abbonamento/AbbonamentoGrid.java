@@ -25,7 +25,6 @@ public class AbbonamentoGrid extends SmdGrid<Abbonamento> {
         getGrid().addColumn("totale",EuroConverter.getEuroRenderer());
         getGrid().addColumn("incassato",EuroConverter.getEuroRenderer());
         getGrid().addColumn("residuo",EuroConverter.getEuroRenderer());
-        getGrid().addColumn("statoAbbonamento");
 
         gridfooter = getGrid().prependFooterRow();
 
