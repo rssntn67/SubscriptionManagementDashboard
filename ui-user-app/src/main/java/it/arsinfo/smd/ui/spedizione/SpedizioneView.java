@@ -7,10 +7,9 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.renderer.NumberRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import it.arsinfo.smd.dao.AnagraficaDao;
+import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.SpedizioneService;
-import it.arsinfo.smd.dto.Indirizzo;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.entity.EntityGridView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,10 @@ import java.util.List;
 public class SpedizioneView extends EntityGridView<SpedizioneItem> {
 
     private final SpedizioneService service;
-    private final AnagraficaDao dao;
     private final IndirizzoForm form = new IndirizzoForm(new BeanValidationBinder<>(Indirizzo.class));
 
-    public SpedizioneView(@Autowired SpedizioneService service, @Autowired AnagraficaDao anagraficaDao) {
+    public SpedizioneView(@Autowired SpedizioneService service) {
         this.service=service;
-        this.dao = anagraficaDao;
-
     }
     @PostConstruct
     public void init() {
@@ -58,10 +54,6 @@ public class SpedizioneView extends EntityGridView<SpedizioneItem> {
     public void edit(SpedizioneItem entity) {
         Anagrafica destinatario = entity.getSpedizione().getDestinatario();
         Indirizzo indirizzo = Indirizzo.getIndirizzo(destinatario);
-        if (destinatario.getCo() != null ) {
-            Anagrafica co = dao.findById(destinatario.getCo().getId()).orElse(null);
-            Indirizzo.getIndirizzo(destinatario,co);
-        }
         form.setEntity(indirizzo);
         form.setVisible(true);
         addClassName("editing");

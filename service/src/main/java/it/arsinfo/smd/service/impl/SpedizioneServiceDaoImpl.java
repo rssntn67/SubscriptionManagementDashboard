@@ -215,13 +215,7 @@ public class SpedizioneServiceDaoImpl implements SpedizioneService {
 
 	@Override
 	public Indirizzo getIndirizzo(Spedizione sped) {
-		Anagrafica co = sped.getDestinatario().getCo();
-		if (co == null)
-			return Indirizzo.getIndirizzo(sped.getDestinatario());
-		co = anagraficaDao.findById(co.getId()).orElse(null);
-		if (co == null)
-			return Indirizzo.getIndirizzo(sped.getDestinatario());
-		return Indirizzo.getIndirizzo(sped.getDestinatario(),co);
+		return Indirizzo.getIndirizzo(sped.getDestinatario());
 	}
 
 	@Override

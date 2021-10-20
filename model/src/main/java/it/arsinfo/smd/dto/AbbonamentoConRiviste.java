@@ -1,14 +1,13 @@
 package it.arsinfo.smd.dto;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.util.Assert;
-
-import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
+import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.RivistaAbbonamento;
+import org.springframework.util.Assert;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public class AbbonamentoConRiviste extends Indirizzo {
 
@@ -26,18 +25,23 @@ public class AbbonamentoConRiviste extends Indirizzo {
 
     private void populate(List<RivistaAbbonamento> estrattiConto) {
 		for (RivistaAbbonamento ec:estrattiConto) {
-			if (ec.getPubblicazione().getNome().equals("Messaggio")) {
-				numeroMessaggi+=ec.getNumero();
-				importoMessaggi=importoMessaggi.add(ec.getImporto());
-			} else if(ec.getPubblicazione().getNome().equals("Lodare")) {
-				numeroLodare+=ec.getNumero();
-				importoLodare=importoLodare.add(ec.getImporto());
-			} else if(ec.getPubblicazione().getNome().equals("Blocchetti")) {
-				numeroBlocchetti+=ec.getNumero();
-				importoBlocchetti=importoBlocchetti.add(ec.getImporto());
-			} else if(ec.getPubblicazione().getNome().equals("Estratti")) {
-				numeroManifesti+=ec.getNumero();
-				importoManifesti=importoManifesti.add(ec.getImporto());
+			switch (ec.getPubblicazione().getNome()) {
+				case "Messaggio":
+					numeroMessaggi += ec.getNumero();
+					importoMessaggi = importoMessaggi.add(ec.getImporto());
+					break;
+				case "Lodare":
+					numeroLodare += ec.getNumero();
+					importoLodare = importoLodare.add(ec.getImporto());
+					break;
+				case "Blocchetti":
+					numeroBlocchetti += ec.getNumero();
+					importoBlocchetti = importoBlocchetti.add(ec.getImporto());
+					break;
+				case "Estratti":
+					numeroManifesti += ec.getNumero();
+					importoManifesti = importoManifesti.add(ec.getImporto());
+					break;
 			}
 		}
 	}
@@ -49,13 +53,6 @@ public class AbbonamentoConRiviste extends Indirizzo {
 		populate(estrattiConto);
 	}
 
-	public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario, Anagrafica co) {
-    	super(intestatario,co);
-    	Assert.notNull(abbonamento,"abbonamento must be not null");
-    	this.abbonamento= abbonamento;
-    	populate(estrattiConto);
-    }
-    
 	public Anno getAnno() {
         return abbonamento.getAnno();
     }

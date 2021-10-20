@@ -19,8 +19,6 @@ public interface AnagraficaDao extends JpaRepository<Anagrafica, Long> {
 
 	List<Anagrafica> findByDiocesi(Diocesi diocesi);
 
-	List<Anagrafica> findByCo(Anagrafica co);
-
 	List<Anagrafica> findByCittaContainingIgnoreCase(String citta);
 
 	List<Anagrafica> findByDiocesiAndNomeContainingIgnoreCase(Diocesi diocesi, String nome);

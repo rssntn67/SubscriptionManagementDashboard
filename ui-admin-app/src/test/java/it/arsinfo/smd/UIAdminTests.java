@@ -6,6 +6,8 @@ import it.arsinfo.smd.bancoposta.impl.BancoPostaApiServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import it.arsinfo.smd.dao.*;
+import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
@@ -13,8 +15,6 @@ import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
-import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.service.impl.SmdServiceImpl;
 import it.arsinfo.smd.service.impl.WooCommerceOrderServiceDaoImpl;
 import it.arsinfo.smd.ui.security.CustomLogoutSuccessHandler;
@@ -40,7 +40,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -337,58 +336,13 @@ public class UIAdminTests {
         assertEquals(2,anagraficaDao.findByDiocesi(Diocesi.DIOCESI116).size());
         assertEquals(0,anagraficaDao.findByDiocesi(Diocesi.DIOCESI115).size());
         
-        antonioRusso.setCo(diocesiMilano);
         anagraficaDao.save(antonioRusso);
-        
-        assertEquals(0,anagraficaDao.findByCo(antonioRusso).size());
-        assertEquals(1,anagraficaDao.findByCo(diocesiMilano).size());
-        
-        try {
-            anagraficaDao.delete(diocesiMilano);
-            assertThat(false).isTrue();
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
-        
+
         anagraficaDao.findAll().forEach( a -> log.info(a.toString()));
         anagraficaDao.delete(antonioRusso);
         anagraficaDao.delete(diocesiMilano);
         
         assertEquals(0, anagraficaDao.findAll().size());        
-    }
-    
-    @Test
-    public void testAnagraficaCo() {
-        log.info("----------------->testAnagraficaCo<----------------");
-        Anagrafica diocesiMilano = SmdHelper.getDiocesiMi();
-        anagraficaDao.save(diocesiMilano);
-        assertEquals(1, anagraficaDao.findAll().size());
-        
-        Anagrafica ar = SmdHelper.getAR();
-        ar.setCo(diocesiMilano);
-        anagraficaDao.save(ar);
-        assertEquals(2, anagraficaDao.findAll().size());
-        
-        List<Anagrafica> withco = anagraficaDao.findAll()
-                .stream()
-                .filter(a -> a.getCo() != null)
-                .collect(Collectors.toList());
-
-        assertEquals(1, withco.size());
-        Anagrafica ff = withco.iterator().next();
-        assertEquals(ar.getId().longValue(), ff.getId().longValue());
-        
-        try {
-            anagraficaDao.delete(diocesiMilano);
-            assertThat(false).isTrue();
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
-        assertEquals(2, anagraficaDao.findAll().size());       
-        anagraficaDao.delete(ar);
-        assertEquals(1, anagraficaDao.findAll().size());       
-        anagraficaDao.delete(diocesiMilano);
-        assertEquals(0, anagraficaDao.findAll().size());       
     }
 
     @Test

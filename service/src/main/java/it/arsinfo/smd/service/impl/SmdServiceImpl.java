@@ -29,9 +29,6 @@ public class SmdServiceImpl implements SmdService {
     private AbbonamentoDao abbonamentoDao;
 
     @Autowired
-    private AnagraficaDao anagraficaDao;
-
-    @Autowired
     private CampagnaDao campagnaDao;
 
     @Autowired
@@ -78,20 +75,10 @@ public class SmdServiceImpl implements SmdService {
     	List<AbbonamentoConRiviste> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
     	    List<RivistaAbbonamento> ralist =  rivistaAbbonamentoDao.findByAbbonamento(abbonamento);
-            Anagrafica co;
-            co = null;
-    	    if (abbonamento.getIntestatario().getCo() != null) {
-                co = anagraficaDao.findById(abbonamento.getIntestatario().getCo().getId()).orElse(null);
-            }
-    	    if (co != null) {
-                list.add(new
-                        AbbonamentoConRiviste(abbonamento, ralist,abbonamento.getIntestatario(), co));
-            } else {
                 list.add(new
                         AbbonamentoConRiviste(abbonamento,
                         ralist,
                         abbonamento.getIntestatario()));
-            }
     	}
     	return list;
     }
@@ -370,14 +357,7 @@ public class SmdServiceImpl implements SmdService {
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
-    		Anagrafica co = destinatario.getCo();
-    		SpedizioneDto dto;
-            if (co == null) {
-    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
-    		} else {
-        		co = anagraficaDao.findById(co.getId()).orElse(null);
-        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
-    		}
+    		SpedizioneDto dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
     			dto.setOmaggio();
     		}
@@ -417,14 +397,7 @@ public class SmdServiceImpl implements SmdService {
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
-    		Anagrafica co = destinatario.getCo();
-    		SpedizioneDto dto;
-    		if (co == null) {
-    			dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
-    		} else {
-        		co = anagraficaDao.findById(co.getId()).orElse(null);
-        		dto=SpedizioneDto.getSpedizioneDto(sped,item, destinatario, co);
-    		}
+    		SpedizioneDto dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
     		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
     			dto.setOmaggio();
     		}

@@ -1,18 +1,7 @@
 package it.arsinfo.smd.entity;
 
+import javax.persistence.*;
 import java.util.concurrent.ThreadLocalRandom;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints={
@@ -26,8 +15,10 @@ public class Anagrafica implements SmdEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private Diocesi diocesi = Diocesi.DIOCESISTD;
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private Provincia provincia = Provincia.ND;
     @Enumerated(EnumType.STRING)
     private Regione regioneVescovi;
@@ -35,15 +26,14 @@ public class Anagrafica implements SmdEntity {
     private CentroDiocesano centroDiocesano;
 
     @Column(nullable=false)
-    private TitoloAnagrafica titolo=TitoloAnagrafica.Nessuno;   
-    
+    private TitoloAnagrafica titolo=TitoloAnagrafica.Nessuno;
+
+    @Column(nullable=false)
     private String nome;
+    @Column(nullable=false)
     private String denominazione;
     private String descr;
-    
-    @ManyToOne
-    private Anagrafica co;
-    
+
     private String indirizzo;
     private String indirizzoSecondaRiga;
 
@@ -53,6 +43,7 @@ public class Anagrafica implements SmdEntity {
     private Paese paese = Paese.IT;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable=false)
     private AreaSpedizione areaSpedizione = AreaSpedizione.Italia;
 
     private String email;
@@ -339,14 +330,6 @@ public class Anagrafica implements SmdEntity {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
-    }
-
-    public Anagrafica getCo() {
-        return co;
-    }
-
-    public void setCo(Anagrafica co) {
-        this.co = co;
     }
 
     public AreaSpedizione getAreaSpedizione() {
