@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.6 (Debian 12.6-1.pgdg100+1)
--- Dumped by pg_dump version 12.6 (Debian 12.6-1.pgdg100+1)
+-- Dumped from database version 12.8
+-- Dumped by pg_dump version 12.8
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -26,21 +26,21 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.abbonamento (
     id bigint NOT NULL,
-    anno character varying(255),
-    code_line character varying(255),
+    anno character varying(255) NOT NULL,
+    code_line character varying(255) NOT NULL,
     contrassegno boolean NOT NULL,
-    data timestamp without time zone,
-    importo numeric(19,2),
-    incassato numeric(19,2),
+    data timestamp without time zone NOT NULL,
+    importo numeric(19,2) NOT NULL,
+    incassato numeric(19,2) NOT NULL,
     inviatoec boolean NOT NULL,
-    pregresso numeric(19,2),
+    pregresso numeric(19,2) NOT NULL,
     sollecitato boolean NOT NULL,
-    spese numeric(19,2),
-    spese_estero numeric(19,2),
-    spese_estratto_conto numeric(19,2),
-    stato_abbonamento character varying(255),
+    spese numeric(19,2) NOT NULL,
+    spese_contrassegno numeric(19,2) NOT NULL,
+    spese_estero numeric(19,2) NOT NULL,
+    spese_estratto_conto numeric(19,2) NOT NULL,
     campagna_id bigint,
-    intestatario_id bigint
+    intestatario_id bigint NOT NULL
 );
 
 
@@ -52,7 +52,7 @@ ALTER TABLE public.abbonamento OWNER TO postgres;
 
 CREATE TABLE public.anagrafica (
     id bigint NOT NULL,
-    area_spedizione character varying(255),
+    area_spedizione character varying(255) NOT NULL,
     cap character varying(255),
     cariche_socialiadp boolean NOT NULL,
     cellulare character varying(255),
@@ -62,9 +62,9 @@ CREATE TABLE public.anagrafica (
     codfis character varying(255),
     consiglio_nazionaleadp boolean NOT NULL,
     delegati_regionaliadp boolean NOT NULL,
-    denominazione character varying(255),
+    denominazione character varying(255) NOT NULL,
     descr character varying(255),
-    diocesi character varying(255),
+    diocesi character varying(255) NOT NULL,
     direttore_diocesiano boolean NOT NULL,
     direttore_zona_milano boolean NOT NULL,
     direzioneadp boolean NOT NULL,
@@ -72,19 +72,18 @@ CREATE TABLE public.anagrafica (
     email character varying(255),
     indirizzo character varying(255),
     indirizzo_seconda_riga character varying(255),
-    nome character varying(255),
+    nome character varying(255) NOT NULL,
     paese character varying(255),
     piva character varying(255),
     presidente_diocesano boolean NOT NULL,
     presidenzaadp boolean NOT NULL,
     promotore_regionale boolean NOT NULL,
-    provincia character varying(255),
+    provincia character varying(255) NOT NULL,
     regione_direttore_diocesano character varying(255),
     regione_presidente_diocesano character varying(255),
     regione_vescovi character varying(255),
     telefono character varying(255),
-    titolo integer NOT NULL,
-    co_id bigint
+    titolo integer NOT NULL
 );
 
 
@@ -97,8 +96,16 @@ ALTER TABLE public.anagrafica OWNER TO postgres;
 CREATE TABLE public.campagna (
     id bigint NOT NULL,
     anno character varying(255) NOT NULL,
-    numero integer,
+    contrassegno numeric(19,2) NOT NULL,
+    limite_invio_estratto numeric(19,2) NOT NULL,
+    limite_invio_sollecito numeric(19,2) NOT NULL,
+    max_debito numeric(19,2) NOT NULL,
+    min_perc_incassato numeric(19,2) NOT NULL,
+    numero integer NOT NULL,
     running boolean NOT NULL,
+    soglia_importo_totale numeric(19,2) NOT NULL,
+    spese_estratto_conto numeric(19,2) NOT NULL,
+    spese_sollecito numeric(19,2) NOT NULL,
     stato_campagna character varying(255) NOT NULL
 );
 
@@ -308,17 +315,17 @@ ALTER TABLE public.operazione_sospendi OWNER TO postgres;
 
 CREATE TABLE public.pubblicazione (
     id bigint NOT NULL,
-    abbonamento numeric(19,2),
-    abbonamento_con_sconto numeric(19,2),
-    abbonamento_sostenitore numeric(19,2),
-    abbonamento_web numeric(19,2),
+    abbonamento numeric(19,2) NOT NULL,
+    abbonamento_con_sconto numeric(19,2) NOT NULL,
+    abbonamento_sostenitore numeric(19,2) NOT NULL,
+    abbonamento_web numeric(19,2) NOT NULL,
     active boolean NOT NULL,
     ago boolean NOT NULL,
-    anno character varying(255),
+    anno character varying(255) NOT NULL,
     anticipo_spedizione integer NOT NULL,
     apr boolean NOT NULL,
     autore character varying(255),
-    costo_unitario numeric(19,2),
+    costo_unitario numeric(19,2) NOT NULL,
     descrizione character varying(255),
     dic boolean NOT NULL,
     editore character varying(255),
@@ -329,11 +336,11 @@ CREATE TABLE public.pubblicazione (
     lug boolean NOT NULL,
     mag boolean NOT NULL,
     mar boolean NOT NULL,
-    nome character varying(255),
+    nome character varying(255) NOT NULL,
     nov boolean NOT NULL,
     ott boolean NOT NULL,
     set boolean NOT NULL,
-    tipo character varying(255)
+    tipo character varying(255) NOT NULL
 );
 
 
@@ -438,7 +445,7 @@ CREATE TABLE public.storico (
     id bigint NOT NULL,
     contrassegno boolean NOT NULL,
     invio_spedizione character varying(255) NOT NULL,
-    numero integer,
+    numero integer NOT NULL,
     stato_storico character varying(255) NOT NULL,
     tipo_abbonamento_rivista character varying(255) NOT NULL,
     destinatario_id bigint NOT NULL,
@@ -1089,14 +1096,6 @@ ALTER TABLE ONLY public.campagna_item
 
 ALTER TABLE ONLY public.operazione_sospendi
     ADD CONSTRAINT fktd8vxarfqw60w2s0r4nvb5emj FOREIGN KEY (pubblicazione_id) REFERENCES public.pubblicazione(id);
-
-
---
--- Name: anagrafica fktm3w7nxtai9fmoi3d1a9je3uq; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.anagrafica
-    ADD CONSTRAINT fktm3w7nxtai9fmoi3d1a9je3uq FOREIGN KEY (co_id) REFERENCES public.anagrafica(id);
 
 
 --
