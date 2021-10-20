@@ -174,7 +174,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 
         getActions().addComponents(buttonGenera, buttonInvio, buttonSollecita, buttonSospendi, comboBoxPubblicazioneDaSospendere, buttonEstrattoConto, buttonChiudi);
 
-        HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna,contrassegno);
+        HorizontalLayout stato = new HorizontalLayout(anno,statoCampagna);
+        Label generatedLabel= new Label("Il valore contrassegno viene usato quando la campagna viene generata\n" +
+				                             "Inserire il valore delle spese da pagare con contrassegno",
+				ContentMode.PREFORMATTED);
 		Label sollecitoLabel =
 				new Label( "Questi valori vengono utilizzati quando si invia il sollecito.\n " +
 						        "Inserire il valore minimo di debito e le spese da aggiungere:\n" +
@@ -198,6 +201,10 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 					  " **** importo >= Soglia Importo & incassato >= importo * Fattore Minimo\n" +
 				      " **** importo < Soglia Importo & debito < Max Debito"
 				,ContentMode.PREFORMATTED);
+		Panel generated = new Panel("Gestione Contrassegno");
+		generated.setContent(new HorizontalLayout(contrassegno,generatedLabel));
+		generated.setSizeUndefined();
+
 		Panel sollecito = new Panel("Gestione Sollecito");
 		sollecito.setContent(new HorizontalLayout(limiteInvioSollecito,speseSollecito,sollecitoLabel));
 		sollecito.setSizeUndefined();
@@ -222,15 +229,16 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         		getActions(),
         		running,
         		riviste,
-        		stato,
+				stato,
+				new HorizontalLayout(buttonVisualizzaGenerati, buttonVisualizzaInviati, buttonVisualizzaSollecitati, buttonVisualizzaEstrattoConto, buttonVisualizzaDebitori),
+				new VerticalLayout(grid.getComponents()),
+				operazioni.getGrid(),
+				sospensioni.getGrid(),
         		statoincasso,
+				generated,
         		sollecito,
         		ec,
-        		close,
-        		new HorizontalLayout(buttonVisualizzaGenerati, buttonVisualizzaInviati, buttonVisualizzaSollecitati, buttonVisualizzaEstrattoConto, buttonVisualizzaDebitori),
-        	    new VerticalLayout(grid.getComponents()),
-        		operazioni.getGrid(),
-        		sospensioni.getGrid()
+        		close
 		);
         
         grid.setVisible(false);
