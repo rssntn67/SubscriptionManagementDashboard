@@ -189,10 +189,15 @@ public class RivistaAbbonamento implements SmdEntity {
         importo=BigDecimal.ZERO;
         switch (tipoAbbonamentoRivista) {
             case Ordinario:
-                importo = pubblicazione.getAbbonamento().multiply(new BigDecimal(numero));
-                if (!isAbbonamentoAnnuale() || numero == 0) {
-                    importo = pubblicazione.getCostoUnitario().multiply(new BigDecimal(getNumeroTotaleRiviste()));
+                if (isAbbonamentoAnnuale() ) {
+                    importo=pubblicazione.getAbbonamento().multiply(new BigDecimal(numero));
+                    int numrivres=numeroTotaleRiviste-pubblicazione.getMesiPubblicazione().size()*numero;
+                    BigDecimal residuo= pubblicazione.getCostoUnitario().multiply(new BigDecimal(numrivres));
+                    importo=importo.add(residuo);
+                } else {
+                    importo = pubblicazione.getCostoUnitario().multiply(new BigDecimal(numeroTotaleRiviste));
                 }
+
                 break;
 
             case Web:
