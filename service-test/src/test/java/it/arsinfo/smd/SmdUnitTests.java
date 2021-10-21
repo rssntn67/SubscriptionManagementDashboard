@@ -1150,7 +1150,6 @@ public class SmdUnitTests {
     }
 
     @Test
-    //FIXME
     public void testAggiornaNumeroLtAbbonamentoRivistaConSpedizioniInviate() {
         Anno anno = Anno.getAnnoProssimo();
 
@@ -1193,32 +1192,19 @@ public class SmdUnitTests {
         RivistaAbbonamentoAggiorna aggiorna = service.doAggiorna(abb,spedizioni,ec1,1,TipoAbbonamentoRivista.Ordinario);
         Assertions.assertEquals(2, aggiorna.getSpedizioniToSave().size());
         for (SpedizioneWithItems spedwiItems: aggiorna.getSpedizioniToSave()) {
-//            Assertions.assertEquals(2,spedwiItems.getSpedizioneItems().size());
+            Assertions.assertEquals(1,spedwiItems.getSpedizioneItems().size());
             SpedizioneItem item= spedwiItems.getSpedizioneItems().iterator().next();
             Assertions.assertNotNull(item);
             switch (item.getStatoSpedizione()) {
                 case PROGRAMMATA:
                     switch(item.getMesePubblicazione()) {
-                        case GENNAIO:
-                            Assertions.assertEquals(1,item.getNumero());
-                            Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
-                            if (Mese.getMeseCorrente().getPosizione() >= 10) {
-                                Assertions.assertTrue(item.isPosticipata());
-                                Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
-                                Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
-                            } else {
-                                Assertions.assertFalse(item.isPosticipata());
-                                Assertions.assertEquals(Mese.OTTOBRE, item.getSpedizione().getMeseSpedizione());
-                                Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
-                            }
-
-                            break;
                         case LUGLIO:
                             Assertions.assertEquals(1,item.getNumero());
                             Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
                             Assertions.assertEquals(Mese.APRILE, item.getSpedizione().getMeseSpedizione());
                             Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
                             break;
+                        case GENNAIO:
                         case FEBBRAIO:
                         case MARZO:
                         case APRILE:
@@ -1234,7 +1220,7 @@ public class SmdUnitTests {
                     }
                     break;
                 case INVIATA:
-                    Assertions.assertEquals(1,item.getNumero());
+                    Assertions.assertEquals(2,item.getNumero());
                     Assertions.assertEquals(Mese.GENNAIO, item.getMesePubblicazione());
                     Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
                     if (Mese.getMeseCorrente().getPosizione() > 10) {
@@ -1252,12 +1238,13 @@ public class SmdUnitTests {
                     Assertions.fail();
             }
         }
-//        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
-        Assertions.assertEquals(2, aggiorna.getRivisteToSave().size());
+        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
         Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
         RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
-        Assertions.assertEquals(3.50, rivista.getImporto().doubleValue(),0);
-//        Assertions.assertEquals(10.50, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+        Assertions.assertEquals(3,rivista.getNumeroTotaleRiviste());
+        Assertions.assertEquals(10.50, rivista.getImporto().doubleValue(),0);
+        Assertions.assertEquals(10.50, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
     }
 
 

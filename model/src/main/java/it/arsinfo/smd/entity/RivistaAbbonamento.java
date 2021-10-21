@@ -167,8 +167,8 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("RivistaAbbonamento[id=%d, Abb.%d, '%d %s' %s imp. %.2f %s, %s %s -> %s %s]", 
-                             id,abbonamento.getId(),numero,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista, 
+        return String.format("RivistaAbbonamento[id=%d, Abb.%d, numero %d '%d %s' %s imp. %.2f %s, %s %s -> %s %s]",
+                             id,abbonamento.getId(),numero,numeroTotaleRiviste,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista,
                              meseInizio,annoInizio,meseFine,annoFine);
     }
 
@@ -303,21 +303,6 @@ public class RivistaAbbonamento implements SmdEntity {
     public String getBeneficiario() {
         return Anagrafica.generaIntestazione(destinatario);
     }
-
-
-	public RivistaAbbonamento clone() {
-        RivistaAbbonamento r = new RivistaAbbonamento(id);
-		r.setAbbonamento(abbonamento);
-		r.setAnnoFine(annoFine);
-		r.setAnnoInizio(annoInizio);
-		r.setDestinatario(destinatario);
-		r.setInvioSpedizione(invioSpedizione);
-		r.setMeseFine(meseFine);
-		r.setMeseInizio(meseInizio);
-		r.setPubblicazione(pubblicazione);
-		r.setStorico(storico);
-		return r;
-	}
 
 	public StatoRivista getStatoRivista() {
 		return statoRivista;
