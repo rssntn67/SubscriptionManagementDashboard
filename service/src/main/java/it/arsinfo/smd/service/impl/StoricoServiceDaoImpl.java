@@ -199,9 +199,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
         	log.info("aggiornaCampagna: rimuovi {} {}",storico,campagna);
             storico.addItem(getNotaOnUpdate(storico, campagna, "rimuovi",username));
     		save(storico);
-            Abbonamento abbonamento = abbonamentoDao.findById(Objects.requireNonNull(ec).getAbbonamento().getId()).orElse(null);
-            Objects.requireNonNull(abbonamento);
-            smdService.rimuovi(abbonamento,ec);
+            smdService.rimuovi(ec);
             return;
         } 
         

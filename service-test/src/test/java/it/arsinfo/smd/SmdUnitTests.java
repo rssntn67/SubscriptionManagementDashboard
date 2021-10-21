@@ -451,7 +451,7 @@ public class SmdUnitTests {
             }
         }
         
-        RivistaAbbonamentoAggiorna aggiorna = service.rimuovi(abb, ec1, spedizioniwithitems);
+        RivistaAbbonamentoAggiorna aggiorna = service.doRimuovi(abb, ec1, spedizioniwithitems);
         Assertions.assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, aggiorna.getItemsToDelete().size());
 
         BigDecimal ss = BigDecimal.ZERO;
@@ -598,7 +598,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(2, ec3items.size());
         
         //FIRST operation Delete ec2 lodare
-        RivistaAbbonamentoAggiorna aggiorna = service.rimuovi(abb,ec2, spedizioni);
+        RivistaAbbonamentoAggiorna aggiorna = service.doRimuovi(abb,ec2, spedizioni);
         Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
         
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
@@ -651,7 +651,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(0, ec2.getImporto().doubleValue(),0);
         
 
-        aggiorna = service.rimuovi(abb,ec1, spedizioni);
+        aggiorna = service.doRimuovi(abb,ec1, spedizioni);
         Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
 
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
@@ -689,7 +689,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
         Assertions.assertEquals(0, ec1.getImporto().doubleValue(),0);
 
-        aggiorna = service.rimuovi(abb,ec3, spedizioni);
+        aggiorna = service.doRimuovi(abb,ec3, spedizioni);
         for (SpedizioneItem item: aggiorna.getItemsToDelete()) {
             Assertions.assertEquals(ec3, item.getRivistaAbbonamento());
         }
@@ -862,21 +862,21 @@ public class SmdUnitTests {
         Assertions.assertNotEquals(ec2, ec1);
 
         try {
-            service.aggiorna(abb,spedizioni,null,3,ec1.getTipoAbbonamentoRivista());
+            service.doAggiorna(abb,spedizioni,null,3,ec1.getTipoAbbonamentoRivista());
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
-            service.aggiorna(abb,spedizioni,ec1,0,ec1.getTipoAbbonamentoRivista());
+            service.doAggiorna(abb,spedizioni,ec1,0,ec1.getTipoAbbonamentoRivista());
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
-            service.aggiorna(abb,spedizioni,ec1,3,null);
+            service.doAggiorna(abb,spedizioni,ec1,3,null);
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
@@ -924,7 +924,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
         Assertions.assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
 
-        RivistaAbbonamentoAggiorna aggiorna = service.aggiorna(abb,spedizioni,ec1,10,ec1.getTipoAbbonamentoRivista());
+        RivistaAbbonamentoAggiorna aggiorna = service.doAggiorna(abb,spedizioni,ec1,10,ec1.getTipoAbbonamentoRivista());
         
         Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
         Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
@@ -935,6 +935,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(10*8*messaggio.getCostoUnitario().doubleValue(), aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
         RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
         Assertions.assertNotNull(rivista);
+        Assertions.assertEquals(80,rivista.getNumeroTotaleRiviste());
         Assertions.assertEquals(aggiorna.getAbbonamentoToSave().getImporto().doubleValue(), rivista.getImporto().doubleValue(),0);
         Assertions.assertEquals(8, aggiorna.getSpedizioniToSave().size());
         
@@ -985,7 +986,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
 
-        RivistaAbbonamentoAggiorna aggiorna = service.aggiorna(abb,spedizioni,ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
+        RivistaAbbonamentoAggiorna aggiorna = service.doAggiorna(abb,spedizioni,ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
         Assertions.assertEquals(0, aggiorna.getSpedizioniToSave().size());
         Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
         Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
@@ -1001,6 +1002,227 @@ public class SmdUnitTests {
         }));
         Assertions.assertEquals(11, items.size());
         Assertions.assertEquals(11, spedizioni.size());
+    }
+
+
+    @Test
+    public void testAggiornaNumeroGtAbbonamentoRivistaConSpedizioniInviate() {
+        Anno anno = Anno.getAnnoProssimo();
+
+        Anagrafica tizio = SmdHelper.getGP();
+        Pubblicazione blocchetti = SmdHelper.getBlocchetti();
+
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno,false);
+
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(56L);
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(blocchetti);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(5);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
+        List<SpedizioneWithItems> spedizioni =
+                service.genera(
+                        abb,
+                        ec1,
+                        new ArrayList<>());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
+            if (item.getMesePubblicazione() == Mese.GENNAIO) {
+                item.setStatoSpedizione(StatoSpedizione.INVIATA);
+            }
+            items.add(item);
+            Assertions.assertEquals(5, item.getNumero().intValue());
+        }));
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals(2, spedizioni.size());
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*5.00, ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*5.00, abb.getImporto().doubleValue(),0);
+
+        RivistaAbbonamentoAggiorna aggiorna = service.doAggiorna(abb,spedizioni,ec1,8,TipoAbbonamentoRivista.Ordinario);
+        Assertions.assertEquals(3, aggiorna.getSpedizioniToSave().size());
+        for (SpedizioneWithItems spedwiItems: aggiorna.getSpedizioniToSave()) {
+            Assertions.assertEquals(1,spedwiItems.getSpedizioneItems().size());
+            SpedizioneItem item= spedwiItems.getSpedizioneItems().iterator().next();
+            Assertions.assertNotNull(item);
+            switch (item.getStatoSpedizione()) {
+                case PROGRAMMATA:
+                    switch(item.getMesePubblicazione()) {
+                        case GENNAIO:
+                            Assertions.assertEquals(3,item.getNumero());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                            if (Mese.getMeseCorrente().getPosizione() >= 10) {
+                                Assertions.assertTrue(item.isPosticipata());
+                                Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
+                                Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
+                            } else {
+                                Assertions.assertFalse(item.isPosticipata());
+                                Assertions.assertEquals(Mese.OTTOBRE, item.getSpedizione().getMeseSpedizione());
+                                Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
+                            }
+
+                            break;
+                        case LUGLIO:
+                            Assertions.assertEquals(8,item.getNumero());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                            Assertions.assertEquals(Mese.APRILE, item.getSpedizione().getMeseSpedizione());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
+                            break;
+                        case FEBBRAIO:
+                        case MARZO:
+                        case APRILE:
+                        case MAGGIO:
+                        case GIUGNO:
+                        case AGOSTO:
+                        case SETTEMBRE:
+                        case OTTOBRE:
+                        case NOVEMBRE:
+                        case DICEMBRE:
+                        default:
+                            Assertions.fail();
+                    }
+                    break;
+                case INVIATA:
+                    Assertions.assertEquals(5,item.getNumero());
+                    Assertions.assertEquals(Mese.GENNAIO, item.getMesePubblicazione());
+                    Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                    if (Mese.getMeseCorrente().getPosizione() > 10) {
+                        Assertions.assertTrue(item.isPosticipata());
+                        Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
+                    } else {
+                        Assertions.assertFalse(item.isPosticipata());
+                        Assertions.assertEquals(Mese.OTTOBRE, item.getSpedizione().getMeseSpedizione());
+                    }
+                    Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
+                    break;
+                case SOSPESA:
+                case ANNULLATA:
+                default:
+                    Assertions.fail();
+            }
+        }
+        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
+        Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
+        RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*8.00, rivista.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*8.00, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
+    }
+
+    @Test
+    public void testAggiornaNumeroLtAbbonamentoRivistaConSpedizioniInviate() {
+        Anno anno = Anno.getAnnoProssimo();
+
+        Anagrafica tizio = SmdHelper.getGP();
+        Pubblicazione blocchetti = SmdHelper.getBlocchetti();
+
+        Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno,false);
+
+        RivistaAbbonamento ec1 = new RivistaAbbonamento(56L);
+        ec1.setAbbonamento(abb);
+        ec1.setPubblicazione(blocchetti);
+        ec1.setMeseInizio(Mese.GENNAIO);
+        ec1.setAnnoInizio(anno);
+        ec1.setMeseFine(Mese.DICEMBRE);
+        ec1.setAnnoFine(anno);
+        ec1.setDestinatario(tizio);
+        ec1.setNumero(2);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
+        List<SpedizioneWithItems> spedizioni =
+                service.genera(
+                        abb,
+                        ec1,
+                        new ArrayList<>());
+        final List<SpedizioneItem> items = new ArrayList<>();
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
+            if (item.getMesePubblicazione() == Mese.GENNAIO) {
+                item.setStatoSpedizione(StatoSpedizione.INVIATA);
+            }
+            items.add(item);
+            Assertions.assertEquals(2, item.getNumero().intValue());
+        }));
+        Assertions.assertEquals(2, items.size());
+        Assertions.assertEquals(2, spedizioni.size());
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*2.00, ec1.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*2.00, abb.getImporto().doubleValue(),0);
+
+        RivistaAbbonamentoAggiorna aggiorna = service.doAggiorna(abb,spedizioni,ec1,1,TipoAbbonamentoRivista.Ordinario);
+        Assertions.assertEquals(2, aggiorna.getSpedizioniToSave().size());
+        for (SpedizioneWithItems spedwiItems: aggiorna.getSpedizioniToSave()) {
+            Assertions.assertEquals(1,spedwiItems.getSpedizioneItems().size());
+            SpedizioneItem item= spedwiItems.getSpedizioneItems().iterator().next();
+            Assertions.assertNotNull(item);
+            switch (item.getStatoSpedizione()) {
+                case PROGRAMMATA:
+                    switch(item.getMesePubblicazione()) {
+                        case GENNAIO:
+                            Assertions.assertEquals(1,item.getNumero());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                            if (Mese.getMeseCorrente().getPosizione() >= 10) {
+                                Assertions.assertTrue(item.isPosticipata());
+                                Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
+                                Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
+                            } else {
+                                Assertions.assertFalse(item.isPosticipata());
+                                Assertions.assertEquals(Mese.OTTOBRE, item.getSpedizione().getMeseSpedizione());
+                                Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
+                            }
+
+                            break;
+                        case LUGLIO:
+                            Assertions.assertEquals(1,item.getNumero());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                            Assertions.assertEquals(Mese.APRILE, item.getSpedizione().getMeseSpedizione());
+                            Assertions.assertEquals(Anno.getAnnoProssimo(),item.getSpedizione().getAnnoSpedizione());
+                            break;
+                        case FEBBRAIO:
+                        case MARZO:
+                        case APRILE:
+                        case MAGGIO:
+                        case GIUGNO:
+                        case AGOSTO:
+                        case SETTEMBRE:
+                        case OTTOBRE:
+                        case NOVEMBRE:
+                        case DICEMBRE:
+                        default:
+                            Assertions.fail();
+                    }
+                    break;
+                case INVIATA:
+                    Assertions.assertEquals(1,item.getNumero());
+                    Assertions.assertEquals(Mese.GENNAIO, item.getMesePubblicazione());
+                    Assertions.assertEquals(Anno.getAnnoProssimo(), item.getAnnoPubblicazione());
+                    if (Mese.getMeseCorrente().getPosizione() > 10) {
+                        Assertions.assertTrue(item.isPosticipata());
+                        Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
+                    } else {
+                        Assertions.assertFalse(item.isPosticipata());
+                        Assertions.assertEquals(Mese.OTTOBRE, item.getSpedizione().getMeseSpedizione());
+                    }
+                    Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
+                    break;
+                case SOSPESA:
+                case ANNULLATA:
+                default:
+                    Assertions.fail();
+            }
+        }
+        Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
+        Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
+        Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
+        RivistaAbbonamento rivista = aggiorna.getRivisteToSave().iterator().next();
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*8.00, rivista.getImporto().doubleValue(),0);
+        Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*8.00, aggiorna.getAbbonamentoToSave().getImporto().doubleValue(),0);
     }
 
 

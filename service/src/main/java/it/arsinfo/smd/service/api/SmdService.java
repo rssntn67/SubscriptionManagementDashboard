@@ -15,16 +15,15 @@ public interface SmdService {
 
     void calcolaPesoESpesePostali(Abbonamento abbonamento, Collection<SpedizioneWithItems> spedizioni);
     void genera(Abbonamento abbonamento) throws Exception;
-    void aggiornaStato(Abbonamento abbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
-    
-    void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivista) throws Exception;
-    
+    void aggiornaStatoRiviste(Abbonamento abbonamento) throws Exception;
+
     void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista);
     void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista);
     
     void aggiorna(RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;
-    
+    void rimuovi(RivistaAbbonamento rivista) throws Exception;
+
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void inviaSpedizionere(Operazione operazione) throws Exception;
     void inviaAdpSede(Mese meseSpedizione, Anno annoSpedizione, InvioSpedizione invio) throws Exception;

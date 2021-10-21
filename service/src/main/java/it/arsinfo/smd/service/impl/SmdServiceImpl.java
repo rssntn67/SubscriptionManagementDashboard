@@ -192,58 +192,84 @@ public class SmdServiceImpl implements SmdService {
         return new ArrayList<>(spedMap.values());
     }
 
+    public void doRivistaAbbonamentoAggiorna(RivistaAbbonamentoAggiorna raa) {
+
+        raa.getRivisteToSave().forEach(r -> {
+            log.info("doRivistaAbbonamentoAggiorna: save: {} ", r);
+            rivistaAbbonamentoDao.save(r);
+        });
+
+        raa.getSpedizioniToSave().forEach(sped -> {
+            log.info("doRivistaAbbonamentoAggiorna: save: {}", sped.getSpedizione());
+            spedizioneDao.save(sped.getSpedizione());
+            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
+        });
+
+        raa.getItemsToDelete().forEach(rimitem -> {
+            log.info("doRivistaAbbonamentoAggiorna: delete: {}", rimitem);
+            spedizioneItemDao.deleteById(rimitem.getId());
+        });
+
+        for (SpedizioneWithItems sped:raa.getSpedizioniToSave()) {
+            if (sped.getSpedizioneItems().isEmpty()) {
+                log.info("doRivistaAbbonamentoAggiorna: delete: {}", sped);
+                spedizioneDao.deleteById(sped.getSpedizione().getId());
+            }
+        }
+
+        raa.getRivisteToDelete().forEach(r ->{
+            log.info("doRivistaAbbonamentoAggiorna: delete: {}  ", r);
+            rivistaAbbonamentoDao.deleteById(r.getId());
+        });
+
+        if (raa.getAbbonamentoToSave() != null) {
+            log.info("doRivistaAbbonamentoAggiorna: save: {}  ", raa.getAbbonamentoToSave());
+            aggiornaStatoRiviste(raa.getAbbonamentoToSave());
+            abbonamentoDao.save(raa.getAbbonamentoToSave());
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public void rimuovi(RivistaAbbonamento rivistaAbbonamento) throws Exception {
+        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
+        if (abbonamento == null)
+            throw new UnsupportedOperationException("Abbonamento not found");
+
+        log.info("rimuovi: {} ", rivistaAbbonamento );
+
+        doRivistaAbbonamentoAggiorna(doRimuovi(abbonamento,
+                rivistaAbbonamento,
+                findByAbbonamento(abbonamento)));
+    }
+
     @Override
     @Transactional
     public void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws UnsupportedOperationException {
         Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
-        if (abbonamento == null) throw new UnsupportedOperationException("Abbonamento not found");
-            log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
+        if (abbonamento == null)
+            throw new UnsupportedOperationException("Abbonamento not found");
+
+        log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
         
         if (numero == rivistaAbbonamento.getNumero() && tipo == rivistaAbbonamento.getTipoAbbonamentoRivista()) {
             log.info("aggiorna: updated equals to persisted: {}", rivistaAbbonamento);        	
         	return;
         }
 
-        RivistaAbbonamentoAggiorna aggiorna =
-        		aggiorna(
+        doRivistaAbbonamentoAggiorna(doAggiorna(
         				abbonamento,
         				findByAbbonamento(abbonamento),
                         rivistaAbbonamento,
                         numero,
                         tipo
-                );
+                ));
         
-        aggiorna.getRivisteToSave().forEach(r -> {
-            log.info("aggiorna: {} save ", r);
-        	rivistaAbbonamentoDao.save(r);
-        	});
-        
-        if (aggiorna.getAbbonamentoToSave() != null) {
-            log.info("aggiorna: {} save ", aggiorna.getAbbonamentoToSave());
-        	aggiornaStato(aggiorna.getAbbonamentoToSave());
-        }
 
-        aggiorna.getSpedizioniToSave().forEach(sped -> {
-        	log.info("aggiorna: {}, save {}", rivistaAbbonamento, sped.getSpedizione());
-            spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
-        });
-        
-        aggiorna.getItemsToDelete().forEach(rimitem -> {
-        	log.info("aggiorna: {}, del {}", rivistaAbbonamento, rimitem);
-        	spedizioneItemDao.deleteById(rimitem.getId());
-        	});
-        
-        for (SpedizioneWithItems sped:aggiorna.getSpedizioniToSave()) {
-            if (sped.getSpedizioneItems().isEmpty()) {
-            	log.info("aggiorna: {}, del {}",rivistaAbbonamento, sped);
-                spedizioneDao.deleteById(sped.getSpedizione().getId());
-            }
-        }
-        
     }
 
-    private RivistaAbbonamentoAggiorna aggiornaSoloTipoRivista(Abbonamento abbonamento, RivistaAbbonamento rivista, TipoAbbonamentoRivista tipo) {
+    public synchronized RivistaAbbonamentoAggiorna doAggiornaSoloTipoRivista(Abbonamento abbonamento, RivistaAbbonamento rivista, TipoAbbonamentoRivista tipo) {
         RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
         rivista.setTipoAbbonamentoRivista(tipo);
         rivista.calcolaImporto();
@@ -255,18 +281,19 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    private RivistaAbbonamentoAggiorna aggiornaNoSped(Abbonamento abbonamento,  List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) {
+    private synchronized RivistaAbbonamentoAggiorna doAggiornaNoSped(Abbonamento abbonamento,  List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) {
         RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
         int numeroTotaleRiviste = 0;
         for (SpedizioneWithItems s: spedizioni) {
             for (SpedizioneItem item: s.getSpedizioneItems()) {
                 if ( rivista.getId().equals(item.getRivistaAbbonamento().getId())) {
-                    log.info("aggiornaNoSped: aggiornato numero spedizione : {}",item);
                     item.setNumero(numero);
+                    log.info("aggiornaNoSped: aggiornato numero in spedizione: {}",item);
                     numeroTotaleRiviste+=numero;
                 }
             }
         }
+        log.info("aggiornaNoSped: numeroTotaleRiviste: {}",numeroTotaleRiviste);
         rivista.setTipoAbbonamentoRivista(tipo);
         rivista.setNumero(numero);
         rivista.setNumeroTotaleRiviste(numeroTotaleRiviste);
@@ -282,18 +309,19 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    public RivistaAbbonamentoAggiorna aggiornaSpedNumLt(Abbonamento abbonamento,
+    public synchronized RivistaAbbonamentoAggiorna doAggiornaSpedNumLt(Abbonamento abbonamento,
                                                         List<SpedizioneWithItems> spedizioni,
-                                                        List<SpedizioneWithItems> spedinviate,
                                                         RivistaAbbonamento rivista,
                                                         int numero,
-                                                        TipoAbbonamentoRivista tipo,
-                                                        Mese meseInizioInv,
-                                                        Anno annoInizioInv,
-                                                        Mese meseFineInv,
-                                                        Anno annoFineInv) {
+                                                        TipoAbbonamentoRivista tipo) {
+        SpedizioneWithItems.SpedizioneWithItemsData data = SpedizioneWithItems.getData(spedizioni,rivista);
+        log.info("aggiornaSpedNumLt: {}, spedizioni inviate: prima {} {}, ultima {} {}",
+                rivista,
+                data.getMesePrimaPubblicazioneInviata(),
+                data.getAnnoPrimaPubblicazioneInviata(),
+                data.getMeseUltimaPubblicazioneInviata(),
+                data.getAnnoUltimaPubblicazioneInviata());
         RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
-        log.info("aggiornaSpedNumLt: {}, spedizioni inviate: prima {} {}, ultima {} {}", rivista,meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
         rivista.setTipoAbbonamentoRivista(tipo);
 
         RivistaAbbonamento r = rivista.clone();
@@ -301,17 +329,17 @@ public class SmdServiceImpl implements SmdService {
         r.setTipoAbbonamentoRivista(tipo);
         log.info("aggiornaSpedNumLt: new {}", r);
 
-        rivista.setMeseInizio(meseInizioInv);
-        rivista.setMeseFine(meseFineInv);
-        rivista.setAnnoInizio(annoInizioInv);
-        rivista.setAnnoFine(annoFineInv);
+        rivista.setMeseInizio(data.getMesePrimaPubblicazioneInviata());
+        rivista.setMeseFine(data.getMeseUltimaPubblicazioneInviata());
+        rivista.setAnnoInizio(data.getAnnoPrimaPubblicazioneInviata());
+        rivista.setAnnoFine(data.getAnnoUltimaPubblicazioneInviata());
         rivista.setNumero(rivista.getNumero()-numero);
         log.info("aggiorna: updated {}", rivista);
 
 
         int itemsoriginal=0;
         int itemsupdated=0;
-        for (SpedizioneWithItems spedwith: spedinviate) {
+        for (SpedizioneWithItems spedwith: data.getSpedizioneWithItemsInviate()) {
             List<SpedizioneItem> listitem = new ArrayList<>(spedwith.getSpedizioneItems());
             for (SpedizioneItem originitem: listitem) {
                 if ( rivista.getId().equals(originitem.getRivistaAbbonamento().getId())) {
@@ -368,44 +396,43 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    public RivistaAbbonamentoAggiorna aggiornaSpedNumGt(
+    public synchronized RivistaAbbonamentoAggiorna doAggiornaSpedNumGt(
             Abbonamento abbonamento,
             List<SpedizioneWithItems> spedizioni,
-            List<SpedizioneItem> usabili,
-            List<SpedizioneItem> inviate,
             RivistaAbbonamento rivista,
             int numero,
-            TipoAbbonamentoRivista tipo,
-            Mese meseUltimaSped,
-            Anno annoUltimaSped) {
+            TipoAbbonamentoRivista tipo) {
+
+        SpedizioneWithItems.SpedizioneWithItemsData data = SpedizioneWithItems.getData(spedizioni,rivista);
+        log.info("aggiornaSpedNumGt: {}", data);
         RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
-        Mese meseSped = Mese.getMeseSuccessivo(meseUltimaSped);
-        Anno annoSped=annoUltimaSped;
-        if (meseSped==Mese.GENNAIO) {
-            annoSped=Anno.getAnnoSuccessivo(annoUltimaSped);
+        Mese meseNextSped = Mese.getMeseSuccessivo(data.getMeseUltimaSpedizione());
+        Anno annoNextSped=data.getAnnoUltimaSpedizione();
+        if (meseNextSped==Mese.GENNAIO) {
+            annoNextSped=Anno.getAnnoSuccessivo(data.getAnnoUltimaSpedizione());
         }
-        int numeroTotaleRiviste = 0;
         rivista.setTipoAbbonamentoRivista(tipo);
         rivista.setNumero(numero);
-        for (SpedizioneItem item: usabili) {
+        for (SpedizioneItem item: data.getUsabili()) {
             item.setNumero(numero);
             log.info("aggiornaSpedNumGt: updated {}", item);
         }
-        for (SpedizioneWithItems nuovaspedwithitem: genera(abbonamento,rivista, new ArrayList<>(), meseSped,annoSped)) {
+        int numeroTotaleRiviste = 0;
+        for (SpedizioneWithItems nuovaspedwithitem: genera(abbonamento,rivista, new ArrayList<>(), meseNextSped,annoNextSped)) {
             final List<SpedizioneItem> itemstoDelete = new ArrayList<>();
             for (SpedizioneItem nuovoItem: nuovaspedwithitem.getSpedizioneItems()) {
-                log.info("aggiorna: nuovo item {}", nuovoItem);
+                log.info("aggiornaSpedNumGt: generated item {}", nuovoItem);
                 numeroTotaleRiviste+=numero;
-                for (SpedizioneItem item: usabili) {
+                for (SpedizioneItem item: data.getUsabili()) {
                     if (item.getMesePubblicazione() == nuovoItem.getMesePubblicazione() && item.getAnnoPubblicazione() == nuovoItem.getAnnoPubblicazione()) {
                         nuovoItem.setNumero(nuovoItem.getNumero()-item.getNumero());
-                        log.info("aggiorna: match usabile ,nuovo item {}", nuovoItem);
+                        log.info("aggiornaSpedNumGt: matched usabile ,nuovo item {}", nuovoItem);
                     }
                 }
-                for (SpedizioneItem item: inviate) {
+                for (SpedizioneItem item: data.getInviate()) {
                     if (item.getMesePubblicazione() == nuovoItem.getMesePubblicazione() && item.getAnnoPubblicazione() == nuovoItem.getAnnoPubblicazione()) {
                         nuovoItem.setNumero(nuovoItem.getNumero()-item.getNumero());
-                        log.info("aggiorna: match inviate, nuovo item {}", nuovoItem);
+                        log.info("aggiornaSpedNumGt: match inviate, nuovo item {}", nuovoItem);
                     }
                 }
                 if (nuovoItem.getNumero() == 0) {
@@ -413,26 +440,27 @@ public class SmdServiceImpl implements SmdService {
                 }
             }
             for (SpedizioneItem itemtodelete: itemstoDelete) {
-                log.info("aggiorna: delete, nuovo item {}", itemtodelete);
                 nuovaspedwithitem.deleteSpedizioneItem(itemtodelete);
-                log.info("aggiorna: deleted, nuovo item {}", itemtodelete);
+                log.info("aggiornaSpedNumGt: deleted, nuovo item {}", itemtodelete);
             }
             if (!nuovaspedwithitem.getSpedizioneItems().isEmpty()) {
+                log.info("aggiornaSpedNumGt: add sped {}", nuovaspedwithitem.getSpedizione());
                 spedizioni.add(nuovaspedwithitem);
             }
-
         }
 
         rivista.setNumeroTotaleRiviste(numeroTotaleRiviste);
-        calcolaPesoESpesePostali(abbonamento, spedizioni);
-
-        output.setAbbonamentoToSave(abbonamento);
-        output.setSpedizioniToSave(spedizioni);
         output.getRivisteToSave().add(rivista);
-        log.info("aggiorna: spedizioni inviata ed incremento {} {} ",abbonamento,rivista);
+        log.info("aggiornaSpedNumGt: aggiornato importo e tipo rivista: {}",rivista);
+
+        calcolaPesoESpesePostali(abbonamento, spedizioni);
+        output.setAbbonamentoToSave(abbonamento);
+        log.info("aggiornaSpedNumGt: aggiornato importo abbonamento: {} ",abbonamento);
+        output.setSpedizioniToSave(spedizioni);
         return output;
     }
-    public RivistaAbbonamentoAggiorna aggiorna (
+
+    public RivistaAbbonamentoAggiorna doAggiorna (
             Abbonamento abbonamento,
             List<SpedizioneWithItems> spedizioni,
             RivistaAbbonamento original,
@@ -456,97 +484,25 @@ public class SmdServiceImpl implements SmdService {
         log.info("aggiorna: sottratto importo rivista {} da abbonamento {}", original.getImporto(),abbonamento);
 
         if (numero == original.getNumero()) {
-            return aggiornaSoloTipoRivista(abbonamento,original,tipo);
+            return doAggiornaSoloTipoRivista(abbonamento,original,tipo);
         }
 
-        List<SpedizioneWithItems> spedinviate = new ArrayList<>();
-        List<SpedizioneItem> annullate = new ArrayList<>();
-        List<SpedizioneItem> usabili = new ArrayList<>();
-        List<SpedizioneItem> inviate = new ArrayList<>();
-        Mese meseInizioInv=null;
-        Anno annoInizioInv=null;
-        Mese meseFineInv=null;
-        Anno annoFineInv=null;
-        Mese meseUltimaSped=null;
-        Anno annoUltimaSped=null;
-        for (SpedizioneWithItems spedwith: spedizioni) {
-            for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
-                if ( original.getId().equals(item.getRivistaAbbonamento().getId())) {
-                    switch (item.getStatoSpedizione()) {
-                        case INVIATA:
-                            spedinviate.add(spedwith);
-                            inviate.add(item);
-
-                            if (meseInizioInv==null) {
-                                meseInizioInv=item.getMesePubblicazione();
-                                annoInizioInv=item.getAnnoPubblicazione();
-                            } else if (annoInizioInv.getAnno() > item.getAnnoPubblicazione().getAnno()) {
-                                meseInizioInv=item.getMesePubblicazione();
-                                annoInizioInv=item.getAnnoPubblicazione();
-                            } else if (annoInizioInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                    meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
-                                meseInizioInv=item.getMesePubblicazione();
-                            }
-                            if (meseFineInv==null) {
-                                meseFineInv=item.getMesePubblicazione();
-                                annoFineInv=item.getAnnoPubblicazione();
-                            } else if (annoFineInv.getAnno() < item.getAnnoPubblicazione().getAnno()) {
-                                meseFineInv=item.getMesePubblicazione();
-                                annoFineInv=item.getAnnoPubblicazione();
-                            } else if (annoFineInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                    meseFineInv.getPosizione() < item.getMesePubblicazione().getPosizione()) {
-                                meseFineInv=item.getMesePubblicazione();
-                            }
-                            if (meseUltimaSped==null) {
-                                meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
-                                annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
-                            } else if (annoUltimaSped.getAnno() < spedwith.getSpedizione().getAnnoSpedizione().getAnno()) {
-                                meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
-                                annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
-                            } else if (annoUltimaSped.getAnno() == spedwith.getSpedizione().getAnnoSpedizione().getAnno() &&
-                                    meseUltimaSped.getPosizione() < spedwith.getSpedizione().getMeseSpedizione().getPosizione()) {
-                                meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
-                            }
-                            break;
-
-                        case PROGRAMMATA:
-                        case SOSPESA:
-                            usabili.add(item);
-                            break;
-
-                        case ANNULLATA:
-                            annullate.add(item);
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                }
-            }
+        if (SpedizioneWithItems.noSpedizioniInviateOrAnnullate(spedizioni,original)) {
+            return doAggiornaNoSped(abbonamento,spedizioni,original,numero,tipo);
         }
-
-
-        if (spedinviate.size() == 0 && annullate.size() == 0) {
-            return aggiornaNoSped(abbonamento,spedizioni,original,numero,tipo);
-        }
-
-        log.info("aggiorna: ultima rivista inviata {} {} con spedizione {} {}",meseFineInv,annoFineInv,meseUltimaSped,annoUltimaSped);
-        log.info("aggiorna: spedizioni inviate->{} ", spedinviate.size());
-        log.info("aggiorna: spedizioni annullate->{} ", annullate.size());
 
         if (numero > original.getNumero()) {
-            return aggiornaSpedNumGt(abbonamento,spedizioni,usabili,inviate,original,numero,tipo,meseUltimaSped,annoUltimaSped);
+            return doAggiornaSpedNumGt(abbonamento,spedizioni,original,numero,tipo);
         }
-        return aggiornaSpedNumLt(abbonamento,spedizioni,spedinviate,original,numero,tipo,meseInizioInv,annoInizioInv,meseFineInv,annoFineInv);
+        return doAggiornaSpedNumLt(abbonamento,spedizioni,original,numero,tipo);
     }
 
-    public RivistaAbbonamentoAggiorna rimuovi(
+    public RivistaAbbonamentoAggiorna doRimuovi(
             Abbonamento abb,
             RivistaAbbonamento original,
             List<SpedizioneWithItems> spedizioni) {
         abb.setImporto(abb.getImporto().subtract(original.getImporto()));
-        log.info("rimuovi: rimosso importo rivista: {}", abb);
+        log.info("doRimuovi: rimosso importo rivista: {}", abb);
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
         Mese meseInizioInv=null;
         Anno annoInizioInv=null;
@@ -583,7 +539,7 @@ public class SmdServiceImpl implements SmdService {
                 }
             }
         }
-        log.info("rimuovi: {} riviste inviate", rivisteinviate);
+        log.info("doRimuovi: {} riviste inviate", rivisteinviate);
         if (rivisteinviate == 0) {
             for (SpedizioneWithItems s: spedizioni) {
                 for (SpedizioneItem item: new ArrayList<>(s.getSpedizioneItems())) {
@@ -601,12 +557,12 @@ public class SmdServiceImpl implements SmdService {
             aggiorna.setAbbonamentoToSave(abb);
             aggiorna.setSpedizioniToSave(spedizioni);
             aggiorna.getRivisteToDelete().add(original);
-            log.info("rimuovi: {}",abb);
-            log.info("rimuovi: {}",original);
+            log.info("doRimuovi: {}",abb);
+            log.info("doRimuovi: {}",original);
             return aggiorna;
         }
 
-        log.info("rimuovi: riviste inviate:{} - inizio {} {}, fine {} {}",original.getPubblicazione().getNome(), meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
+        log.info("doRimuovi: riviste inviate:{} - inizio {} {}, fine {} {}",original.getPubblicazione().getNome(), meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
         original.setMeseInizio(meseInizioInv);
         original.setMeseFine(meseFineInv);
         original.setAnnoInizio(annoInizioInv);
@@ -630,7 +586,7 @@ public class SmdServiceImpl implements SmdService {
         aggiorna.setSpedizioniToSave(spedizioni);
         aggiorna.getRivisteToSave().add(original);
         aggiorna.setItemsToDelete(rimItems);
-        log.info("rimuovi:  from {} ec -> {}",abb,original);
+        log.info("doRimuovi:  from {} ec -> {}",abb,original);
 
         return aggiorna;
 
@@ -638,34 +594,6 @@ public class SmdServiceImpl implements SmdService {
 
     public void setSpesaSpedizioneDao(SpesaSpedizioneDao spesaSpedizioneDao) {
         this.spesaSpedizioneDao = spesaSpedizioneDao;
-    }
-
-    @Override
-    @Transactional
-    public void rimuovi(Abbonamento abbonamento, RivistaAbbonamento rivistaAbbonamento) throws Exception {
-        if (rivistaAbbonamento == null || abbonamento == null)
-            return;
-        List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-
-        RivistaAbbonamentoAggiorna aggiorna = rimuovi(abbonamento,
-                                                     rivistaAbbonamento, 
-                                                     spedizioni);
-        
-        aggiorna.getSpedizioniToSave().forEach(sped -> {
-            spedizioneDao.save(sped.getSpedizione());
-            sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
-        });
-        aggiorna.getItemsToDelete().forEach(item -> spedizioneItemDao.deleteById(item.getId()));
-        
-        for (SpedizioneWithItems sped:spedizioni) {
-            if (sped.getSpedizioneItems().isEmpty()) {
-                spedizioneDao.deleteById(sped.getSpedizione().getId());
-            }
-        }
-        
-        aggiorna.getRivisteToDelete().forEach(r ->rivistaAbbonamentoDao.deleteById(r.getId()));
-        aggiorna.getRivisteToSave().forEach(r->rivistaAbbonamentoDao.save(r));
-    	abbonamentoDao.save(aggiorna.getAbbonamentoToSave());        
     }
 
     @Override
@@ -879,7 +807,8 @@ public class SmdServiceImpl implements SmdService {
         }
         versamentoDao.save(versamento);
         incassoDao.save(incasso);
-        aggiornaStato(abbonamento);
+        aggiornaStatoRiviste(abbonamento);
+        abbonamentoDao.save(abbonamento);
 
         OperazioneIncasso operIncasso = new OperazioneIncasso();
         operIncasso.setAbbonamento(abbonamento);
@@ -1180,7 +1109,7 @@ switch (rivista.getStatoRivista()) {
 	}
 
 	@Override
-	public void aggiornaStato(Abbonamento abbonamento)  {
+	public void aggiornaStatoRiviste(Abbonamento abbonamento)  {
         if (abbonamento.getCampagna() == null) {
             return;
         }
@@ -1202,7 +1131,6 @@ switch (rivista.getStatoRivista()) {
             default:
                 break;
 		}
-        abbonamentoDao.save(abbonamento);
 	}
 
 	private void aggiornaCampagnaInviatoEC(Abbonamento abbonamento, Campagna campagna) {

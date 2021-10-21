@@ -1083,7 +1083,7 @@ public class UIAdminTests {
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.aggiorna(rivista,4,TipoAbbonamentoRivista.Ordinario);
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        smdService.rimuovi(abb,rivista);
+        smdService.rimuovi(rivista);
         assertEquals(0, rivistaAbbonamentoDao.count());
         assertEquals(1, abbonamentoDao.count());
         assertEquals(0, spedizioneDao.count());
@@ -1334,7 +1334,7 @@ public class UIAdminTests {
         assertEquals(14, spedizioneItemDao.findAll().size());
 
 
-        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.rimuovi(abb,
+        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.doRimuovi(abb,
                       ec2, 
                       spedizioni);
 
@@ -1368,7 +1368,7 @@ public class UIAdminTests {
 
         
         spedizioni=smdService.findByAbbonamento(abb);
-        aggiorna = smdServiceImpl.rimuovi(abb,ec1, spedizioni);
+        aggiorna = smdServiceImpl.doRimuovi(abb,ec1, spedizioni);
         assertEquals(6, aggiorna.getItemsToDelete().size());
         assertEquals(1, aggiorna.getRivisteToDelete().size());
         rivista = aggiorna.getRivisteToDelete().iterator().next();
@@ -1400,7 +1400,7 @@ public class UIAdminTests {
         
 
         spedizioni=smdService.findByAbbonamento(abb);
-        aggiorna = smdServiceImpl.rimuovi(abb,ec3, spedizioni);
+        aggiorna = smdServiceImpl.doRimuovi(abb,ec3, spedizioni);
         for (SpedizioneItem delitem: aggiorna.getItemsToDelete() ) {
             spedizioneItemDao.deleteById(delitem.getId());
         }
@@ -1503,7 +1503,7 @@ public class UIAdminTests {
         });
 
         spedizioni=smdService.findByAbbonamento(abb);
-        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.rimuovi(abb,ec1, spedizioni);
+        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.doRimuovi(abb,ec1, spedizioni);
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
@@ -1615,7 +1615,7 @@ public class UIAdminTests {
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
         RivistaAbbonamentoAggiorna aggiorna = 
-        		smdServiceImpl.aggiorna(
+        		smdServiceImpl.doAggiorna(
         				abb,
         		        spedizioni,
         		        ec1,

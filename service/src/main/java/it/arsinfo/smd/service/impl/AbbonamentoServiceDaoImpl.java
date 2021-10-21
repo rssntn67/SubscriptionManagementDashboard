@@ -67,7 +67,8 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
         if (entity.getId() == null ) {
             smdService.genera(entity);
         }
-    	smdService.aggiornaStato(entity);
+    	smdService.aggiornaStatoRiviste(entity);
+        repository.save(entity);
 		return entity;
 	}
 
@@ -135,7 +136,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
             	throw new UnsupportedOperationException("Non posso rimuovere EC");
             }
         } else {
-            smdService.rimuovi(t,item);        	
+            smdService.rimuovi(item);
         }
         return findById(t.getId());
 	}
