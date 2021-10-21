@@ -11,27 +11,13 @@ import java.util.stream.Collectors;
 public class SpedizioneWithItems {
 
     public static class SpedizioneWithItemsData {
-        private List<SpedizioneWithItems> spedizioneWithItemsInviate = new ArrayList<>();
 
-        public List<SpedizioneWithItems> getSpedizioneWithItemsInviate() {
-            return spedizioneWithItemsInviate;
-        }
-
-        private List<SpedizioneItem> annullate = new ArrayList<>();
         private List<SpedizioneItem> usabili = new ArrayList<>();
         private List<SpedizioneItem> inviate = new ArrayList<>();
-        private Mese meseInizioInv=null;
-        private Anno annoInizioInv=null;
-        private Mese meseFineInv=null;
-        private Anno annoFineInv=null;
         private Mese meseUltimaSped=null;
         private Anno annoUltimaSped=null;
 
         public SpedizioneWithItemsData() {}
-
-        public List<SpedizioneItem> getAnnullate() {
-            return annullate;
-        }
 
         public List<SpedizioneItem> getUsabili() {
             return usabili;
@@ -39,22 +25,6 @@ public class SpedizioneWithItems {
 
         public List<SpedizioneItem> getInviate() {
             return inviate;
-        }
-
-        public Mese getMesePrimaPubblicazioneInviata() {
-            return meseInizioInv;
-        }
-
-        public Anno getAnnoPrimaPubblicazioneInviata() {
-            return annoInizioInv;
-        }
-
-        public Mese getMeseUltimaPubblicazioneInviata() {
-            return meseFineInv;
-        }
-
-        public Anno getAnnoUltimaPubblicazioneInviata() {
-            return annoFineInv;
         }
 
         public Mese getMeseUltimaSpedizione() {
@@ -68,13 +38,8 @@ public class SpedizioneWithItems {
         @Override
         public String toString() {
             return "SpedizioneWithItemsData{" +
-                    "annullate=" + annullate.size() +
                     ", usabili=" + usabili.size() +
                     ", inviate=" + inviate.size() +
-                    ", mesePrimaPubblicazioneInviata=" + meseInizioInv +
-                    ", annoPrimaPubblicazioneInviata=" + annoInizioInv +
-                    ", meseUltimaPubbicazioneInviata=" + meseFineInv +
-                    ", annoUltimaIPubblicazioneInviata=" + annoFineInv +
                     ", meseUltimaSpedizione=" + meseUltimaSped +
                     ", annoUltimaSpedizione=" + annoUltimaSped +
                     '}';
@@ -133,14 +98,8 @@ public class SpedizioneWithItems {
     }
 
     public static SpedizioneWithItemsData getData(List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivistaAbbonamento) {
-        List<SpedizioneWithItems> spedizioniinviate = new ArrayList<>();
-        List<SpedizioneItem> annullate = new ArrayList<>();
         List<SpedizioneItem> usabili = new ArrayList<>();
         List<SpedizioneItem> inviate = new ArrayList<>();
-        Mese meseInizioInv=null;
-        Anno annoInizioInv=null;
-        Mese meseFineInv=null;
-        Anno annoFineInv=null;
         Mese meseUltimaSped=null;
         Anno annoUltimaSped=null;
         for (SpedizioneWithItems spedwith: spedizioni) {
@@ -149,28 +108,6 @@ public class SpedizioneWithItems {
                     switch (item.getStatoSpedizione()) {
                         case INVIATA:
                             inviate.add(item);
-                            spedizioniinviate.add(spedwith);
-
-                            if (meseInizioInv==null) {
-                                meseInizioInv=item.getMesePubblicazione();
-                                annoInizioInv=item.getAnnoPubblicazione();
-                            } else if (annoInizioInv.getAnno() > item.getAnnoPubblicazione().getAnno()) {
-                                meseInizioInv=item.getMesePubblicazione();
-                                annoInizioInv=item.getAnnoPubblicazione();
-                            } else if (annoInizioInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                    meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
-                                meseInizioInv=item.getMesePubblicazione();
-                            }
-                            if (meseFineInv==null) {
-                                meseFineInv=item.getMesePubblicazione();
-                                annoFineInv=item.getAnnoPubblicazione();
-                            } else if (annoFineInv.getAnno() < item.getAnnoPubblicazione().getAnno()) {
-                                meseFineInv=item.getMesePubblicazione();
-                                annoFineInv=item.getAnnoPubblicazione();
-                            } else if (annoFineInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                    meseFineInv.getPosizione() < item.getMesePubblicazione().getPosizione()) {
-                                meseFineInv=item.getMesePubblicazione();
-                            }
                             if (meseUltimaSped==null) {
                                 meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
                                 annoUltimaSped=spedwith.getSpedizione().getAnnoSpedizione();
@@ -182,16 +119,12 @@ public class SpedizioneWithItems {
                                 meseUltimaSped=spedwith.getSpedizione().getMeseSpedizione();
                             }
                             break;
-
-                        case PROGRAMMATA:
+                       case PROGRAMMATA:
                         case SOSPESA:
                             usabili.add(item);
                             break;
 
                         case ANNULLATA:
-                            annullate.add(item);
-                            break;
-
                         default:
                             break;
                     }
@@ -200,16 +133,10 @@ public class SpedizioneWithItems {
             }
         }
         SpedizioneWithItemsData data = new SpedizioneWithItemsData();
-        data.annoFineInv=annoFineInv;
-        data.annoInizioInv=annoInizioInv;
-        data.meseFineInv=meseFineInv;
-        data.meseInizioInv=meseInizioInv;
         data.meseUltimaSped=meseUltimaSped;
         data.annoUltimaSped=annoUltimaSped;
-        data.annullate=annullate;
         data.inviate=inviate;
         data.usabili=usabili;
-        data.spedizioneWithItemsInviate=spedizioniinviate;
         return data;
     }
 
