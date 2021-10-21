@@ -84,67 +84,6 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         log.info("aggiungiItemSpedizione: aggiunto {}, a spedizione {}, size {}",item,spedizione,spedMap.size());
     }
 
-    public static List<SpedizioneWithItems> genera(Abbonamento abb,
-                                                   RivistaAbbonamento ec,
-                                                   List<SpedizioneWithItems> spedizioni,
-                                                   List<SpesaSpedizione> spese) throws UnsupportedOperationException {
-        return genera(abb,
-                ec,
-                spedizioni,
-                spese, Mese.getMeseCorrente(), Anno.getAnnoCorrente());
-    }
-
-    public static List<SpedizioneWithItems> genera(Abbonamento abb,
-                                                   RivistaAbbonamento ec,
-                                                   List<SpedizioneWithItems> spedizioni,
-                                                   List<SpesaSpedizione> spese, Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
-
-
-        ec.setAbbonamento(abb);
-        List<SpedizioneItem> items = SpedizioneItem.generaSpedizioneItems(ec);
-        ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
-        ec.calcolaImporto();
-        abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
-
-        if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
-            for (SpedizioneItem item : items) {
-                aggiungiItemSpedizione(abb, ec, spedMap, item,mesePost,annoPost);
-            }
-        }
-        Abbonamento.calcolaPesoESpesePostali(abb, spedMap.values(), spese);
-        return new ArrayList<>(spedMap.values());
-    }
-
-    public static void calcolaPesoESpesePostali(Abbonamento abb, Collection<SpedizioneWithItems> spedizioni, List<SpesaSpedizione> spese) {
-        abb.setSpese(BigDecimal.ZERO);
-        abb.setSpeseEstero(BigDecimal.ZERO);
-        for (SpedizioneWithItems sped: spedizioni) {
-            int pesoStimato=0;
-            for (SpedizioneItem item: sped.getSpedizioneItems()) {
-                pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
-            }
-            sped.getSpedizione().setPesoStimato(pesoStimato);
-
-            sped.getSpedizione().setSpesePostali(SpesaSpedizione.getSpesaSpedizione(
-                    spese,
-                    sped.getSpedizione().getDestinatario().getAreaSpedizione(),
-                    RangeSpeseSpedizione.getByPeso(pesoStimato)
-            ).calcolaSpesePostali(sped.getSpedizione().getInvioSpedizione()));
-            switch (sped.getSpedizione().getDestinatario().getAreaSpedizione()) {
-                case Italia:
-                    abb.setSpese(abb.getSpese().add(sped.getSpedizione().getSpesePostali()));
-                    break;
-                case EuropaBacinoMediterraneo:
-                case AmericaAfricaAsia:
-                    abb.setSpeseEstero(abb.getSpeseEstero().add(sped.getSpedizione().getSpesePostali()));
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     public static Abbonamento genera(Campagna campagna, Anagrafica a,boolean contrassegno) throws Exception {
         if (campagna == null) {
             throw new Exception("genera: Null Campagna");

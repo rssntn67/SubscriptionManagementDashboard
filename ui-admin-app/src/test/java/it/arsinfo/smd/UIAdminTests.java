@@ -11,7 +11,6 @@ import it.arsinfo.smd.dto.SpedizioneWithItems;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.service.Smd;
 import it.arsinfo.smd.service.api.AbbonamentoService;
 import it.arsinfo.smd.service.api.SmdService;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
@@ -869,11 +868,11 @@ public class UIAdminTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
+        SmdServiceImpl serviceimpl = (SmdServiceImpl) smdService;
         List<SpedizioneWithItems> spedizioni 
-            = Abbonamento.genera(abb,
+            = serviceimpl.genera(abb,
                                ec,
-                               new ArrayList<>(),
-                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+                               new ArrayList<>());
         
         assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
@@ -927,11 +926,12 @@ public class UIAdminTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
+        SmdServiceImpl serviceimpl = (SmdServiceImpl) smdService;
+
         List<SpedizioneWithItems> spedizioni 
-            = Abbonamento.genera(abb,
+            = serviceimpl.genera(abb,
                                ec,
-                               new ArrayList<>(),
-                               spesaSpedizioneDao.findByAreaSpedizione(tizio.getAreaSpedizione()));
+                               new ArrayList<>());
         
         assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
@@ -1081,7 +1081,7 @@ public class UIAdminTests {
         abb.addItem(ec1);
         smdService.genera(abb);
         RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
-        smdService.aggiornaRivistaAbbonamento(rivista,4,TipoAbbonamentoRivista.Ordinario);
+        smdService.aggiorna(rivista,4,TipoAbbonamentoRivista.Ordinario);
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(abb,rivista);
         assertEquals(0, rivistaAbbonamentoDao.count());
@@ -1242,10 +1242,10 @@ public class UIAdminTests {
         ec3.setAnnoFine(anno);     
         ec3.setDestinatario(tizio);
         List<SpedizioneWithItems> spedizioni = smdService.findByAbbonamento(abb);
-        spedizioni = Abbonamento.genera(abb,
+        SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
+        spedizioni = smdServiceImpl.genera(abb,
                                           ec3,
-                                          spedizioni,
-                                          SmdHelper.getSpeseSpedizione());
+                                          spedizioni);
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec3);
         spedizioni.forEach(sped -> {
@@ -1299,25 +1299,23 @@ public class UIAdminTests {
         ec3.setAnnoFine(anno);
         ec3.setDestinatario(tizio);
 
+        SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                smdServiceImpl.genera(
                      abb,
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         spedizioni =
-                Abbonamento.genera(
+                smdServiceImpl.genera(
                      abb,
                      ec2,
-                    spedizioni,
-                     SmdHelper.getSpeseSpedizione());        
+                    spedizioni);
 
         spedizioni =
-                Abbonamento.genera(
+                smdServiceImpl.genera(
                      abb,
                      ec3,
-                    spedizioni,
-                     SmdHelper.getSpeseSpedizione());        
+                    spedizioni);
 
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
@@ -1334,11 +1332,11 @@ public class UIAdminTests {
         assertEquals(3, rivistaAbbonamentoDao.findAll().size());
         assertEquals(14, spedizioneDao.findAll().size());
         assertEquals(14, spedizioneItemDao.findAll().size());
-        
-        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,
+
+
+        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.rimuovi(abb,
                       ec2, 
-                      spedizioni,
-                      SmdHelper.getSpeseSpedizione());
+                      spedizioni);
 
         assertEquals(6, aggiorna.getItemsToDelete().size());
         
@@ -1370,7 +1368,7 @@ public class UIAdminTests {
 
         
         spedizioni=smdService.findByAbbonamento(abb);
-        aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+        aggiorna = smdServiceImpl.rimuovi(abb,ec1, spedizioni);
         assertEquals(6, aggiorna.getItemsToDelete().size());
         assertEquals(1, aggiorna.getRivisteToDelete().size());
         rivista = aggiorna.getRivisteToDelete().iterator().next();
@@ -1402,7 +1400,7 @@ public class UIAdminTests {
         
 
         spedizioni=smdService.findByAbbonamento(abb);
-        aggiorna = Smd.rimuovi(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
+        aggiorna = smdServiceImpl.rimuovi(abb,ec3, spedizioni);
         for (SpedizioneItem delitem: aggiorna.getItemsToDelete() ) {
             spedizioneItemDao.deleteById(delitem.getId());
         }
@@ -1454,13 +1452,13 @@ public class UIAdminTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(Anno.getAnnoCorrente());
         ec1.setDestinatario(tizio);
-        
 
-        List<SpedizioneWithItems> spedizioni = Abbonamento.genera(
+        SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
+
+        List<SpedizioneWithItems> spedizioni = smdServiceImpl.genera(
                                            abb,
                                            ec1,
-                                           new ArrayList<>(), 
-                                           SmdHelper.getSpeseSpedizione()
+                                           new ArrayList<>()
                                            );
         spedizioni.forEach(s -> log.info("{}",s.getSpedizione()));
         assertTrue(ec1.isAbbonamentoAnnuale());
@@ -1505,7 +1503,7 @@ public class UIAdminTests {
         });
 
         spedizioni=smdService.findByAbbonamento(abb);
-        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.rimuovi(abb,ec1, spedizioni);
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
@@ -1588,12 +1586,12 @@ public class UIAdminTests {
         ec1.setMeseFine(Mese.DICEMBRE);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
+        SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                smdServiceImpl.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());        
+                     new ArrayList<>());
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec1);
@@ -1617,10 +1615,9 @@ public class UIAdminTests {
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
         RivistaAbbonamentoAggiorna aggiorna = 
-        		Smd.aggiorna(
+        		smdServiceImpl.aggiorna(
         				abb,
         		        spedizioni,
-        		        SmdHelper.getSpeseSpedizione(),
         		        ec1,
         		        10,
         		        ec1.getTipoAbbonamentoRivista()
@@ -1895,7 +1892,8 @@ public class UIAdminTests {
         ec.setAnnoFine(Anno.getAnnoProssimo());
         ec.setDestinatario(davidePalma);
 
-        Abbonamento.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
+        smdServiceImpl.genera(abb, ec, new ArrayList<>());
         abbonamentoDao.save(abb);
         rivistaAbbonamentoDao.save(ec);
         

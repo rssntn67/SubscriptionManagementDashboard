@@ -1,12 +1,17 @@
 package it.arsinfo.smd;
 
-import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.helper.SmdHelper;
-import it.arsinfo.smd.service.Smd;
+import it.arsinfo.smd.dao.SpesaSpedizioneDao;
 import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
 import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.entity.*;
+import it.arsinfo.smd.helper.SmdHelper;
+import it.arsinfo.smd.service.impl.SmdServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,30 +19,14 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.*;
 
+@ExtendWith(MockitoExtension.class)
 public class SmdUnitTests {
     
     private static final Logger log = LoggerFactory.getLogger(SmdUnitTests.class);
 
-    private static RivistaAbbonamento crea(Abbonamento abb,Pubblicazione p, TipoAbbonamentoRivista tipo) {
-        Anno anno = Anno.getAnnoProssimo();
-        Mese mese = Mese.getMeseCorrente();
-        if (mese.getPosizione()+p.getAnticipoSpedizione() > 12) {
-            anno=Anno.getAnnoSuccessivo(anno);
-        }
-        RivistaAbbonamento ec =  new RivistaAbbonamento();
-        ec.setAbbonamento(abb);
-        ec.setNumero(10);
-        ec.setPubblicazione(p);
-        ec.setTipoAbbonamentoRivista(tipo);
-        ec.setMeseInizio(Mese.GENNAIO);
-        ec.setAnnoInizio(anno);
-        ec.setMeseFine(Mese.DICEMBRE);
-        ec.setAnnoFine(anno);
-        ec.setDestinatario(abb.getIntestatario());
-        Abbonamento.genera(abb, ec, new ArrayList<>(), SmdHelper.getSpeseSpedizione());
+    @Mock
+    SpesaSpedizioneDao spesaspedizioneDaoMock;
 
-        return ec;
-    }
     @Test
     public void testMesiPubblicazione() {
  
@@ -157,7 +146,10 @@ public class SmdUnitTests {
     
     @Test
     public void testCreaSpedizioneMessaggio() {
-        List<SpesaSpedizione> spese = SmdHelper.getSpeseSpedizione();
+        Assertions.assertNotNull(spesaspedizioneDaoMock);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
         Abbonamento abb = new Abbonamento();
         abb.setIntestatario(SmdHelper.getAnagraficaBy("tizio", "caio"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
@@ -175,10 +167,10 @@ public class SmdUnitTests {
         ec.setDestinatario(SmdHelper.getAnagraficaBy("AAAA", "BBBBB"));
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                service.genera(
                          abb, 
                          ec,
-                        new ArrayList<>(),spese);
+                        new ArrayList<>());
         
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
@@ -210,6 +202,10 @@ public class SmdUnitTests {
     public void testCreaSpedizioneUnica() {
         List<SpesaSpedizione> spese = SmdHelper.getSpeseSpedizione();
         Abbonamento abb = new Abbonamento();
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         abb.setIntestatario(SmdHelper.getAnagraficaBy("a", "b"));
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Assertions.assertEquals(2, messaggio.getAnticipoSpedizione());
@@ -225,10 +221,9 @@ public class SmdUnitTests {
         ec.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         Assertions.assertEquals(TipoAbbonamentoRivista.Ordinario, ec.getTipoAbbonamentoRivista());
         List<SpedizioneWithItems> spedizioni = 
-                Abbonamento.genera(abb,
+                service.genera(abb,
                                      ec,
-                                     new ArrayList<>(),
-                                     spese);
+                                     new ArrayList<>());
         
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
@@ -403,9 +398,12 @@ public class SmdUnitTests {
         ec1.setAnnoFine(annof);
         ec1.setDestinatario(tizio);
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
 
         List<SpedizioneWithItems> spedizioniwithitems = 
-                Abbonamento.genera(abb,ec1,new ArrayList<>(),SmdHelper.getSpeseSpedizione());
+                service.genera(abb,ec1,new ArrayList<>());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioniwithitems.forEach(sped -> items.addAll(sped.getSpedizioneItems()));
         
@@ -453,7 +451,7 @@ public class SmdUnitTests {
             }
         }
         
-        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb, ec1, spedizioniwithitems, SmdHelper.getSpeseSpedizione());
+        RivistaAbbonamentoAggiorna aggiorna = service.rimuovi(abb, ec1, spedizioniwithitems);
         Assertions.assertEquals(numeroRiviste-numeroRivisteSpedizionePosticipata-numeroRivisteSpedizioneMeseA, aggiorna.getItemsToDelete().size());
 
         BigDecimal ss = BigDecimal.ZERO;
@@ -534,27 +532,27 @@ public class SmdUnitTests {
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);
         ec3.setDestinatario(tizio);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
 
         List<SpedizioneWithItems> spedizioni = 
-                Abbonamento.genera(
+                service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());        
+                     new ArrayList<>());
         
         spedizioni =
-                Abbonamento.genera(
+                service.genera(
                      abb, 
                      ec2,
-                     spedizioni,
-                     SmdHelper.getSpeseSpedizione());
+                     spedizioni);
        
        spedizioni =
-               Abbonamento.genera(
+               service.genera(
                     abb, 
                     ec3,
-                    spedizioni,
-                    SmdHelper.getSpeseSpedizione());
+                    spedizioni);
 
         
         spedizioni.forEach(spwi -> {
@@ -600,7 +598,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(2, ec3items.size());
         
         //FIRST operation Delete ec2 lodare
-        RivistaAbbonamentoAggiorna aggiorna = Smd.rimuovi(abb,ec2, spedizioni,SmdHelper.getSpeseSpedizione());
+        RivistaAbbonamentoAggiorna aggiorna = service.rimuovi(abb,ec2, spedizioni);
         Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
         
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
@@ -653,7 +651,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(0, ec2.getImporto().doubleValue(),0);
         
 
-        aggiorna = Smd.rimuovi(abb,ec1, spedizioni,SmdHelper.getSpeseSpedizione());
+        aggiorna = service.rimuovi(abb,ec1, spedizioni);
         Assertions.assertEquals(6, aggiorna.getItemsToDelete().size());
 
         for (SpedizioneItem item: aggiorna.getItemsToDelete()){
@@ -691,7 +689,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(0, ec1.getNumeroTotaleRiviste().intValue());
         Assertions.assertEquals(0, ec1.getImporto().doubleValue(),0);
 
-        aggiorna = Smd.rimuovi(abb,ec3, spedizioni,SmdHelper.getSpeseSpedizione());
+        aggiorna = service.rimuovi(abb,ec3, spedizioni);
         for (SpedizioneItem item: aggiorna.getItemsToDelete()) {
             Assertions.assertEquals(ec3, item.getRivistaAbbonamento());
         }
@@ -711,12 +709,31 @@ public class SmdUnitTests {
 
     @Test
     public void testImportoAbbonamentoStd() {
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         Pubblicazione messaggio = SmdHelper.getMessaggio();
         Anagrafica ar = SmdHelper.getAR();
-        EnumSet.allOf(TipoAbbonamentoRivista.class).forEach(tpec -> {
+        EnumSet.allOf(TipoAbbonamentoRivista.class).forEach(tipo -> {
             Abbonamento abb = new Abbonamento();
             abb.setIntestatario(ar);
-            RivistaAbbonamento ec = crea(abb,messaggio, tpec);
+            Anno anno = Anno.getAnnoProssimo();
+            Mese mese = Mese.getMeseCorrente();
+            if (mese.getPosizione()+messaggio.getAnticipoSpedizione() > 12) {
+                anno=Anno.getAnnoSuccessivo(anno);
+            }
+            RivistaAbbonamento ec =  new RivistaAbbonamento();
+            ec.setAbbonamento(abb);
+            ec.setNumero(10);
+            ec.setPubblicazione(messaggio);
+            ec.setTipoAbbonamentoRivista(tipo);
+            ec.setMeseInizio(Mese.GENNAIO);
+            ec.setAnnoInizio(anno);
+            ec.setMeseFine(Mese.DICEMBRE);
+            ec.setAnnoFine(anno);
+            ec.setDestinatario(abb.getIntestatario());
+            service.genera(abb, ec, new ArrayList<>());
             verificaImportoAbbonamentoAnnuale(abb,ec);
         });
     }
@@ -742,13 +759,14 @@ public class SmdUnitTests {
         ec.setMeseFine(Mese.DICEMBRE);
         ec.setDestinatario(intestatario);
 
-        List<SpesaSpedizione> spese = SmdHelper.getSpeseSpedizione();
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
 
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(abb,
+                service.genera(abb,
                                      ec,
-                                     new ArrayList<>(), 
-                                     spese
+                                     new ArrayList<>()
                                      );
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni
@@ -771,7 +789,7 @@ public class SmdUnitTests {
         
         SpesaSpedizione spesa = 
                 SpesaSpedizione.getSpesaSpedizione(
-                           spese, 
+                        spesaspedizioneDaoMock.findAll(),
                            AreaSpedizione.AmericaAfricaAsia, 
                            RangeSpeseSpedizione.getByPeso(p.getGrammi())
                            );
@@ -804,12 +822,15 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> {
             log.info(sped.toString());
@@ -841,21 +862,21 @@ public class SmdUnitTests {
         Assertions.assertNotEquals(ec2, ec1);
 
         try {
-            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),null,3,ec1.getTipoAbbonamentoRivista());
+            service.aggiorna(abb,spedizioni,null,3,ec1.getTipoAbbonamentoRivista());
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
-            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,0,ec1.getTipoAbbonamentoRivista());
+            service.aggiorna(abb,spedizioni,ec1,0,ec1.getTipoAbbonamentoRivista());
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
         }
 
         try {
-            Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,3,null);
+            service.aggiorna(abb,spedizioni,ec1,3,null);
             Assertions.fail();
         } catch (UnsupportedOperationException e) {
             log.info(e.getMessage());
@@ -883,12 +904,15 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
@@ -900,7 +924,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(15*8*messaggio.getCostoUnitario().doubleValue(), abb.getImporto().doubleValue(),0);
         Assertions.assertEquals(abb.getImporto().doubleValue(), ec1.getImporto().doubleValue(),0);
 
-        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,10,ec1.getTipoAbbonamentoRivista());
+        RivistaAbbonamentoAggiorna aggiorna = service.aggiorna(abb,spedizioni,ec1,10,ec1.getTipoAbbonamentoRivista());
         
         Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
         Assertions.assertNotNull(aggiorna.getAbbonamentoToSave());
@@ -942,12 +966,15 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(1);
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         List<SpedizioneWithItems> spedizioni =
-                Abbonamento.genera(
+                service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         final List<SpedizioneItem> items = new ArrayList<>();
         spedizioni.forEach(sped -> sped.getSpedizioneItems().forEach(item -> {
             items.add(item);
@@ -958,7 +985,7 @@ public class SmdUnitTests {
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), ec1.getImporto().doubleValue(),0);
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getImporto().doubleValue(),0);
 
-        RivistaAbbonamentoAggiorna aggiorna = Smd.aggiorna(abb,spedizioni,SmdHelper.getSpeseSpedizione(),ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
+        RivistaAbbonamentoAggiorna aggiorna = service.aggiorna(abb,spedizioni,ec1,1,TipoAbbonamentoRivista.OmaggioCuriaDiocesiana);
         Assertions.assertEquals(0, aggiorna.getSpedizioniToSave().size());
         Assertions.assertEquals(0, aggiorna.getItemsToDelete().size());
         Assertions.assertEquals(1, aggiorna.getRivisteToSave().size());
@@ -1017,12 +1044,16 @@ public class SmdUnitTests {
             log.info(abb.getIntestatario().toString());
             log.info(abb.toString());
         }
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
         for (Storico storico:storici) {
             RivistaAbbonamento ec = RivistaAbbonamento.genera(storico,abb);
             abb.addItem(ec);
-            spedizioni = Abbonamento.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
+            spedizioni = service.genera(abb, ec, spedizioni);
         }                
         Assertions.assertEquals(25, spedizioni.size());
         spedizioni.forEach(sped -> {
@@ -1049,11 +1080,14 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(15);
-        Abbonamento.genera(
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
+        service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         
         Assertions.assertEquals(blocchetti.getAbbonamento().doubleValue()*15, abb.getImporto().doubleValue(),0);
         Assertions.assertEquals(abb.getTotale().doubleValue(), abb.getImporto().doubleValue(),0);
@@ -1087,11 +1121,14 @@ public class SmdUnitTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         ec1.setNumero(14);
-        Abbonamento.genera(
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
+        service.genera(
                      abb, 
                      ec1,
-                     new ArrayList<>(),
-                     SmdHelper.getSpeseSpedizione());
+                     new ArrayList<>());
         
         Assertions.assertEquals(messaggio.getAbbonamento().doubleValue()*14, abb.getImporto().doubleValue(),0);
         
@@ -1140,6 +1177,11 @@ public class SmdUnitTests {
         Assertions.assertEquals(1, abbonamenti.size());
         Abbonamento abb = abbonamenti.iterator().next();
         List<SpedizioneWithItems> spedizioni = new ArrayList<>();
+        Mockito.when(spesaspedizioneDaoMock.findAll()).thenReturn(SmdHelper.getSpeseSpedizione());
+        SmdServiceImpl service = new SmdServiceImpl();
+        service.setSpesaSpedizioneDao(spesaspedizioneDaoMock);
+
+
         for (Storico storico:storici) {
         	log.info("testGeneraCampagnaAR: genera Rivista abbonamento from Storico {}", storico);
             RivistaAbbonamento ec = RivistaAbbonamento.genera(storico,abb);
@@ -1149,7 +1191,7 @@ public class SmdUnitTests {
             Assertions.assertEquals(0, abb.getImporto().doubleValue(),0);
             Assertions.assertEquals(0,abb.getSpese().doubleValue(),0);
         	log.info("testGeneraCampagnaAR: Rivista abbonamento {}", ec);
-            spedizioni = Abbonamento.genera(abb, ec, spedizioni, SmdHelper.getSpeseSpedizione());
+            spedizioni = service.genera(abb, ec, spedizioni);
         	log.info("testGeneraCampagnaAR: spedizioni {}", spedizioni.size());
         }      
         Assertions.assertEquals(26, spedizioni.size());

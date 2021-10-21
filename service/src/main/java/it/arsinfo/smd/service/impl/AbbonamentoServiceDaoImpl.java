@@ -148,6 +148,9 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
         if (item.getPubblicazione() == null) {
         	throw new UnsupportedOperationException("Selezionare la Pubblicazione");
         }
+		if (item.getNumero() <= 0) {
+			throw new UnsupportedOperationException("Numero deve essere > 0");
+		}
         if (item.getId() == null && item.getAbbonamento().getId() == null) {
             t.addItem(item);
             return save(t);
@@ -158,7 +161,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
             smdService.genera(t);
         } else {
         	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).orElse(null);
-        	smdService.aggiornaRivistaAbbonamento(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
+        	smdService.aggiorna(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
         }
         return findById(t.getId());
 	}

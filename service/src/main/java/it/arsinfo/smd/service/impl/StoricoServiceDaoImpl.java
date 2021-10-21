@@ -210,7 +210,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
         storico.setStatoStorico(StatoStorico.Valido);
         save(storico);
         try {
-            smdService.aggiornaRivistaAbbonamento(ec, storico.getNumero(), storico.getTipoAbbonamentoRivista());
+            smdService.aggiorna(ec, storico.getNumero(), storico.getTipoAbbonamentoRivista());
         } catch (Exception e) {
             log.error("aggiornaCampagna: {}", ec, e);
             throw new UnsupportedOperationException("aggiornaRivistaAbbonamento failed");
