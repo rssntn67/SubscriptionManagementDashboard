@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +36,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
     private AbbonamentoDao abbonamentoDao;
 
     @Autowired
-    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaDao rivistaDao;
 
     
     @Autowired
@@ -174,7 +173,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
         	log.warn("aggiornaCampagna: {} {} Storico nuovo con numero <= , non aggiornabile",campagna,storico);
             throw new UnsupportedOperationException(storico + "Errore impossibile aggiungere con Numero < 0.");                 
         }
-        RivistaAbbonamento ec = getByStorico(campagna, storico);
+        Rivista ec = getByStorico(campagna, storico);
         if (storico.getId() == null || (ec == null && storico.getNumero() > 0) ) {
         	log.info("aggiornaCampagna: genera {} {}",storico,campagna);
     		Anagrafica a = anagraficaDao.findById(storico.getIntestatario().getId()).orElse(null);
@@ -182,7 +181,7 @@ public class StoricoServiceDaoImpl implements StoricoService {
     		if (abbonamento == null) {
     			abbonamento = Abbonamento.genera(campagna, a, storico.isContrassegno());
     		}
-    		abbonamento.addItem(RivistaAbbonamento.genera(storico, abbonamento));
+    		abbonamento.addItem(Rivista.genera(storico, abbonamento));
             storico.setStatoStorico(StatoStorico.Valido);
             storico.addItem(getNotaOnUpdate(storico, campagna, "genera",username));
             save(storico);
@@ -211,13 +210,13 @@ public class StoricoServiceDaoImpl implements StoricoService {
             smdService.aggiorna(ec, storico.getNumero(), storico.getTipoAbbonamentoRivista());
         } catch (Exception e) {
             log.error("aggiornaCampagna: {}", ec, e);
-            throw new UnsupportedOperationException("aggiornaRivistaAbbonamento failed");
+            throw new UnsupportedOperationException("aggiornaCampagna failed");
         }
     }
 	
-    private RivistaAbbonamento getByStorico(Campagna campagna,Storico storico) throws Exception{
-        List<RivistaAbbonamento> ecs = 
-                rivistaAbbonamentoDao
+    private Rivista getByStorico(Campagna campagna, Storico storico) throws Exception{
+        List<Rivista> ecs =
+                rivistaDao
                 .findByStorico(storico)
                 .stream()
                 .filter(ec -> {

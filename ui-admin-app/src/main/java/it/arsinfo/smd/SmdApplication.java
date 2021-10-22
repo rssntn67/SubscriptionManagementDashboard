@@ -37,7 +37,7 @@ public class SmdApplication {
             PubblicazioneDao pubblicazioneDao,
             SpesaSpedizioneDao spesaSpedizioneDao,
             AbbonamentoDao abbonamentoDao,
-            RivistaAbbonamentoDao rivistaAbbonamentoDao,
+            RivistaDao rivistaDao,
             SpedizioneDao spedizioneDao,
             SpedizioneItemDao spedizioneItemDao,
             CampagnaDao campagnaDao, 

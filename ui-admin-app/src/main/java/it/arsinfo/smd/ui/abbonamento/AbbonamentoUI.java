@@ -45,7 +45,7 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
         AbbonamentoSearch search = new AbbonamentoSearch(dao,campagne,pubblicazioni,anagrafica);
         AbbonamentoGrid grid = new AbbonamentoGrid("Abbonamenti");
         
-        SmdAddItem<RivistaAbbonamento,Abbonamento> itemAdd = new SmdAddItem<>("Aggiungi Rivista",dao);
+        SmdAddItem<Rivista,Abbonamento> itemAdd = new SmdAddItem<>("Aggiungi Rivista",dao);
      	
         SmdButton itemDel = new SmdButton("Rimuovi Rivista", VaadinIcons.TRASH);
 	    itemDel.getButton().addStyleName(ValoTheme.BUTTON_DANGER);
@@ -63,11 +63,11 @@ public class AbbonamentoUI extends SmdEditorUI<Abbonamento> {
 		maineditor.getActions().addComponents(itemSave.getButton());
 		maineditor.getActions().addComponents(itemAdd.getButton());
         
-		RivistaAbbonamentoGrid itemGrid = new RivistaAbbonamentoGrid("Riviste in Abbonamento");
+		RivistaGrid itemGrid = new RivistaGrid("Riviste in Abbonamento");
         
-		RivistaAbbonamentoEditor itemEditor = new RivistaAbbonamentoEditor(pubblicazioni, anagrafica);
+		RivistaEditor itemEditor = new RivistaEditor(pubblicazioni, anagrafica);
    	    
-        SmdEntityItemEditor<RivistaAbbonamento,Abbonamento> editor = new SmdEntityItemEditor<>(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
+        SmdEntityItemEditor<Rivista,Abbonamento> editor = new SmdEntityItemEditor<>(dao, itemAdd, itemDel, itemSave,itemGrid, itemEditor, maineditor);
         editor.addComponents(itemEditor.getComponents());
         editor.addComponents(maineditor.getComponents());
         editor.addComponents(itemGrid.getComponents());

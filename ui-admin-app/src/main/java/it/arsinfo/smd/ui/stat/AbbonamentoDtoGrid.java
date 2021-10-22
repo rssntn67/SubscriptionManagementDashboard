@@ -1,4 +1,4 @@
-package it.arsinfo.smd.ui.campagna;
+package it.arsinfo.smd.ui.stat;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -6,24 +6,25 @@ import java.util.List;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.FooterRow;
 
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoDto;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
+public class AbbonamentoDtoGrid extends SmdGrid<AbbonamentoDto> {
 
     private final FooterRow gridfooter;
 
-    public AbbonamentoConRivisteGrid(String gridName) {
-        super(new Grid<>(AbbonamentoConRiviste.class),gridName);
-        getGrid().addColumn("codeLine");
+    public AbbonamentoDtoGrid(String gridName) {
+        super(new Grid<>(AbbonamentoDto.class),gridName);
         getGrid().addColumn("intestazione");
-        getGrid().addColumn("sottoIntestazione");
         getGrid().addColumn("indirizzo");
         getGrid().addColumn("citta");
         getGrid().addColumn("cap");
         getGrid().addColumn("provincia");
         getGrid().addColumn("paese");
+        getGrid().addColumn("email");
+        getGrid().addColumn("telefono");
+        getGrid().addColumn("cellulare");
         getGrid().addColumn("numeroMessaggi");
         getGrid().addColumn("numeroBlocchetti");
         getGrid().addColumn("numeroManifesti");
@@ -45,7 +46,7 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
 	}
 
     @Override
-    public void populate(List<AbbonamentoConRiviste> items) {
+    public void populate(List<AbbonamentoDto> items) {
         super.populate(items);
         gridfooter.getCell("numeroMessaggi").setHtml("<b>"+getNumeroMessaggi(items).toString()+"</b>");
         gridfooter.getCell("numeroBlocchetti").setHtml("<b>"+getNumeroBlocchetti(items).toString()+"</b>");
@@ -64,120 +65,120 @@ public class AbbonamentoConRivisteGrid extends SmdGrid<AbbonamentoConRiviste> {
         gridfooter.getCell("saldo").setHtml("<b>"+getSaldo(items).toString()+"</b>"); 
     }
     
-    private Integer getNumeroMessaggi(List<AbbonamentoConRiviste> items) {
+    private Integer getNumeroMessaggi(List<AbbonamentoDto> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConRiviste abbec: items) {
+    	for (AbbonamentoDto abbec: items) {
     		numero+=abbec.getTotaleMessaggi();
     	}
     	return numero;
     }
-    private Integer getNumeroLodare(List<AbbonamentoConRiviste> items) {
+    private Integer getNumeroLodare(List<AbbonamentoDto> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConRiviste abbec: items) {
+    	for (AbbonamentoDto abbec: items) {
     		numero+=abbec.getTotaleLodare();
     	}
     	return numero;
     }
-    private Integer getNumeroManifesti(List<AbbonamentoConRiviste> items) {
+    private Integer getNumeroManifesti(List<AbbonamentoDto> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConRiviste abbec: items) {
+    	for (AbbonamentoDto abbec: items) {
     		numero+=abbec.getTotaleManifesti();
     	}
     	return numero;
     }
-    private Integer getNumeroBlocchetti(List<AbbonamentoConRiviste> items) {
+    private Integer getNumeroBlocchetti(List<AbbonamentoDto> items) {
     	Integer numero = 0;
-    	for (AbbonamentoConRiviste abbec: items) {
+    	for (AbbonamentoDto abbec: items) {
     		numero+=abbec.getTotaleBlocchetti();
     	}
     	return numero;
     }
 
-    private BigDecimal getImportoMessaggi(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getImportoMessaggi(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getImportoMessaggi());
         }
         return importo;
     }
 
-    private BigDecimal getImportoLodare(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getImportoLodare(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getImportoLodare());
         }
         return importo;
     }
 
-    private BigDecimal getImportoBlocchetti(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getImportoBlocchetti(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getImportoBlocchetti());
         }
         return importo;
     }
 
-    private BigDecimal getImportoManifesti(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getImportoManifesti(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getImportoManifesti());
         }
         return importo;
     }
 
-    private BigDecimal getPregresso(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getPregresso(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getPregresso());
         }
         return importo;
     }
 
 
-    private BigDecimal getSpesePostali(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getSpesePostali(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getSpesePostali());
         }
         return importo;
     }
 
-    private BigDecimal getSpeseEstrattoConto(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getSpeseEstrattoConto(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getSpeseEstrattoConto());
         }
         return importo;
     }
 
-    private BigDecimal getTotaleImporti(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getTotaleImporti(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getTotaleImporti());
         }
         return importo;
     }
 
-    private BigDecimal getTotale(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getTotale(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamento:abbonamenti) {
+        for (AbbonamentoDto abbonamento:abbonamenti) {
             importo=importo.add(abbonamento.getTotale());
         }
         return importo;
     }
 
-    private BigDecimal getIncassato(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getIncassato(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abb:abbonamenti) {
+        for (AbbonamentoDto abb:abbonamenti) {
             if (abb.getIncassato() != null)
                 importo=importo.add(abb.getIncassato());
         }
         return importo;
     }
 
-    private BigDecimal getSaldo(List<AbbonamentoConRiviste> abbonamenti) {
+    private BigDecimal getSaldo(List<AbbonamentoDto> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
-        for (AbbonamentoConRiviste abbonamneto:abbonamenti) {
+        for (AbbonamentoDto abbonamneto:abbonamenti) {
             importo=importo.add(abbonamneto.getSaldo());
         }
         return importo;

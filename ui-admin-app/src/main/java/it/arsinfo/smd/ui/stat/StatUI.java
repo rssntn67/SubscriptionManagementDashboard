@@ -27,7 +27,7 @@ public class StatUI extends SmdUI {
         
         StatSearch search = 
         		new StatSearch(dao);
-        AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("abbonamenti");
+        AbbonamentoDtoGrid grid = new AbbonamentoDtoGrid("abbonamenti");
         
         
         addSmdComponents(search,grid);

@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-public class RivistaAbbonamento implements SmdEntity {
+public class Rivista implements SmdEntity {
 
-    public static RivistaAbbonamento genera(Storico storico, Abbonamento abbonamento) {
-        final RivistaAbbonamento ec = new RivistaAbbonamento();
+    public static Rivista genera(Storico storico, Abbonamento abbonamento) {
+        final Rivista ec = new Rivista();
         ec.setStorico(storico);
         ec.setAbbonamento(abbonamento);
         ec.setPubblicazione(storico.getPubblicazione());
@@ -108,10 +108,10 @@ public class RivistaAbbonamento implements SmdEntity {
     @Column(nullable=false)
     private InvioSpedizione invioSpedizione = InvioSpedizione.Spedizioniere;
 
-    public RivistaAbbonamento() {
+    public Rivista() {
     }
 
-    public RivistaAbbonamento(Long id) {
+    public Rivista(Long id) {
         this.id=id;
     }
 
@@ -167,7 +167,7 @@ public class RivistaAbbonamento implements SmdEntity {
 
     @Override
     public String toString() {
-        return String.format("RivistaAbbonamento[id=%d, Abb.%d, numero %d '%d %s' %s imp. %.2f %s, %s %s -> %s %s]",
+        return String.format("Rivista[id=%d, Abb.%d, numero %d '%d %s' %s imp. %.2f %s, %s %s -> %s %s]",
                              id,abbonamento.getId(),numero,numeroTotaleRiviste,pubblicazione.getNome(), tipoAbbonamentoRivista, importo, statoRivista,
                              meseInizio,annoInizio,meseFine,annoFine);
     }
@@ -275,7 +275,7 @@ public class RivistaAbbonamento implements SmdEntity {
         this.numeroTotaleRiviste = numeroTotaleRiviste;
     }
 
-    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(RivistaAbbonamento ec) throws UnsupportedOperationException {
+    public static Map<Anno, EnumSet<Mese>> getAnnoMeseMap(Rivista ec) throws UnsupportedOperationException {
         
         if (ec.getPubblicazione() == null) {
             throw new UnsupportedOperationException("pubblicazione null");

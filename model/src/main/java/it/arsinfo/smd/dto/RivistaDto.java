@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.arsinfo.smd.entity.Abbonamento;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import it.arsinfo.smd.entity.SpedizioneItem;
 
-public class RivistaAbbonamentoAggiorna {
-	private final List<RivistaAbbonamento> rivisteToSave = new ArrayList<>();
-	private final List<RivistaAbbonamento> rivisteToDelete = new ArrayList<>();
+public class RivistaDto {
+	private final List<Rivista> rivisteToSave = new ArrayList<>();
+	private final List<Rivista> rivisteToDelete = new ArrayList<>();
 	private Abbonamento abbonamentoToSave;
 	private List<SpedizioneItem> itemsToDelete = new ArrayList<>();
-	private List<SpedizioneWithItems> spedizioniToSave = new ArrayList<>();
+	private List<SpedizioneItemsDto> spedizioniToSave = new ArrayList<>();
 	
-	public List<RivistaAbbonamento> getRivisteToSave() {
+	public List<Rivista> getRivisteToSave() {
 		return rivisteToSave;
 	}
 	public Abbonamento getAbbonamentoToSave() {
@@ -29,13 +29,13 @@ public class RivistaAbbonamentoAggiorna {
 	public void setItemsToDelete(List<SpedizioneItem> itemsToDelete) {
 		this.itemsToDelete = itemsToDelete;
 	}
-	public List<SpedizioneWithItems> getSpedizioniToSave() {
+	public List<SpedizioneItemsDto> getSpedizioniToSave() {
 		return spedizioniToSave;
 	}
-	public void setSpedizioniToSave(List<SpedizioneWithItems> spedizioniToSave) {
+	public void setSpedizioniToSave(List<SpedizioneItemsDto> spedizioniToSave) {
 		this.spedizioniToSave = spedizioniToSave;
 	}
-	public List<RivistaAbbonamento> getRivisteToDelete() {
+	public List<Rivista> getRivisteToDelete() {
 		return rivisteToDelete;
 	}
 

@@ -21,7 +21,7 @@ import it.arsinfo.smd.entity.Provincia;
 import it.arsinfo.smd.entity.Regione;
 import it.arsinfo.smd.entity.TitoloAnagrafica;
 import it.arsinfo.smd.service.api.CampagnaService;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoDto;
 import it.arsinfo.smd.ui.vaadin.SmdChangeHandler;
 
 public class StatSearch extends SmdChangeHandler {
@@ -168,7 +168,7 @@ public class StatSearch extends SmdChangeHandler {
 
     }
 
-    public List<AbbonamentoConRiviste> find() {
+    public List<AbbonamentoDto> find() {
         return dao.searchBy(
         		anno,
         		searchDiocesi,
@@ -198,7 +198,7 @@ public class StatSearch extends SmdChangeHandler {
     }
 
 
-	public List<AbbonamentoConRiviste> findNone() {
+	public List<AbbonamentoDto> findNone() {
 		return new ArrayList<>();
 	}
 

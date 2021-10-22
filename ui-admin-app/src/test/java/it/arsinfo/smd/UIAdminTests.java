@@ -6,8 +6,8 @@ import it.arsinfo.smd.bancoposta.impl.BancoPostaApiServiceImpl;
 import it.arsinfo.smd.bollettino.api.BollettinoApiService;
 import it.arsinfo.smd.bollettino.config.BollettinoApiServiceConfig;
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.RivistaDto;
+import it.arsinfo.smd.dto.SpedizioneItemsDto;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.entity.UserInfo.Role;
 import it.arsinfo.smd.helper.SmdHelper;
@@ -59,7 +59,7 @@ public class UIAdminTests {
     @Autowired
     private AbbonamentoService abbonamentoServiceDao;
     @Autowired
-    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaDao rivistaDao;
     @Autowired
     private CampagnaDao campagnaDao;
     @Autowired
@@ -127,7 +127,7 @@ public class UIAdminTests {
         assertThat(abbonamentoDao).isNotNull();
         assertThat(anagraficaDao).isNotNull();
         assertThat(pubblicazioneDao).isNotNull();
-        assertThat(rivistaAbbonamentoDao).isNotNull();
+        assertThat(rivistaDao).isNotNull();
         assertThat(storicoDao).isNotNull();
         assertThat(campagnaDao).isNotNull();
         assertThat(campagnaItemDao).isNotNull();
@@ -177,7 +177,7 @@ public class UIAdminTests {
         assertEquals(0, campagnaDao.findAll().size());
         assertEquals(0, campagnaItemDao.findAll().size());
         assertEquals(0, abbonamentoDao.findAll().size());
-        assertEquals(0, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(0, rivistaDao.findAll().size());
         assertEquals(0, spedizioneDao.findAll().size());
         assertEquals(0, spedizioneItemDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
@@ -217,7 +217,7 @@ public class UIAdminTests {
 	        operazioneDao.deleteAll();
 	        spedizioneItemDao.deleteAll();
 	        spedizioneDao.deleteAll();
-	        rivistaAbbonamentoDao.deleteAll();
+	        rivistaDao.deleteAll();
 	        operazioneIncassoDao.deleteAll();
 	        operazioneSospendiDao.deleteAll();
 	        abbonamentoDao.deleteAll();
@@ -720,12 +720,12 @@ public class UIAdminTests {
     }
     
     @Test
-    public void testRivistaAbbonamentoCRUD() {
-        log.info("----------------->testRivistaAbbonamentoCRUD<----------------");
-        RivistaAbbonamento ec = new RivistaAbbonamento();
+    public void testRivistaCRUD() {
+        log.info("----------------->testRivistaCRUD<----------------");
+        Rivista ec = new Rivista();
 
         try {
-            rivistaAbbonamentoDao.save(ec);
+            rivistaDao.save(ec);
             fail();
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -744,7 +744,7 @@ public class UIAdminTests {
         ec.setAbbonamento(abb);
 
         try {
-            rivistaAbbonamentoDao.save(ec);
+            rivistaDao.save(ec);
             fail();
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -753,17 +753,17 @@ public class UIAdminTests {
         Pubblicazione lodare =pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
         ec.setPubblicazione(lodare);
         ec.setDestinatario(tizio);
-        rivistaAbbonamentoDao.save(ec);
+        rivistaDao.save(ec);
         
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(1, rivistaDao.findAll().size());
 
         log.info(ec.toString());
 
         //Need to retrieve a fresh copy from database
-        ec = rivistaAbbonamentoDao.findAll().iterator().next();
-        rivistaAbbonamentoDao.delete(ec);
-        assertEquals(0, rivistaAbbonamentoDao.findAll().size());
+        ec = rivistaDao.findAll().iterator().next();
+        rivistaDao.delete(ec);
+        assertEquals(0, rivistaDao.findAll().size());
     }
 
     @Test
@@ -817,18 +817,18 @@ public class UIAdminTests {
         spedizioneDao.save(sped);
         assertEquals(1, spedizioneDao.findAll().size());
 
-        RivistaAbbonamento ec = new RivistaAbbonamento();
+        Rivista ec = new Rivista();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(lodare);
         ec.setDestinatario(tizio);
-        rivistaAbbonamentoDao.save(ec);
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        rivistaDao.save(ec);
+        assertEquals(1, rivistaDao.findAll().size());
 
         SpedizioneItem item = new SpedizioneItem();
-        item.setRivistaAbbonamento(ec);
+        item.setRivista(ec);
         item.setPubblicazione(ec.getPubblicazione());
         item.setSpedizione(sped);
-        SpedizioneWithItems spwi = new SpedizioneWithItems(sped);
+        SpedizioneItemsDto spwi = new SpedizioneItemsDto(sped);
         spwi.addSpedizioneItem(item);
 
         spedizioneItemDao.save(item);
@@ -860,7 +860,7 @@ public class UIAdminTests {
 
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
 
-        RivistaAbbonamento ec = new RivistaAbbonamento();
+        Rivista ec = new Rivista();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(messaggio);
         ec.setMeseFine(Mese.GENNAIO);
@@ -869,38 +869,38 @@ public class UIAdminTests {
         ec.setAnnoFine(anno);
         ec.setDestinatario(tizio);
         SmdServiceImpl serviceimpl = (SmdServiceImpl) smdService;
-        List<SpedizioneWithItems> spedizioni 
+        List<SpedizioneItemsDto> spedizioni
             = serviceimpl.genera(abb,
                                ec,
                                new ArrayList<>());
         
         assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivista() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
         for (SpedizioneItem item: items) {
             mesi.add(item.getMesePubblicazione());
             assertEquals(anno, item.getAnnoPubblicazione());
             assertEquals(ec.getNumero(), item.getNumero());
-            assertEquals(ec, item.getRivistaAbbonamento());
+            assertEquals(ec, item.getRivista());
         }
         assertEquals(mesi, messaggio.getMesiPubblicazione());
         assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec);
+        rivistaDao.save(ec);
         spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findByAbbonamento(abb).size());
+        assertEquals(1, rivistaDao.findAll().size());
+        assertEquals(1, rivistaDao.findByAbbonamento(abb).size());
         assertEquals(items.size(), spedizioneDao.findAll().size());
-        assertEquals(items.size(), spedizioneItemDao.findByRivistaAbbonamento(ec).size());
+        assertEquals(items.size(), spedizioneItemDao.findByRivista(ec).size());
 
         abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
     }
@@ -918,7 +918,7 @@ public class UIAdminTests {
 
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
 
-        RivistaAbbonamento ec = new RivistaAbbonamento();
+        Rivista ec = new Rivista();
         ec.setAbbonamento(abb);
         ec.setPubblicazione(messaggio);
         ec.setMeseFine(Mese.GENNAIO);
@@ -928,21 +928,21 @@ public class UIAdminTests {
         ec.setDestinatario(tizio);
         SmdServiceImpl serviceimpl = (SmdServiceImpl) smdService;
 
-        List<SpedizioneWithItems> spedizioni 
+        List<SpedizioneItemsDto> spedizioni
             = serviceimpl.genera(abb,
                                ec,
                                new ArrayList<>());
         
         assertTrue(ec.isAbbonamentoAnnuale());
         final List<SpedizioneItem> items = new ArrayList<>();
-        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivistaAbbonamento() == ec).forEach(items::add));
+        spedizioni.forEach(sped -> sped.getSpedizioneItems().stream().filter(item -> item.getRivista() == ec).forEach(items::add));
         assertEquals(messaggio.getMesiPubblicazione().size(), items.size());
         EnumSet<Mese> mesi = EnumSet.noneOf(Mese.class);
         for (SpedizioneItem item: items) {
             mesi.add(item.getMesePubblicazione());
             assertEquals(anno, item.getAnnoPubblicazione());
             assertEquals(ec.getNumero(), item.getNumero());
-            assertEquals(ec, item.getRivistaAbbonamento());
+            assertEquals(ec, item.getRivista());
         }
         assertEquals(mesi, messaggio.getMesiPubblicazione());
         assertEquals(messaggio.getAbbonamento().doubleValue()*ec.getNumero(), abb.getTotale().doubleValue(),0);
@@ -963,15 +963,15 @@ public class UIAdminTests {
         
     }
 
-    private RivistaAbbonamento checkAbbonamento(Anagrafica tizio,String codeline,Pubblicazione blocchetti, int numero, TipoAbbonamentoRivista tipoEC,InvioSpedizione invioSpedizioneEc, InvioSpedizione invioSpedizioneSped) {
+    private Rivista checkAbbonamento(Anagrafica tizio, String codeline, Pubblicazione blocchetti, int numero, TipoAbbonamentoRivista tipoEC, InvioSpedizione invioSpedizioneEc, InvioSpedizione invioSpedizioneSped) {
 
     	assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(1, rivistaDao.findAll().size());
         assertEquals(2, spedizioneDao.findAll().size());
         assertEquals(2, spedizioneItemDao.findAll().size());
         Abbonamento abbonamento = abbonamentoDao.findByCodeLine(codeline);
         log.info(abbonamento.toString());
-        RivistaAbbonamento rivista = rivistaAbbonamentoDao.findAll().iterator().next();
+        Rivista rivista = rivistaDao.findAll().iterator().next();
         log.info(rivista.toString());
         assertEquals(0, abbonamento.getPregresso().doubleValue(),0);
 
@@ -1025,7 +1025,7 @@ public class UIAdminTests {
         	log.info(item.toString());
         	assertEquals(blocchetti.getId(), item.getPubblicazione().getId());
         	assertEquals(numero, item.getNumero().intValue());
-        	assertEquals(rivista.getId(), item.getRivistaAbbonamento().getId());        	
+        	assertEquals(rivista.getId(), item.getRivista().getId());
         }
         
         return rivista;
@@ -1043,7 +1043,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1068,7 +1068,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1080,11 +1080,11 @@ public class UIAdminTests {
         ec1.setInvioSpedizione(InvioSpedizione.Spedizioniere);
         abb.addItem(ec1);
         smdService.genera(abb);
-        RivistaAbbonamento rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
+        Rivista rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 5,TipoAbbonamentoRivista.Ordinario, InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.aggiorna(rivista,4,TipoAbbonamentoRivista.Ordinario);
         rivista = checkAbbonamento(tizio, abb.getCodeLine(), blocchetti, 4, TipoAbbonamentoRivista.Ordinario,InvioSpedizione.Spedizioniere, InvioSpedizione.AdpSede);
         smdService.rimuovi(rivista);
-        assertEquals(0, rivistaAbbonamentoDao.count());
+        assertEquals(0, rivistaDao.count());
         assertEquals(1, abbonamentoDao.count());
         assertEquals(0, spedizioneDao.count());
         assertEquals(0, spedizioneItemDao.count());
@@ -1102,7 +1102,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1126,7 +1126,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1152,7 +1152,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1178,7 +1178,7 @@ public class UIAdminTests {
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(blocchetti);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1194,8 +1194,8 @@ public class UIAdminTests {
     }
 
     @Test
-    public void testAbbonamentoAggiungiRivistaAbbonamento() throws Exception {
-        log.info("----------------->testAbbonamentoAggiungiRivistaAbbonamento<----------------");
+    public void testAbbonamentoAggiungiRivista() throws Exception {
+        log.info("----------------->testAbbonamentoAggiungiRivista<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1205,7 +1205,7 @@ public class UIAdminTests {
         Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
         Pubblicazione blocchetti = pubblicazioneDao.findByNomeStartsWithIgnoreCase("blocchetti").iterator().next();
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1214,7 +1214,7 @@ public class UIAdminTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         abb.addItem(ec1);
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        Rivista ec2 = new Rivista();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
         ec2.setMeseInizio(Mese.GENNAIO);
@@ -1224,16 +1224,16 @@ public class UIAdminTests {
         ec2.setDestinatario(tizio);
         abb.addItem(ec2);
         smdService.genera(abb);
-        assertEquals(2, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(2, rivistaDao.findAll().size());
         assertEquals(12, spedizioneDao.findAll().size());
         assertEquals(12, spedizioneItemDao.findAll().size());
 
         abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
 
-        RivistaAbbonamento ec3 = new RivistaAbbonamento();
+        Rivista ec3 = new Rivista();
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
         ec3.setMeseInizio(Mese.GENNAIO);
@@ -1241,30 +1241,30 @@ public class UIAdminTests {
         ec3.setMeseFine(Mese.DICEMBRE);
         ec3.setAnnoFine(anno);     
         ec3.setDestinatario(tizio);
-        List<SpedizioneWithItems> spedizioni = smdService.findByAbbonamento(abb);
+        List<SpedizioneItemsDto> spedizioni = smdService.findByAbbonamento(abb);
         SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
         spedizioni = smdServiceImpl.genera(abb,
                                           ec3,
                                           spedizioni);
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec3);
+        rivistaDao.save(ec3);
         spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(spedizioneItemDao::save);
         });
-        assertEquals(3, rivistaAbbonamentoDao.findAll().size());        
+        assertEquals(3, rivistaDao.findAll().size());
         assertEquals(14, spedizioneDao.findAll().size());
         assertEquals(14, spedizioneItemDao.findAll().size());
 
         abbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
-        rivistaAbbonamentoDao.findAll().forEach(msg -> log.info(msg.toString()));
+        rivistaDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneDao.findAll().forEach(msg -> log.info(msg.toString()));
         spedizioneItemDao.findAll().forEach(msg -> log.info(msg.toString()));
     }
     
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamento() {
-        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento<----------------");
+    public void testAbbonamentoRimuoviRivista() {
+        log.info("----------------->testAbbonamentoRimuoviRivista<----------------");
         Anno anno = Anno.getAnnoSuccessivo(Anno.getAnnoProssimo());
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
@@ -1274,7 +1274,7 @@ public class UIAdminTests {
         
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, Anno.getAnnoProssimo(), false);
         
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1282,7 +1282,7 @@ public class UIAdminTests {
         ec1.setMeseFine(Mese.GIUGNO);
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        Rivista ec2 = new Rivista();
         ec2.setAbbonamento(abb);
         ec2.setPubblicazione(lodare);
         ec2.setMeseInizio(Mese.GENNAIO);
@@ -1290,7 +1290,7 @@ public class UIAdminTests {
         ec2.setMeseFine(Mese.GIUGNO);
         ec2.setAnnoFine(anno);
         ec2.setDestinatario(tizio);
-        RivistaAbbonamento ec3 = new RivistaAbbonamento();
+        Rivista ec3 = new Rivista();
         ec3.setAbbonamento(abb);
         ec3.setPubblicazione(blocchetti);
         ec3.setMeseInizio(Mese.GENNAIO);
@@ -1300,7 +1300,7 @@ public class UIAdminTests {
         ec3.setDestinatario(tizio);
 
         SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
-        List<SpedizioneWithItems> spedizioni =
+        List<SpedizioneItemsDto> spedizioni =
                 smdServiceImpl.genera(
                      abb,
                      ec1,
@@ -1318,9 +1318,9 @@ public class UIAdminTests {
                     spedizioni);
 
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec1);
-        rivistaAbbonamentoDao.save(ec2);
-        rivistaAbbonamentoDao.save(ec3);        
+        rivistaDao.save(ec1);
+        rivistaDao.save(ec2);
+        rivistaDao.save(ec3);
 
         spedizioni.forEach( sped -> {
             spedizioneDao.save(sped.getSpedizione());
@@ -1329,12 +1329,12 @@ public class UIAdminTests {
 
         assertEquals(1, anagraficaDao.findAll().size());
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(3, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(3, rivistaDao.findAll().size());
         assertEquals(14, spedizioneDao.findAll().size());
         assertEquals(14, spedizioneItemDao.findAll().size());
 
 
-        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.doRimuovi(abb,
+        RivistaDto aggiorna = smdServiceImpl.doRimuovi(abb,
                       ec2, 
                       spedizioni);
 
@@ -1352,19 +1352,19 @@ public class UIAdminTests {
         aggiorna.getSpedizioniToSave()
         	.stream().filter(s -> s.getSpedizioneItems().isEmpty()).forEach(s ->spedizioneDao.deleteById(s.getSpedizione().getId()));
         assertEquals(1, aggiorna.getRivisteToDelete().size());
-        RivistaAbbonamento rivista = aggiorna.getRivisteToDelete().iterator().next();
+        Rivista rivista = aggiorna.getRivisteToDelete().iterator().next();
         assertEquals(0, aggiorna.getRivisteToSave().size());
         assertEquals(0, rivista.getNumeroTotaleRiviste().intValue());
         assertEquals(0, rivista.getImporto().doubleValue(),0);
-        rivistaAbbonamentoDao.deleteById(rivista.getId());
+        rivistaDao.deleteById(rivista.getId());
         abbonamentoDao.save(abb);
         assertEquals(1, anagraficaDao.findAll().size());
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(2, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(2, rivistaDao.findAll().size());
         assertEquals(8, spedizioneDao.findAll().size());
         assertEquals(8, spedizioneItemDao.findAll().size());
         
-        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamento Rimosso: {}",ec2);
+        log.info("----------------->testAbbonamentoRimuoviRivista Rimossa: {}",ec2);
 
         
         spedizioni=smdService.findByAbbonamento(abb);
@@ -1384,17 +1384,17 @@ public class UIAdminTests {
             spedizioneItemDao.deleteById(delitem.getId());
         }
 
-        for (SpedizioneWithItems sped:spedizioni) {
+        for (SpedizioneItemsDto sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
         
-        rivistaAbbonamentoDao.deleteById(rivista.getId());
+        rivistaDao.deleteById(rivista.getId());
         abbonamentoDao.save(abb);
         assertEquals(1, anagraficaDao.findAll().size());
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(1, rivistaDao.findAll().size());
         assertEquals(2, spedizioneDao.findAll().size());
         assertEquals(2, spedizioneItemDao.findAll().size());
         
@@ -1404,7 +1404,7 @@ public class UIAdminTests {
         for (SpedizioneItem delitem: aggiorna.getItemsToDelete() ) {
             spedizioneItemDao.deleteById(delitem.getId());
         }
-        for (SpedizioneWithItems sped:spedizioni) {
+        for (SpedizioneItemsDto sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
@@ -1416,11 +1416,11 @@ public class UIAdminTests {
         assertEquals(0, rivista.getImporto().doubleValue(),0);
         assertEquals(0, rivista.getNumeroTotaleRiviste().intValue());
         assertEquals(0, rivista.getImporto().doubleValue(),0);
-        rivistaAbbonamentoDao.delete(rivista);
+        rivistaDao.delete(rivista);
         abbonamentoDao.save(abb);
         assertEquals(1, anagraficaDao.findAll().size());
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(0, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(0, rivistaDao.findAll().size());
         assertEquals(0, spedizioneDao.findAll().size());
         assertEquals(0, spedizioneItemDao.findAll().size());
         
@@ -1428,14 +1428,14 @@ public class UIAdminTests {
         
         abbonamentoDao.delete(abb);
         assertEquals(0, abbonamentoDao.findAll().size());
-        assertEquals(0, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(0, rivistaDao.findAll().size());
         assertEquals(0, spedizioneDao.findAll().size());
 
     }
 
     @Test
-    public void testAbbonamentoRimuoviRivistaAbbonamentoConSpediti() {
-        log.info("----------------->testAbbonamentoRimuoviRivistaAbbonamentoConSpediti<----------------");
+    public void testAbbonamentoRimuoviRivistaConSpediti() {
+        log.info("----------------->testAbbonamentoRimuoviRivistaConSpediti<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
@@ -1444,7 +1444,7 @@ public class UIAdminTests {
         Pubblicazione lodare = pubblicazioneDao.findByNomeStartsWithIgnoreCase("lodare").iterator().next();
 
 
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(lodare);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1455,7 +1455,7 @@ public class UIAdminTests {
 
         SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
 
-        List<SpedizioneWithItems> spedizioni = smdServiceImpl.genera(
+        List<SpedizioneItemsDto> spedizioni = smdServiceImpl.genera(
                                            abb,
                                            ec1,
                                            new ArrayList<>()
@@ -1484,7 +1484,7 @@ public class UIAdminTests {
         	assertEquals(lodare.getMesiPubblicazione().size()-lodare.getAnticipoSpedizione()-Mese.getMeseCorrente().getPosizione()+2, spedizioni.size());
         }
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec1);
+        rivistaDao.save(ec1);
         spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
@@ -1503,25 +1503,25 @@ public class UIAdminTests {
         });
 
         spedizioni=smdService.findByAbbonamento(abb);
-        RivistaAbbonamentoAggiorna aggiorna = smdServiceImpl.doRimuovi(abb,ec1, spedizioni);
+        RivistaDto aggiorna = smdServiceImpl.doRimuovi(abb,ec1, spedizioni);
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         for (SpedizioneItem deletedItem:aggiorna.getItemsToDelete()) {
             assertEquals(StatoSpedizione.PROGRAMMATA, deletedItem.getStatoSpedizione());
-            assertEquals(ec1.getId(), deletedItem.getRivistaAbbonamento().getId());
+            assertEquals(ec1.getId(), deletedItem.getRivista().getId());
             log.info("deleted: " + deletedItem);
             spedizioneItemDao.deleteById(deletedItem.getId());            
         }
-        for (SpedizioneWithItems sped:spedizioni) {
+        for (SpedizioneItemsDto sped:spedizioni) {
             if (sped.getSpedizioneItems().isEmpty()) {
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }     
         assertEquals(0, aggiorna.getRivisteToDelete().size());
         assertEquals(1, aggiorna.getRivisteToSave().size());
-        RivistaAbbonamento rivista=aggiorna.getRivisteToSave().iterator().next();
+        Rivista rivista=aggiorna.getRivisteToSave().iterator().next();
         assertEquals(1, rivista.getNumero().intValue());
         assertEquals(Mese.GENNAIO, rivista.getMeseInizio());
         if (Mese.getByPosizione(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione()) == null) {
@@ -1531,7 +1531,7 @@ public class UIAdminTests {
         }
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoInizio());
         assertEquals(Anno.getAnnoCorrente(), rivista.getAnnoFine());
-        rivistaAbbonamentoDao.save(aggiorna.getRivisteToSave().iterator().next());
+        rivistaDao.save(aggiorna.getRivisteToSave().iterator().next());
         
         spedizioni=smdService.findByAbbonamento(abb);
         if (12-Mese.getMeseCorrente().getPosizione()-lodare.getAnticipoSpedizione() < 0) {
@@ -1541,7 +1541,7 @@ public class UIAdminTests {
             assertEquals(Mese.getMeseCorrente().getPosizione()+lodare.getAnticipoSpedizione(), rivista.getNumeroTotaleRiviste().intValue());
             assertEquals(2, spedizioni.size());
         }
-        for (SpedizioneWithItems inviata : spedizioni) {
+        for (SpedizioneItemsDto inviata : spedizioni) {
         	assertEquals(inviata.getSpedizione().getAnnoSpedizione(), Anno.getAnnoCorrente());
         	assertEquals(inviata.getSpedizione().getMeseSpedizione(), Mese.getMeseCorrente());
         	spedizioneItemDao.findBySpedizione(inviata.getSpedizione()).forEach(item->
@@ -1564,13 +1564,13 @@ public class UIAdminTests {
             spedizioneDao.deleteById(inviata.getSpedizione().getId());
         }
         
-        rivistaAbbonamentoDao.deleteById(ec1.getId());
+        rivistaDao.deleteById(ec1.getId());
         abbonamentoDao.delete(abb);
     }
     
     @Test
-    public void testAbbonamentoAggiornaRivistaAbbonamento() {
-        log.info("----------------->testAbbonamentoAggiornaRivistaAbbonamento<----------------");
+    public void testAbbonamentoAggiornaRivista() {
+        log.info("----------------->testAbbonamentoAggiornaRivista<----------------");
         Anagrafica tizio = SmdHelper.getGP();
         anagraficaDao.save(tizio);
         
@@ -1578,7 +1578,7 @@ public class UIAdminTests {
         Abbonamento abb = SmdHelper.getAbbonamentoBy(tizio, anno, false);
         
         Pubblicazione messaggio = pubblicazioneDao.findByNomeStartsWithIgnoreCase("messaggio").iterator().next();
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setAbbonamento(abb);
         ec1.setPubblicazione(messaggio);
         ec1.setMeseInizio(Mese.GENNAIO);
@@ -1587,20 +1587,20 @@ public class UIAdminTests {
         ec1.setAnnoFine(anno);
         ec1.setDestinatario(tizio);
         SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
-        List<SpedizioneWithItems> spedizioni =
+        List<SpedizioneItemsDto> spedizioni =
                 smdServiceImpl.genera(
                      abb, 
                      ec1,
                      new ArrayList<>());
         assertTrue(ec1.isAbbonamentoAnnuale());
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec1);
+        rivistaDao.save(ec1);
         spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(1, rivistaDao.findAll().size());
         assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneDao.findAll().size());
         assertEquals(messaggio.getMesiPubblicazione().size(), spedizioneItemDao.findAll().size());
   
@@ -1614,7 +1614,7 @@ public class UIAdminTests {
         
         log.info("Costo abbonamento: " + abb.getTotale());
         assertEquals(messaggio.getAbbonamento().doubleValue(), abb.getTotale().doubleValue(),0);
-        RivistaAbbonamentoAggiorna aggiorna = 
+        RivistaDto aggiorna =
         		smdServiceImpl.doAggiorna(
         				abb,
         		        spedizioni,
@@ -1624,7 +1624,7 @@ public class UIAdminTests {
 				);       
         assertEquals(0, aggiorna.getItemsToDelete().size());
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec1);
+        rivistaDao.save(ec1);
         aggiorna.getSpedizioniToSave().forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
@@ -1882,7 +1882,7 @@ public class UIAdminTests {
                             false
                             );
         
-        RivistaAbbonamento ec = new RivistaAbbonamento();
+        Rivista ec = new Rivista();
         ec.setPubblicazione(b);
         ec.setNumero(2);
         ec.setAbbonamento(abb);
@@ -1895,7 +1895,7 @@ public class UIAdminTests {
         SmdServiceImpl smdServiceImpl = (SmdServiceImpl) smdService;
         smdServiceImpl.genera(abb, ec, new ArrayList<>());
         abbonamentoDao.save(abb);
-        rivistaAbbonamentoDao.save(ec);
+        rivistaDao.save(ec);
         
         DistintaVersamento incasso = getIncassoByImportoAndCodeLine(abb.getTotale(), abb.getCodeLine());
         incassoDao.save(incasso);
@@ -1967,7 +1967,7 @@ public class UIAdminTests {
                                                      Anno.getAnnoCorrente(), 
                                                      false
                                                      );
-        RivistaAbbonamento ec1 = new RivistaAbbonamento();
+        Rivista ec1 = new Rivista();
         ec1.setPubblicazione(b);
         ec1.setNumero(2);
         ec1.setAbbonamento(abb1);
@@ -1980,7 +1980,7 @@ public class UIAdminTests {
         smdService.genera(abb1);
 
         assertEquals(1, abbonamentoDao.findAll().size());
-        assertEquals(1, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(1, rivistaDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, versamentoDao.findAll().size());
 
@@ -1990,7 +1990,7 @@ public class UIAdminTests {
                                                       Anno.getAnnoCorrente(), 
                                                       false
                                                       );
-        RivistaAbbonamento ec2 = new RivistaAbbonamento();
+        Rivista ec2 = new Rivista();
         ec2.setPubblicazione(b);
         ec2.setNumero(2);
         ec2.setAbbonamento(abb1);
@@ -2003,7 +2003,7 @@ public class UIAdminTests {
         smdService.genera(abb2);
 
         assertEquals(2, abbonamentoDao.findAll().size());
-        assertEquals(2, rivistaAbbonamentoDao.findAll().size());
+        assertEquals(2, rivistaDao.findAll().size());
         assertEquals(0, incassoDao.findAll().size());
         assertEquals(0, versamentoDao.findAll().size());
 

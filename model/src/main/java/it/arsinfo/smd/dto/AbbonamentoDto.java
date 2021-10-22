@@ -3,13 +3,13 @@ package it.arsinfo.smd.dto;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Anno;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class AbbonamentoConRiviste extends Indirizzo {
+public class AbbonamentoDto extends Indirizzo {
 
 	public static String numeroPlaceHolder="-";
     private final Abbonamento abbonamento;
@@ -23,8 +23,8 @@ public class AbbonamentoConRiviste extends Indirizzo {
     private BigDecimal importoLodare=BigDecimal.ZERO;
     private BigDecimal importoManifesti=BigDecimal.ZERO;
 
-    private void populate(List<RivistaAbbonamento> estrattiConto) {
-		for (RivistaAbbonamento ec:estrattiConto) {
+    private void populate(List<Rivista> estrattiConto) {
+		for (Rivista ec:estrattiConto) {
 			switch (ec.getPubblicazione().getNome()) {
 				case "Messaggio":
 					numeroMessaggi += ec.getNumero();
@@ -46,7 +46,7 @@ public class AbbonamentoConRiviste extends Indirizzo {
 		}
 	}
 
-	public AbbonamentoConRiviste(Abbonamento abbonamento, List<RivistaAbbonamento> estrattiConto, Anagrafica intestatario) {
+	public AbbonamentoDto(Abbonamento abbonamento, List<Rivista> estrattiConto, Anagrafica intestatario) {
 		super(intestatario);
 		Assert.notNull(abbonamento,"abbonamento must be not null");
 		this.abbonamento= abbonamento;

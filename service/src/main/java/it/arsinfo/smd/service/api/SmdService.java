@@ -1,8 +1,8 @@
 package it.arsinfo.smd.service.api;
 
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoDto;
 import it.arsinfo.smd.dto.SpedizioneDto;
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.SpedizioneItemsDto;
 import it.arsinfo.smd.entity.*;
 
 import java.math.BigDecimal;
@@ -11,19 +11,19 @@ import java.util.List;
 
 public interface SmdService {
 
-    List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti);
+    List<AbbonamentoDto> get(List<Abbonamento> abbonamenti);
 
-    void calcolaPesoESpesePostali(Abbonamento abbonamento, Collection<SpedizioneWithItems> spedizioni);
+    void calcolaPesoESpesePostali(Abbonamento abbonamento, Collection<SpedizioneItemsDto> spedizioni);
     void genera(Abbonamento abbonamento) throws Exception;
     void rimuovi(Abbonamento abbonamento) throws Exception;
     void aggiornaStatoRiviste(Abbonamento abbonamento) throws Exception;
     void aggiornaStatoRiviste(Campagna campagna) throws Exception;
 
-    void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista);
-    void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista);
+    void programmaSpedizioniSospese(Abbonamento abbonamento, Rivista rivista);
+    void sospendiSpedizioniProgrammate(Abbonamento abbonamento, Rivista rivista);
     
-    void aggiorna(RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;
-    void rimuovi(RivistaAbbonamento rivista) throws Exception;
+    void aggiorna(Rivista rivista, int numero, TipoAbbonamentoRivista tipo) throws Exception;
+    void rimuovi(Rivista rivista) throws Exception;
 
     void generaStatisticheTipografia(Anno anno, Mese mese, Pubblicazione p); 
     void inviaSpedizionere(Operazione operazione) throws Exception;
@@ -35,7 +35,7 @@ public interface SmdService {
 
     List<SpedizioneDto> listBy(Pubblicazione pubblicazione,Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
     List<SpedizioneDto> listBy(Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio);
-    List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb);
+    List<SpedizioneItemsDto> findByAbbonamento(Abbonamento abb);
         
     void incassa(Abbonamento abbonamento, Versamento versamento, UserInfo user, String description) throws Exception;    
     void storna(OperazioneIncasso operazioneIncasso,UserInfo user, String description) throws Exception;    
@@ -47,8 +47,8 @@ public interface SmdService {
 	void incassa(String ddt, BigDecimal bigDecimal, DocumentiTrasportoCumulati ddtAnno, Versamento selected,
 			UserInfo loggedInUser, Anagrafica committente);
 
-	List<RivistaAbbonamento> getRivisteNotValid(Abbonamento abbonamento, Campagna campagna);
-    StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista);
+	List<Rivista> getRivisteNotValid(Abbonamento abbonamento, Campagna campagna);
+    StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, Rivista rivista);
 
 
 }

@@ -2,14 +2,14 @@ package it.arsinfo.smd.ui.abbonamento;
 
 import com.vaadin.ui.Grid;
 
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import it.arsinfo.smd.ui.EuroConverter;
 import it.arsinfo.smd.ui.vaadin.SmdGrid;
 
-public class RivistaAbbonamentoGrid extends SmdGrid<RivistaAbbonamento> {
+public class RivistaGrid extends SmdGrid<Rivista> {
 
-    public RivistaAbbonamentoGrid(String gridname) {
-        super(new Grid<>(RivistaAbbonamento.class),gridname);
+    public RivistaGrid(String gridname) {
+        super(new Grid<>(Rivista.class),gridname);
         
         getGrid().addColumn("pubblicazione.nome").setCaption("Pubblicazione");
         getGrid().addColumn("inizio");

@@ -4,7 +4,7 @@ import it.arsinfo.smd.entity.*;
 
 import java.util.List;
 
-public interface AbbonamentoService extends SmdServiceItem<Abbonamento,RivistaAbbonamento> {
+public interface AbbonamentoService extends SmdServiceItem<Abbonamento, Rivista> {
 	
 	List<Anagrafica> getAnagrafica();
 	List<Pubblicazione> getPubblicazioni();

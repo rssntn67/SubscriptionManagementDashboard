@@ -23,7 +23,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
     private AbbonamentoDao repository;
 
     @Autowired
-    private RivistaAbbonamentoDao itemRepository;
+    private RivistaDao itemRepository;
 
     @Autowired
     private PubblicazioneDao pubblicazioneDao;
@@ -121,7 +121,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 	}
 
 	@Override
-	public List<RivistaAbbonamento> getItems(Abbonamento t) {
+	public List<Rivista> getItems(Abbonamento t) {
 		if (t.getId() == null) {
 			return new ArrayList<>();
 		}
@@ -130,7 +130,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 
 	@Override
 	@Transactional
-	public Abbonamento deleteItem(Abbonamento t, RivistaAbbonamento item) throws Exception{
+	public Abbonamento deleteItem(Abbonamento t, Rivista item) throws Exception{
 		if (item.getId() == null ) {
             if (!t.removeItem(item)) {
             	throw new UnsupportedOperationException("Non posso rimuovere EC");
@@ -142,7 +142,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
 	}
 
 	@Override
-	public Abbonamento saveItem(Abbonamento t, RivistaAbbonamento item) throws Exception {
+	public Abbonamento saveItem(Abbonamento t, Rivista item) throws Exception {
         if (item.getDestinatario() == null) {
         	throw new UnsupportedOperationException("Selezionare il Destinatario");
         }
@@ -161,7 +161,7 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
             t.addItem(item);
             smdService.genera(t);
         } else {
-        	RivistaAbbonamento persisted = itemRepository.findById(item.getId()).orElse(null);
+        	Rivista persisted = itemRepository.findById(item.getId()).orElse(null);
         	smdService.aggiorna(persisted,item.getNumero(),item.getTipoAbbonamentoRivista());
         }
         return findById(t.getId());
@@ -218,13 +218,13 @@ public class AbbonamentoServiceDaoImpl implements AbbonamentoService {
     	return operazioneIncassoDao.findByAbbonamento(abbonamento);
 	}
 
-	public List<RivistaAbbonamento> findAllItems() {
+	public List<Rivista> findAllItems() {
 		return itemRepository.findAll();
 	}
 
 	@Override
-	public RivistaAbbonamento addItem(Abbonamento abbonamento) {
-		RivistaAbbonamento ec = new RivistaAbbonamento();
+	public Rivista addItem(Abbonamento abbonamento) {
+		Rivista ec = new Rivista();
 		ec.setAbbonamento(abbonamento);
 		ec.setDestinatario(abbonamento.getIntestatario());
 		ec.setAnnoInizio(abbonamento.getAnno());

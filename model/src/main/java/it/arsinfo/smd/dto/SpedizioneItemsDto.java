@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SpedizioneWithItems {
+public class SpedizioneItemsDto {
 
     public static class SpedizioneWithItemsData {
         private List<SpedizioneItem> annullate = new ArrayList<>();
@@ -86,7 +86,7 @@ public class SpedizioneWithItems {
     private final Spedizione spedizione;
     private List<SpedizioneItem> spedizioneItems = new ArrayList<>();
 
-    public SpedizioneWithItems(Spedizione sped) {
+    public SpedizioneItemsDto(Spedizione sped) {
         this.spedizione=sped;
     }
     
@@ -126,15 +126,15 @@ public class SpedizioneWithItems {
         return spedizione.hashCode();
     }
 
-    public static Map<Integer, SpedizioneWithItems> getSpedizioneMap(List<SpedizioneWithItems> spedizioni) {
-        final Map<Integer,SpedizioneWithItems> spedMap = new HashMap<>();
-        for (SpedizioneWithItems spedizione:spedizioni) {
+    public static Map<Integer, SpedizioneItemsDto> getSpedizioneMap(List<SpedizioneItemsDto> spedizioni) {
+        final Map<Integer, SpedizioneItemsDto> spedMap = new HashMap<>();
+        for (SpedizioneItemsDto spedizione:spedizioni) {
             spedMap.put(getHashCode(spedizione.getSpedizione(), spedizione.getSpedizioneItems().iterator().next().getPubblicazione()), spedizione);
         }
         return spedMap;
     }
 
-    public static SpedizioneWithItemsData getData(List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivistaAbbonamento) {
+    public static SpedizioneWithItemsData getData(List<SpedizioneItemsDto> spedizioni, Rivista rivista) {
         List<SpedizioneItem> annullate = new ArrayList<>();
         List<SpedizioneItem> usabili = new ArrayList<>();
         List<SpedizioneItem> inviate = new ArrayList<>();
@@ -144,9 +144,9 @@ public class SpedizioneWithItems {
         Anno annoFineInv=null;
         Mese meseUltimaSped=null;
         Anno annoUltimaSped=null;
-        for (SpedizioneWithItems spedwith: spedizioni) {
+        for (SpedizioneItemsDto spedwith: spedizioni) {
             for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
-                if ( rivistaAbbonamento.getId().equals(item.getRivistaAbbonamento().getId())) {
+                if ( rivista.getId().equals(item.getRivista().getId())) {
                     switch (item.getStatoSpedizione()) {
                         case INVIATA:
                             inviate.add(item);
@@ -212,10 +212,10 @@ public class SpedizioneWithItems {
         return data;
     }
 
-    public static boolean noSpedizioniInviateOrAnnullate(List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivistaAbbonamento) {
-        for (SpedizioneWithItems spedwith: spedizioni) {
+    public static boolean noSpedizioniInviateOrAnnullate(List<SpedizioneItemsDto> spedizioni, Rivista rivista) {
+        for (SpedizioneItemsDto spedwith: spedizioni) {
             for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
-                if ( rivistaAbbonamento.getId().equals(item.getRivistaAbbonamento().getId())) {
+                if ( rivista.getId().equals(item.getRivista().getId())) {
                     if (item.getStatoSpedizione() == StatoSpedizione.INVIATA || item.getStatoSpedizione() == StatoSpedizione.ANNULLATA) {
                             return false;
                     }
@@ -242,7 +242,7 @@ public class SpedizioneWithItems {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SpedizioneWithItems other = (SpedizioneWithItems) obj;
+        SpedizioneItemsDto other = (SpedizioneItemsDto) obj;
         if (spedizione == null) {
             return other.spedizione == null;
         } else return spedizione.equals(other.spedizione);

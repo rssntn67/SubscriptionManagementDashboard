@@ -17,11 +17,11 @@ import it.arsinfo.smd.entity.StatoRivista;
 import it.arsinfo.smd.entity.TipoAbbonamentoRivista;
 import it.arsinfo.smd.entity.Anagrafica;
 import it.arsinfo.smd.entity.Pubblicazione;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import it.arsinfo.smd.ui.vaadin.SmdItemEditor;
 
-public class RivistaAbbonamentoEditor
-        extends SmdItemEditor<RivistaAbbonamento> {
+public class RivistaEditor
+        extends SmdItemEditor<Rivista> {
 
     private final ComboBox<Pubblicazione> pubblicazione = new ComboBox<Pubblicazione>("Pubblicazione");
     
@@ -49,10 +49,10 @@ public class RivistaAbbonamentoEditor
     private final ComboBox<InvioSpedizione> invioSpedizione = new ComboBox<InvioSpedizione>("Sped.",
             EnumSet.allOf(InvioSpedizione.class));
 
-    public RivistaAbbonamentoEditor(
+    public RivistaEditor(
             List<Pubblicazione> pubblicazioni, List<Anagrafica> anagrafica) {
 
-        super(new Binder<>(RivistaAbbonamento.class) );
+        super(new Binder<>(Rivista.class) );
         pubblicazione.setEmptySelectionAllowed(false);
         pubblicazione.setPlaceholder("Pubblicazione");
         pubblicazione.setItems(pubblicazioni);
@@ -91,51 +91,51 @@ public class RivistaAbbonamentoEditor
         getBinder()
         .forField(importo).withConverter(new EuroConverter("Conversione in Eur"))
         .withValidator(bdec -> bdec != null && bdec.signum() >= 0,"deve essere maggiore di 0")
-        .bind(RivistaAbbonamento::getImporto,RivistaAbbonamento::setImporto);
+        .bind(Rivista::getImporto, Rivista::setImporto);
   
         getBinder()
             .forField(numero)
             .withConverter(new StringToIntegerConverter("Deve essere un numero"))
             .withValidator(num -> num != null && num > 0,"deve essere maggiore di 0")
-            .bind(RivistaAbbonamento::getNumero, RivistaAbbonamento::setNumero);
+            .bind(Rivista::getNumero, Rivista::setNumero);
 
         getBinder()
         .forField(numeroTotaleRiviste)
         .withConverter(new StringToIntegerConverter("Deve essere un numero"))
         .withValidator(num -> num != null && num >= 0,"essere maggiore o uguale 0")
-        .bind(RivistaAbbonamento::getNumeroTotaleRiviste, RivistaAbbonamento::setNumeroTotaleRiviste);
+        .bind(Rivista::getNumeroTotaleRiviste, Rivista::setNumeroTotaleRiviste);
 
         getBinder()
             .forField(pubblicazione)
             .asRequired()
             .withValidator(p -> p != null, "Pubblicazione deve essere selezionata")
-            .bind(RivistaAbbonamento::getPubblicazione,RivistaAbbonamento::setPubblicazione);
+            .bind(Rivista::getPubblicazione, Rivista::setPubblicazione);
 
         getBinder()
         .forField(destinatario)
         .asRequired()
         .withValidator(p -> p != null, "Destinatario deve essere selezionato")
-        .bind(RivistaAbbonamento::getDestinatario,RivistaAbbonamento::setDestinatario);
+        .bind(Rivista::getDestinatario, Rivista::setDestinatario);
 
         getBinder().forField(tipoAbbonamentoRivista)
-        .asRequired().bind(RivistaAbbonamento::getTipoAbbonamentoRivista,RivistaAbbonamento::setTipoAbbonamentoRivista);
+        .asRequired().bind(Rivista::getTipoAbbonamentoRivista, Rivista::setTipoAbbonamentoRivista);
 
         getBinder().forField(invioSpedizione)
-        .asRequired().bind(RivistaAbbonamento::getInvioSpedizione,RivistaAbbonamento::setInvioSpedizione);
+        .asRequired().bind(Rivista::getInvioSpedizione, Rivista::setInvioSpedizione);
 
         getBinder().forField(meseInizio)
-        .asRequired().bind(RivistaAbbonamento::getMeseInizio,RivistaAbbonamento::setMeseInizio);
+        .asRequired().bind(Rivista::getMeseInizio, Rivista::setMeseInizio);
         getBinder().forField(meseFine)
-        .asRequired().bind(RivistaAbbonamento::getMeseFine,RivistaAbbonamento::setMeseFine);
+        .asRequired().bind(Rivista::getMeseFine, Rivista::setMeseFine);
         
         getBinder().forField(annoInizio)
-        .asRequired().bind(RivistaAbbonamento::getAnnoInizio,RivistaAbbonamento::setAnnoInizio);
+        .asRequired().bind(Rivista::getAnnoInizio, Rivista::setAnnoInizio);
 
         getBinder().forField(annoFine)
-        .asRequired().bind(RivistaAbbonamento::getAnnoFine,RivistaAbbonamento::setAnnoFine);
+        .asRequired().bind(Rivista::getAnnoFine, Rivista::setAnnoFine);
 
         getBinder().forField(statoRivista)
-        .asRequired().bind(RivistaAbbonamento::getStatoRivista,RivistaAbbonamento::setStatoRivista);
+        .asRequired().bind(Rivista::getStatoRivista, Rivista::setStatoRivista);
 
         importo.setReadOnly(true);
         numeroTotaleRiviste.setReadOnly(true);
@@ -143,7 +143,7 @@ public class RivistaAbbonamentoEditor
     }
 
     @Override
-    public void focus(boolean persisted, RivistaAbbonamento obj) {
+    public void focus(boolean persisted, Rivista obj) {
         pubblicazione.setReadOnly(persisted);
         destinatario.setReadOnly(persisted);
         invioSpedizione.setReadOnly(persisted);

@@ -7,16 +7,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
+import it.arsinfo.smd.dao.RivistaDao;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.service.api.WooCommerceOrderService;
 import it.arsinfo.smd.ui.MainLayout;
 import it.arsinfo.smd.ui.abbonamento.AbbonamentoGrid;
-import it.arsinfo.smd.ui.abbonamento.RivistaAbbonamentoGrid;
+import it.arsinfo.smd.ui.abbonamento.RivistaDtoGrid;
 import it.arsinfo.smd.woocommerce.api.WooCommerceApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,8 +32,8 @@ public class CampagnaView extends AbbonamentoGrid {
     private List<Abbonamento> abbonamenti = new ArrayList<>();
     private Campagna campagna;
     @Autowired
-    private RivistaAbbonamentoDao raDao;
-    RivistaAbbonamentoGrid raGrid;
+    private RivistaDao raDao;
+    RivistaDtoGrid raGrid;
     @Autowired
     private WooCommerceOrderService wooCommerceOrderService;
     @Autowired
@@ -58,17 +58,17 @@ public class CampagnaView extends AbbonamentoGrid {
 
         HorizontalLayout toolbar = getToolBar();
 
-        raGrid = new RivistaAbbonamentoGrid() {
+        raGrid = new RivistaDtoGrid() {
             @Override
-            public List<RivistaAbbonamento> filter() {
-                List<RivistaAbbonamento> list = new ArrayList<>();
+            public List<Rivista> filter() {
+                List<Rivista> list = new ArrayList<>();
                 for (Abbonamento abb: abbonamenti) {
                     list.addAll(raDao.findByAbbonamento(abb));
                 }
                 return list;
             }
         };
-        raGrid.init(new Grid<>(RivistaAbbonamento.class));
+        raGrid.init(new Grid<>(Rivista.class));
         raGrid.getGrid().setHeightByRows(true);
         add(
                 toolbar,

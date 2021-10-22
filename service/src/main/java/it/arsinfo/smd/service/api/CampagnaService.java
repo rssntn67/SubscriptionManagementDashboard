@@ -3,19 +3,19 @@ package it.arsinfo.smd.service.api;
 import java.util.List;
 
 import it.arsinfo.smd.entity.*;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoDto;
 
 public interface CampagnaService extends SmdServiceBase<Campagna> {
 
 	List<Pubblicazione> findPubblicazioni();
 	List<Pubblicazione> findPubblicazioniValide();
 	
-	List<AbbonamentoConRiviste> findAbbonamentoConRivisteGenerati(Campagna entity);
-	List<AbbonamentoConRiviste> findAbbonamentoConRivisteInviati(Campagna entity);
-	List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna campagna);
-	List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity);
-	List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity);
-	List<AbbonamentoConRiviste> searchBy(
+	List<AbbonamentoDto> findAbbonamentoConRivisteGenerati(Campagna entity);
+	List<AbbonamentoDto> findAbbonamentoConRivisteInviati(Campagna entity);
+	List<AbbonamentoDto> findAbbonamentoConRivisteSollecito(Campagna campagna);
+	List<AbbonamentoDto> findAbbonamentoConRivisteEstrattoConto(Campagna entity);
+	List<AbbonamentoDto> findAbbonamentoConDebito(Campagna entity);
+	List<AbbonamentoDto> searchBy(
 			Anno anno,
 			Diocesi searchDiocesi,
 			String searchNome,

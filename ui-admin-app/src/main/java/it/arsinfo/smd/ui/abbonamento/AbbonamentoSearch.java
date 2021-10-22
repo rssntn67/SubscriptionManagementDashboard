@@ -35,7 +35,7 @@ public class AbbonamentoSearch extends SmdSearch<Abbonamento> {
     private final CheckBox checkNotResiduo = new CheckBox("Residuo < 0");
     private final CheckBox checkResiduoZero = new CheckBox("Residuo = 0");
     private final ComboBox<StatoRivista> filterStatoRivista= new ComboBox<>();
-    // this are used on RivistaAbbonamento
+    // this are used on Rivista
     private Pubblicazione pubblicazione;
     private final ComboBox<TipoAbbonamentoRivista> filterTipoAbbonamentoRivista = new ComboBox<>();
     

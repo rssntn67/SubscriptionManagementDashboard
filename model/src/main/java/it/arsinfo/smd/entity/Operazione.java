@@ -1,6 +1,6 @@
 package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.SpedizioneItemsDto;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Operazione implements SmdEntity {
 
     public static Operazione generaOperazione(
             Pubblicazione pubblicazione,
-            List<SpedizioneWithItems> spedizioni, Mese mese, Anno anno) {
+            List<SpedizioneItemsDto> spedizioni, Mese mese, Anno anno) {
         log.info("generaOperazione {}, {}, {}", pubblicazione,mese,anno);
         final Operazione op = new Operazione(pubblicazione, anno, mese);
         int posizioneMese=mese.getPosizione()+pubblicazione.getAnticipoSpedizione();

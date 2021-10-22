@@ -1,10 +1,10 @@
 package it.arsinfo.smd.service.impl;
 
 import it.arsinfo.smd.dao.*;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
-import it.arsinfo.smd.dto.RivistaAbbonamentoAggiorna;
+import it.arsinfo.smd.dto.AbbonamentoDto;
+import it.arsinfo.smd.dto.RivistaDto;
 import it.arsinfo.smd.dto.SpedizioneDto;
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.SpedizioneItemsDto;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.SmdService;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class SmdServiceImpl implements SmdService {
     private OperazioneSospendiDao operazioneSospendiDao;
 
     @Autowired
-    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaDao rivistaDao;
     
     @Autowired
     private SpedizioneDao spedizioneDao;
@@ -70,12 +70,12 @@ public class SmdServiceImpl implements SmdService {
 
 
     @Override
-    public List<AbbonamentoConRiviste> get(List<Abbonamento> abbonamenti) {
-    	List<AbbonamentoConRiviste> list = new ArrayList<>();
+    public List<AbbonamentoDto> get(List<Abbonamento> abbonamenti) {
+    	List<AbbonamentoDto> list = new ArrayList<>();
     	for (Abbonamento abbonamento: abbonamenti) {
-    	    List<RivistaAbbonamento> ralist =  rivistaAbbonamentoDao.findByAbbonamento(abbonamento);
+    	    List<Rivista> ralist =  rivistaDao.findByAbbonamento(abbonamento);
                 list.add(new
-                        AbbonamentoConRiviste(abbonamento,
+                        AbbonamentoDto(abbonamento,
                         ralist,
                         abbonamento.getIntestatario()));
     	}
@@ -83,11 +83,11 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void calcolaPesoESpesePostali(Abbonamento abbonamento, Collection<SpedizioneWithItems> spedizioni) {
+    public void calcolaPesoESpesePostali(Abbonamento abbonamento, Collection<SpedizioneItemsDto> spedizioni) {
         abbonamento.setSpese(BigDecimal.ZERO);
         abbonamento.setSpeseEstero(BigDecimal.ZERO);
         List<SpesaSpedizione> spese = spesaSpedizioneDao.findAll();
-        for (SpedizioneWithItems sped: spedizioni) {
+        for (SpedizioneItemsDto sped: spedizioni) {
             int pesoStimato=0;
             for (SpedizioneItem item: sped.getSpedizioneItems()) {
                 pesoStimato+=item.getNumero()*item.getPubblicazione().getGrammi();
@@ -141,19 +141,19 @@ public class SmdServiceImpl implements SmdService {
                 spedizioneDao.deleteById(sped.getId());
             }
         );
-        rivistaAbbonamentoDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaAbbonamentoDao.deleteById(ec.getId()));
+        rivistaDao.findByAbbonamento(abbonamento).forEach(ec -> rivistaDao.deleteById(ec.getId()));
         abbonamentoDao.delete(abbonamento);
     }
 
     @Override
     public void genera(Abbonamento abbonamento) {
-        List<SpedizioneWithItems> spedizioni = findByAbbonamento(abbonamento);
-        for (RivistaAbbonamento ec: abbonamento.getItems()) {
+        List<SpedizioneItemsDto> spedizioni = findByAbbonamento(abbonamento);
+        for (Rivista ec: abbonamento.getItems()) {
             spedizioni = genera(abbonamento, ec, spedizioni);
         }
         abbonamentoDao.save(abbonamento);
-        for (RivistaAbbonamento ec: abbonamento.getItems()) {
-            rivistaAbbonamentoDao.save(ec);
+        for (Rivista ec: abbonamento.getItems()) {
+            rivistaDao.save(ec);
         }
         spedizioni.forEach(sped -> {
             spedizioneDao.save(sped.getSpedizione());
@@ -161,19 +161,19 @@ public class SmdServiceImpl implements SmdService {
         });
     }
 
-    public List<SpedizioneWithItems> genera(Abbonamento abb,
-                                                   RivistaAbbonamento ec,
-                                                   List<SpedizioneWithItems> spedizioni) throws UnsupportedOperationException {
+    public List<SpedizioneItemsDto> genera(Abbonamento abb,
+                                           Rivista ec,
+                                           List<SpedizioneItemsDto> spedizioni) throws UnsupportedOperationException {
         return genera(abb,
                 ec,
                 spedizioni,
                 Mese.getMeseCorrente(), Anno.getAnnoCorrente());
     }
 
-    public List<SpedizioneWithItems> genera(Abbonamento abb,
-                                                   RivistaAbbonamento ec,
-                                                   List<SpedizioneWithItems> spedizioni,
-                                                   Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
+    public List<SpedizioneItemsDto> genera(Abbonamento abb,
+                                           Rivista ec,
+                                           List<SpedizioneItemsDto> spedizioni,
+                                           Mese mesePost, Anno annoPost) throws UnsupportedOperationException {
 
 
         ec.setAbbonamento(abb);
@@ -181,7 +181,7 @@ public class SmdServiceImpl implements SmdService {
         ec.setNumeroTotaleRiviste(ec.getNumero()*items.size());
         ec.calcolaImporto();
         abb.setImporto(abb.getImporto().add(ec.getImporto()));
-        Map<Integer, SpedizioneWithItems> spedMap = SpedizioneWithItems.getSpedizioneMap(spedizioni);
+        Map<Integer, SpedizioneItemsDto> spedMap = SpedizioneItemsDto.getSpedizioneMap(spedizioni);
 
         if (ec.getTipoAbbonamentoRivista() != TipoAbbonamentoRivista.Web) {
             for (SpedizioneItem item : items) {
@@ -192,38 +192,38 @@ public class SmdServiceImpl implements SmdService {
         return new ArrayList<>(spedMap.values());
     }
 
-    public void doRivistaAbbonamentoAggiorna(RivistaAbbonamentoAggiorna raa) {
+    public void persistRivistaDto(RivistaDto raa) {
 
         raa.getRivisteToSave().forEach(r -> {
-            log.info("doRivistaAbbonamentoAggiorna: save: {} ", r);
-            rivistaAbbonamentoDao.save(r);
+            log.info("save: save: {} ", r);
+            rivistaDao.save(r);
         });
 
         raa.getSpedizioniToSave().forEach(sped -> {
-            log.info("doRivistaAbbonamentoAggiorna: save: {}", sped.getSpedizione());
+            log.info("persistRivistaDto: save: {}", sped.getSpedizione());
             spedizioneDao.save(sped.getSpedizione());
             sped.getSpedizioneItems().forEach(item -> spedizioneItemDao.save(item));
         });
 
         raa.getItemsToDelete().forEach(rimitem -> {
-            log.info("doRivistaAbbonamentoAggiorna: delete: {}", rimitem);
+            log.info("persistRivistaDto: delete: {}", rimitem);
             spedizioneItemDao.deleteById(rimitem.getId());
         });
 
-        for (SpedizioneWithItems sped:raa.getSpedizioniToSave()) {
+        for (SpedizioneItemsDto sped:raa.getSpedizioniToSave()) {
             if (sped.getSpedizioneItems().isEmpty()) {
-                log.info("doRivistaAbbonamentoAggiorna: delete: {}", sped);
+                log.info("persistRivistaDto: delete: {}", sped);
                 spedizioneDao.deleteById(sped.getSpedizione().getId());
             }
         }
 
         raa.getRivisteToDelete().forEach(r ->{
-            log.info("doRivistaAbbonamentoAggiorna: delete: {}  ", r);
-            rivistaAbbonamentoDao.deleteById(r.getId());
+            log.info("persistRivistaDto: delete: {}  ", r);
+            rivistaDao.deleteById(r.getId());
         });
 
         if (raa.getAbbonamentoToSave() != null) {
-            log.info("doRivistaAbbonamentoAggiorna: save: {}  ", raa.getAbbonamentoToSave());
+            log.info("persistRivistaDto: save: {}  ", raa.getAbbonamentoToSave());
             aggiornaStatoRiviste(raa.getAbbonamentoToSave());
             abbonamentoDao.save(raa.getAbbonamentoToSave());
         }
@@ -232,36 +232,36 @@ public class SmdServiceImpl implements SmdService {
 
     @Override
     @Transactional
-    public void rimuovi(RivistaAbbonamento rivistaAbbonamento) throws Exception {
-        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
+    public void rimuovi(Rivista rivista) throws Exception {
+        Abbonamento abbonamento = abbonamentoDao.findById(rivista.getAbbonamento().getId()).orElse(null);
         if (abbonamento == null)
             throw new UnsupportedOperationException("Abbonamento not found");
 
-        log.info("rimuovi: {} ", rivistaAbbonamento );
+        log.info("rimuovi: {} ", rivista);
 
-        doRivistaAbbonamentoAggiorna(doRimuovi(abbonamento,
-                rivistaAbbonamento,
+        persistRivistaDto(doRimuovi(abbonamento,
+                rivista,
                 findByAbbonamento(abbonamento)));
     }
 
     @Override
     @Transactional
-    public void aggiorna(RivistaAbbonamento rivistaAbbonamento, int numero, TipoAbbonamentoRivista tipo) throws UnsupportedOperationException {
-        Abbonamento abbonamento = abbonamentoDao.findById(rivistaAbbonamento.getAbbonamento().getId()).orElse(null);
+    public void aggiorna(Rivista rivista, int numero, TipoAbbonamentoRivista tipo) throws UnsupportedOperationException {
+        Abbonamento abbonamento = abbonamentoDao.findById(rivista.getAbbonamento().getId()).orElse(null);
         if (abbonamento == null)
             throw new UnsupportedOperationException("Abbonamento not found");
 
-        log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivistaAbbonamento, numero, tipo );
+        log.info("aggiorna: {} -> numero -> {},  tipo -> {} ", rivista, numero, tipo );
         
-        if (numero == rivistaAbbonamento.getNumero() && tipo == rivistaAbbonamento.getTipoAbbonamentoRivista()) {
-            log.info("aggiorna: updated equals to persisted: {}", rivistaAbbonamento);        	
+        if (numero == rivista.getNumero() && tipo == rivista.getTipoAbbonamentoRivista()) {
+            log.info("aggiorna: updated equals to persisted: {}", rivista);
         	return;
         }
 
-        doRivistaAbbonamentoAggiorna(doAggiorna(
+        persistRivistaDto(doAggiorna(
         				abbonamento,
         				findByAbbonamento(abbonamento),
-                        rivistaAbbonamento,
+                rivista,
                         numero,
                         tipo
                 ));
@@ -269,8 +269,8 @@ public class SmdServiceImpl implements SmdService {
 
     }
 
-    public synchronized RivistaAbbonamentoAggiorna doAggiornaSoloTipoRivista(Abbonamento abbonamento, RivistaAbbonamento rivista, TipoAbbonamentoRivista tipo) {
-        RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
+    public synchronized RivistaDto doAggiornaSoloTipoRivista(Abbonamento abbonamento, Rivista rivista, TipoAbbonamentoRivista tipo) {
+        RivistaDto output = new RivistaDto();
         rivista.setTipoAbbonamentoRivista(tipo);
         rivista.calcolaImporto();
         log.info("doAggiornaSoloTipoRivista: aggiornato importo e tipo rivista: {}",rivista);
@@ -281,12 +281,12 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    private synchronized RivistaAbbonamentoAggiorna doAggiornaNoSped(Abbonamento abbonamento,  List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivista, int numero, TipoAbbonamentoRivista tipo) {
-        RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
+    private synchronized RivistaDto doAggiornaNoSped(Abbonamento abbonamento, List<SpedizioneItemsDto> spedizioni, Rivista rivista, int numero, TipoAbbonamentoRivista tipo) {
+        RivistaDto output = new RivistaDto();
         int numeroTotaleRiviste = 0;
-        for (SpedizioneWithItems s: spedizioni) {
+        for (SpedizioneItemsDto s: spedizioni) {
             for (SpedizioneItem item: s.getSpedizioneItems()) {
-                if ( rivista.getId().equals(item.getRivistaAbbonamento().getId())) {
+                if ( rivista.getId().equals(item.getRivista().getId())) {
                     item.setNumero(numero);
                     log.info("doAggiornaNoSped: aggiornato numero in spedizione: {}",item);
                     numeroTotaleRiviste+=numero;
@@ -309,16 +309,16 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    public synchronized RivistaAbbonamentoAggiorna doAggiornaSped(
+    public synchronized RivistaDto doAggiornaSped(
             Abbonamento abbonamento,
-            List<SpedizioneWithItems> spedizioni,
-            RivistaAbbonamento rivista,
+            List<SpedizioneItemsDto> spedizioni,
+            Rivista rivista,
             int numero,
             TipoAbbonamentoRivista tipo) {
 
-        SpedizioneWithItems.SpedizioneWithItemsData data = SpedizioneWithItems.getData(spedizioni,rivista);
+        SpedizioneItemsDto.SpedizioneWithItemsData data = SpedizioneItemsDto.getData(spedizioni,rivista);
         log.info("doAggiornaSped: {}", data);
-        RivistaAbbonamentoAggiorna output = new RivistaAbbonamentoAggiorna();
+        RivistaDto output = new RivistaDto();
         Mese meseNextSped = Mese.getMeseSuccessivo(data.getMeseUltimaSpedizione());
         Anno annoNextSped=data.getAnnoUltimaSpedizione();
         if (meseNextSped==Mese.GENNAIO) {
@@ -335,7 +335,7 @@ public class SmdServiceImpl implements SmdService {
         for (SpedizioneItem item: data.getInviate()) {
             numeroTotaleRiviste+= item.getNumero();
         }
-        for (SpedizioneWithItems nuovaspedwithitem: genera(abbonamento,rivista, new ArrayList<>(), meseNextSped,annoNextSped)) {
+        for (SpedizioneItemsDto nuovaspedwithitem: genera(abbonamento,rivista, new ArrayList<>(), meseNextSped,annoNextSped)) {
             final List<SpedizioneItem> itemstoDelete = new ArrayList<>();
             for (SpedizioneItem nuovoItem: nuovaspedwithitem.getSpedizioneItems()) {
                 log.info("doAggiornaSped: generated item {}", nuovoItem);
@@ -381,10 +381,10 @@ public class SmdServiceImpl implements SmdService {
         return output;
     }
 
-    public RivistaAbbonamentoAggiorna doAggiorna (
+    public RivistaDto doAggiorna (
             Abbonamento abbonamento,
-            List<SpedizioneWithItems> spedizioni,
-            RivistaAbbonamento original,
+            List<SpedizioneItemsDto> spedizioni,
+            Rivista original,
             int numero,
             TipoAbbonamentoRivista tipo
     )    throws UnsupportedOperationException {
@@ -408,23 +408,23 @@ public class SmdServiceImpl implements SmdService {
             return doAggiornaSoloTipoRivista(abbonamento,original,tipo);
         }
 
-        if (SpedizioneWithItems.noSpedizioniInviateOrAnnullate(spedizioni,original)) {
+        if (SpedizioneItemsDto.noSpedizioniInviateOrAnnullate(spedizioni,original)) {
             return doAggiornaNoSped(abbonamento,spedizioni,original,numero,tipo);
         }
 
         return doAggiornaSped(abbonamento,spedizioni,original,numero,tipo);
     }
 
-    public RivistaAbbonamentoAggiorna doRimuoviNoSped(
+    public RivistaDto doRimuoviNoSped(
             Abbonamento abb,
-            RivistaAbbonamento original,
-            List<SpedizioneWithItems> spedizioni)
+            Rivista original,
+            List<SpedizioneItemsDto> spedizioni)
     {
-        RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
+        RivistaDto aggiorna = new RivistaDto();
         List<SpedizioneItem> rimItems=new ArrayList<>();
-        for (SpedizioneWithItems s: spedizioni) {
+        for (SpedizioneItemsDto s: spedizioni) {
             for (SpedizioneItem item: new ArrayList<>(s.getSpedizioneItems())) {
-                if ( original.getId().equals(item.getRivistaAbbonamento().getId())) {
+                if ( original.getId().equals(item.getRivista().getId())) {
                     rimItems.add(item);
                     s.deleteSpedizioneItem(item);
                 }
@@ -444,23 +444,23 @@ public class SmdServiceImpl implements SmdService {
 
     }
 
-    public RivistaAbbonamentoAggiorna doRimuoviSped(
+    public RivistaDto doRimuoviSped(
             Abbonamento abb,
-            RivistaAbbonamento original,
-            List<SpedizioneWithItems> spedizioni,
-            SpedizioneWithItems.SpedizioneWithItemsData data) {
+            Rivista original,
+            List<SpedizioneItemsDto> spedizioni,
+            SpedizioneItemsDto.SpedizioneWithItemsData data) {
         List<SpedizioneItem> rimItems=new ArrayList<>();
-        RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
+        RivistaDto aggiorna = new RivistaDto();
         original.setMeseInizio(data.getMesePrimaPubblicazioneInviata());
         original.setMeseFine(data.getMeseUltimaPubblicazioneInviata());
         original.setAnnoInizio(data.getAnnoPrimaPubblicazioneInviata());
         original.setAnnoFine(data.getAnnoUltimaPubblicazioneInviata());
         original.setNumeroTotaleRiviste(data.getNumeroRivisteInviate());
 
-        for (SpedizioneWithItems sw:spedizioni) {
+        for (SpedizioneItemsDto sw:spedizioni) {
             for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
                 if (originitem.getStatoSpedizione() != StatoSpedizione.INVIATA) {
-                    if ( original.getId().equals(originitem.getRivistaAbbonamento().getId())) {
+                    if ( original.getId().equals(originitem.getRivista().getId())) {
                         rimItems.add(originitem);
                         sw.deleteSpedizioneItem(originitem);
                     }
@@ -480,14 +480,14 @@ public class SmdServiceImpl implements SmdService {
     }
 
 
-    public RivistaAbbonamentoAggiorna doRimuovi(
+    public RivistaDto doRimuovi(
             Abbonamento abb,
-            RivistaAbbonamento original,
-            List<SpedizioneWithItems> spedizioni) {
+            Rivista original,
+            List<SpedizioneItemsDto> spedizioni) {
 
         abb.setImporto(abb.getImporto().subtract(original.getImporto()));
         log.info("doRimuovi: rimosso importo rivista: {}", abb);
-        SpedizioneWithItems.SpedizioneWithItemsData data = SpedizioneWithItems.getData(spedizioni,original);
+        SpedizioneItemsDto.SpedizioneWithItemsData data = SpedizioneItemsDto.getData(spedizioni,original);
         log.info("doRimuovi: {}", data);
 
         if (data.getNumeroRivisteInviate() == 0) {
@@ -621,7 +621,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public List<SpedizioneDto> listBy(Pubblicazione pubblicazione, Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
         final List<SpedizioneItem> items = new ArrayList<>();
-        final Set<Long> rivistaAbbonamentoIdSet =  new HashSet<>();
+        final Set<Long> rivistaIdsSet =  new HashSet<>();
         final Map<Long,Spedizione> approved = 
         		spedizioneDao
         		.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
@@ -636,20 +636,20 @@ public class SmdServiceImpl implements SmdService {
         	.stream()
         	.filter(spedItem -> approved.containsKey(spedItem.getSpedizione().getId()))
         	.forEach(spedItem -> {
-        		rivistaAbbonamentoIdSet.add(spedItem.getRivistaAbbonamento().getId());
+        		rivistaIdsSet.add(spedItem.getRivista().getId());
         		items.add(spedItem);
 			});
     	List<Long> omaggi = 
-			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet)
+			rivistaDao.findAllById(rivistaIdsSet)
                     .stream()
                     .filter(SmdServiceImpl::isOmaggio)
-                    .map(RivistaAbbonamento::getId).collect(Collectors.toList());
+                    .map(Rivista::getId).collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
     		SpedizioneDto dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
-    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
+    		if (omaggi.contains(item.getRivista().getId())) {
     			dto.setOmaggio();
     		}
     		dtos.add(dto);
@@ -660,7 +660,7 @@ public class SmdServiceImpl implements SmdService {
     @Override
     public List<SpedizioneDto> listBy(Mese meseSpedizione, Anno annoSpedizione, StatoSpedizione statoSpedizione, InvioSpedizione invio) {
         final List<SpedizioneItem> items = new ArrayList<>();
-        final Set<Long> rivistaAbbonamentoIdSet =  new HashSet<>();
+        final Set<Long> rivistaIdsSet =  new HashSet<>();
         final Map<Long,Spedizione> approved = 
         		spedizioneDao
         		.findByMeseSpedizioneAndAnnoSpedizioneAndInvioSpedizione(
@@ -675,21 +675,21 @@ public class SmdServiceImpl implements SmdService {
         	.stream()
         	.filter(spedItem -> approved.containsKey(spedItem.getSpedizione().getId()))
         	.forEach(spedItem -> {
-        		rivistaAbbonamentoIdSet.add(spedItem.getRivistaAbbonamento().getId());
+        		rivistaIdsSet.add(spedItem.getRivista().getId());
         		items.add(spedItem);
 			});
     	List<Long> omaggi = 
-			rivistaAbbonamentoDao.findAllById(rivistaAbbonamentoIdSet)
+			rivistaDao.findAllById(rivistaIdsSet)
                     .stream()
                     .filter(SmdServiceImpl::isOmaggio)
-                    .map(RivistaAbbonamento::getId)
+                    .map(Rivista::getId)
                     .collect(Collectors.toList());
     	List<SpedizioneDto> dtos = new ArrayList<>();
     	for (SpedizioneItem item: items) {
     		Spedizione sped = approved.get(item.getSpedizione().getId());
     		Anagrafica destinatario =  sped.getDestinatario();
     		SpedizioneDto dto = SpedizioneDto.getSpedizioneDto(sped,item, destinatario);
-    		if (omaggi.contains(item.getRivistaAbbonamento().getId())) {
+    		if (omaggi.contains(item.getRivista().getId())) {
     			dto.setOmaggio();
     		}
     		dtos.add(dto);
@@ -909,10 +909,10 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void sospendiSpedizioniProgrammate(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public void sospendiSpedizioniProgrammate(Abbonamento abbonamento, Rivista rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> spedizioneItemDao
-        .findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(sped, StatoSpedizione.PROGRAMMATA,rivista)
+        .findBySpedizioneAndStatoSpedizioneAndRivista(sped, StatoSpedizione.PROGRAMMATA,rivista)
         .forEach( item ->
         {
             switch (rivista.getStatoRivista()) {
@@ -929,10 +929,10 @@ public class SmdServiceImpl implements SmdService {
     }
 
     @Override
-    public void programmaSpedizioniSospese(Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public void programmaSpedizioniSospese(Abbonamento abbonamento, Rivista rivista) {
         spedizioneDao.findByAbbonamento(abbonamento)
         .forEach(sped -> spedizioneItemDao
-        .findBySpedizioneAndStatoSpedizioneAndRivistaAbbonamento(
+        .findBySpedizioneAndStatoSpedizioneAndRivista(
                 sped, StatoSpedizione.SOSPESA,rivista)
 .forEach( item ->
 {
@@ -956,21 +956,21 @@ switch (rivista.getStatoRivista()) {
     }
 
     @Override
-    public List<SpedizioneWithItems> findByAbbonamento(Abbonamento abb) {
-        List<SpedizioneWithItems> spedizioni = new ArrayList<>();
+    public List<SpedizioneItemsDto> findByAbbonamento(Abbonamento abb) {
+        List<SpedizioneItemsDto> spedizioni = new ArrayList<>();
         if (abb.getId() == null) {
             return spedizioni;
         }
         for (Spedizione sped: spedizioneDao.findByAbbonamento(abb)) {
-            SpedizioneWithItems swit = new SpedizioneWithItems(sped);
+            SpedizioneItemsDto swit = new SpedizioneItemsDto(sped);
             swit.setSpedizioneItems(spedizioneItemDao.findBySpedizione(sped));
             spedizioni.add(swit);
         }
         return spedizioni;
     }
 
-    public List<SpedizioneWithItems> findByMeseSpedizioneAndAnnoSpedizione(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) {
-        Map<Long,SpedizioneWithItems> spedizioni = new HashMap<>();
+    public List<SpedizioneItemsDto> findByMeseSpedizioneAndAnnoSpedizione(Mese meseSpedizione, Anno annoSpedizione, Pubblicazione p) {
+        Map<Long, SpedizioneItemsDto> spedizioni = new HashMap<>();
         final Map<Long,Spedizione> approved = 
         		spedizioneDao
         		.findByMeseSpedizioneAndAnnoSpedizione(
@@ -983,7 +983,7 @@ switch (rivista.getStatoRivista()) {
         	if (approved.containsKey(item.getSpedizione().getId())) {
             	Spedizione sped = approved.get(item.getSpedizione().getId());
         		if (!spedizioni.containsKey(sped.getId())) 
-        			spedizioni.put(sped.getId(),new SpedizioneWithItems(sped));
+        			spedizioni.put(sped.getId(),new SpedizioneItemsDto(sped));
         		spedizioni.get(sped.getId()).addSpedizioneItem(item);
         	}
         }
@@ -996,7 +996,7 @@ switch (rivista.getStatoRivista()) {
         assert abbonamento != null;
         List<SpedizioneItem> items = spedizioneItemDao.findBySpedizione(spedizione);
 		for (SpedizioneItem item: items) {
-			RivistaAbbonamento ra = new RivistaAbbonamento();
+			Rivista ra = new Rivista();
 			ra.setAbbonamento(abbonamento);
 			ra.setTipoAbbonamentoRivista(TipoAbbonamentoRivista.Duplicato);
 			ra.setAnnoInizio(item.getAnnoPubblicazione());
@@ -1063,16 +1063,16 @@ switch (rivista.getStatoRivista()) {
 	}
 
 	private void aggiornaCampagnaInviatoEC(Abbonamento abbonamento, Campagna campagna) {
-    	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+    	for (Rivista ra: rivistaDao.
     			findByAbbonamento(abbonamento)) {
     		StatoRivista stato = getStatoRivista(campagna,abbonamento, ra);
         	if (stato != StatoRivista.Attiva) {
 				ra.setStatoRivista(StatoRivista.Sospesa);
-				rivistaAbbonamentoDao.save(ra);
+				rivistaDao.save(ra);
 				sospendiSpedizioniProgrammate(abbonamento,ra);
         	} else {
 				ra.setStatoRivista(StatoRivista.Attiva);
-				rivistaAbbonamentoDao.save(ra);
+				rivistaDao.save(ra);
 				programmaSpedizioniSospese(abbonamento,ra);
         	}
         }
@@ -1085,31 +1085,31 @@ switch (rivista.getStatoRivista()) {
         		.stream()
         		.map(opsos -> opsos.getPubblicazione().getId())
         		.collect(Collectors.toList());
-    	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+    	for (Rivista ra: rivistaDao.
     			findByAbbonamento(abbonamento)) {
     		StatoRivista stato = getStatoRivista(campagna,abbonamento, ra);
         	boolean sospesa = rivisteSospese.contains(ra.getPubblicazione().getId());
         	if (stato != StatoRivista.Attiva && sospesa) {
 				ra.setStatoRivista(StatoRivista.Sospesa);
-				rivistaAbbonamentoDao.save(ra);
+				rivistaDao.save(ra);
 				sospendiSpedizioniProgrammate(abbonamento,ra);
         	} else {
 				ra.setStatoRivista(StatoRivista.Attiva);
-				rivistaAbbonamentoDao.save(ra);
+				rivistaDao.save(ra);
 				programmaSpedizioniSospese(abbonamento,ra);
         	}
         }
 	}
 	
 	@Override
-	public List<RivistaAbbonamento> getRivisteNotValid(Abbonamento abbonamento,Campagna campagna) {
+	public List<Rivista> getRivisteNotValid(Abbonamento abbonamento, Campagna campagna) {
         final List<Pubblicazione> rivisteSospeseList = new ArrayList<>();
         if (campagna.getStatoCampagna() == StatoCampagna.InviatoSospeso) {
             for (OperazioneSospendi op: operazioneSospendiDao.findByCampagna(campagna)) {
                 rivisteSospeseList.add(op.getPubblicazione());
             }
         }
-		return rivistaAbbonamentoDao
+		return rivistaDao
 				.findByAbbonamento(abbonamento)
 				.stream()
 				.filter(ra ->
@@ -1119,7 +1119,7 @@ switch (rivista.getStatoRivista()) {
 
 
     @Override
-    public StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista) {
+    public StatoRivista getStatoRivista(Campagna campagna, Abbonamento abbonamento, Rivista rivista) {
 
         if (isOmaggio(rivista)) {
             return StatoRivista.Attiva;
@@ -1138,9 +1138,9 @@ switch (rivista.getStatoRivista()) {
         return stato;
     }
 
-    public static boolean isOmaggio(RivistaAbbonamento rivistaAbbonamento) {
+    public static boolean isOmaggio(Rivista rivista) {
         boolean isOmaggio=false;
-        switch (rivistaAbbonamento.getTipoAbbonamentoRivista()) {
+        switch (rivista.getTipoAbbonamentoRivista()) {
             case Duplicato:
             case OmaggioCuriaDiocesiana:
             case OmaggioCuriaGeneralizia:
@@ -1155,7 +1155,7 @@ switch (rivista.getStatoRivista()) {
         return isOmaggio;
     }
 
-    private boolean isRivistaValid(Campagna campagna, Abbonamento abbonamento, RivistaAbbonamento rivista, boolean isRivistaSospesa) {
+    private boolean isRivistaValid(Campagna campagna, Abbonamento abbonamento, Rivista rivista, boolean isRivistaSospesa) {
         if (isOmaggio(rivista)) {
             return true;
         }

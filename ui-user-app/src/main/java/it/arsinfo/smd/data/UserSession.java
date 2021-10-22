@@ -2,7 +2,7 @@ package it.arsinfo.smd.data;
 
 import it.arsinfo.smd.dao.AbbonamentoDao;
 import it.arsinfo.smd.dao.AnagraficaDao;
-import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
+import it.arsinfo.smd.dao.RivistaDao;
 import it.arsinfo.smd.dao.StoricoDao;
 import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.UserInfoService;
@@ -39,7 +39,7 @@ public class UserSession implements Serializable {
     private StoricoDao storicoDao;
 
     @Autowired
-    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaDao rivistaDao;
 
     private static final Logger log = LoggerFactory.getLogger(UserSession.class);
 
@@ -86,7 +86,7 @@ public class UserSession implements Serializable {
     public List<Anagrafica> getDestinatariAbbonamento() {
         final Set<Anagrafica> destinatari = new HashSet<>();
         for (Abbonamento abb: getAbbonamentiIntestatario()) {
-            for (RivistaAbbonamento rivista: rivistaAbbonamentoDao.findByAbbonamento(abb)) {
+            for (Rivista rivista: rivistaDao.findByAbbonamento(abb)) {
                 destinatari.add(rivista.getDestinatario());
             }
         }

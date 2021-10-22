@@ -30,7 +30,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
     private AbbonamentoDao abbonamentoDao;
 
     @Autowired
-    private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+    private RivistaDao rivistaDao;
 
     @Autowired
     private AnagraficaDao anagraficaDao;
@@ -234,7 +234,7 @@ public class DistintaVersamentoServiceDaoImpl implements DistintaVersamentoServi
                     log.info("getIncassiGiornaliero: {}", ig);
                     Abbonamento abb = op.getAbbonamento();
                     if (!abbonamentoids.contains(abb.getId())) {
-                        for (RivistaAbbonamento ec: rivistaAbbonamentoDao.findByAbbonamento(abb)) {
+                        for (Rivista ec: rivistaDao.findByAbbonamento(abb)) {
                             log.info("getIncassiGiornaliero: {}", ec);
                             switch (ec.getPubblicazione().getNome()) {
                                 case "Messaggio":

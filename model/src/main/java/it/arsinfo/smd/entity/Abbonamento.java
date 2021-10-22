@@ -1,6 +1,6 @@
 package it.arsinfo.smd.entity;
 
-import it.arsinfo.smd.dto.SpedizioneWithItems;
+import it.arsinfo.smd.dto.SpedizioneItemsDto;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -28,9 +28,9 @@ import javax.persistence.UniqueConstraint;
         })
 //create unique index abb_idx_codeline on abbonamento (codeline);
 //create unique index abb_idx_select on abbonamento (intestatario_id, campagna_id, contrassegno);
-public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
+public class Abbonamento implements SmdEntityItems<Rivista> {
 
-    public static void aggiungiItemSpedizione(Abbonamento abb, RivistaAbbonamento ec,Map<Integer,SpedizioneWithItems> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
+    public static void aggiungiItemSpedizione(Abbonamento abb, Rivista ec, Map<Integer, SpedizioneItemsDto> spedMap, SpedizioneItem item, Mese mesePost, Anno annoPost) {
         Anagrafica destinatario = ec.getDestinatario();
         InvioSpedizione isped = ec.getInvioSpedizione();
         Mese mesePubblicazione = item.getMesePubblicazione();
@@ -73,11 +73,11 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         spedizione.setInvioSpedizione(isped);
         spedizione.setAbbonamento(abb);
         spedizione.setDestinatario(destinatario);
-        int hash = SpedizioneWithItems.getHashCode(spedizione, item.getPubblicazione());
+        int hash = SpedizioneItemsDto.getHashCode(spedizione, item.getPubblicazione());
         if (!spedMap.containsKey(hash)) {
-            spedMap.put(hash, new SpedizioneWithItems(spedizione));
+            spedMap.put(hash, new SpedizioneItemsDto(spedizione));
         }
-        SpedizioneWithItems sped = spedMap.get(hash);
+        SpedizioneItemsDto sped = spedMap.get(hash);
         item.setPosticipata(posticipata);
         item.setSpedizione(sped.getSpedizione());
         sped.addSpedizioneItem(item);
@@ -309,7 +309,7 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     private String progressivo;
 
     @Transient
-    private List<RivistaAbbonamento> items = new ArrayList<>();
+    private List<Rivista> items = new ArrayList<>();
     @Transient
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPagamento;
@@ -431,19 +431,19 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
         this.speseEstrattoConto = speseEstrattoConto;
     }
 
-    public List<RivistaAbbonamento> getItems() {
+    public List<Rivista> getItems() {
         return items;
     }
 
-    public void setItems(List<RivistaAbbonamento> estrattiConto) {
+    public void setItems(List<Rivista> estrattiConto) {
         this.items = estrattiConto;
     }
 
-    public boolean addItem(RivistaAbbonamento ec) {
+    public boolean addItem(Rivista ec) {
         return items.add(ec);
     }
 
-    public boolean removeItem(RivistaAbbonamento ec) {
+    public boolean removeItem(Rivista ec) {
         return items.remove(ec);
     }
 

@@ -43,7 +43,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 	private final TextField minPercIncassato = new TextField("Fattore Minimo");
 	private final TextField maxDebito = new TextField("Max Debito");
 
-	private final AbbonamentoConRivisteGrid grid = new AbbonamentoConRivisteGrid("Abbonamenti");
+	private final AbbonamentoDtoGrid grid = new AbbonamentoDtoGrid("Abbonamenti");
     private final OperazioneCampagnaGrid operazioni =  new OperazioneCampagnaGrid("Operazioni");    
     private final OperazioneSospendiGrid sospensioni =  new OperazioneSospendiGrid("Sospensioni");
    

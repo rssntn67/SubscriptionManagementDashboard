@@ -17,14 +17,14 @@ import java.util.Map;
 @Entity
 public class SpedizioneItem implements SmdEntity {
 
-    public static List<SpedizioneItem> generaSpedizioneItems(RivistaAbbonamento ec) throws UnsupportedOperationException {
+    public static List<SpedizioneItem> generaSpedizioneItems(Rivista ec) throws UnsupportedOperationException {
         log.info("generaSpedizioneItems: {}", ec);
         List<SpedizioneItem> items = new ArrayList<>();
-        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = RivistaAbbonamento.getAnnoMeseMap(ec);
+        Map<Anno, EnumSet<Mese>> mappaPubblicazioni = Rivista.getAnnoMeseMap(ec);
         for (Anno anno: mappaPubblicazioni.keySet()) {
             mappaPubblicazioni.get(anno).forEach(mese -> {
                 SpedizioneItem item = new SpedizioneItem();
-                item.setRivistaAbbonamento(ec);
+                item.setRivista(ec);
                 item.setAnnoPubblicazione(anno);
                 item.setMesePubblicazione(mese);
                 item.setNumero(ec.getNumero());
@@ -51,7 +51,7 @@ public class SpedizioneItem implements SmdEntity {
     private Pubblicazione pubblicazione;
 
     @ManyToOne(optional=false,fetch=FetchType.LAZY)
-    private RivistaAbbonamento rivistaAbbonamento;
+    private Rivista rivista;
     
     @Enumerated(EnumType.STRING)
     private Mese mesePubblicazione=Mese.getMeseCorrente();
@@ -106,20 +106,20 @@ public class SpedizioneItem implements SmdEntity {
     }
 
 
-    public RivistaAbbonamento getRivistaAbbonamento() {
-        return rivistaAbbonamento;
+    public Rivista getRivista() {
+        return rivista;
     }
 
 
-    public void setRivistaAbbonamento(RivistaAbbonamento rivistaAbbonamento) {
-        this.rivistaAbbonamento = rivistaAbbonamento;
+    public void setRivista(Rivista rivista) {
+        this.rivista = rivista;
     }
         
     @Override
     public String toString() {
         return String.format("SpedizioneItem[id=%d, ec=%d,%s %s %s, num. %d, post %b,%s]", 
                              id,
-                             rivistaAbbonamento.getId(),
+                             rivista.getId(),
                              pubblicazione.getNome(),		
                              mesePubblicazione,
                              annoPubblicazione,

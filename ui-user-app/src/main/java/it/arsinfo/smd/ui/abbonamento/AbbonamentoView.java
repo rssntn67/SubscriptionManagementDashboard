@@ -5,11 +5,11 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import it.arsinfo.smd.dao.RivistaAbbonamentoDao;
+import it.arsinfo.smd.dao.RivistaDao;
 import it.arsinfo.smd.entity.Anno;
 import it.arsinfo.smd.entity.Abbonamento;
 import it.arsinfo.smd.entity.Campagna;
-import it.arsinfo.smd.entity.RivistaAbbonamento;
+import it.arsinfo.smd.entity.Rivista;
 import it.arsinfo.smd.service.api.StoricoService;
 import it.arsinfo.smd.ui.MainLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class AbbonamentoView extends AbbonamentoGrid {
 
     private Campagna campagna;
     @Autowired
-    private RivistaAbbonamentoDao raDao;
+    private RivistaDao raDao;
 
     public AbbonamentoView(@Autowired StoricoService service)  {
         this.service=service;
@@ -37,18 +37,18 @@ public class AbbonamentoView extends AbbonamentoGrid {
         super.init(new Grid<>(Abbonamento.class));
         campagna = service.getByAnno(Anno.getAnnoCorrente());
         List<Abbonamento> abbonamentoList = filter();
-        RivistaAbbonamentoGrid raGrid = new RivistaAbbonamentoGrid() {
+        RivistaDtoGrid raGrid = new RivistaDtoGrid() {
 
             @Override
-            public List<RivistaAbbonamento> filter() {
-                List<RivistaAbbonamento> list = new ArrayList<>();
+            public List<Rivista> filter() {
+                List<Rivista> list = new ArrayList<>();
                 for (Abbonamento abb: abbonamentoList) {
                     list.addAll(raDao.findByAbbonamento(abb));
                 }
                 return list;
             }
         };
-        raGrid.init(new Grid<>(RivistaAbbonamento.class));
+        raGrid.init(new Grid<>(Rivista.class));
         raGrid.getGrid().setHeightByRows(true);
 
         add(

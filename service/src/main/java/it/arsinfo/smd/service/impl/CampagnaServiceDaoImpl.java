@@ -5,7 +5,7 @@ import it.arsinfo.smd.entity.*;
 import it.arsinfo.smd.service.api.AnagraficaService;
 import it.arsinfo.smd.service.api.CampagnaService;
 import it.arsinfo.smd.service.api.SmdService;
-import it.arsinfo.smd.dto.AbbonamentoConRiviste;
+import it.arsinfo.smd.dto.AbbonamentoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	private AbbonamentoDao abbonamentoDao;
 
 	@Autowired
-	private RivistaAbbonamentoDao rivistaAbbonamentoDao;
+	private RivistaDao rivistaDao;
 
 	@Autowired
 	private AnagraficaService anagraficaService;
@@ -145,7 +145,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         for (Abbonamento abb: Storico.genera(entity, anagraficaService.findAll(), storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Annullato,0))) {
             storicoDao.findByIntestatarioAndContrassegnoAndStatoStorico(abb.getIntestatario(),abb.isContrassegno(), StatoStorico.Valido)
                 .forEach(storico ->
-                	abb.addItem(RivistaAbbonamento.genera(storico,abb)
+                	abb.addItem(Rivista.genera(storico,abb)
 				));
             if (abb.getItems().size() >= 1) {
                 smdService.genera(abb);
@@ -219,12 +219,12 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteGenerati(Campagna entity) {
+	public List<AbbonamentoDto> findAbbonamentoConRivisteGenerati(Campagna entity) {
 		return smdService.get(abbonamentoDao.findByCampagna(entity));
 	}
 
 	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteInviati(Campagna entity) {
+	public List<AbbonamentoDto> findAbbonamentoConRivisteInviati(Campagna entity) {
 		return smdService.get(
 				abbonamentoDao.findByCampagna(entity)
 					.stream()
@@ -239,17 +239,17 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 	
 	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteSollecito(Campagna entity) {
+	public List<AbbonamentoDto> findAbbonamentoConRivisteSollecito(Campagna entity) {
 		return smdService.get( abbonamentoDao.findByCampagnaAndSollecitato(entity, true));
 	}
 
 	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConRivisteEstrattoConto(Campagna entity) {
+	public List<AbbonamentoDto> findAbbonamentoConRivisteEstrattoConto(Campagna entity) {
 		return smdService.get( abbonamentoDao.findByCampagnaAndInviatoEC(entity, true));
 	}
 
 	@Override
-	public List<AbbonamentoConRiviste> findAbbonamentoConDebito(Campagna entity) {
+	public List<AbbonamentoDto> findAbbonamentoConDebito(Campagna entity) {
 		return smdService
 				.get(abbonamentoDao.findByCampagna(entity)
 		                .stream()
@@ -361,12 +361,12 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         abbonamentoDao.
         findByCampagna(campagna).
         forEach(abbonamento -> {
-        	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.
+        	for (Rivista ra: rivistaDao.
             findByAbbonamentoAndPubblicazione(abbonamento, p)) {
             	StatoRivista stato = smdService.getStatoRivista(campagna,abbonamento, ra);
             	if (stato != StatoRivista.Attiva) {
 					ra.setStatoRivista(StatoRivista.Sospesa);
-					rivistaAbbonamentoDao.save(ra);
+					rivistaDao.save(ra);
 					smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
             	}
             }
@@ -417,11 +417,11 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         campagna.setStatoCampagna(StatoCampagna.InviatoEC);
         repository.save(campagna);  
         abbonamentoDao.findByCampagna(campagna).forEach(abbonamento -> {
-        	for (RivistaAbbonamento ra: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
+        	for (Rivista ra: rivistaDao.findByAbbonamento(abbonamento)) {
             	StatoRivista stato = smdService.getStatoRivista(campagna,abbonamento, ra);
             	if (stato != StatoRivista.Attiva) {
 					ra.setStatoRivista(StatoRivista.Sospesa);
-					rivistaAbbonamentoDao.save(ra);
+					rivistaDao.save(ra);
 					smdService.sospendiSpedizioniProgrammate(abbonamento,ra);
             	}
             }
@@ -470,7 +470,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
         });
         Map<Long,Storico> storici = storicoDao.findByStatoStoricoNotAndNumeroGreaterThan(StatoStorico.Sospeso, 0).stream().collect(Collectors.toMap(Storico::getId, Function.identity()));
         for (Abbonamento abbonamento :abbonamentoDao.findByCampagna(campagna)) {
-            for (RivistaAbbonamento rivista: rivistaAbbonamentoDao.findByAbbonamento(abbonamento)) {
+            for (Rivista rivista: rivistaDao.findByAbbonamento(abbonamento)) {
             	if (rivista.getStorico() == null ) {
             		continue;
             	}
@@ -548,7 +548,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public List<AbbonamentoConRiviste> searchBy(
+	public List<AbbonamentoDto> searchBy(
 			Anno anno,
 			Diocesi searchDiocesi,
 			String searchNome,
