@@ -11,12 +11,6 @@ import java.util.stream.Collectors;
 public class SpedizioneWithItems {
 
     public static class SpedizioneWithItemsData {
-        private List<SpedizioneWithItems> spedizioneWithItemsInviate = new ArrayList<>();
-
-        public List<SpedizioneWithItems> getSpedizioneWithItemsInviate() {
-            return spedizioneWithItemsInviate;
-        }
-
         private List<SpedizioneItem> annullate = new ArrayList<>();
         private List<SpedizioneItem> usabili = new ArrayList<>();
         private List<SpedizioneItem> inviate = new ArrayList<>();
@@ -35,6 +29,14 @@ public class SpedizioneWithItems {
 
         public List<SpedizioneItem> getUsabili() {
             return usabili;
+        }
+
+        public int getNumeroRivisteInviate() {
+            int nrInviate=0;
+            for (SpedizioneItem item: inviate) {
+                nrInviate+=item.getNumero();
+            }
+            return nrInviate;
         }
 
         public List<SpedizioneItem> getInviate() {
@@ -133,7 +135,6 @@ public class SpedizioneWithItems {
     }
 
     public static SpedizioneWithItemsData getData(List<SpedizioneWithItems> spedizioni, RivistaAbbonamento rivistaAbbonamento) {
-        List<SpedizioneWithItems> spedizioniinviate = new ArrayList<>();
         List<SpedizioneItem> annullate = new ArrayList<>();
         List<SpedizioneItem> usabili = new ArrayList<>();
         List<SpedizioneItem> inviate = new ArrayList<>();
@@ -149,7 +150,6 @@ public class SpedizioneWithItems {
                     switch (item.getStatoSpedizione()) {
                         case INVIATA:
                             inviate.add(item);
-                            spedizioniinviate.add(spedwith);
 
                             if (meseInizioInv==null) {
                                 meseInizioInv=item.getMesePubblicazione();
@@ -209,7 +209,6 @@ public class SpedizioneWithItems {
         data.annullate=annullate;
         data.inviate=inviate;
         data.usabili=usabili;
-        data.spedizioneWithItemsInviate=spedizioniinviate;
         return data;
     }
 

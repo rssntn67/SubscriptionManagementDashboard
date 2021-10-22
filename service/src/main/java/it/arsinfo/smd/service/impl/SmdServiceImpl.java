@@ -415,77 +415,47 @@ public class SmdServiceImpl implements SmdService {
         return doAggiornaSped(abbonamento,spedizioni,original,numero,tipo);
     }
 
-    public RivistaAbbonamentoAggiorna doRimuovi(
+    public RivistaAbbonamentoAggiorna doRimuoviNoSped(
             Abbonamento abb,
             RivistaAbbonamento original,
-            List<SpedizioneWithItems> spedizioni) {
-        abb.setImporto(abb.getImporto().subtract(original.getImporto()));
-        log.info("doRimuovi: rimosso importo rivista: {}", abb);
+            List<SpedizioneWithItems> spedizioni)
+    {
         RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
-        Mese meseInizioInv=null;
-        Anno annoInizioInv=null;
-        Mese meseFineInv=null;
-        Anno annoFineInv=null;
-        int rivisteinviate=0;
-        final List<SpedizioneItem> rimItems = new ArrayList<>();
-        for (SpedizioneWithItems spedwith: spedizioni) {
-            for (SpedizioneItem item : spedwith.getSpedizioneItems()) {
-                if (item.getStatoSpedizione() == StatoSpedizione.INVIATA) {
-                    if ( original.getId().equals(item.getRivistaAbbonamento().getId())) {
-                        rivisteinviate+=item.getNumero();
-                        if (meseInizioInv==null) {
-                            meseInizioInv=item.getMesePubblicazione();
-                            annoInizioInv=item.getAnnoPubblicazione();
-                        } else if (annoInizioInv.getAnno() > item.getAnnoPubblicazione().getAnno()) {
-                            meseInizioInv=item.getMesePubblicazione();
-                            annoInizioInv=item.getAnnoPubblicazione();
-                        } else if (annoInizioInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                meseInizioInv.getPosizione() > item.getMesePubblicazione().getPosizione()) {
-                            meseInizioInv=item.getMesePubblicazione();
-                        }
-                        if (meseFineInv==null) {
-                            meseFineInv=item.getMesePubblicazione();
-                            annoFineInv=item.getAnnoPubblicazione();
-                        } else if (annoFineInv.getAnno() < item.getAnnoPubblicazione().getAnno()) {
-                            meseFineInv=item.getMesePubblicazione();
-                            annoFineInv=item.getAnnoPubblicazione();
-                        } else if (annoFineInv.getAnno() == item.getAnnoPubblicazione().getAnno() &&
-                                meseFineInv.getPosizione() < item.getMesePubblicazione().getPosizione()) {
-                            meseFineInv=item.getMesePubblicazione();
-                        }
-                    }
+        List<SpedizioneItem> rimItems=new ArrayList<>();
+        for (SpedizioneWithItems s: spedizioni) {
+            for (SpedizioneItem item: new ArrayList<>(s.getSpedizioneItems())) {
+                if ( original.getId().equals(item.getRivistaAbbonamento().getId())) {
+                    rimItems.add(item);
+                    s.deleteSpedizioneItem(item);
                 }
             }
         }
-        log.info("doRimuovi: {} riviste inviate", rivisteinviate);
-        if (rivisteinviate == 0) {
-            for (SpedizioneWithItems s: spedizioni) {
-                for (SpedizioneItem item: new ArrayList<>(s.getSpedizioneItems())) {
-                    if ( original.getId().equals(item.getRivistaAbbonamento().getId())) {
-                        rimItems.add(item);
-                        s.deleteSpedizioneItem(item);
-                    }
-                }
-            }
-            calcolaPesoESpesePostali(abb, spedizioni);
-            original.setNumero(0);
-            original.setNumeroTotaleRiviste(0);
-            original.setImporto(BigDecimal.ZERO);
-            aggiorna.setItemsToDelete(rimItems);
-            aggiorna.setAbbonamentoToSave(abb);
-            aggiorna.setSpedizioniToSave(spedizioni);
-            aggiorna.getRivisteToDelete().add(original);
-            log.info("doRimuovi: {}",abb);
-            log.info("doRimuovi: {}",original);
-            return aggiorna;
-        }
+        calcolaPesoESpesePostali(abb, spedizioni);
+        original.setNumero(0);
+        original.setNumeroTotaleRiviste(0);
+        original.setImporto(BigDecimal.ZERO);
+        aggiorna.setItemsToDelete(rimItems);
+        aggiorna.setAbbonamentoToSave(abb);
+        aggiorna.setSpedizioniToSave(spedizioni);
+        aggiorna.getRivisteToDelete().add(original);
+        log.info("doRimuoviNoSped: {}",abb);
+        log.info("doRimuoviNoSped: {}",original);
+        return aggiorna;
 
-        log.info("doRimuovi: riviste inviate:{} - inizio {} {}, fine {} {}",original.getPubblicazione().getNome(), meseInizioInv, annoInizioInv,meseFineInv,annoFineInv);
-        original.setMeseInizio(meseInizioInv);
-        original.setMeseFine(meseFineInv);
-        original.setAnnoInizio(annoInizioInv);
-        original.setAnnoFine(annoFineInv);
-        original.setNumeroTotaleRiviste(rivisteinviate);
+    }
+
+    public RivistaAbbonamentoAggiorna doRimuoviSped(
+            Abbonamento abb,
+            RivistaAbbonamento original,
+            List<SpedizioneWithItems> spedizioni,
+            SpedizioneWithItems.SpedizioneWithItemsData data) {
+        List<SpedizioneItem> rimItems=new ArrayList<>();
+        RivistaAbbonamentoAggiorna aggiorna = new RivistaAbbonamentoAggiorna();
+        original.setMeseInizio(data.getMesePrimaPubblicazioneInviata());
+        original.setMeseFine(data.getMeseUltimaPubblicazioneInviata());
+        original.setAnnoInizio(data.getAnnoPrimaPubblicazioneInviata());
+        original.setAnnoFine(data.getAnnoUltimaPubblicazioneInviata());
+        original.setNumeroTotaleRiviste(data.getNumeroRivisteInviate());
 
         for (SpedizioneWithItems sw:spedizioni) {
             for (SpedizioneItem originitem: new ArrayList<>(sw.getSpedizioneItems())) {
@@ -504,9 +474,27 @@ public class SmdServiceImpl implements SmdService {
         aggiorna.setSpedizioniToSave(spedizioni);
         aggiorna.getRivisteToSave().add(original);
         aggiorna.setItemsToDelete(rimItems);
-        log.info("doRimuovi:  from {} ec -> {}",abb,original);
-
+        log.info("doRimuoviSped: {}",abb);
+        log.info("doRimuoviSped: {}",original);
         return aggiorna;
+    }
+
+
+    public RivistaAbbonamentoAggiorna doRimuovi(
+            Abbonamento abb,
+            RivistaAbbonamento original,
+            List<SpedizioneWithItems> spedizioni) {
+
+        abb.setImporto(abb.getImporto().subtract(original.getImporto()));
+        log.info("doRimuovi: rimosso importo rivista: {}", abb);
+        SpedizioneWithItems.SpedizioneWithItemsData data = SpedizioneWithItems.getData(spedizioni,original);
+        log.info("doRimuovi: {}", data);
+
+        if (data.getNumeroRivisteInviate() == 0) {
+            return doRimuoviNoSped(abb,original,spedizioni);
+        }
+
+        return doRimuoviSped(abb,original,spedizioni,data);
 
     }
 
