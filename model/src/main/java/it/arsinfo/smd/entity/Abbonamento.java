@@ -228,8 +228,15 @@ public class Abbonamento implements SmdEntityItems<RivistaAbbonamento> {
     public static BigDecimal getIncassato(List<Abbonamento> abbonamenti) {
         BigDecimal importo = BigDecimal.ZERO;
         for (Abbonamento abb:abbonamenti) {
-            if (abb.getIncassato() != null)
                 importo=importo.add(abb.getIncassato());
+        }
+        return importo;
+    }
+
+    public static BigDecimal getContrassegno(List<Abbonamento> abbonamenti) {
+        BigDecimal importo = BigDecimal.ZERO;
+        for (Abbonamento abb:abbonamenti) {
+                importo=importo.add(abb.getSpeseContrassegno());
         }
         return importo;
     }
