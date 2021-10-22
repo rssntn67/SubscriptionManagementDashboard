@@ -258,7 +258,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 				
 	@Override
-	public void invia(Campagna campagna, UserInfo user) {
+	public synchronized void invia(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.Generata ) {
         	log.warn("invia: Impossibile invia campagna {}, lo stato campagna non 'Generata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire invia campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Generata'");
@@ -289,7 +289,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public void sollecita(Campagna campagna, UserInfo user) {
+	public synchronized void sollecita(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.Inviata ) {
         	log.warn("sollecita: Impossibile sollecita campagna {}, lo stato campagna non 'Inviata'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire sollecito campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'Inviata'");
@@ -328,7 +328,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public void sospendi(Campagna campagna, Pubblicazione p, UserInfo user) {
+	public synchronized void sospendi(Campagna campagna, Pubblicazione p, UserInfo user) {
         log.info("sospendi Campagna start {} {}", campagna, p);
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoSollecito && campagna.getStatoCampagna() != StatoCampagna.InviatoSospeso) {
         	log.warn("sospendi: Impossibile sospendere campagna {}, lo stato campagna non 'Inviato Sollecito'", campagna);
@@ -384,7 +384,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public void estratto(Campagna campagna, UserInfo user) {
+	public synchronized void estratto(Campagna campagna, UserInfo user) {
 		switch (campagna.getStatoCampagna()) {
 			case InviatoSospeso:
 			case InviatoSollecito:
@@ -436,7 +436,7 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 	
 	@Override
-	public void chiudi(Campagna campagna, UserInfo user) {
+	public synchronized void chiudi(Campagna campagna, UserInfo user) {
     	if (campagna.getStatoCampagna() != StatoCampagna.InviatoEC ) {
         	log.warn("chiudi: Impossibile chiudi campagna {}, lo stato campagna non 'InviatoEC'", campagna);
         	throw new UnsupportedOperationException("Impossibile eseguire chiudi campagna, " + campagna.getAnno().getAnno() +". La campagna non è nello stato 'InviatoEC'");
@@ -518,8 +518,22 @@ public class CampagnaServiceDaoImpl implements CampagnaService {
 	}
 
 	@Override
-	public Campagna save(Campagna entity) throws Exception {
+	public synchronized Campagna save(Campagna entity) throws Exception {
+		boolean aggiornariviste=false;
+		if (entity.getId() != null) {
+			Campagna persisted = repository.findByAnno(entity.getAnno());
+			if (persisted.getMaxDebito().compareTo(entity.getMaxDebito()) != 0 ||
+			   persisted.getMinPercIncassato().compareTo(entity.getMinPercIncassato()) != 0 ||
+			   persisted.getSogliaImportoTotale().compareTo(entity.getSogliaImportoTotale()) != 0 )
+				aggiornariviste=true;
+		}
 		repository.save(entity);
+		log.info("save: aggiorna riviste: {}", aggiornariviste);
+		if (aggiornariviste) {
+			lock(entity);
+			smdService.aggiornaStatoRiviste(entity);
+			unlock(entity);
+		}
 		return repository.findByAnno(entity.getAnno());
 	}
 

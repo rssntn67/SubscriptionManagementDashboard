@@ -1013,8 +1013,31 @@ switch (rivista.getStatoRivista()) {
 		genera(abbonamento);
 		
 	}
+    @Override
+    public void aggiornaStatoRiviste(Campagna campagna)  {
+        if (campagna == null) {
+            return;
+        }
+        switch (campagna.getStatoCampagna()) {
+            case InviatoSospeso:
+                for (Abbonamento abbonamento: abbonamentoDao.findByCampagna(campagna))
+                    aggiornaCampagnaInviatoSospeso(abbonamento,campagna);
+                break;
+            case InviatoEC:
+                for (Abbonamento abbonamento: abbonamentoDao.findByCampagna(campagna))
+                    aggiornaCampagnaInviatoEC(abbonamento,campagna);
+                break;
+            case Generata:
+            case Inviata:
+            case InviatoSollecito:
+            case Chiusa:
+            default:
+                break;
+        }
+    }
 
-	@Override
+
+    @Override
 	public void aggiornaStatoRiviste(Abbonamento abbonamento)  {
         if (abbonamento.getCampagna() == null) {
             return;

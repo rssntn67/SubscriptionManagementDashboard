@@ -88,7 +88,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
         buttonVisualizzaSollecitati.addClickListener(click -> grid.populate(repo.findAbbonamentoConRivisteSollecito(get())));
         buttonVisualizzaEstrattoConto.addClickListener(click -> grid.populate(repo.findAbbonamentoConRivisteEstrattoConto(get())));
         buttonVisualizzaDebitori.addClickListener(click -> grid.populate(repo.findAbbonamentoConDebito(get())));
-       
+
         buttonGenera.addClickListener(click -> {
 			Notification.show("Generazione Campagna Avviata", Notification.Type.TRAY_NOTIFICATION);
 			@SuppressWarnings("unchecked")
@@ -199,7 +199,9 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 				new Label(
 				 "Gli abbonamenti sono validi se: \n" +
 					  " **** importo >= Soglia Importo & incassato >= importo * Fattore Minimo\n" +
-				      " **** importo < Soglia Importo & debito < Max Debito"
+				      " **** importo < Soglia Importo & debito < Max Debito \n" +
+                      "La modifica di questi valori aggiornerà lo stato delle riviste\n"+
+					  "in base allo stato della Campagna"
 				,ContentMode.PREFORMATTED);
 		Panel generated = new Panel("Gestione Contrassegno");
 		generated.setContent(new HorizontalLayout(contrassegno,generatedLabel));
@@ -309,6 +311,21 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     }
 
     @Override
+	public void save() {
+		Notification.show("Salva Campagna Avviato", Notification.Type.TRAY_NOTIFICATION);
+		@SuppressWarnings("unchecked")
+		BgSave bgsave = new BgSave(repo,(SmdEditorUI<Campagna>)UI.getCurrent());
+		bgsave.start();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			Notification.show("Chiudi Campagna Sleep Error", Notification.Type.TRAY_NOTIFICATION);
+		}
+		edit(get());
+
+	}
+
+    @Override
     public void focus(boolean persisted, Campagna campagna) {
         buttonVisualizzaGenerati.setVisible(persisted);
     	buttonVisualizzaInviati.setVisible(persisted);
@@ -325,6 +342,7 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 		buttonChiudi.setVisible(false);
 
 		anno.setReadOnly(persisted);
+		statoCampagna.setVisible(persisted);
 
 		getSave().setEnabled(persisted);
 		getCancel().setEnabled(persisted);
@@ -332,7 +350,6 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
     		campagna.getStatoCampagna() == StatoCampagna.Generata 
          && campagna.getAnno().getAnno() > Anno.getAnnoCorrente().getAnno()
         );
-        statoCampagna.setVisible(persisted);
 
         if (campagna.isRunning()) {
 			running.setValue("locked: running...");
@@ -347,51 +364,62 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 			anno.focus();
 			return;
 		}
-		items.edit(campagna.getCampagnaItems(),true);
-		operazioni.populate(repo.getOperazioni(campagna));
-		sospensioni.populate(repo.getSospensioni(campagna));
+		contrassegno.setReadOnly(false);
+		limiteInvioSollecito.setReadOnly(false);
+		speseSollecito.setReadOnly(false);
+		limiteInvioEstratto.setReadOnly(false);
+		speseEstrattoConto.setReadOnly(false);
+		sogliaImportoTotale.setReadOnly(false);
+		minPercIncassato.setReadOnly(false);
+		maxDebito.setReadOnly(false);
+
 		switch (get().getStatoCampagna()) {
 		case Generata:
 			buttonInvio.setVisible(true);
 			break;
 		case Inviata:
 			buttonSollecita.setVisible(true);
-			contrassegno.setEnabled(false);
+			contrassegno.setReadOnly(true);
 			break;
 		case InviatoSollecito:
 		case InviatoSospeso:
 			buttonSospendi.setVisible(true);
 			comboBoxPubblicazioneDaSospendere.setVisible(true);
 			buttonEstrattoConto.setVisible(true);
-			limiteInvioSollecito.setEnabled(false);
-			speseSollecito.setEnabled(false);
-			contrassegno.setEnabled(false);
+			limiteInvioSollecito.setReadOnly(true);
+			speseSollecito.setReadOnly(true);
+			contrassegno.setReadOnly(true);
 			break;
 		case InviatoEC:
 			buttonChiudi.setVisible(true);
-			limiteInvioSollecito.setEnabled(false);
-			speseSollecito.setEnabled(false);
-			limiteInvioEstratto.setEnabled(false);
-			speseEstrattoConto.setEnabled(false);
-			contrassegno.setEnabled(false);
+			limiteInvioSollecito.setReadOnly(true);
+			speseSollecito.setReadOnly(true);
+			contrassegno.setReadOnly(true);
+			limiteInvioEstratto.setReadOnly(true);
+			speseEstrattoConto.setReadOnly(true);
 			break;
 		case Chiusa:
+			limiteInvioSollecito.setReadOnly(true);
+			speseSollecito.setReadOnly(true);
+			contrassegno.setReadOnly(true);
+			limiteInvioEstratto.setReadOnly(true);
+			speseEstrattoConto.setReadOnly(true);
+			sogliaImportoTotale.setReadOnly(true);
+			minPercIncassato.setReadOnly(true);
+			maxDebito.setReadOnly(true);
 			numero.setReadOnly(true);
-			limiteInvioSollecito.setEnabled(false);
-			speseSollecito.setEnabled(false);
-			limiteInvioEstratto.setEnabled(false);
-			speseEstrattoConto.setEnabled(false);
-			sogliaImportoTotale.setEnabled(false);
-			minPercIncassato.setEnabled(false);
-			maxDebito.setEnabled(false);
-			contrassegno.setEnabled(false);
 			getSave().setEnabled(false);
 			getCancel().setEnabled(false);
 			break;
 		default:
 			break;
 		}
-    }
+
+		items.edit(campagna.getCampagnaItems(),true);
+		operazioni.populate(repo.getOperazioni(campagna));
+		sospensioni.populate(repo.getSospensioni(campagna));
+
+	}
 
     private abstract class Bg extends Thread {
     	private final UI ui; 
@@ -428,8 +456,24 @@ public class CampagnaEditor extends SmdEntityEditor<Campagna> {
 		}
 				
     }
-    
-    private final class BgGenera extends Bg {
+
+	private final class BgSave extends Bg {
+		private final CampagnaService repo;
+
+		public BgSave(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
+			super(ui, ui.getLoggedInUser());
+			this.repo = repo;
+		}
+
+
+		@Override
+		public void exec(Campagna c) throws Exception
+		{
+			repo.save(c);
+		}
+	}
+
+	private final class BgGenera extends Bg {
     	private final CampagnaService repo;
     	
     	public BgGenera(CampagnaService repo, final SmdEditorUI<Campagna> ui) {
