@@ -2,8 +2,10 @@ package it.arsinfo.smd.ui.incassa.abbonamento;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.ReadOnlyHasValue;
 import com.vaadin.data.converter.LocalDateToDateConverter;
 import it.arsinfo.smd.ui.EuroConverter;
 import com.vaadin.ui.ComboBox;
@@ -25,30 +27,18 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
 
     private boolean hasResiduo;
 
-    private final ComboBox<Anagrafica> intestatario = new ComboBox<Anagrafica>("Intestatario");
-    private final ComboBox<Campagna> campagna = new ComboBox<Campagna>("Campagna");
+    private final ComboBox<Campagna> campagna = new ComboBox<>("Campagna");
 
-    private final ComboBox<Anno> anno = new ComboBox<Anno>("Selezionare Anno",
-            EnumSet.allOf(Anno.class));
 
-    private final TextField importo = new TextField("Importo");
-    private final TextField spese = new TextField("Spese");
-    private final TextField speseEstero = new TextField("Spese Estero");
-    private final TextField speseEstrattoConto = new TextField("Spese Estratto Conto");
-    private final TextField pregresso = new TextField("Pregresso");
-    private final TextField totale = new TextField("Totale");
-    private final TextField residuo = new TextField("Residuo");
-    private final TextField incassato = new TextField("Incassato");
-    private final ComboBox<Cassa> cassa = new ComboBox<Cassa>("Cassa",
+    private final ComboBox<Cassa> cassa = new ComboBox<>("Cassa",
             EnumSet.allOf(Cassa.class));
-    private final TextField codeLine = new TextField("Code Line");
-    private final ComboBox<Ccp> ccp = new ComboBox<Ccp>("Conto Corrente",
+    private final ComboBox<Ccp> ccp = new ComboBox<>("Conto Corrente",
             EnumSet.allOf(Ccp.class));
-    private final ComboBox<Cuas> cuas = new ComboBox<Cuas>("Cuas",
+    private final ComboBox<Cuas> cuas = new ComboBox<>("Cuas",
             EnumSet.allOf(Cuas.class));
     private final TextField progressivo = new TextField("Progressivo");
 
-    private final ComboBox<Incassato> statoIncasso = new ComboBox<Incassato>("Incassato",EnumSet.allOf(Incassato.class));
+    private final ComboBox<Incassato> statoIncasso = new ComboBox<>("Incassato",EnumSet.allOf(Incassato.class));
     
     private final DateField dataContabile = new DateField("Data contabile");
     private final DateField dataPagamento = new DateField("Data pagamento");
@@ -56,7 +46,20 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
     public IncassaAbbonamentoEditor(List<Anagrafica> anagrafica, List<Campagna> campagne) {
 
         super(new Binder<>(Abbonamento.class));
-        
+
+        final ComboBox<Anagrafica> intestatario = new ComboBox<>("Intestatario");
+        final ComboBox<Anno> anno = new ComboBox<>("Selezionare Anno",
+                EnumSet.allOf(Anno.class));
+        final TextField importo = new TextField("Importo");
+        final TextField spese = new TextField("Spese");
+        final TextField speseEstero = new TextField("Spese Estero");
+        final TextField speseEstrattoConto = new TextField("Spese Estratto Conto");
+        final TextField pregresso = new TextField("Pregresso");
+        final TextField totale = new TextField("Totale");
+        final TextField residuo = new TextField("Residuo");
+        final TextField incassato = new TextField("Incassato");
+        final TextField codeLine = new TextField("Code Line");
+
         HorizontalLayout anag = new HorizontalLayout(campagna,anno,codeLine);
         anag.addComponentsAndExpand(intestatario);
 
@@ -108,17 +111,18 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
         dataContabile.setDateFormat("dd/MM/yyyy");
         dataPagamento.setDateFormat("dd/MM/yyyy");
 
-        getBinder().forField(codeLine).asRequired().withValidator(ca -> ca != null,
+        getBinder().forField(codeLine).asRequired().withValidator(Objects::nonNull,
                 "Deve essere definito").bind(Abbonamento::getCodeLine,
                                              Abbonamento::setCodeLine);
         getBinder().forField(intestatario)
             .asRequired()
-            .withValidator(an -> an != null,"Scegliere un Cliente")
+            .withValidator(Objects::nonNull,"Scegliere un Cliente")
             .bind(Abbonamento::getIntestatario,Abbonamento::setIntestatario);
 
         getBinder().forField(campagna).bind(Abbonamento::getCampagna, Abbonamento::setCampagna);
         getBinder().forField(anno).asRequired().bind("anno");
-        getBinder().forField(statoIncasso).bind("statoIncasso");
+        ReadOnlyHasValue<Abbonamento> stato = new ReadOnlyHasValue<>(abb->  statoIncasso.setValue(abb.getStatoIncasso(campagna.getValue())));
+        getBinder().forField(stato).bind(abb->abb,null);
 
 
         getBinder()
@@ -128,22 +132,22 @@ public class IncassaAbbonamentoEditor extends SmdItemEditor<Abbonamento> {
         getBinder()
         .forField(spese)
         .withConverter(new EuroConverter("Conversione in Eur"))
-        .withValidator(sp -> sp != null, "Spese non può essere null")
+        .withValidator(Objects::nonNull, "Spese non può essere null")
         .bind("spese");
         getBinder()
         .forField(speseEstero)
         .withConverter(new EuroConverter("Conversione in Eur"))
-        .withValidator(sp -> sp != null, "Spese Estero non può essere null")
+        .withValidator(Objects::nonNull, "Spese Estero non può essere null")
         .bind("speseEstero");
         getBinder()
         .forField(speseEstrattoConto)
         .withConverter(new EuroConverter("Conversione in Eur"))
-        .withValidator(sp -> sp != null, "Spese Estratto conto non può essere null")
+        .withValidator(Objects::nonNull, "Spese Estratto conto non può essere null")
         .bind("speseEstrattoConto");
         getBinder()
         .forField(pregresso)
         .withConverter(new EuroConverter("Conversione in Eur"))
-        .withValidator(sp -> sp != null, "Pregresso non può essere null")
+        .withValidator(Objects::nonNull, "Pregresso non può essere null")
         .bind("pregresso");
         getBinder()
         .forField(totale)
