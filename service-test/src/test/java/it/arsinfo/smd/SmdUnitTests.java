@@ -1094,12 +1094,12 @@ public class SmdUnitTests {
                         case GENNAIO:
                             Assertions.assertEquals(3,item.getNumero());
                             Assertions.assertEquals(anno, item.getAnnoPubblicazione());
-                            if (Mese.getMeseCorrente().getPosizione() >= 10) {
+                            if (Mese.getMeseCorrente().getPosizione() >= 2 ) {
                                 Assertions.assertTrue(item.isPosticipata());
                                 Assertions.assertEquals(Mese.getMeseCorrente(), item.getSpedizione().getMeseSpedizione());
                                 Assertions.assertEquals(Anno.getAnnoCorrente(),item.getSpedizione().getAnnoSpedizione());
                             } else {
-                                //Assertions.assertFalse(item.isPosticipata());
+                                Assertions.assertFalse(item.isPosticipata());
                                 Assertions.assertEquals(Mese.FEBBRAIO, item.getSpedizione().getMeseSpedizione());
                                 Assertions.assertEquals(anno,item.getSpedizione().getAnnoSpedizione());
                             }
