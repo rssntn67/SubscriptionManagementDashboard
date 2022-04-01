@@ -2,6 +2,7 @@ package it.arsinfo.smd.entity;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -150,7 +151,7 @@ public class Pubblicazione implements SmdEntity {
 
     @Transient
     public String getPubblicato() {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         switch (tipo) {
         case UNICO:
             sb.append(anno.getAnnoAsString());
@@ -398,6 +399,6 @@ public class Pubblicazione implements SmdEntity {
         if (id == null) {
             return other.nome.equals(nome);
         }
-        return (other.id == id);
+        return (Objects.equals(other.id, id));
     }
 }
